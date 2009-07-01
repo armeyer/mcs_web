@@ -1,0 +1,385 @@
+\section{Arithmetic with a Prime Modulus}
+
+\subsection{Multiplicative Inverses}
+\label{sec:prime}
+
+The \term{multiplicative inverse} of a number $x$ is another number
+$x^{-1}$ such that:
+%
+\[
+x \cdot x^{-1} = 1
+\]
+
+Generally, multiplicative inverses exist over the real numbers.  For
+example, the multiplicative inverse of 3 is $1 / 3$ since:
+%
+\[
+3 \cdot \frac{1}{3} = 1
+\]
+%
+The sole exception is that 0 does not have an inverse.
+
+On the other hand, inverses generally do not exist over the integers.
+For example, 7 can not be multiplied by another integer to give 1.
+
+Surprisingly, multiplicative inverses do exist when we're working
+\textit{modulo a prime number}.  For example, if we're working modulo
+5, then 3 is a multiplicative inverse of 7, since:
+%
+\[
+7 \cdot 3 \equiv 1 \pmod{5}
+\]
+%
+(All numbers congruent to 3 modulo 5 are also multiplicative inverses
+of 7; for example, $7 \cdot 8 \equiv 1 \pmod{5}$ as well.)  The only
+exception is that numbers congruent to 0 modulo 5 (that is, the
+multiples of 5) do not have inverses, much as 0 does not have an
+inverse over the real numbers.  Let's prove this.
+
+\begin{lemma}
+\label{lem:inverses}
+If $p$ is prime and $k$ is not a multiple of $p$, then $k$ has a
+multiplicative inverse.
+\end{lemma}
+
+\begin{proof}
+Since $p$ is prime, it has only two divisors: 1 and $p$.  And since
+$k$ is not a multiple of $p$, we must have $\gcd(p, k) = 1$.
+Therefore, there is a linear combination of $p$ and $k$ equal to 1:
+%
+\[
+s p + t k = 1
+\]
+%
+Rearranging terms gives:
+%
+\[
+s p = 1 - t k
+\]
+%
+This implies that $p \divides \paren{1 - tk}$ by the definition of divisibility,
+and therefore $tk \equiv 1 \pmod{p}$ by the definition of congruence.
+Thus, $t$ is a multiplicative inverse of $k$.
+\end{proof}
+
+Multiplicative inverses are the key to decryption in Turing's code.
+Specifically, we can recover the original message by multiplying the
+encoded message by the \textit{inverse} of the key:
+\begin{align*}
+m^* \cdot k^{-1}
+    & = \rem{mk}{p} \cdot k^{-1}
+         & \text{(def.~\eqref{eq:turing-code} of $m^*$)}\\
+    & \equiv (mk)k^{-1} \pmod{p} & \text{(by Cor.~\ref{aran})}\\
+    & \equiv m \pmod{p}.
+\end{align*}
+
+This shows that $m^* k^{-1}$ is congruent to the original message $m$.
+Since $m$ was in the range $0, 1, \dots, p - 1$, we can recover
+it exactly by taking a remainder:
+%
+\[
+m = \rem{m^* k^{-1}}{p}
+\]
+%
+So now we can decrypt!
+
+\subsection{Cancellation}
+
+Another sense in which real numbers are nice is that one can cancel
+multiplicative terms.  In other words, if we know that $m_1 k = m_2 k$,
+then we can cancel the $k$'s and conclude that $m_1 = m_2$, provided $k
+\neq 0$.  In general, cancellation is \textit{not} valid in modular
+arithmetic.  For example, this congruence is correct:
+%
+\[
+2 \cdot 3 \equiv 4 \cdot 3 \pmod{6}
+\]
+%
+But if we cancel the 3's, we reach a false conclusion:
+%
+\[
+2 \equiv 4 \pmod{6}
+\]
+%
+The fact that multiplicative terms can not be cancelled is the most
+significant sense in which congruences differ from ordinary equations.
+However, this difference goes away if we're working modulo a
+\textit{prime}; then cancellation is valid.
+
+\begin{lemma}
+\label{lem:cancel}
+Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then
+%
+\[
+ak \equiv bk \pmod{p}
+\hspace{0.5in} \text{implies} \hspace{0.5in}
+a \equiv b \pmod{p}
+\]
+\end{lemma}
+
+\begin{proof}
+Multiply both sides of the congruence by $k^{-1}$.
+\end{proof}
+
+We can use this lemma to get a bit more insight into how Turing's code
+works.  In particular, the encryption operation in Turing's code
+\textit{permutes the set of possible messages}.  This is stated more
+precisely in the following corollary.
+
+\hyperdef{for}{Fermat}{\begin{corollary}
+\label{cor:prime-permutes}
+Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then the
+sequence:
+\[
+\rem{(0 \cdot k)}{p},\quad
+\rem{(1 \cdot k)}{p},\quad
+\rem{(2 \cdot k)}{p},\quad
+ \dots,\quad
+\rem{\paren{(p-1) \cdot k}}{p}
+\]
+is a permutation\footnote{A \emph{permutation} of a sequence of elements
+is a sequence with the same elements (including repeats) possibly in a
+different order.  More formally, if
+\[
+\vec{e} \eqdef e_1,e_2,\dots,e_n
+\]
+is a length $n$ sequence, and  $\pi: \set{1,\dots, n} \to \set{1,\dots,
+n}$ is a bijection, then
+\[
+e_{\pi(1)}, e_{\pi(2)},\dots, e_{\pi(n)},
+\]
+is a \emph{permutation} of $\vec{e}$.} of the sequence:
+\[
+0,\quad 1,\quad 2,\quad \dots,\quad (p - 1)
+\]
+This remains true if the first term is deleted from each sequence.
+\end{corollary}}
+
+\begin{proof}
+The first sequence contains $p$ numbers, which are all in the range
+$0$ to $p - 1$ by the definition of remainder.  Furthermore, the
+numbers in the first sequence are all different; by
+Lemma~\ref{lem:cancel}, $i k \equiv j k \pmod{p}$
+if and only if $i \equiv j \pmod{p}$, and no two numbers in the range 0, 1,
+\dots, p - 1 are congruent modulo $p$.  Thus, the first sequence must
+contain \textit{all} of the numbers from 0 to $p - 1$ in some order.
+The claim remains true if the first terms are deleted, because both
+sequences begin with 0.
+\end{proof}
+
+For example, suppose $p = 5$ and $k = 3$.  Then the sequence:
+%
+\[
+\underbrace{\rem{(0 \cdot 3)}{5}}_{=0},\quad
+\underbrace{\rem{(1 \cdot 3)}{5}}_{=3},\quad
+\underbrace{\rem{(2 \cdot 3)}{5}}_{=1},\quad
+\underbrace{\rem{(3 \cdot 3)}{5}}_{=4},\quad
+\underbrace{\rem{(4 \cdot 3)}{5}}_{=2}
+\]
+%
+is a permutation of 0, 1, 2, 3, 4 and the last four terms are a
+permutation of 1, 2, 3, 4.  As long as the Nazis don't know the secret key
+$k$, they don't know how the set of possible messages are permuted by the
+process of encryption and thus can't read encoded messages.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Fermat's Theorem}
+
+A remaining challenge in using Turing's code is that decryption requires
+the inverse of the secret key $k$.  An effective way to calculate
+$k^{-1}$ follows from the proof of Lemma~\ref{lem:inverses}: $k^{-1} =
+\rem{t}{p}$ where $s,t$ are coefficients such that $sp+tk=1$.  Notice that
+$t$ is easy to find using the Pulverizer.
+
+An alternative approach, about equally efficient and probably more
+memorable, is to rely on Fermat's Theorem, which is much easier than his
+famous Last Theorem ---and more useful.
+
+\begin{theorem}[Fermat's Theorem]
+Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then:
+%
+\[
+k^{p-1} \equiv 1 \pmod{p}
+\]
+\end{theorem}
+
+\begin{proof}
+We reason as follows:
+\begin{align*}
+1 \cdot 2 \cdots (p-1)
+	& = \rem{k}{p} \cdot \rem{2k}{p} \cdots
+	\rem{(p-1)k}{p} & \text{(by Cor~\ref{cor:prime-permutes})}\\
+	& \equiv k \cdot 2k \cdots (p-1) k \pmod{p}
+            & \text{(by Cor~\ref{aran})}\\
+	& \equiv (p-1)! \cdot k^{p-1} \pmod{p} & \text{(rearranging terms)}\\
+\end{align*}
+
+Now $(p - 1)!$ can not be a multiple of $p$, because the prime
+factorizations of $1, 2, \dots, (p - 1)$ contain only primes smaller
+than $p$.  Therefore, we can cancel $(p - 1)!$ from the first
+expression and the last by Lemma~\ref{lem:cancel}, which proves the
+claim.
+\end{proof}
+
+Here is how we can find inverses using Fermat's Theorem.  Suppose $p$
+is a prime and $k$ is not a multiple of $p$.  Then, by Fermat's
+Theorem, we know that:
+%
+\[
+k^{p-2} \cdot k \equiv 1 \pmod{p}
+\]
+%
+Therefore, $k^{p-2}$ must be a multiplicative inverse of $k$.  For
+example, suppose that we want the multiplicative inverse of 6 modulo
+17.  Then we need to compute $\rem{6^{15}}{17}$, which we can do by
+successive squaring.  All the congruences below hold modulo 17.
+%
+\begin{align*}
+6^2 & \equiv 36 \equiv 2 \\
+6^4 & \equiv (6^2)^2 \equiv 2^2 \equiv 4 \\
+6^8 & \equiv (6^4)^2 \equiv 4^2 \equiv 16 \\
+6^{15} & \equiv 6^8 \cdot 6^4 \cdot 6^2 \cdot 6
+       \equiv 16 \cdot 4 \cdot 2 \cdot 6
+       \equiv 3
+\end{align*}
+%
+Therefore, $\rem{6^{15}}{17} = 3$.  Sure enough, 3 is the multiplicative
+inverse of 6 modulo 17, since:
+%
+\[
+3 \cdot 6 \equiv 1 \pmod{17}
+\]
+
+In general, if we were working modulo a prime $p$, finding a
+multiplicative inverse by trying every value between 1 and $p - 1$
+would require about $p$ operations.  However, the approach above
+requires only about $\log p$ operations, which is far better when $p$
+is large.
+
+\subsection{Breaking Turing's Code--- Again}
+
+The Germans didn't bother to encrypt their weather reports with the
+highly-secure Enigma system.  After all, so what if the Allies learned
+that there was rain off the south coast of Iceland?  But, amazingly, this
+practice provided the British with a critical edge in the Atlantic naval
+battle during 1941.
+
+The problem was that some of those weather reports had originally been
+transmitted from U-boats out in the Atlantic.  Thus, the British
+obtained both unencrypted reports and the same reports encrypted with
+Enigma.  By comparing the two, the British were able to determine
+which key the Germans were using that day and could read all other
+Enigma-encoded traffic.  Today, this would be called a
+\term{known-plaintext attack}.
+
+Let's see how a known-plaintext attack would work against Turing's
+code.  Suppose that the Nazis know both $m$ and $m^*$ where:
+%
+\[
+m^* \equiv mk \pmod{p}
+\]
+%
+Now they can compute:
+%
+\begin{align*}
+m^{p-2} \cdot m^*
+  & = m^{p-2} \cdot \rem{mk}{p}
+                & \text{(def.~\eqref{eq:turing-code} of $m^*$)}\\
+  & \equiv m^{p-2} \cdot mk \pmod{p} & \text{(by Cor~\ref{aran})}\\
+  & \equiv m^{p-1} \cdot k \pmod{p}\\ % & \text{(simplification)}\\
+  & \equiv k \pmod{p} & \text{(Fermat's Theorem)}
+\end{align*}
+%
+Now the Nazis have the secret key $k$ and can decrypt any message!
+
+This is a huge vulnerability, so Turing's code has no practical value.
+Fortunately, Turing got better at cryptography after devising this
+code; his subsequent cracking of Enigma surely saved thousands of
+lives, if not the whole of Britain.
+
+%  I could insert a bit about public-key cryptography here as introduction to
+%  the recitation.
+
+\subsection{Turing Postscript}
+
+A few years after the war, Turing's home was robbed.  Detectives soon
+determined that a former homosexual lover of Turing's had conspired in the
+robbery.  So they arrested him ---that is, they arrested Alan Turing
+---because homosexuality was a British crime punishable by up to two years
+in prison at that time.  Turing was sentenced to a humiliating hormonal
+``treatment'' for his homosexuality: he was given estrogen injections.  He
+began to develop breasts.
+
+Three years later, Alan Turing, the founder of computer science, was
+dead.  His mother explained what happened in a biography of her own
+son.  Despite her repeated warnings, Turing carried out chemistry
+experiments in his own home.  Apparently, her worst fear was realized:
+by working with potassium cyanide while eating an apple, he poisoned
+himself.
+
+However, Turing remained a puzzle to the very end.  His mother was a
+devoutly religious woman who considered suicide a sin.  And, other
+biographers have pointed out, Turing had previously discussed
+committing suicide by eating a poisoned apple.  Evidently, Alan
+Turing, who founded computer science and saved his country, took his
+own life in the end, and in just such a way that his mother could
+believe it was an accident.
+
+
+\floatingtextbox{
+\textboxtitle{The Riemann Hypothesis}
+
+Turing's last project before he disappeared from public view in 1939
+involved the construction of an elaborate mechanical device to test a
+mathematical conjecture called the Riemann Hypothesis.  This conjecture
+first appeared in a sketchy paper by Berhard Riemann in 1859 and is now
+one of the most famous unsolved problem in mathematics.  The formula for
+the sum of an infinite geometric series says:
+\[
+1 + x + x^2 + x^3 + \cdots = \frac{1}{1-x}
+\]
+Substituting $x = \frac{1}{2^s}$, $x = \frac{1}{3^s}$, 
+$x = \frac{1}{5^s}$, and so on for each prime
+number gives a sequence of equations:
+%
+\begin{align*}
+1 + \frac{1}{2^s} + \frac{1}{2^{2s}} + \frac{1}{2^{3s}} + \cdots
+    & = \frac{1}{1 - 1 / 2^s} \\
+1 + \frac{1}{3^s} + \frac{1}{3^{2s}} + \frac{1}{3^{3s}} + \cdots
+    & = \frac{1}{1 - 1 / 3^s} \\
+1 + \frac{1}{5^s} + \frac{1}{5^{2s}} + \frac{1}{5^{3s}} + \cdots
+    & = \frac{1}{1 - 1 / 5^s} \\
+    & \text{etc.}
+\end{align*}
+%
+Multiplying together all the left sides and all the right sides gives:
+%
+\[
+\sum_{n=1}^{\infty} \frac{1}{n^s} = \prod_{p \in \text{primes}} \left(\frac{1}{1 - 1 / p^s}\right)
+\]
+%
+The sum on the left is obtained by multiplying out all the infinite
+series and applying the Fundamental Theorem of Arithmetic.  For
+example, the term $1 / 300^s$ in the sum is obtained by multiplying $1
+/ 2^{2s}$ from the first equation by $1 / 3^s$ in the second and $1 /
+5^{2s}$ in the third.  Riemann noted that every prime appears in the
+expression on the right.  So he proposed to learn about the primes by
+studying the equivalent, but simpler expression on the left.  In
+particular, he regarded $s$ as a complex number and the left side as a
+function, $\zeta(s)$.  Riemann found that the distribution of primes
+is related to values of $s$ for which $\zeta(s) = 0$, which led to his
+famous conjecture:
+\begin{quote}
+\emph{The Riemann Hypothesis}: Every nontrivial zero of the zeta function
+$\zeta(s)$ lies on the line $s = 1/2 + c i$ in the complex plane.
+\end{quote}
+
+Researchers continue to work intensely to settle this conjecture, as they
+have for over a century.  A proof would immediately imply, among other
+things, a strong form of the Prime Number Theorem--- and earn the prover a
+\$1 million prize!  (We're not sure what the cash would be for a
+counter-example, but the discoverer would be wildly applauded by
+mathematicians everywhere.)}
+
+\endinput

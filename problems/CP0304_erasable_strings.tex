@@ -1,0 +1,177 @@
+\input{latex-macros/handout-preamble.tex}
+\inhandout{
+\decideaboutsolutions
+\usesimpleproblems
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+\PTAGfilename{CP0303_erasable_strings.tex}
+\PTAGhistory{S09_cp5m}
+\PTAGkeywords{structural_induction}
+%
+Let $p$ be the string $\mtt{()}$.  A string of parentheses is said to be
+\term{erasable} iff it can be reduced to the empty string by repeatedly
+erasing occurrences of $p$.  For example, here's how to erase the string
+$\mtt{((())())()}$:
+\[
+\mtt{((())())()}
+\rightarrow \mtt{(())}
+\rightarrow \mtt{()}
+\rightarrow \emptystring.
+\]
+On the other hand the string $\mtt{())((((())}$ is not erasable because
+when we try to erase, we get stuck at $\mtt{)(((}$:
+\[
+\mtt{())((((())}
+\rightarrow \mtt{)(((()}
+\rightarrow \mtt{)(((}
+\not\rightarrow
+\]
+
+Let $\ES$ be the set of erasable strings of parentheses.  Let $\RM$ be the
+recursive data type of strings of \emph{matched} parentheses.  (The
+definition of $\RM$ is repeated in the Appendix.)
+
+\bparts
+
+\ppart Use structural induction to prove that
+\[
+\RM \subseteq \ES.
+\]
+
+\solution{
+\begin{proof}
+We prove by structural induction on the definition of $\RM$ that
+  the predicate
+\[
+P(x) \eqdef x \in \ES
+\]
+is true for all $x \in \RM$.
+
+\textbf{Base case}: [$x = \emptystring$] The empty string is erasable by
+definition of $\ES$ -- it can be reduced to itself by erasing the
+substring $\mtt{()}$ 0 times.
+
+\textbf{Constructor case}: [$x = \mtt{(}s\mtt{)}t$] for $s,t \in \RM$.  By
+structural induction hypothesis, we may assume that $s,t \in \ES$.  So to
+erase $x$, erase $s$ and then erase $t$ to be left with the substring
+$\mtt{()}$, and one more erasure leads to the empty string.
+
+This completes the proof by structural induction, so we conclude that
+\[
+\forall x.\ x\in \RM.\ \QIMPLIES\ x \in \ES
+\]
+which by definition means that $\RM \subseteq \ES$.
+
+\end{proof}}
+
+\ppart\label{RMES} Supply the missing parts of the following proof that
+\[
+\ES \subseteq \RM.
+\]
+
+\begin{proof}
+
+We prove by induction on the length, $n$, of strings, $x$, that if $x \in
+\ES$, then $x \in \RM$.  The induction predicate is
+\[
+P(n) \eqdef \forall x \in \ES.\, [\lnth{x} \leq n\ \QIMPLIES\ x \in \RM]
+\]
+
+\textbf{Base case}:
+
+\textbf{ What is the base case?  Prove that $P$ is true in this case.}
+
+\solution{The base case is [$n = 0$].  Now $P(0)$ is true because the
+  empty string is the only string of length 0, and it is in $\RM$ by the
+  base case of the recursive definition of $\RM$.}
+
+\textbf{Inductive step}: To prove $P(n+1)$, suppose $\lnth{x} \leq n+1$
+and $x \in \ES$.  We need only show that $x \in \RM$.  Now if $\lnth{x} <
+n+1$, then the induction hypothesis, $P(n)$, implies that $x \RM$, so we
+only have to deal with $x$ of length exactly $n+1$.
+
+Let's say that a string $y$ is an \emph{erase} of a string $z$ iff $y$ is
+the result of erasing a single occurrence of $p$ in $z$.
+
+Since $x \in \ES$ and has positive length, there must be an erase, $y \in
+\ES$, of $x$.  So $\lnth{y} = n-1$, and since $y \in \ES$, we may assume
+by induction hypothesis that $y \in \RM$.
+
+Now we argue by cases:
+
+\textbf{Case} [$y$ is the empty string].
+
+\textbf{Prove that $x \in \RM$ in this case.}
+
+\solution{In this case $x = p \in \RM$.}
+
+\textbf{Case} [$y = \mtt{(}s\mtt{)}t$ for some strings $s, t \in \RM$.]
+Now we argue by subcases.
+\begin{itemize}
+
+\item \textbf{Subcase} [$x$ is of the form $\mtt{(}s'\mtt{)}t$ where $s$
+  is an erase of $s'$].
+
+  Since $s \in \RM$, it is erasable by part~\eqref{RMES}, which implies
+  that $s'\in \ES$.  But $\lnth{s'} < \lnth{x}$, so by induction
+  hypothesis, we may assume that $s' \in \RM$.  This shows that $x$ is
+  the result of the constructor step of $\RM$, and therefore $x \in \RM$.
+
+\item \textbf{Subcase} [$x$ is of the form $\mtt{(}s\mtt{)}t'$ where $t$ is an
+  erase of $t'$].
+
+  \textbf{Prove that $x \in \RM$ in this subcase.}
+
+\solution{The proof is essentially identical to the previous case, with
+  $t,t'$ in place of $s,s'$:
+
+  Now $t$ is erasable by part~\eqref{RMES}, so $t'\in \ES$.  But
+  $\lnth{t'} < \lnth{x}$, so by induction hypothesis, we may assume that
+  $t' \in \RM$.  This proves that $x$ is the result of the constructor
+  step of $\RM$ and therefore $x \in \RM$.
+}
+
+\item \textbf{Subcase}[$x=p\mtt{(}s\mtt{)}t$].
+
+  \textbf{Prove that $x \in \RM$ in this subcase.}
+
+\solution{Let $t' \eqdef \mtt{(}s\mtt{)}t$ and $s'$ be the empty string.
+  Then $x = \mtt{(}s'\mtt{)}t'$.  But we know $s',t' \in \RM$, which
+  implies that $x \in \RM$ because it is the result the $\RM$ constructor
+  step applied to $s',t'$.}
+
+\end{itemize}
+
+The proofs of the remaining subcases are just like this last one.
+\textbf{List these remaining subcases.}
+
+\solution{
+\begin{itemize}
+
+\item \textbf{case} [$x=\mtt{(}ps\mtt{)}t$],
+\item \textbf{case} [$x=\mtt{(}sp\mtt{)}t$],
+\item \textbf{case} [$x=\mtt{(}s\mtt{)}pt$],
+\item \textbf{case} [$x=\mtt{(}s\mtt{)}tp$].
+\end{itemize}
+}
+
+This completes the proof by induction on $n$, so we conclude that $P(n)$
+holds for all $n \in \naturals$.  Therefore $x \in \RM$ for every string
+$x \in \ES$.  That is,
+\[
+\ES \subseteq \RM \text{  and hence  } \ES = \RM.
+\]
+\end{proof}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{latex-macros/handout-postamble.tex}

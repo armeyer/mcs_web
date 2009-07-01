@@ -1,0 +1,292 @@
+
+\iffalse
+\section{Philosophy of Polling}
+
+One place where the binomial distribution comes up is in polling.
+Polling involves not only some tricky mathematics, but also some
+philosophical issues.
+The difficulty is that polling tries to apply probabilty theory to
+resolve a question of fact.  We can make a
+convincing argument that a statement about public opinion is true, but
+can not actually say that the statement is true with any particular
+probability.  Suppose we're conducting a yes/no poll on some question.
+Then we assume that some fraction $p$ of the population would answer
+``yes'' to the question and the remaining $1 - p$ fraction would
+answer ``no''.  (Let's forget about the people who hang up on
+pollsters or launch into long stories about their little dog Fi-Fi---
+real pollsters have no such luxury!)  Now, $p$ is a fixed number, not
+a randomly-determined quantity.  
+
+Probability slips into a poll since the pollster samples the opinions
+of a people selected uniformly and independently at random.  The
+results are qualified by saying something like this:
+%
+\begin{quotation}
+``One can say with 95\% confidence that the maximum margin of sampling
+error is $\pm 3$ percentage points.''
+\end{quotation}
+%
+This means that either the number reported in the poll is within 3\%
+
+of the actual fraction $p$ or else an unlucky 1-in-20 event happened
+during the polling process; specifically, the pollster's random sample
+was not representative of the population at large.  This is
+\textit{not} the same thing as saying that there is a 95\% chance that
+the poll is correct; it either is or it isn't. 
+
+\fi
+
+\hyperdef{sam}{pling}{\section{Polling}}
+
+Suppose we want to estimate the fraction of the Minnesota voting
+population who currently favor Al Franken over Norm Coleman in the (still
+unresolved) senatorial election.
+
+\iffalse
+\footnote{We can only keep our fingers crossed for this race to happen --
+when they ran against each other for the U.S. Senate in 2000, they
+generated some of the best entertainment in TV history.}  \fi
+
+Let $p$ be this unknown fraction, and let's suppose we have some random
+process ---say throwing darts at voter registration lists--- which will
+select each voter with equal probability.  We can define a Bernoulli
+variable, $K$, by the rule that $K=1$ if the random voter most prefers
+Franken, and $K=0$ otherwise.
+
+Now to estimate $p$, we take a large number, $n$, of random choices of
+voters\footnote{We're choosing a random voter $n$ times \emph{with
+replacement}.  That is, we don't remove a chosen voter from the set of
+voters eligible to be chosen later; so we might choose the same voter more
+than once in $n$ tries!  We would get a slightly better estimate if we
+required $n$ \emph{different} people to be chosen, but doing so complicates
+both the selection process and its analysis with little gain in accuracy.}
+and count the fraction who favor Franken.  That is, we define variables $K_1,
+K_2, \dots$, where $K_i$ is interpreted to be the indicator variable for
+the event that the $i$th chosen voter prefers Franken.  Since our choices are
+made independently, the $K_i$'s are independent.  So formally, we model our
+estimation process by simply assuming we have mutually independent
+Bernoulli variables $K_1, K_2, \dots,$ each with the same probability, $p$,
+of being equal to 1.  Now let $S_n$ be their sum, that is,
+\begin{equation}\label{LN12:Sn}
+S_n \eqdef \sum_{i=1}^n K_i.
+\end{equation}
+So $S_n$ has the binomial distribution with parameter $n$, which we can
+choose, and unknown parameter $p$.
+
+The variable $S_n/n$ describes the fraction of voters \emph{in our sample}
+who favor Franken.  We would expect that $S_n/n$ should
+be something like $p$.
+%Note that
+%\[
+%\expect{\frac{S_n}{n}} = \sum_{i=1}^n \expect{K_i} = pn.
+%\]
+We will use the sample value, $S_n/n$, as our \emph{statistical estimate} of
+$p$.
+
+\subsection{Sampling}
+Suppose we want our estimate of $p$ to be within $0.04$
+of $p$ at least 95\% of the time.  Namely, we want
+\[
+\pr{\abs{\frac{S_n}{n} - p} \leq 0.04} \geq 0.95\ .
+\]
+We let $\epsilon$ be the margin of error we can tolerate, and let $\delta$
+be the probability that our result lies outside this margin, so in this
+case we'd have $\epsilon = 0.04$ and $\delta \le 0.05$.
+
+We want to determine the number, $n$, of times we must poll voters so that
+the value, $S_n/n$, of our estimate will, with probability at least
+$1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
+favoring Franken.
+
+We can define $\delta$, the probability that our poll is off by more
+than the margin of error $\epsilon$, as follows:
+\begin{eqnarray*}
+\delta  & = &
+        \underbrace{\pr{\frac{S_n}{n} \leq p - \epsilon}}_{
+\begin{array}{c}
+\mbox{too many in sample} \\
+\mbox{prefer ``Coleman''}
+\end{array}}
+        + \underbrace{\pr{\frac{S_n}{n} \geq p + \epsilon}}_{
+\begin{array}{c}
+\mbox{too many in sample} \\
+\mbox{prefer ``Franken''}
+\end{array}} \\
+        & = & \pr{S_n \leq (p - \epsilon) n} + \pr{S_n \geq (p + \epsilon) n}.
+\end{eqnarray*}
+
+Now
+\[
+\cdf_{S_n}((p-\epsilon)n) \eqdef \pr{S_n \leq (p - \epsilon) n}
+\]
+%where $F_{n,p}$ is the \emph{cumulative} binomial distribution function.
+Also,
+\[
+\pr{S_n \geq (p + \epsilon) n} = \pr{n- S_n \leq ((1-p) - \epsilon)n}.
+\]
+But $T_n \eqdef n - S_n$ is simply the number of voters in the sample who prefer
+Coleman, which is a sum of Bernoulli random variables
+with parameter $1-p$, and therefore
+\[
+\pr{T_n \leq ((1-p) - \epsilon)n} = \cdf_{T_n}(((1-p) - \epsilon)n).
+\]
+Hence
+\begin{equation}\label{LN12:Fnpe}
+\delta = \cdf_{S_n}((p - \epsilon) n) + \cdf_{T_n}(((1-p) - \epsilon) n).
+\end{equation}
+So we have reduced getting a good estimate of the required sample size to
+finding good bounds on two cumulative binomial distributions
+with parameters $p$ and $1-p$ respectively.
+
+Using the bound on the cumulative binomial distribution function allows us
+to calculate an expression bounding~\eqref{LN12:Fnpe} in terms of $n, \epsilon$
+and $p$.  The problem is that this bound would contain the fraction, $p$,
+of Americans that prefer Franken which is the unknown number we are trying
+to determine by polling in the first place!  Fortunately, there is a
+simple way out of this circularity.  Since~\eqref{LN12:Fnpe} is symmetric in
+$p$, it has an inflection point when $p=1/2$, and this inflection point
+is, in fact, its maximum:
+\begin{fact*}
+For all $\epsilon,n$, the maximum value of $\delta$ in
+equation~\eqref{LN12:Fnpe} occurs when $p = 1/2$.
+\end{fact*}
+In other words, the binomial tails fall off most slowly when $p=1/2$.
+Using this fact, and plugging into the inequality~\eqref{LN12:nH} bounding
+$\cdf_{S_n}((p - \epsilon) n)$ and $\cdf_{T_n}(((1-p) - \epsilon) n)$, we
+get the following theorem:
+
+\iffalse
+So, letting $\alpha = (1/2) - \epsilon$, we have
+\begin{align*}
+\delta & \leq F_{n,1/2}((\frac{1}{2} - \epsilon) n) +
+   F_{n,1 - 1/2}((1 -\frac{1}{2}-\epsilon) n)\notag\\
+   & = 2 F_{n,1/2}(\alpha n)\notag\\
+ & \le 2 \cdot \frac{\beta}{1 - \alpha / (1/2)} \cdot
+                \frac{2^{n H(\alpha)}}{\sqrt{2 \pi \alpha \beta  n}} 
+                \cdot (1/2)^{\alpha n} (1/2)^{\beta n}
+   &\text{(by~\eqref{LN12:1 - H} and~\eqref{LN12:Fbyf})}\notag\\
+ & =  2 \cdot \frac{\beta}{1 - 2\alpha} \cdot
+                \frac{2^{n H(\alpha)}}{\sqrt{2 \pi \alpha \beta  n}}
+                \cdot (1/2)^n\notag\\
+ & = 2 \cdot \frac{\beta}{1 - 2\alpha} \cdot
+                \frac{2^{-n (1 - H(\alpha))}}{\sqrt{2 \pi \alpha \beta n}}\\
+ & = \frac{1 - 2\epsilon}{2\epsilon} \cdot
+     \frac{2^{-n (1 - H((1/2) - \epsilon))}}{\sqrt{2 \pi (1/4 - \epsilon^2) n}}.
+\end{align*}
+
+To summarize, we have established
+\fi
+\begin{theorem}\hyperdef{binomial}{sampling}{[Binomial Sampling]}\label{LN12:bs}
+Let $K_1, K_2, \dots$, be a sequence of mutually independent 0-1-valued
+random variables with the same probability, $p$, that $K_i=1$, and let
+\[
+S_n \eqdef \sum_{i=1}^n K_i.
+\]
+Then, for $1/2 > \epsilon > 0$,
+\begin{equation}\label{LN12:delta bound}
+\pr{\abs{\frac{S_n}{n} - p} \geq \epsilon}
+\leq 
+\frac{1 + 2\epsilon}{2\epsilon} \cdot
+        \frac{2^{-n (1 - H((1/2) - \epsilon))}}{\sqrt{2 \pi (1/4 - \epsilon^2) n}}.
+\end{equation}
+
+\end{theorem}
+
+We want $\epsilon = 0.04$, so plugging into~\eqref{LN12:delta bound} gives 
+\begin{equation}\label{LN12:db2}
+\delta \leq 13.5 \cdot \frac{2^{-n(0.00462)}}{1.2492 \sqrt{n}}
+\end{equation}
+where $\delta$ is the probability that our estimate is not within
+$\epsilon$ of $p$.  We want to poll enough people so that $\delta \leq
+0.05$.  The easiest way to find the necessary sample size $n$ is to plug
+in values for $n$ to find the smallest one where the righthand side
+of~\eqref{LN12:db2} is $ \leq 0.05$:
+\[
+\begin{array}{c|l}
+\mbox{$n$ = people polled} & \begin{array}{cc}
+\mbox{upper bound on} \\
+\mbox{probability poll is wrong}
+\end{array} \\
+\hline
+500 &  9.7\% \\
+600 &  6.4\% \\
+623 &  5.9\% \\
+650 &  5.3\% \\
+664 &  5.0\% \quad \leftarrow \quad \mbox{our poll size} \\
+700 &  4.3\% \\
+\end{array}
+\]
+So 95\% of the time, polling 664\footnote{An exact calculation of the
+binomial \cdf\ shows that a somewhat smaller poll size of 589 would be
+sufficient.}  people will yield a fraction that is within 0.04 of the
+actual fraction of voters preferring Franken.  This method of estimation
+by sampling a quantity ---voting preference in this example--- is a
+technique that can obviously be used to estimate many other unknown
+quantities.
+
+We just showed that sampling merely 664 voters will yield a fraction that,
+95\% of the time, is within 0.04 of the actual fraction of the voting
+population who prefer Franken.  Notice that the actual size of the voting
+population was never considered because \emph{it did not matter}.  Polling
+only a few hundred is always sufficient, whether there are a thousand, a
+million, or a billion voters ---which people often find remarkable.
+
+
+\subsection{Confidence Levels}
+
+Suppose a pollster uses a sample of 664 random voters to estimate the
+fraction of voters who prefer Franken, and the pollster finds that 364 of
+them prefer Franken.  It's tempting, \textbf{but sloppy}, to say that this
+means:
+\begin{falseclm*}
+With probability 0.95, the fraction, $p$, of voters who prefer
+Franken is $364/664 \pm 0.04$.  Since $364/664 -0.04 >0.50$, there is a 95\%
+chance that more than half the voters prefer Franken.
+\end{falseclm*}
+What's objectionable about this statement is that it talks about the
+probability or ``chance'' that a real world fact is true, namely that the
+actual fraction, $p$, of voters favoring Franken is more than 0.50.  But $p$
+is what it is, and it simply makes no sense to talk about the probability
+that it is something else.  For example, suppose $p$ is actually 0.49;
+then it's nonsense to ask about the probability that it is within 0.04 of
+364/664 ---it simply isn't.
+
+This example of voter preference is typical: we want to estimate a fixed,
+unknown real-world quantity.  But being unknown does not make this
+quantity a random variable, so it makes no sense to talk about the
+probability that it has some property.
+
+A more careful summary of what we have accomplished goes this way:
+\begin{quote}
+We have described a probabilistic procedure for estimating the value of
+the actual fraction, $p$.  The probability that \emph{our estimation
+procedure} will yield a value within 0.04 of $p$ is 0.95.
+\end{quote}
+This is a bit of a mouthful, so special phrasing closer to the sloppy
+language is commonly used.  The pollster would describe his conclusion by
+saying that
+\begin{quote}
+At the 95\% \emph{confidence level}, the fraction of voters
+who prefer Franken is $364/664 \pm 0.04$.
+\end{quote}
+
+So confidence levels refer to the results of estimation procedures for
+real-world quantities.  The phrase ``confidence level'' should be heard as
+a reminder that some statistical procedure was used to obtain an estimate,
+and in judging the credibility of the estimate, it may be important to
+learn just what this procedure was.
+
+\iffalse So adding 1 to both the numerator and denominator increases the
+quotient,
+\footnote{
+If $0 < a < b$, then
+\[
+\frac{a}{b} < \frac{a+1}{b+1},
+\]
+because
+\[
+\frac{a}{b} = \frac{a(1+1/b)}{b(1+1/b)} = \frac{a+a/b}{b+1} < \frac{a+1}{b+1}.
+\]} and the bound~\eqref{LN12:wnsol} simplifies to $(q/p)^n/(q/p)^T
+= (p/q)^{T-n}$,\fi
+
+\endinput

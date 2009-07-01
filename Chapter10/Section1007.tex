@@ -1,0 +1,208 @@
+\hyperdef{random}{vars}{\section{Random Variables}}
+
+So far we focused on probabilities of \term{events} ---that you win the
+Monty Hall game; that you have a rare medical condition, given that you
+tested positive; \dots.  Now we focus on quantitative questions: \emph{How
+  many} contestants must play the Monty Hall game until one of them
+finally wins? \dots {\em How long} will this condition last?  {\em How
+  much} will I lose playing 6.042 games all day?  \emph{Random variables}
+are the mathematical tool for addressing such questions.
+
+\begin{definition}
+  A random variable, $R$, on a probability space is a function whose
+  domain is the sample space.
+\end{definition}
+The codomain of $R$ can be anything, but will usually be a subset of the
+real numbers.  Notice that the name ``random variable'' is a misnomer;
+random variables are actually functions!
+
+\subsection{Counting Coin Flips}
+Consider the experiment of tossing three independent, unbiased coins.  Let
+$C$ be the number of heads that appear.  Let $M = 1$ if the three coins
+come up all heads or all tails, and let $M = 0$ otherwise.  Now every
+outcome of the three coin flips uniquely determines the values of $C$ and
+$M$.  For example, if we flip heads, tails, heads, then $C = 2$ and $M =
+0$.  If we flip tails, tails, tails, then $C = 0$ and $M = 1$.  In effect,
+$C$ counts the number of heads, and $M$ indicates whether all the coins
+match.
+
+Since each outcome uniquely determines $C$ and $M$, we can regard them
+as functions mapping outcomes to numbers.  For this experiment, the
+sample space is:
+\begin{eqnarray*}
+\sspace & = & \set{ HHH, HHT, HTH, HTT, THH, THT, TTH, TTT }.
+\end{eqnarray*}
+Now $C$ is a function that maps each outcome in the sample space to a 
+number as follows:
+\[
+\begin{array}{rclcrcl}
+C(HHH) & = & 3 & \quad & C(THH) & = & 2 \\
+C(HHT) & = & 2 & \quad & C(THT) & = & 1 \\
+C(HTH) & = & 2 & \quad & C(TTH) & = & 1 \\
+C(HTT) & = & 1 & \quad & C(TTT) & = & 0.
+\end{array}
+\]
+Similarly, $M$ is a function mapping each outcome another way:
+\[
+\begin{array}{rclcrcl}
+M(HHH) & = & 1 & \quad & M(THH) & = & 0 \\
+M(HHT) & = & 0 & \quad & M(THT) & = & 0 \\
+M(HTH) & = & 0 & \quad & M(TTH) & = & 0 \\
+M(HTT) & = & 0 & \quad & M(TTT) & = & 1.
+\end{array}
+\]
+So $C$ and $M$ are \term{random variables}.
+
+\subsection{Indicator Random Variables}
+
+An \term{indicator random variable} (or simply an \term{indicator}, or
+a \term{Bernoulli random variable}) is a random variable that maps
+every outcome to either 0 or 1.  The random variable $M$ is an
+example.  If all three coins match, then $M=1$; otherwise, $M = 0$.
+
+Indicator random variables are closely related to events.  In
+particular, an indicator partitions the sample space into those
+outcomes mapped to 1 and those outcomes mapped to 0.  For example, the
+indicator $M$ partitions the sample space into two blocks as follows:
+\[
+\underbrace{HHH \quad TTT}_{\text{$M = 1$}} \quad
+\underbrace{HHT \quad HTH \quad HTT \quad
+        THH \quad THT \quad TTH}_{\text{$M = 0$}}.
+\]
+
+In the same way, an event, $E$, partitions the sample space into those
+outcomes in $E$ and those not in $E$.  So $E$ is naturally associated with
+an indicator random variable, $I_E$, for the event, where $I_E(p) = 1$ for
+outcomes $p \in E$ and $I_E(p) = 0$ for outcomes $p \notin E$.  Thus,
+$M=I_F$ where $F$ is the event that all three coins match.
+
+\subsection{Random Variables and Events}
+
+There is a strong relationship between events and more general random
+variables as well.  A random variable that takes on several values
+partitions the sample space into several blocks.  For example, $C$
+partitions the sample space as follows:
+\[
+\underbrace{TTT}_{\text{$C = 0$}} \quad
+\underbrace{TTH \quad THT \quad HTT}_{\text{$C = 1$}} \quad
+\underbrace{THH \quad HTH \quad HHT}_{\text{$C = 2$}} \quad
+\underbrace{HHH}_{\text{$C = 3$}}.
+\]
+Each block is a subset of the sample space and is therefore
+an event.  Thus, we can regard an equation or inequality involving a
+random variable as an event.  For example, the event that $C = 2$
+consists of the outcomes $THH$, $HTH$, and $HHT$.  The event $C \leq
+1$ consists of the outcomes $TTT$, $TTH$, $THT$, and $HTT$.
+
+Naturally enough, we can talk about the probability of events defined
+by properties of random variables.  For example, 
+\begin{eqnarray*}
+\pr{C = 2}
+        & = &   \pr{THH} + \pr{HTH} + \pr{HHT} \\
+        & = &   \frac{1}{8} + \frac{1}{8} + \frac{1}{8} =  \frac{3}{8}.
+\end{eqnarray*}
+
+\iffalse
+
+As another example:
+\begin{eqnarray*}
+\pr{M = 1}
+        & = &   \pr{TTT} + \pr{HHH}\\
+        & = &   \frac{1}{8} + \frac{1}{8} =    \frac{1}{4}.
+\end{eqnarray*}
+
+
+
+\subsection{Conditional Probability}
+
+Mixing conditional probabilities and events involving random variables
+creates no new difficulties.  For example, $\prcond{C \geq 2}{M = 0}$
+is the probability that at least two coins are heads ($C \geq 2$),
+given that not all three coins are the same ($M = 0$).  We can compute
+this probability using the definition of conditional probability:
+\begin{eqnarray*}
+\prcond{C \geq 2}{M = 0}
+        & = &   \frac{\pr{[C \geq 2] \intersect [M = 0]}}{\pr{M = 0}} \\
+        & = &   \frac{\pr{\set{THH, HTH, HHT}}}
+                        {\pr{\set{THH, HTH, HHT, HTT, THT, TTH }}} \\
+        & = &   \frac{3/8}{6/8} = \frac{1}{2}.
+\end{eqnarray*}
+The expression $[C \geq 2] \intersect [M = 0]$ on the first line may look odd;
+what is the set operation $\intersect$ doing between an inequality and an
+equality?  But recall that, in this context, $[C \geq 2]$ and $[M = 0]$
+are \emph{events}, namely, \emph{sets} of outcomes.
+\fi
+
+\subsection{Independence}
+
+The notion of independence carries over from events to random
+variables as well.  Random variables $R_1$ and $R_2$ are
+\term{independent} iff for all $x_1$ in the codomain
+of $R_1$, and $x_2$  in the codomain of $R_2$, we have:
+\[
+\pr{R_1 = x_1 \QAND R_2 = x_2}  =  \pr{R_1 = x_1} \cdot \pr{R_2 = x_2}.
+\]
+As with events, we can formulate independence for random
+variables in an equivalent and perhaps more intuitive way: random
+variables $R_1$ and $R_2$ are independent if for all $x_1$ and $x_2$
+\[
+\prcond{R_1 = x_1}{R_2 = x_2}  =  \pr{R_1 = x_1}.
+\]
+whenever the lefthand conditional probability is defined, that is,
+whenever $\pr{R_2 = x_2} > 0$.
+
+As an example, are $C$ and $M$ independent?  Intuitively, the answer
+should be ``no''.  The number of heads, $C$, completely determines
+whether all three coins match; that is, whether $M = 1$.  But, to
+verify this intuition, we must find some $x_1, x_2 \in \reals$
+such that:
+\[
+\pr{C = x_1 \QAND M = x_2} \neq \pr{C = x_1} \cdot \pr{M = x_2}.
+\]
+One appropriate choice of values is $x_1 = 2$ and $x_2 = 1$.
+In this case, we have:
+\[
+\pr{C = 2 \QAND M = 1} = 0 \neq \dfrac{1}{4} \cdot \dfrac{3}{8} = \pr{M
+= 1} \cdot \pr{C = 2}.
+\]
+The first probability is zero because we never have exactly two heads ($C
+= 2$) when all three coins match ($M = 1$).  The other two probabilities
+were computed earlier.
+
+On the other hand, let $H_1$ be the indicator variable for event that the
+first flip is a Head, so
+\[
+[H_1 = 1] = \set{HHH, HTH, HHT, HTT}.
+\]
+Then $H_1$ is independent of $M$, since
+\begin{align*}
+\pr{M=1} & = 1/4 = \prcond{M=1}{H_1=1} = \prcond{M=1}{H_1=0}\\
+\pr{M=0} & = 3/4 = \prcond{M=0}{H_1=1} = \prcond{M=0}{H_1=0}
+\end{align*}
+This example is an instance of a simple
+\begin{lemma}
+  Two events are independent iff their indicator variables are
+  independent.
+\end{lemma}
+As with events, the notion of independence generalizes to more than two
+random variables.
+\begin{definition}
+Random variables $R_1, R_2, \dots, R_n$ are \term{mutually independent} iff
+\begin{eqnarray*}
+\lefteqn{\pr{R_1 = x_1 \QAND R_2 = x_2 \QAND \cdots \QAND R_n = x_n}}\\
+        & = & \pr{R_1 = x_1} \cdot \pr{R_2 = x_2} \cdots \pr{R_n = x_n}.
+\end{eqnarray*}
+for all $x_1, x_2, \dots, x_n$.
+\end{definition}
+
+It is a simple exercise to show that the probability that any {\em
+subset} of the variables takes a particular set of values is equal to the
+product of the probabilities that the individual variables take their
+values.  Thus, for example, if $R_1, R_2, \dots, R_{100}$ are mutually
+independent random variables, then it follows that:
+\[
+\pr{R_1 = 7 \QAND R_7 = 9.1 \QAND R_{23} = \pi} = \pr{R_1 = 7} \cdot
+\pr{R_7 = 9.1} \cdot \pr{R_{23} = \pi}.
+\]
+
+\endinput

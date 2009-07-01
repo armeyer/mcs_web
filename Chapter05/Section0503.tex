@@ -1,0 +1,243 @@
+%Used to come after Coloring: proof read for switched references
+\section{Trees}
+
+Trees are a fundamental data structure in Computer Science, and there are
+many kinds, for example rooted, ordered, or binary trees.  In this section
+we focus on the purest kind of tree.  Namely, we use the \term{tree} to
+mean a connected graph without simple cycles.
+
+A graph with no simple cycles is called \term{acyclic}; so trees are
+acyclic connected graphs.
+
+\subsection{Tree Properties}
+Here is an example of a tree:
+
+\mfigure{!}{1.5in}{figures/tree-example.pdf}
+
+A vertex of degree at most one is called a \term{leaf}.  Note that the only
+case where a tree can have a vertex of degree zero is a graph with a single
+vertex.  In this example, there are 5~leaves.
+
+The graph shown above would no longer be a tree if any edge were removed,
+because it would no longer be connected.  The graph would also not remain
+a tree if any edge were added between two of its vertices, because then it
+would contain a simple cycle.  Furthermore, note that there is a unique
+path between every pair of vertices.  These features of the example tree
+are actually common to all trees.
+
+\begin{theorem}
+Every tree has the following properties:
+\begin{enumerate}
+\item Any connected subgraph is a tree.
+\item There is a unique simple path between every pair of vertices.
+\item Adding an edge between two vertices creates a cycle.
+\item Removing any edge disconnects the graph.
+\item If it has at least two vertices, then it has at least two leaves.
+\item The number of vertices is one larger than the number of edges.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+
+\begin{enumerate}
+\item\label{asub} A simple cycle in a subgraph is also a simple cycle in
+the whole graph, so any subgraph of an acyclic graph must also be acyclic.
+If the subgraph is also connected, then by definition, it is a tree.
+
+\item There is at least one path, and hence one simple path, between every
+pair of vertices, because the graph is connected.  Suppose that there are
+two different simple paths between vertices $u$ and $v$.  Beginning at
+$u$, let $x$ be the first vertex where the paths diverge, and let $y$ be
+the next vertex they share.  Then there are two simple paths from $x$ to
+$y$ with no common edges, which defines a simple cycle.  This is a
+contradiction, since trees are acyclic.  Therefore, there is exactly one
+simple path between every pair of vertices.
+
+\mfigure{!}{1in}{figures/unique-path.pdf}
+
+\item An additional edge $\edge{u}{v}$ together with the unique path
+between $u$ and $v$ forms a simple cycle.
+
+\item Suppose that we remove edge $\edge{u}{v}$.  Since a tree
+contained a unique path between $u$ and $v$, that path must have been
+$\edge{u}{v}$.  Therefore, when that edge is removed, no path remains,
+and so the graph is not connected.
+
+\item Let $v_1, \dots, v_m$ be the sequence of vertices on a longest
+simple path in the tree.  Then $m \geq 2$, since a tree with two vertices
+must contain at least one edge.  There cannot be an edge $\edge{v_1}{v_i}$
+for $2 < i \leq m$; otherwise, vertices $v_1, \dots, v_i$ would from a
+simple cycle.  Furthermore, there cannot be an edge $\edge{u}{v_1}$ where
+$u$ is not on the path; otherwise, we could make the path longer.
+Therefore, the only edge incident to $v_1$ is $\edge{v_1}{v_2}$, which
+means that $v_1$ is a leaf.  By a symmetric argument, $v_m$ is a second
+leaf.
+
+\item We use induction on the number of vertices.  For a tree with a
+single vertex, the claim holds since it has no edges and $0 + 1 = 1$.
+
+Now suppose that the claim holds for all $n$-vertex trees and consider an
+$(n+1)$-vertex tree, $T$.  Let $v$ be a leaf of the tree.
+
+We will let the reader verify that deleting a vertex of degree 1 (and its
+incident edge) from any connected graph leaves a connected subgraph.  So
+by~\eqref{asub}, deleting $v$ and its incident edge gives a smaller tree,
+and this smaller tree has one more vertex than edge by induction.  If we
+reattach the vertex, $v$, and its incident edge, then the equation still
+holds because the number of vertices and number of edges both increase by
+1.  Thus, the claim holds for $T$ and, by induction, for all trees.
+\end{enumerate}
+\end{proof}
+
+Various subsets of these properties provide alternative characterizations
+of trees, though we won't prove this.  For example, a \emph{connected}
+graph with a number of vertices one larger than the number of edges is
+necessarily a tree.  Also, a graph with unique paths between every pair of
+vertices is necessarily a tree.
+
+
+\subsection{Spanning Trees}
+
+Trees are everywhere.  In fact, every connected graph contains a a
+subgraph that is a tree with the same vertices as the graph.  This is a
+called a \term{spanning tree} for the graph.  For example, here is a
+connected graph with a spanning tree highlighted.
+
+\mfigure{!}{1.5in}{figures/spanning-tree.pdf}
+
+\begin{theorem}
+Every connected graph contains a spanning tree.
+\end{theorem}
+
+\begin{proof}
+Let $T$ be a connected subgraph of $G$, with the same vertices as $G$, and
+with the smallest number of edges possible for such a subgraph.  We show
+that $T$ is acyclic by contradiction.  So suppose that $T$ has a cycle
+with the following edges:
+\[
+\edge{v_0}{v_1}, \edge{v_1}{v_2}, \dots, \edge{v_n}{v_0}
+\]
+Suppose that we remove the last edge, $\edge{v_n}{v_0}$.  If a pair of
+vertices $x$ and $y$ was joined by a path not containing
+$\edge{v_n}{v_0}$, then they remain joined by that path.  On the other
+hand, if $x$ and $y$ were joined by a path containing $\edge{v_n}{v_0}$,
+then they remain joined by a path containing the remainder of the cycle.
+So all the vertices of $G$ are still connected after we remove an edge
+from $T$.  This is a contradiction, since $T$ was defined to be a minimum
+size connected subgraph with all the vertices of $G$.  So $T$ must be
+acyclic.
+\end{proof}
+
+
+
+\iffalse
+
+\subsection{Tree Variations}
+
+Trees come up often in computer science.  For example, information is
+often stored in tree-like data structures and the execution of many
+recursive programs can be regarded as a traversal of a tree.
+
+There are many varieties of trees.  For example, a \term{rooted tree}
+is a tree with one vertex identified as the \term{root}.  Let
+$\edge{u}{v}$ be an edge in a rooted tree such that $u$ is closer to
+the root than $v$.  Then $u$ is the \term{parent} of $v$, and $v$ is
+a \term{child} of $u$.
+
+\mfigure{!}{1.5in}{figures/rooted-tree.pdf}
+
+In the tree above, suppose that we regard vertex $A$ as the
+root.  Then $E$ and $F$ are the children of $B$, and $A$ is the parent
+of $B$, $C$, and $D$.
+
+A \term{binary} tree is a rooted tree in which every vertex has at most
+two children.  Here is an example, where the topmost vertex is the
+root.
+
+\mfigure{!}{1.5in}{figures/binary-tree.pdf}
+
+In an \term{ordered, binary} tree, the children of a vertex $v$ are
+distinguished.  One is called the \term{left child} of $v$, and the
+other is called the \term{right child}.  For example, if we regard the
+two binary trees below as unordered, then they are equivalent.
+However, if we regard these trees as ordered, then they are different.
+
+\mfigure{!}{1.5in}{figures/ordered-trees.pdf}
+\fi
+
+\iffalse
+
+\section{Traversing a Graph}
+Can you walk every hallway in the Museum of Fine Arts {\em exactly
+once}?  If we represent hallways and intersections with edges and
+vertices, then this reduces to a question about graphs.  For example,
+could you visit every hallway exactly once in a museum with this
+floorplan?
+
+\mfigure{!}{1.5in}{figures/euler-tour.pdf}
+
+\subsection{Euler Tours and Hamiltonian Cycles}
+
+The entire field of graph theory began when Euler asked whether the seven
+bridges of K\"onigsberg could all be traversed exactly once--- essentially
+the same question we asked about the Museum of Fine Arts.  In his honor,
+an \term{Euler walk} is a defined to be a path that traverses every edge
+in a graph exactly once.  Similarly, an \term{Euler tour} is an Euler walk
+that starts and finishes at the same vertex, that is a cycle that
+traverses every edge exactly once.  Graphs with Euler tours and Euler
+walks both have simple characterizations.
+
+\begin{theorem}
+A graph has an Euler tour iff it is connected and every vertex has even
+degree.
+\end{theorem}
+
+\begin{proof}
+Suppose a graph has an Euler tour.  Every pair of vertices must appear in
+the tour, so the graph is connected.  Moreover, a vertex that appears $k$
+times in the tour must have degree $2k$, so every vertex of the graph has
+even degree.
+
+%Unconvincing
+
+Conversely, suppose every vertex in a graph, $G$, has even degree.  Let $W
+= (v_0,\dot,v_n)$ be the longest path in $G$ that traverses every edge
+\textit{at most} once.  Now $W$ must traverse every edge incident to
+$v_n$; otherwise, the path could be extended.  In particular, the $W$
+traverses two of these edges each time it passes through $v_n$, and it
+traverses $\edge{v_{n-1}}{v_n}$ at the end.  This accounts for an odd
+number of edges, but the degree of $v_n$ is even by assumption.
+Therefore, the $W$ must also begin at $v_n$; that is, $v_0 = v_n$.
+
+Suppose that $W$ is not an Euler tour.  Because $G$ is a connected
+graph, we can find an edge not in $W$ but incident to some vertex in
+$W$.  Call this edge $\edge{u}{v_i}$.  But then we can construct a
+longer walk:
+%
+\[
+u, \edge{u}{v_i}, v_i, \edge{v_i}{v_{i+1}}, 
+\dots, 
+\edge{v_{n-1}}{v_n}, v_n, \edge{v_0}{v_1}, 
+\dots, 
+\edge{v_{i-1}}{v_i}, v_i
+\]
+%
+This contradicts the definition of $W$, so $W$ must be an
+Euler tour after all.
+\end{proof}
+
+\begin{corollary}
+A connected graph has an Euler walk if and only if either 0 or 2
+vertices have odd degree.
+\end{corollary}
+
+\term{Hamiltonian cycles} are the unruly cousins of Euler tours.  A
+\term{Hamiltonian cycle} is walk that starts and ends at the same
+vertex and visits every \textit{vertex} in a graph exactly once.
+There is no simple characterization of all graphs with a Hamiltonian
+cycle.  (In fact, determining whether a given graph has a Hamiltonian
+cycle is ``NP-complete''.)
+\fi
+
+
+\endinput
