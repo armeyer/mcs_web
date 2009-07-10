@@ -5,6 +5,8 @@ use warnings;
 
 use File::Basename;
 
+use File::Spec;
+
 use Getopt::Long qw(:config no_ignore_case);
 
 ######################################################################
@@ -39,7 +41,7 @@ our %OPT = (index    => 0,
             bibtex   => 0,
             xrefs    => 1,
             max_runs => 4,
-            mode     => 'scrollstop',
+            mode     => 'scroll',
             include  => 1,
             verbose  => 0,
             );
@@ -68,7 +70,7 @@ EOF
     exit 0;
 }
 
-sub nonempty(;$) {
+sub nonempty( ;$ ) {
     my $string = @_ == 1 ? shift : $_;
 
     return defined $string && $string !~ /^\s*$/;
@@ -80,7 +82,7 @@ sub fwrite($@) {
     return print {$fh} @_ or die "write error: $!";
 }
 
-sub latex($) {
+sub latex( $ ) {
     my $chapter = shift;
 
     my $first_line;
@@ -106,7 +108,7 @@ sub latex($) {
     system "pdflatex --interaction $OPT{mode}mode '$first_line'";
 }
 
-sub bibtex($) {
+sub bibtex( $ ) {
     my $chapter = shift;
 
     return unless $OPT{bibtex};
@@ -259,7 +261,7 @@ sub munge_idx_file( $ ) {
     return;
 }
 
-sub makeindex($) {
+sub makeindex( $ ) {
     my $chapter = shift;
 
     return unless $OPT{index};
@@ -308,7 +310,7 @@ sub makeindex($) {
     system "makeindex -l -r $chapter.idx"; 
 }
 
-sub unresolved_xrefs($) {
+sub unresolved_xrefs( $ ) {
     my $chapter = shift;
 
     (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
@@ -328,6 +330,93 @@ sub unresolved_xrefs($) {
     }
 
     close($log);
+
+    return;
+}
+
+sub summarize_errors( $ ) {
+    my $chapter = shift;
+
+    (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
+
+    if ($OPT{include}) {
+        $log_file = "$DRIVER.log";
+    }
+
+    print "\nScanning log file for errors and warnings\n";
+
+    my $found = 0;
+
+    open(my $log, "<", $log_file) or die "Can't open $log_file: $!\n";
+
+    local $_;
+
+    while (<$log>) {
+        # Avoid any !'s that occur as part of an overfull or underfull
+        # box warning.
+
+        /^(Ov|Und)erfull \\[hv]box/ and do {
+            while (<$log>) {
+                last if /^\s*$/;
+            }
+        };
+
+        /^!/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^Class mcs Warning/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: (Citation|Reference) \`([^ ]+)\' .*undefined/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: Reference \`([^ ]+)\'/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: \S.*Rerun to get cross-references right/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        # "Missing character: There is no ^^e9 in font cmbx12!"
+
+        /^Missing character: There is no/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+    }
+
+    close($log);
+
+    if ($found == 0) {
+        print "No errors found\n";
+    }
 
     return;
 }
@@ -417,6 +506,8 @@ sub process_chapter($) {
         }
     }
 
+    summarize_errors($chapter);
+
     if ($OPT{include} && $chapter ne $DRIVER) {
         print "\nMoving $DRIVER.pdf to $chapter.pdf\n";
 
@@ -473,10 +564,12 @@ GetOptions("index!"     => \$OPT{index},
 
 usage unless @ARGV;
 
+my $main_dir = File::Spec->rel2abs(dirname $0);
+
 if ($ENV{TEXINPUTS}) {
-    $ENV{TEXINPUTS} = join ":", './/', $ENV{TEXINPUTS};
+    $ENV{TEXINPUTS} = join ":", "$main_dir//", $ENV{TEXINPUTS};
 } else {
-    $ENV{TEXINPUTS} = './/:';
+    $ENV{TEXINPUTS} = "$main_dir//:";
 }
 
 while (my $chapter = shift) {
