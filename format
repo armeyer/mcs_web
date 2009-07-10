@@ -1,0 +1,498 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use File::Basename;
+
+use Getopt::Long qw(:config no_ignore_case);
+
+######################################################################
+##                                                                  ##
+##                            CONSTANTS                             ##
+##                                                                  ##
+######################################################################
+
+my $PROBLEMS_DIR = "problems";
+
+######################################################################
+##                                                                  ##
+##                         GLOBAL VARIABLES                         ##
+##                                                                  ##
+######################################################################
+
+my $DRIVER = $ENV{DRIVER_FILE} || 'mcs';
+
+my %TRANSLATION = (texttt  => '',
+                   protect => '',
+                   relax   => '',
+                   textsc  => '',
+    );
+
+######################################################################
+##                                                                  ##
+##                             OPTIONS                              ##
+##                                                                  ##
+######################################################################
+
+our %OPT = (index    => 0,
+            bibtex   => 0,
+            xrefs    => 1,
+            max_runs => 4,
+            mode     => 'scrollstop',
+            include  => 1,
+            verbose  => 0,
+            );
+
+######################################################################
+##                                                                  ##
+##                           SUBROUTINES                            ##
+##                                                                  ##
+######################################################################
+
+sub program_name() {
+    return basename $0;
+}
+
+sub usage() {
+    my $program_name = program_name;
+
+    print << "EOF";
+Usage: $program_name [options] chapter
+
+Options:
+    -nobib   : omit per-chapter bibliography
+    -noindex : omit per-chapter index
+EOF
+
+    exit 0;
+}
+
+sub nonempty(;$) {
+    my $string = @_ == 1 ? shift : $_;
+
+    return defined $string && $string !~ /^\s*$/;
+}
+
+sub fwrite($@) {
+    my $fh = shift;
+
+    return print {$fh} @_ or die "write error: $!";
+}
+
+sub latex($) {
+    my $chapter = shift;
+
+    my $first_line;
+
+    if (! $OPT{include}) {
+        $first_line = $chapter;
+    } else {
+        if ($chapter ne $DRIVER) {
+            $first_line .= qq{\\includeonly{$chapter}};
+
+            # if ($OPT{bibtex}) {
+            #     $first_line .= qq{\\AtEndDocument{\\printchapbib{$chapter}}};
+            # }
+            # 
+            # if ($OPT{index}) {
+            #     $first_line .= qq{\\AtEndDocument{\\printchapindex{$chapter}}};
+            # }
+        }
+
+        $first_line .= qq{\\input{$DRIVER}};
+    }
+
+    system "pdflatex --interaction $OPT{mode}mode '$first_line'";
+}
+
+sub bibtex($) {
+    my $chapter = shift;
+
+    return unless $OPT{bibtex};
+
+    my $original_size;
+    my $chap_aux = "$chapter.aux";
+
+    if ($chapter ne $DRIVER) {
+        my $bib_style = '\bibstyle{alpha}';
+        my $bib_data  = '\bibdata{extra/main}';
+
+        my $bib_aux = 'bib.aux';
+
+        if (open(my $fh, "<", $bib_aux)) {
+            local $_;
+
+            while (<$fh>) {
+                chomp;
+
+                /\A \\bibstyle/smx and do {
+                    $bib_style = $_;
+                };
+
+                /\A \\bibdata/smx and do {
+                    $bib_data = $_;
+                };
+            }
+
+            close($fh);
+        }
+
+        $original_size = -s $chap_aux;
+
+        open(my $aux, ">>", $chap_aux) or die "Can't open $chap_aux: $!\n";
+
+        fwrite $aux, $bib_style, "\n";
+        fwrite $aux, $bib_data, "\n";
+
+        close($aux) or die "Error writing $chap_aux: $!\n";
+    }
+
+    system "bibtex $chapter";
+
+    if ($original_size) {
+        truncate($chap_aux, $original_size) or do {
+            die "Couldn't truncate $chap_aux: $!\n";
+        };
+    }
+}
+
+sub copy_idx_entries($$) {
+    my $aux_file = shift;
+    my $idx_file = shift;
+
+    open(my $aux, "<", $aux_file) or die "Can't read $aux_file: $!\n";
+
+    while (<$aux>) {
+        chomp;
+
+        /\A \\\@v?writefile \{default\} \{ (.*?) \} $/smx and do {
+            fwrite $idx_file, $1, "\n";
+        };
+    }
+
+    close($aux);
+
+    return;
+}
+
+sub make_sort_key( $ ) {
+    my $text = shift;
+
+    # This replaces hyphens by spaces in the sort key.  Change to
+    # s/-//g to delete them.
+
+    $text =~ s/(?<=[^-])-+/ /g;
+
+    # Delete { and }.
+
+    $text =~ s/[{}]//g;
+
+   $text =~ s/\\([a-z]+)(\s*)/ exists $TRANSLATION{$1} ? $TRANSLATION{$1} : "\\$1$2" /eg;
+
+    return $text;
+}
+
+sub munge_idx_file( $ ) {
+    my $idx_file = shift;
+
+    print "\nScanning $idx_file to adjust sort keys\n\n";
+
+    my $saved_idx_file = "$idx_file.original";
+
+    rename $idx_file, $saved_idx_file or do {
+        die "Can't rename $idx_file to $saved_idx_file: $!\n";
+    };
+
+    open(my $old, "<", $saved_idx_file) or die "Can't read $saved_idx_file: $!";
+
+    open(my $new, ">", $idx_file) or die "Can't read $idx_file: $!";
+
+    while (<$old>) {
+        chomp;
+
+        /^\\indexentry\s*\{(.*)\}\{(.*)\}$/ and do {
+            my ($entry, $page) = ($1, $2);
+
+            my @piece = split /(?<!")!/, $entry;
+
+            for (my $i = 0; $i < @piece; $i++) {
+                $piece[$i] =~ /^([^|]+)(.*)$/;
+
+                my ($text, $extra) = ($1, $2);
+
+                my ($sort_key, $print_text);
+
+                if ($text =~ /\@/) {
+                    ($sort_key, $print_text) = split /\@/, $text;
+                } else {
+                    $sort_key = $print_text = $text;
+                }
+
+                my $new_sort_key = make_sort_key($sort_key);
+
+                if ($new_sort_key ne $sort_key) {
+                    if ($OPT{verbose}) {
+                        print "Line $.: replacing\n    '$sort_key'\nby\n    '$new_sort_key'\n\n";
+                    }
+
+                    $piece[$i] = "$new_sort_key\@$print_text$extra";
+                }
+            }
+
+            $entry = join '!', @piece;
+
+            print { $new } "\\indexentry{$entry}{$page}\n";
+
+            next;
+        };
+
+        warn "unrecognized entry: \"$_\"\n";
+
+        print { $new } $_, "\n";
+    }
+
+    close($old);
+
+    close($new);
+
+    return;
+}
+
+sub makeindex($) {
+    my $chapter = shift;
+
+    return unless $OPT{index};
+
+    my $aux_file = "$chapter.aux";
+
+    return unless -e $aux_file;
+
+    if ($chapter ne $DRIVER) {
+        my $idx_file = "$chapter.idx";
+
+        open(my $idx, ">", $idx_file) or die "Can't write $idx_file: $!\n";
+
+        copy_idx_entries($aux_file, $idx);
+        copy_idx_entries("$DRIVER.aux", $idx);
+
+        close($idx) or die "Error writing $idx_file: $!\n";
+    }
+
+    munge_idx_file("$chapter.idx");
+
+    # [lyn, 12/21/07] I changed "makeindex $chapter" to "makeindex $chapter.idx" 
+    #   since for certain chapters (but only some, like Syntax and Abstract Types) 
+    #   makeindex was looking for index information in the chapter rather than chapter.idx.
+    #   Only I experienced this problem; Mark did not.  Weird!
+    # 
+    #     This is makeindex, version 2.13 [07-Mar-1997] (using kpathsea).
+    #     Scanning input file syntax...done (0 entries accepted, 0 rejected).
+    #     Nothing written in syntax.ind.
+    #     Transcript written in syntax.ilg.
+    # 
+    # and now after the change:
+    #
+    #     This is makeindex, version 2.13 [07-Mar-1997] (using kpathsea).
+    #     Scanning input file syntax.idx....done (167 entries accepted, 0 rejected).
+    #     Sorting entries....done (1254 comparisons).
+    #     Generating output file syntax.ind....done (229 lines written, 0 warnings).
+    #     Output written in syntax.ind.
+    #     Transcript written in syntax.ilg.
+
+    # [jems, 4/25/08] adding -l as per dmj to get letter-by-letter
+    #   (not word-by-word) alphabetization (which also knows to ignore commas)
+    # [dmj, 4/27/08] -r option prevents making consecutive pages into ranges
+    #system "makeindex $chapter.idx"; 
+
+    system "makeindex -l -r $chapter.idx"; 
+}
+
+sub unresolved_xrefs($) {
+    my $chapter = shift;
+
+    (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
+
+    if ($OPT{include}) {
+        $log_file = "$DRIVER.log";
+    }
+
+    open(my $log, "<", $log_file) or die "Can't open $log_file: $!\n";
+
+    local $_;
+
+    while (<$log>) {
+        return 1 if /Rerun to get cross-references right/;
+
+        return 1 if /has been referenced but does not exist/;
+    }
+
+    close($log);
+
+    return;
+}
+
+sub process_chapter($) {
+    my $chapter = shift;
+
+    my $SAVED_DRIVER_PDF = 0;
+
+    if ($OPT{include} && $chapter ne $DRIVER && -e "$DRIVER.pdf") {
+        print "Saving $DRIVER.pdf\n";
+
+        rename("$DRIVER.pdf", "$DRIVER-saved.pdf") or do {
+            die "Can't rename $DRIVER.pdf to $DRIVER-saved.pdf: $!\n";
+        };
+
+        $SAVED_DRIVER_PDF = 1;
+
+        if (-e "$DRIVER.log") {
+            print "Saving $DRIVER.log\n";
+
+        rename("$DRIVER.log", "$DRIVER-saved.log") or do {
+            die "Can't rename $DRIVER.log to $DRIVER-saved.log: $!\n";
+        };
+
+        }
+    }
+
+    print "Running latex for the first time\n";
+
+    my $num_runs = 0;
+
+    latex($chapter);
+
+    $num_runs++;
+
+    if ($OPT{bibtex}) {
+        print "Running bibtex\n";
+
+        bibtex($chapter);
+
+        print "Running latex to incorporate bibliography\n";
+
+        latex($chapter);
+
+        $num_runs++;
+    }
+
+    if ($OPT{index}) {
+        print "Running makeindex for the first time\n";
+
+        makeindex($chapter);
+
+        print "Running latex to incorporate index\n";
+
+        latex($chapter);
+
+        $num_runs++;
+
+        print "Running makeindex and latex again to incorporate xrefs\n";
+
+        makeindex($chapter);
+
+        latex($chapter);
+
+        $num_runs++;
+    }
+
+    while ($OPT{xrefs} && $num_runs < $OPT{max_runs} && unresolved_xrefs($chapter)) {
+        latex($chapter);
+
+        $num_runs++;
+
+        ## In case the crossrefs have caused any changes in
+        ## pagination:
+
+        if ($OPT{index}) {
+            print STDERR "Running makeindex for a second time\n";
+
+            makeindex($chapter);
+
+            print STDERR "Rerunning latex after second makeindex\n";
+
+            latex($chapter);
+
+            $num_runs++;
+        }
+    }
+
+    if ($OPT{include} && $chapter ne $DRIVER) {
+        print "\nMoving $DRIVER.pdf to $chapter.pdf\n";
+
+        rename("$DRIVER.pdf", "$chapter.pdf") or do {
+            die "Can't rename $DRIVER.pdf to $chapter.pdf: $!\n";
+        };
+
+        print "Moving $DRIVER.log to $chapter.log\n";
+
+        rename "$DRIVER.log", "$chapter.log" or do {
+            die "Can't rename $DRIVER.log to $chapter.log: $!\n";
+        };
+
+        if ($SAVED_DRIVER_PDF) {
+            print "Restoring $DRIVER.pdf\n";
+
+            rename("$DRIVER-saved.pdf", "$DRIVER.pdf") or do {
+                die "Can't restore $DRIVER-saved.pdf to $DRIVER.pdf: $!\n";
+            };
+
+            if (-e "$DRIVER-saved.log") {
+                print "Restoring $DRIVER.log\n";
+
+                rename("$DRIVER-saved.log", "$DRIVER.log") or do {
+                    die "Can't restore $DRIVER-saved.log to $DRIVER.log: $!\n";
+                };
+            }
+        }
+    }
+
+    return;
+}
+
+sub is_problem( $ ) {
+    my $name = shift;
+
+    return $name =~ /^$PROBLEMS_DIR\//o;
+}
+
+######################################################################
+##                                                                  ##
+##                               MAIN                               ##
+##                                                                  ##
+######################################################################
+
+GetOptions("index!"     => \$OPT{index},
+           "bib!"       => \$OPT{bibtex},
+           "xrefs!"     => \$OPT{xrefs},
+           "max_runs=i" => \$OPT{max_runs},
+           "mode=s"     => \$OPT{mode},
+           "include!"   => \$OPT{include},
+           "verbose!"   => \$OPT{verbose}
+) or usage();
+
+usage unless @ARGV;
+
+if ($ENV{TEXINPUTS}) {
+    $ENV{TEXINPUTS} = join ":", './/', $ENV{TEXINPUTS};
+} else {
+    $ENV{TEXINPUTS} = './/:';
+}
+
+while (my $chapter = shift) {
+    if (is_problem($chapter)) {
+        local $OPT{include} = 0;
+
+        $chapter =~ s/^$PROBLEMS_DIR\///o;
+
+        chdir "problems" or die "Can't connect to problems directory: $!\n";
+
+        process_chapter($chapter);
+
+        chdir ".." or die "Can't reconnect to parent directory: $!\n";
+    } else {
+        process_chapter($chapter);
+    }
+}
+
+__END__
