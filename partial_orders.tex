@@ -1,3 +1,641 @@
+% cp3r, cp4m
+
 \chapter{Partial Orders}
+
+In this chapter we'll focus on \emph{partial orders}, which are a class of
+binary relations of particular importance in Computer Science, with direct
+applications that include task scheduling, database concurrency control,
+and proving that computations terminate.
+
+The idea of an ordering relation is already familiar to you -- the 
+``less-than'' relation on the integers captures the idea of precedence 
+required to order the set from smallest to largest.  Here we will 
+generalize this notion to analyze orderings on more complicated sets.
+
+
+%% Axioms for Partial Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Axioms for Partial Orders}
+
+The prerequisite structure among MIT subjects provides a nice illustration
+of partial orders.  Here is a table indicating some of the prerequisites of
+subjects in the the Course 6 program of Spring '07:
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Direct Prerequisites & Subject\\ \hline
+18.01 & 6.042\\ \hline
+ 18.01 & 18.02\\ \hline
+ 18.01 & 18.03\\ \hline
+ 8.01 & 8.02\\ \hline
+ 6.001 & 6.034\\ \hline
+ 6.042 & 6.046\\ \hline
+ 18.03, 8.02 & 6.002\\ \hline
+ 6.001, 6.002 & 6.004\\ \hline
+ 6.001, 6.002 & 6.003\\ \hline
+ 6.004 & 6.033\\ \hline
+ 6.033 & 6.857\\ \hline
+ 6.046 & 6.840\\ \hline
+\end{tabular}
+\end{center}
+
+Since 18.01 is a direct prerequisite for 6.042, a student must take 18.01
+before 6.042.  Also, 6.042 is a direct prerequisite for 6.046, so in fact,
+a student has to take \emph{both} 18.01 and 6.042 before taking 6.046.  So
+18.01 is also really a prerequisite for 6.046, though an implicit or
+indirect one; we'll indicate this by writing
+\[
+18.01 \prq 6.046.
+\]
+
+This prerequisite relation has a basic property known as
+\term{transitivity}: if subject $a$ is an indirect prerequisite of subject
+$b$, and $b$ is an indirect prerequisite of subject $c$, then $a$ is also
+an indirect prerequisite of $c$.
+
+In this table, a longest sequence of prerequisites is
+\[
+18.01 \prq 18.03 \prq 6.002 \prq 6.004 \prq 6.033 \prq 6.857
+\]
+so a student would need at least six terms to work through this sequence
+of subjects.  But it would take a lot longer to complete a Course 6 major
+if the direct prerequisites led to a situation\footnote{MIT's Committee on
+Curricula has the responsibility of watching out for such bugs that might
+creep into departmental requirements.} where two subjects turned out to be
+prerequisites of \emph{each other}!  So another crucial property of the
+prerequisite relation is that if $a \prq b$, then it is not the case that
+$b \prq a$.  This property is called \term{asymmetry}.
+
+Another basic example of a partial order is the subset relation,
+$\subseteq$, on sets.  In fact, we'll see that every partial order can be
+represented by the subset relation.
+
+\begin{definition}
+A binary relation, $R$, on a set $A$ is:
+\begin{itemize}
+
+\item \emph{transitive} \qiff 
+$[a \mrel{R}  b \text{ and } b \mrel{R}  c]\ \QIMPLIES\  a \mrel{R}  c$
+\quad for every $a,b,c\in A$,
+
+\item \emph{asymmetric} \qiff
+$a \mrel{R}  b\  \QIMPLIES\  \QNOT(b \mrel{R}  a)$
+\quad for all $a,b\in A$,
+
+\item a \emph{strict partial order} iff it is transitive and asymmetric.
+\end{itemize}
+
+\end{definition}
+
+So the prerequisite relation, $\prq$, on subjects in the MIT catalogue is
+a strict partial order.  More familiar examples of strict partial orders
+are the relation, $<$, on real numbers, and the proper subset relation,
+$\subset$, on sets.
+
+The subset relation, $\subseteq$, on sets and $\leq$ relation on numbers
+are examples of \emph{reflexive} relations in which each element is
+related to itself.  Reflexive partial orders are called \emph{weak}
+partial orders.  Since asymmetry is incompatible with reflexivity, the
+asymmetry property in weak partial orders is relaxed so it applies only to
+two different elements.  This relaxation of the asymmetry is called
+antisymmetry:
+
+\begin{definition}
+A binary relation, $R$, on a set $A$, is
+\begin{itemize}
+
+\item \emph{reflexive} \qiff $a \mrel{R}  a$ \quad for all $a \in A$,
+
+\item \emph{antisymmetric}\label{antis} \qiff
+$a \mrel{R}  b\ \QIMPLIES\ \QNOT(b \mrel{R}  a)$
+\quad for all $a \neq b \in A$,
+
+\item a \emph{weak partial order} iff it is transitive, reflexive and
+antisymmetric.
+
+\end{itemize}
+\end{definition}
+%
+Some authors define partial orders to be what we call weak partial orders,
+but we'll use the phrase ``partial order'' to mean either a weak or strict
+one.
+
+For weak partial orders in general, we often write an ordering-style
+symbol like $\preceq$ or $\sqsubseteq$ instead of a letter symbol like
+$R$.  (General relations are usually denoted by a letter like $R$ instead
+of a cryptic squiggly symbol, so $\preceq$ is kind of like the musical
+performer/composer Prince, who redefined the spelling of his name to be
+his own squiggly symbol.  A few years ago he gave up and went back to the
+spelling ``Prince,'' presumably because of the confusion caused by using
+just his symbol.)  Likewise, we generally use $\prec$ or $\sqsubset$ to
+indicate a strict partial order.  \iffalse We also write $b \succeq a$ to
+mean $a \preceq b$ and $b \succ a$ to mean $a \prec b$.\fi
+
+Two more examples of partial orders are worth mentioning:
+
+\begin{example}\label{supset}
+Let $A$ be some family of sets and define $a \mrel{R} b$ iff $a
+\supset b$.  Then $R$ is a strict partial order.
+\end{example}
+
+For integers, $m,n$ we write $m \divides n$ to mean that $m$
+\emph{divides} $n$, namely, there is an integer, $k$, such that $n=km$.
+
+\begin{example}\label{divides}
+The divides relation is a weak partial order on the nonnegative integers.
+\end{example}
+
+%% Axioms for Partial Orders Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
+\pinput{CP_prerequisite_relation}
+\pinput{CP_transitive_irreflexive_implies_SPO}
+\pinput{CP_binary_relations_on_01}
+
+
+%% Representing Partial Orders by Set Containment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Representing Partial Orders by Set Containment}
+
+When a class of objects are defined by axioms, like the axioms for partial
+orders, it can help to have a way to ``represent'' them explicitly by
+known objects.  Partial orders can be represented by the subset relation
+on a collection of sets.  Namely, if $R$ is a weak partial order on a set,
+$A$, we can let each element $a \in A$ correspond to the set $R\set{a}$.
+Since
+\begin{equation}\label{rgb}
+a \mrel{R} b  \qiff  R\set{a} \subseteq R\set{b}
+\end{equation}
+holds for all $a,b \in A$, we have completely captured the weak partial
+order $R$ by the subset relation on the corresponding sets.  A similar
+correspondence shows that strict partial orders can be represented by the
+proper subset relation, $\subset$.
+
+%%INSERT EXAMPLE
+
+\begin{notesproblem}
+Prove the iff assertion~\eqref{rgb}.
+\end{notesproblem}
+
+\begin{notesproblem}
+Verify that the relations in Examples~\ref{supset} and~\ref{divides} are
+partial orders.
+\end{notesproblem}
+
+\begin{definition}
+  A relation, $R$, on a set, $A$, is \emph{irreflexive} iff $\QNOT(a
+  \mrel{R} a)$ for all $a \in A$.
+\end{definition}
+
+\begin{notesproblem}\label{tir}
+Prove that a binary relation is a strict partial order iff it is
+transitive and irreflexive.
+\end{notesproblem}
+
+\iffalse
+
+\textbf{Quick exercise:}  Why doesn't divisibility define a partial order
+on the integers rather than the nonnegative integers?
+\medskip
+\fi
+
+%% Representing Partial Orders by Set Containment Problems %%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
+%\pinput{CP_}
+
+
+%% Total Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Total Orders}
+
+The familiar order relations on numbers have an important additional
+property: given two different numbers, one will be bigger than the other.
+Partial orders with this property are said to be
+\emph{total}\footnote{``Total'' is an overloaded term when talking about
+  partial orders: being a total order is a much stronger condition than
+  being a partial order that is a total relation.  For example, any weak
+  partial order such as $\subseteq$ is a total relation.} \emph{orders}.
+
+\begin{definition}
+Let $R$ be a binary relation on a set, $A$, and let $a, b$ be elements of
+$A$.  Then $a$ and $b$ are \emph{comparable} with respect to $R$ iff $[a
+  \mrel{R} b\ \QOR\ b \mrel{R} a]$.  A partial order for which every two
+different elements are comparable is called a \emph{total order}.
+\end{definition}
+
+So $<$ and $\le$ are total orders on $\reals$.  On the other hand, the
+subset relation is \emph{not} total, since, for example, any two different
+finite sets of the same size will be incomparable under $\subseteq$.  The
+prerequisite relation on Course 6 required subjects is also not total
+because, for example, neither 8.01 nor 6.001 is a prerequisite of the
+other.
+
+%% Total Orders Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
+%\pinput{CP_}
+
+
+%% Product Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Product Orders}\label{prodsec}
+
+Taking the product of two relations is a useful way to construct new
+relations from old ones.
+
+\begin{definition}\label{productrel}
+\hyperdef{def}{productrel}{The product}, $R_1 \cross R_2$, of relations
+$R_1$ and $R_2$ is defined to be the relation with
+\begin{eqnarray*}
+\domain{R_1 \cross R_2} &\eqdef& \domain{R_1} \cross \domain{R_2},\\
+\codomain{R_1 \cross R_2} &\eqdef& \codomain{R_1} \cross \codomain{R_2},\\
+(a_1,a_2)\, (R_1 \cross R_2)\, (b_1,b_2) &\text{iff}& [a_1\, R_1\, b_1
+\text{ and } a_2\, R_2\, b_2].
+\end{eqnarray*}
+
+\end{definition}
+
+\begin{example}\label{Y}
+Define a relation, $Y$, on age-height pairs of being younger \emph{and}
+shorter.  This is the relation on the set of pairs $(y,h)$ where $y$ is a
+nonnegative integer $\le 2400$ which we interpret as an age in months, and $h$
+is a nonnegative integer $\le 120$ describing height in inches.  We define $Y$
+by the rule
+\[
+(y_1,h_1)\, Y\, (y_2,h_2) \qiff y_1 \le y_2\ \QAND\ h_1 \le h_2.
+\]
+That is, $Y$ is the product of the $\le$-relation on ages and the
+$\le$-relation on heights.
+\end{example}
+
+Products preserve several of the relational properties we have considered.
+Namely, it's not hard to verify that if $R_1$ and $R_2$ are both
+transitive, then so is $R_1 \cross R_2$.  The same holds for reflexivity,
+irreflexivity, and antisymmetry.  This implies that if $R_1$ and $R_2$ are
+both partial orders, then so is $R_1 \cross R_2$.
+
+\iffalse
+\textbf{Quick Exercise:} Verify that if \emph{either} of $R_1$ or $R_2$ is
+irreflexive, then so is $R_1 \cross R_2$.
+\medskip
+\fi
+
+On the other hand, the property of being a total order is not preserved.
+For example, the age-height relation $Y$ is the product of two total
+orders, but it is not total: the age 240 months, height 68 inches pair,
+(240,68), and the pair (228,72) are incomparable under $Y$.
+
+%% Product Orders Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
+%\pinput{CP_}
+
+
+%% Scheduling %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Scheduling}
+
+Scheduling problems are a common source of partial orders: there is a set,
+$A$, of tasks and a set of constraints specifying that starting a certain
+task depends on other tasks being completed beforehand.  We can picture
+the constraints by drawing labelled boxes corresponding to different
+tasks, with an arrow from one box to another if the first box corresponds
+to a task that must be completed before starting the second one.
+
+\begin{samepage}
+\begin{example}\label{cloth}
+Here is a drawing describing the order in which you could put on clothes.
+The tasks are the clothes to be put on, and the arrows indicate what should be
+put on directly before what.
+\begin{center}\includegraphics{figures/clothes.mps}\end{center}
+\end{example}
+\end{samepage}
+
+When we have a partial order of tasks to be performed, it can be useful to
+have an order in which to perform all the tasks, one at a time, while
+respecting the dependency constraints.  This amounts to finding a total
+order that is consistent with the partial order.  This task of finding a
+total ordering that is consistent with a partial order is known as
+\emph{topological sorting}. \iffalse probably because the sort is based
+only on the topology (shape) of the poset and not on the actual values.\fi
+
+\begin{definition}
+A \term{topological sort} of a partial order, $\prec$, on a set, $A$, is
+a total ordering, $\sqsubset$, on $A$ such that
+\[
+a \prec b\ \QIMPLIES\  a \sqsubset b.
+\]
+\end{definition}
+
+For example,
+\[
+\text{shirt} \sqsubset \text{sweater} \sqsubset \text{underwear} \sqsubset \text{leftsock}
+\sqsubset \text{rightsock} \sqsubset \text{pants} \sqsubset \text{leftshoe} \sqsubset
+\text{rightshoe} \sqsubset \text{belt} \sqsubset \text{jacket},
+\]
+is one topological sort of the partial order of dressing tasks given by
+Example~\ref{cloth}; there are several other possible sorts as well.
+
+Topological sorts for partial orders on finite sets are easy to construct
+by starting from \term{minimal} elements:
+
+\begin{definition}
+Let $\preceq$ be a partial order on a set, $A$.  An element $a_0 \in A$ is
+\term{minim\underline{um}} iff it is $\preceq$ every other element
+of $A$, that is, $a_0 \preceq b$ for all $b \neq a_0$.
+
+The element $a$ is \term{minim\underline{al}} iff no other element
+is $\preceq a$, that is, $\QNOT(b \preceq a_0)$ for all $b \neq a_0$.
+\end{definition}
+
+In a total order, minimum and minimal elements are the same thing.  But a
+partial order may have no minimum element but lots of minimal elements.
+There are four minimal elements in the clothes example: leftsock,
+rightsock, underwear, and shirt.
+
+To construct a total ordering for getting dressed, we pick one of these
+minimal elements, say shirt.  Next we pick a minimal element among the
+remaining ones.  For example, once we have removed shirt, sweater becomes
+minimal.  We continue in this way removing successive minimal elements
+until all elements have been picked.  The sequence of elements in the
+order they were picked will be a topological sort.  This is how the
+topological sort above for getting dressed was constructed.
+
+For this method of topological sorting to work, we need to be sure there
+is always a minimal element.  This is sort of obvious, but noting that an
+infinite partially ordered set might have no minimal element ---consider
+$<$ on the $\integers$ ---it would be good to prove that minimal
+elements exist.
+
+\begin{lemma}\label{finmin}
+  \hyperdef{rule}{mine1}{Every} partial order on a nonempty finite set has
+  a minimal element.
+
+\begin{proof}
+Let $R$ be a strict partial order on a set, $A$.  Define the \emph{weight}
+of an element $a \in A$ to be $\card{R\set{a}}$ ---the number of elements
+in the set $R\set{a}$.  Since $A$ is finite, the weights of all elements
+in $A$ are nonnegative integers, so there must be an $a_0 \in A$ with the
+smallest weight.
+
+Now suppose $\card{R\set{a_0}} \neq 0$.  Then there is an element $a_1 \in
+R\set{a_0}$, which implies (by transitivity of $R$) that $R\set{a_1}
+\subseteq R\set{a_0}$, and hence $\card{R\set{a_1}} \leq
+\card{R\set{a_0}}$.  But since $R$ is strict, $a_1 \in R\set{a_0} -
+R\set{a_1}$, so in fact $\card{R\set{a_1}} < \card{R\set{a_0}}$,
+contradicting the fact the $a_0$ has the smallest weight.
+
+This contradiction implies that $\card{R\set{a_0}} = 0$, which means that
+no element is related by $R$ to $a_0$, that is, $a_0$ is minimal.
+
+A similar argument works in the case that $R$ is a weak partial order.
+
+\end{proof}
+\end{lemma}
+
+So our construction shows:
+
+\begin{theorem}\label{thm:topological}
+Every partial order on a finite set has a topological sort.
+\end{theorem}
+
+In fact, the domain of the partial order need not be finite: we won't 
+prove it, but \emph{all} partial orders, even infinite ones, have 
+topological sorts.
+
+There are many other ways of constructing topological sorts.  For example,
+instead of starting ``from the bottom'' with minimal elements, we could
+start ``from the top'' by picking \term{maximal} elements:
+
+\begin{definition}
+Let $\preceq$ be a partial order on a set, $A$.  An element $a \in A$ is
+\term{maximum} iff every other element of $A$ is $\preceq a$.  The element
+$a$ is \term{maximal} iff $a$ is not $\preceq$ to other element.
+\end{definition}
+
+
+\TBA{Move this to a CP...}
+
+\begin{notesproblem}
+
+\bparts
+
+\ppart
+Prove that there is at most one minim\emph{um} element in any partial
+order.
+
+\ppart Give an example of a partial order with exactly one minimal
+element, but no minimum element.  \hint It will have to be infinite.
+
+\eparts
+\end{notesproblem}
+
+
+\subsection{Parallel Task Scheduling}
+
+For a partial order of task dependencies, topological sorting provides a
+way to execute tasks sequentially without violating the dependencies.  But
+what if we have the ability to execute more than one task at the same
+time?  For example, say tasks are programs, the partial order indicates
+data dependence, and we have a parallel machine with lots of processors
+instead of a sequential machine with only one.  How should we schedule the
+tasks?  Our goal should be to minimize the total \emph{time} to complete
+all the tasks.  For simplicity, let's say all the tasks take the same
+amount of time and all the processors are identical.
+
+So, given a finite partially ordered set of tasks, how long does it take
+to do them all, in an optimal parallel schedule?  We can also use partial
+order concepts to analyze this problem.
+
+In the clothes example, we could do all the minimal elements first
+(leftsock, rightsock, underwear, shirt), remove them and repeat.  We'd need
+lots of hands, or maybe dressing servants.  We can do pants and sweater
+next, and then leftshoe, rightshoe, and belt, and finally jacket.
+
+We can't do any better, because the sequence underwear, pants, belt,
+jacket must be done in that order.  A set of tasks that must be done in
+sequence like this is called a \emph{chain}.
+
+\begin{definition}
+A \term{chain} in a partial order is a set of elements such that any two
+different elements in the set are comparable.
+\end{definition}
+
+In other words, a chain is a totally ordered subset of the elements in a
+partial order.  Clearly, the parallel time must be at least the size of
+any chain.  For if we used less time, then two tasks in the chain would
+have to be done at the same time, violating the dependency constraints.
+
+A largest chain is also known as a \term{critical path}.  So we need at
+least $t$ steps, where $t$ is the size of a largest chain.  Fortunately,
+it is always possible to use only $t$ parallel steps.  The idea is to let
+$B_1$ be all the minimal elements and schedule them first.  Then remove
+all the elements in $B_1$, let $B_2$ be the elements that now become
+minimal, and schedule them next, and so on.  For getting dressed, here is
+a picture of the schedule obtained in this way:
+
+\begin{center}\includegraphics{figures/clothesparallel.mps}\end{center}
+
+\begin{theorem}\label{thm:parallel}
+Let $R$ be strict partial order on a set, $A$.  If the longest chain in
+$A$ is of size $t$, then there is a partition\footnote{Partitioning a set,
+$A$, means ``cutting it up'' into non-overlapping, nonempty pieces.  The
+pieces are called the blocks of the partition.  More precisely, a
+\emph{partition} of $A$ is a set $\mathcal{B}$ whose elements are nonempty
+subsets of $A$ such that
+\begin{itemize}
+\item if $B,B' \in \mathcal{B}$ are different sets, then $B \intersect B' =
+ \emptyset$, and
+\item $\lgunion_{B\in \mathcal{B}} B = A$.
+\end{itemize}}
+of $A$ into $t$ blocks,
+$B_1, B_2, \dots, B_t$, such that for each block, $B_i$, all tasks that
+have to precede tasks in $B_i$ are in smaller-numbered groups.  That is,
+\begin{eqnarray}
+RB_1 & = & \emptyset,\text{ and}\label{RA1}\\
+RB_i & \subseteq & B_1 \cup B_2 \cup \cdots \cup B_{i-1},\label{RAi}
+\end{eqnarray}
+for $1<i\le t$.
+\end{theorem}
+
+\begin{corollary}
+For $R$ and $t$ as above, it is possible to schedule all tasks in $t$
+steps.
+\end{corollary}
+
+\begin{proof}
+Schedule all the elements of $B_i$ at time $i$.  This satisfies the
+dependency requirements, because all the tasks that any task depends on
+are scheduled at preceding times.
+\end{proof}
+
+\begin{corollary}
+Parallel time = Size of largest chain.
+\end{corollary}
+
+So it remains to prove Theorem~\ref{thm:parallel}:
+\begin{proof}
+A chain is said to \emph{begin} with its smallest element and \emph{end}
+with its largest element, if any.
+
+Construct the sets $B_i$ as follows:
+\[
+B_i \eqdef \set{a \in A \suchthat \mbox{the largest chain ending in $a$ is of
+    size $i$}}.
+\]
+
+This gives just $t$ sets, because the largest chain is of size $t$.  Also,
+each $a \in A$ belongs to exactly one $B_i$.  To complete the proof,
+notice that if $a \in B_1$, then $a$ must be minimal, and since $R$ is
+strict we have $RB_1 = \emptyset$ proving~\eqref{RA1}.
+
+Now suppose $1 <i \le t$, and assume for the sake of contradiction
+that~\eqref{RAi} does not hold.  That is, there is an $a \in B_i$ and $b
+\in A$ such that $b \mrel{R} a$, and $b \notin B_1 \cup B_2 \cup \cdots
+\cup B_{i-1}$.  Then by definition of the $B_j$'s, there is a chain of
+size $> i-1$ ending at $b$.  Also, since $R$ is strict, $a$ is not in the
+chain ending at $b$.  So we can add $a$ to the end of the chain to obtain
+a chain of size $>i$ ending in $a$, contradicting the fact that that $a
+\in B_i$.
+\end{proof}
+
+So with an unlimited number of processors, the time to complete all the
+tasks is the size of the largest chain.  It turns out that this theorem
+is good for more than parallel scheduling.  It is usually stated as
+follows.
+
+\begin{definition}
+An \term{antichain} in a partial order is a set of elements such that any
+two elements in the set are incomparable.
+\end{definition}
+
+\begin{corollary}\label{cor:parallel}
+If the largest chain in a partial order is of size, $t$, then the domain
+can be partitioned into $t$ antichains.
+\end{corollary}
+
+\begin{proof}
+Let the antichains be the sets $B_i$ defined as in the proof of Theorem
+\ref{thm:parallel}.
+
+We should verify that each $B_i$ is an antichain, namely, if $a,b$ are
+different elements of $B_i$, then they are incomparable.  But suppose to
+the contrary that there exist two elements $a,b \in B_i$ such that $a$ and
+$b$ are comparable, say $a \mrel{R} b$.  Then, as in the proof of Theorem
+\ref{thm:parallel}, by adding $b$ at the end of the chain of size $i$
+ending at $a$, we obtain a chain of size $i+1$ ending at $b$,
+contradicting the assumption that $b\in B_i$.
+\end{proof}
+
+\subsection{Dilworth's Lemma}
+
+We can use the Corollary~\ref{cor:parallel} to prove a famous
+result\footnote{Lemma~\ref{lem:Dilworth} also follows from a more general
+result known as Dilworth's Theorem which we will not discuss.} about
+partially ordered sets:
+
+\begin{lemma}[Dilworth]\label{lem:Dilworth}
+\hyperdef{rule}{Dilworth}{For} all $t>0$, every partially ordered set with
+$n$ elements must have either a chain of size greater than $t$ or an
+antichain of size at least $n / t$.
+\end{lemma}
+
+\begin{proof}
+Assume there is no chain of size greater than $t$, that is, the largest
+chain is of size $\le t$.  Then by Corollary \ref{cor:parallel}, the $n$
+elements can be partitioned into at most $t$ antichains.  Let $\ell$ be
+the size of the largest antichain.  Since every element belongs to exactly
+one antichain, and there are at most $t$ antichains, there can't be more
+than $\ell t$ elements, namely, $\ell t \geq n$.  So there is an antichain
+with at least $\ell \geq n / t$ elements.
+\end{proof}
+
+\begin{corollary}\label{cor:Dilworth}
+Every partially ordered set with $n$ elements has a chain of size greater
+than $\sqrt{n}$ or an antichain of size at least $\sqrt{n}$.
+
+\begin{proof}
+  Set $t = \sqrt{n}$ in Lemma~\ref{lem:Dilworth}.
+\end{proof}
+\end{corollary}
+
+\begin{example}
+In the dressing partially ordered set, $n = 10$.
+
+Try $t = 3$.  There is a chain of size $4$.
+
+Try $t = 4$.  There is no chain of size $5$, but there is an antichain of
+size $4 \geq 10 / 4$.
+\end{example}
+
+\begin{example}
+Suppose we have a class of 101 students.  Then using the product partial
+order, $Y$, from Example~\ref{Y}, we can apply Dilworth's Lemma to
+conclude that there is a chain of 11 students who get taller as they get
+older, or an antichain of 11 students who get taller as they get younger,
+which makes for an amusing in-class demo.
+\end{example}
+
+\TBA{Move to CP??}
+
+\textbf{Quick Exercise:} What is the size of the longest chain that is
+guaranteed to exist in any partially ordered set of $n$ elements?
+What about the largest antichain?
+
+\solution{For $n>0$, chain size is 1 in the ``discrete'' partial order in
+which every two different elements are incomparable.  Antichain size is 1
+if $n>0$ and the partial order is total.}
+
+\TBA{Move to CP...}
+
+\begin{notesproblem}
+Describe a sequence consisting of the integers from 1 to 10,000 in some
+order so that there is no increasing or decreasing subsequence of size
+101.
+\end{notesproblem}
+
+\textbf{Not So Quick Exercise:} Devise an efficient procedure for finding
+the longest increasing and the longest decreasing subsequence in any given
+sequence of integers.  (There is a nice one.)
+
+%% Scheduling Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
+\pinput{CP_conquering_the_galaxy}
+\pinput{CP_minimal_maximal_elements}
+
+
+\TBA{Conclusion...}
 
 \endinput
