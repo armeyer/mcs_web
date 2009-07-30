@@ -6,15 +6,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% To use this package, create a symbolic link named ``latex-macros''
-% inside the directory you will be editing your latex files. Make this
-% link point to the directory that contains the unique copies of the
-% style (.sty) and data (.dat) files of this package. This guarantees
-% the entire teaching staff always use the correct files.
-
 \NeedsTeXFormat{LaTeX2e}
 
-\ProvidesClass{mcs}[2009/07/30 v1.01]
+\ProvidesClass{mcs}[2009/07/30 v1.02]
 
 \newif\ifhandout
 \handouttrue
@@ -514,8 +508,6 @@
   \typeout{(1in=72.27pt, 1cm=28.45pt)}
   \typeout{-----------------------------------------}%
 }
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Mini pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1517,17 +1509,27 @@
 % above, \releasedateofpaper{ln1} returns ``September 5, 2001'', and 
 % \duedateofpaper{ps2} returns ``September 28, 2001''.
 %
-\newcommand{\releasedateofpaper}[1]{\csname @paper@#1@out\endcsname}
-\newcommand{\duedateofpaper    }[1]{\csname @paper@#1@due\endcsname}
+\newcommand{\releasedateofpaper}[1]{%
+    \@ifundefined{@paper@#1@out}{%
+        \ClassWarning{mcs}{Undefined paper id `#1'}%
+    }{%
+        \@nameuse{@paper@#1@out}%
+    }%
+}
+
+\newcommand{\duedateofpaper}[1]{%
+    \@ifundefined{@paper@#1@due}{%
+        \ClassWarning{mcs}{Undefined paper id `#1'}%
+    }{%
+        \@nameuse{@paper@#1@due}%
+    }%
+}
 
 % Loads the definitions of all papers for the current term. This data
 % file (course.dat) should be kept in the same directory as this 
 % style file (course.sty).
-\input{course.dat}
 
-
-
-
+\IfFileExists{00course.dat}{\input{00course.dat}}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
