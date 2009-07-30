@@ -7,8 +7,10 @@ book: $(DRIVER_FILE)
 %: %.pdf
 	@
 
-%.pdf: %.tex
+%.pdf: %.tex FORCE
 	$(FORMAT) $*
+
+FORCE: 
 
 .PRECIOUS: %.pdf
 
