@@ -473,16 +473,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Page formatting %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\setlength{\parindent}{0in}                     
-\setlength{\parskip}{\medskipamount}            
+\setlength{\parindent}{0.125in}                     
+\setlength{\parskip}{0in}            
 \hoffset        = -1.0 in
-\voffset        = -1.0 in
-\paperheight    = 11.0 in
-\paperwidth     =  8.5 in
-\topmargin      = 0.75 in
-\headheight     = \baselineskip
-\headsep        = \baselineskip
-\footskip       = 1.00 in
+\voffset        = -1.25 in
+\paperheight    =  9.0 in
+\paperwidth     =  7.0 in
+\topmargin      = 0.375 in
+\headheight     = 3\baselineskip
+\headsep        = 2\baselineskip
+\footskip       = 0.3 in
 \textheight     = \paperheight
 \addtolength{\textheight}{-\topmargin}
 \addtolength{\textheight}{-\headheight}
@@ -633,10 +633,8 @@
 
 \newcommand{\coursecopyright}{%
 \symbolfootnote[0]{Creative Commons
-\resizebox{!}{0.15in}{\includegraphics{latex-macros/by-nc-sa}}~\coursecopyrightyear, 
+\resizebox{!}{0.15in}{\includegraphics{by-nc-sa}}~\coursecopyrightyear, 
     \coursecopyrightnames.}}
-
-
 
 \newcommand{\coursecopyrightyear}{
   0000%
@@ -1525,7 +1523,7 @@
 % Loads the definitions of all papers for the current term. This data
 % file (course.dat) should be kept in the same directory as this 
 % style file (course.sty).
-\input{latex-macros/course.dat}
+\input{course.dat}
 
 
 
@@ -1542,10 +1540,7 @@
 % Use this command in the preamble, if you want some of the old
 % features included. Please use  `course.old'  to add material that is
 % needed for backwards compatibility only.
-\newcommand{\backwardscompatibility}{\input{latex-macros/course.old}}
-
-
-
+\newcommand{\backwardscompatibility}{\input{course.old}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

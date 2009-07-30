@@ -1,4 +1,4 @@
-FORMAT = ./format
+FORMAT = bin/format
 
 export DRIVER_FILE = mcs
 

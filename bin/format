@@ -544,7 +544,21 @@ sub process_chapter($) {
 sub is_problem( $ ) {
     my $name = shift;
 
-    return $name =~ /^$PROBLEMS_DIR\//o;
+    my $tex_file = "$name.tex";
+
+    my $is_problem = 0;
+
+    local $_;
+
+    open(my $fh, "<", $tex_file) or die "Can't open $tex_file: $!\n";
+
+    while (<$fh>) {
+        m{^\\documentclass\[.*\bproblem\b} and do {
+            return 1;
+        };
+    }
+
+    return $is_problem;
 }
 
 sub is_note( $ ) {
@@ -584,12 +598,12 @@ GetOptions("index!"     => \$OPT{index},
 
 usage unless @ARGV;
 
-my $main_dir = File::Spec->rel2abs(dirname $0);
+my $root_dir = dirname(File::Spec->rel2abs(dirname $0));
 
 if ($ENV{TEXINPUTS}) {
-    $ENV{TEXINPUTS} = join ":", "$main_dir//", $ENV{TEXINPUTS};
+    $ENV{TEXINPUTS} = join ":", "$root_dir//", $ENV{TEXINPUTS};
 } else {
-    $ENV{TEXINPUTS} = "$main_dir//:";
+    $ENV{TEXINPUTS} = "$root_dir//:";
 }
 
 while (my $chapter = shift) {
@@ -600,13 +614,7 @@ while (my $chapter = shift) {
     } elsif (is_problem($chapter)) {
         local $OPT{include} = 0;
 
-        $chapter =~ s/^$PROBLEMS_DIR\///o;
-
-        chdir "problems" or die "Can't connect to problems directory: $!\n";
-
         process_chapter($chapter);
-
-        chdir ".." or die "Can't reconnect to parent directory: $!\n";
     } else {
         process_chapter($chapter);
     }
