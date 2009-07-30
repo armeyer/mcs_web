@@ -5,7 +5,9 @@ use warnings;
 
 use File::Basename;
 
-use File::Spec;
+use File::Copy;
+
+use File::Spec::Functions qw(rel2abs catdir);
 
 use Getopt::Long qw(:config no_ignore_case);
 
@@ -30,6 +32,22 @@ my %TRANSLATION = (texttt  => '',
                    relax   => '',
                    textsc  => '',
     );
+
+my $ROOT = dirname(rel2abs(dirname $0));
+
+my $VIEW_DIR = catdir($ROOT, 'web');
+
+######################################################################
+##                                                                  ##
+##                           ENVIRONMENT                            ##
+##                                                                  ##
+######################################################################
+
+if ($ENV{TEXINPUTS}) {
+    $ENV{TEXINPUTS} = join ":", "$ROOT//", $ENV{TEXINPUTS};
+} else {
+    $ENV{TEXINPUTS} = "$ROOT//:";
+}
 
 ######################################################################
 ##                                                                  ##
@@ -508,11 +526,14 @@ sub process_chapter($) {
 
     summarize_errors($chapter);
 
-    if ($OPT{include} && $chapter ne $DRIVER) {
-        print "\nMoving $DRIVER.pdf to $chapter.pdf\n";
+    my $generated_pdf = "$DRIVER.pdf";
+    my $target_pdf    = "$chapter.pdf";
 
-        rename("$DRIVER.pdf", "$chapter.pdf") or do {
-            die "Can't rename $DRIVER.pdf to $chapter.pdf: $!\n";
+    if ($OPT{include} && $generated_pdf ne $target_pdf) {
+        print "\nMoving $generated_pdf to $target_pdf\n";
+
+        rename($generated_pdf, $target_pdf) or do {
+            die "Can't rename $generated_pdf to $target_pdf: $!\n";
         };
 
         print "Moving $DRIVER.log to $chapter.log\n";
@@ -522,10 +543,10 @@ sub process_chapter($) {
         };
 
         if ($SAVED_DRIVER_PDF) {
-            print "Restoring $DRIVER.pdf\n";
+            print "Restoring $generated_pdf\n";
 
-            rename("$DRIVER-saved.pdf", "$DRIVER.pdf") or do {
-                die "Can't restore $DRIVER-saved.pdf to $DRIVER.pdf: $!\n";
+            rename("$DRIVER-saved.pdf", $generated_pdf) or do {
+                die "Can't restore $DRIVER-saved.pdf to $generated_pdf: $!\n";
             };
 
             if (-e "$DRIVER-saved.log") {
@@ -536,6 +557,14 @@ sub process_chapter($) {
                 };
             }
         }
+    }
+
+    if (-d $VIEW_DIR) {
+        print "Copying $target_pdf to $VIEW_DIR\n";
+
+        copy($target_pdf, $VIEW_DIR) or do {
+            warn "Couldn't copy $target_pdf to $VIEW_DIR: $!\n";
+        };
     }
 
     return;
@@ -597,14 +626,6 @@ GetOptions("index!"     => \$OPT{index},
 ) or usage();
 
 usage unless @ARGV;
-
-my $root_dir = dirname(File::Spec->rel2abs(dirname $0));
-
-if ($ENV{TEXINPUTS}) {
-    $ENV{TEXINPUTS} = join ":", "$root_dir//", $ENV{TEXINPUTS};
-} else {
-    $ENV{TEXINPUTS} = "$root_dir//:";
-}
 
 while (my $chapter = shift) {
     if (is_note($chapter)) {
