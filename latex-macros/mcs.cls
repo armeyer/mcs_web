@@ -14,7 +14,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 
-\ProvidesClass{mcs}[2009/07/08 v1.00]
+\ProvidesClass{mcs}[2009/07/30 v1.01]
 
 \newif\ifhandout
 \handouttrue
@@ -1071,11 +1071,11 @@
   \ifx\answer\yes
     \typeout{}
     \typeout{Solutions *INCLUDED*.} 
-    \showsolutionstrue
+    \global\showsolutionstrue
   \else
     \typeout{}
     \typeout{Solutions *NOT INCLUDED*.} 
-    \showsolutionsfalse
+    \global\showsolutionsfalse
   \fi}
 \newcommand{\decideaboutsolutions}{
   \askaboutsolutions
