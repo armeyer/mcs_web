@@ -547,6 +547,26 @@ sub is_problem( $ ) {
     return $name =~ /^$PROBLEMS_DIR\//o;
 }
 
+sub is_note( $ ) {
+    my $name = shift;
+
+    my $tex_file = "$name.tex";
+
+    my $is_note = 0;
+
+    local $_;
+
+    open(my $fh, "<", $tex_file) or die "Can't open $tex_file: $!\n";
+
+    while (<$fh>) {
+        m{^\\documentclass\[.*\bhandout\b} and do {
+            return 1;
+        };
+    }
+
+    return $is_note;
+}
+
 ######################################################################
 ##                                                                  ##
 ##                               MAIN                               ##
@@ -573,7 +593,11 @@ if ($ENV{TEXINPUTS}) {
 }
 
 while (my $chapter = shift) {
-    if (is_problem($chapter)) {
+    if (is_note($chapter)) {
+        local $OPT{include} = 0;
+
+        process_chapter($chapter);
+    } elsif (is_problem($chapter)) {
         local $OPT{include} = 0;
 
         $chapter =~ s/^$PROBLEMS_DIR\///o;
