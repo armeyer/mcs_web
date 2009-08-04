@@ -1595,7 +1595,7 @@
 
 \IfFileExists{.solutionspolicy}{%
     \input{.solutionspolicy}%
-    \let\askaboutsolutions\relax
+    \let\askaboutsolutions\@empty
 }{}
 
 \endinput
