@@ -1,3 +1,1 @@
-include ../Makefile
-
-FORMAT = ../bin/format
+include ../Makefile.com

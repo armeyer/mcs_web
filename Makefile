@@ -1,31 +1,8 @@
-FORMAT = bin/format
+SUBDIRS = book problems fall09
 
-export DRIVER_FILE = mcs
+.PHONY: clean veryclean
 
-book: $(DRIVER_FILE)
-
-%: %.pdf
-	@
-
-%.pdf: %.tex FORCE
-	$(FORMAT) $*
-
-FORCE: 
-
-.PRECIOUS: %.pdf
-
-clean:
-	-rm -f $(DRIVER_FILE).pdf *.bbl *.blg *.toc *.dvi *.log *.ind *.idx *.ilg *.out *~
-
-cleanall: clean
-	(cd problems; make clean)
-
-veryclean: clean
-	-rm -f *.aux *.pdf
-
-verycleanall: veryclean
-	(cd problems; make veryclean)
-
-
-
-
+clean veryclean:
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir $@; \
+	done
