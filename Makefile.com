@@ -1,5 +1,6 @@
 FORMAT = ../bin/format
 
+
 export DRIVER_FILE = mcs
 
 book: $(DRIVER_FILE)
@@ -24,5 +25,7 @@ clean:
 veryclean: clean
 	-rm -f *.aux *.pdf
 
+.PHONY: showsolutions hidesolutions asksolutions
 
-
+showsolutions hidesolutions asksolutions:
+	$(MAKE) -C .. $@

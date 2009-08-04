@@ -8,7 +8,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 
-\ProvidesClass{mcs}[2009/07/30 v1.02]
+\ProvidesClass{mcs}[2009/08/03 v1.03]
 
 \newif\ifhandout
 \handouttrue
@@ -847,6 +847,8 @@
 %%% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\keywords}[1]{\@bsphack\@esphack}
+
 %%% Tags %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\PTAGfilename}[1]{}
 \newcommand{\PTAGhistory}[1]{}
@@ -1588,5 +1590,12 @@
     \input{\@class@option@file}
 \fi
 
-\endinput
+%% If it exists, .solutionspolicy will contain either
+%% \showsolutionstrue or \showsolutionsfalse.
 
+\IfFileExists{.solutionspolicy}{%
+    \input{.solutionspolicy}%
+    \let\askaboutsolutions\relax
+}{}
+
+\endinput
