@@ -13,6 +13,9 @@
 \newif\ifhandout
 \handouttrue
 
+\newif\ifproblemonly
+\problemonlyfalse
+
 \newif\ifshowsolutions
 \showsolutionsfalse
 
@@ -28,6 +31,7 @@
 }
 
 \DeclareOption{problem}{%
+    \problemonlytrue
     \def\@class@option@file{problem.opt}%
 }
 
@@ -323,6 +327,7 @@
 \def\coordle{\mathrel{\preceq_{\text{c}}}}
 \def\coord<{\mathrel{\prec_{\text{c}}}}
 
+\newcommand{\inv}[1]{#1^{-1}}
 
 \iffalse
 \newcommand{\ms}[1]{\text{#1}}
@@ -436,11 +441,29 @@
   \ifhandout#1\fi}
 \newcommand{\inbook}[1]{%
   \ifhandout\else#1\fi}
+\newcommand{\inmcsprob}[1]{%
+ \ifproblemonly#1\fi}
+
+%%%%%%%%%%%%
+%% pcomments is an itemized list environment that shows up only when 
+%%  the standalone version of the problem is compiled. 
+%%
+\newenvironment{pcomments}
+  {{\bf COMMENTS:}\inmcsprob{\begin{itemize}}}
+  {\inmcsprob{\end{itemize}}}
+\newcommand{\pcomment}[1]{\inmcsprob{\item#1}}
+
+%%%%%%%%%%%%
+%% pkeywords attaches a string of whitespace-delimited (including newline) 
+%%  keywords to problems and prints out the list when the standalone version 
+%%  of the problem is compiled.
+%%
+%% Usage: \pkeywords{keyword_1 keyword_2 keyword_3}
+%%
+\newcommand{\pkeywords}[1]{\inmcsprob{\it {\bf keywords} = [#1]}}
 
 \newcounter{documentdepth}
 
-%% Note: documentdepth declared when executing
-%%  \input{latex-macros/handout-preamble.tex} 
 \newcommand{\ifstandalone}{\ifnum\value{documentdepth}=0}
 
 %% executes #2 only when the documentdepth counter is equal to #1
