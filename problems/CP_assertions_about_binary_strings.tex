@@ -1,0 +1,118 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp2t}
+  \pcomment{There are a few parts commented out that could use review to
+            decide whether to include or cut them.}
+%  \pcomment{}
+\end{pcomments}
+
+\pkeywords{
+  translating_english_statements
+  binary
+  strings
+  logic
+  quantifiers
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The goal of this problem is to translate some assertions about binary
+strings into logic notation.  The domain of discourse is the set of all
+finite-length binary strings: $\lambda$, 0, 1, 00, 01, 10, 11, 000, 001,
+\ldots.  (Here $\lambda$ denotes the empty string.)  In your translations,
+you may use all the ordinary logic symbols (including \texttt{=}),
+variables, and the binary symbols \texttt{0}, \texttt{1} denoting 0, 1.
+
+A string like $\mathtt{01}x\mathtt{0}y$ of binary symbols and variables
+denotes the \emph{concatenation} of the symbols and the binary strings
+represented by the variables.  For example, if the value of $x$ is
+\texttt{011} and the value of $y$ is \texttt{1111}, then the value of
+$\mathtt{01}x\mathtt{0}y$ is the binary string \texttt{0101101111}.
+
+Here are some examples of formulas and their English translations.  Names
+for these predicates are listed in the third column so that you can reuse
+them in your solutions (as we do in the definition of the predicate
+{\sc no-1s} below).
+
+\begin{center}
+\begin{tabular}{lclcl}
+Meaning & \hspace{0.25in} & Formula & \hspace{0.25in} & Name \\ \hline
+$x$ is a prefix of $y$ & & $\exists z\ (xz = y)$ & & \sc{prefix}($x, y$) \\
+$x$ is a substring of $y$ & & $\exists u \exists v\ (uxv = y)$ & & \sc{substring}($x, y$) \\
+$x$ is empty or a string of 0's & & $\neg \text{\sc{substring}}(\mathtt{1},x)$
+ & & \sc{no-1s}($x$)
+\end{tabular}
+\end{center}
+
+\bparts
+
+\ppart $x$ consists of three copies of some string.
+
+\solution{
+$\exists y\ (x = yyy)$
+}
+
+\ppart $x$ is an even-length string of 0's.
+
+\solution{
+$\text{\sc{no-1s}}(x) \conj \exists y\ (x = yy)$
+}
+
+\ppart $x$ does not contain both a 0 and a 1.
+
+\solution{
+$\neg [\text{\sc{substring}}(\mathtt{0}, x) \conj \text{\sc{substring}}(\mathtt{1}, x)]$
+
+\iffalse
+Another solution is
+\[
+\text{\sc{no-1s}}(x) \disj \text{\sc{no-0s}}(x).
+\]
+\fi
+}
+
+\ppart $x$ is the binary representation of $2^k + 1$ for some
+integer $k \geq 0$.
+
+\solution{ $(x = \mathtt{10}) \disj (\exists y\ (x = \mathtt{1}y\mathtt{1}
+\conj \text{\sc{no-1s}}(y)))$ }
+
+
+\ppart An elegant, slightly trickier way to define $\text{\sc{no-1s}}(x)$
+is:
+\begin{equation}\tag{*}
+\text{\sc{prefix}}(x, \mathtt{0}x).
+\end{equation}
+Explain why~(*) is true only when $x$ is a string of 0's.
+
+\iffalse
+Explain why can't we define ``$x$ is an even-length string of 0's,'' by
+\begin{equation}\tag{**}
+\text{\sc{prefix}}(x, \mathtt{00}x).
+\end{equation}
+\fi
+
+\solution{Prefixing $x$ with 0 rightshifts all the bits.  So the $n$th
+symbol of $x$ shifts into the $(n+1)$st symbol of $0x$.  Now for $x$ to be
+a prefix of $0x$, the $n+1$st symbol of $0x$ must match the $(n+1)$st
+symbol of $x$.  So if $x$ satisfies~(*), the $n$th and $(n+1)$st symbols
+of $x$ must match.  This holds for all $n>0$ up to the length of $x$, that
+is, \emph{all} the symbols of $x$ must be the same.  In addition, if
+$x\neq \lambda$, it must start with 0.  Therefore, if $x$ satisfies~(*),
+all its symbols must be 0's.
+
+Note that it's easy to see, conversely, that if $x = \lambda$ or $x$ is
+all 0's, then of course it satisfies~(*).}
+
+\eparts
+
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
