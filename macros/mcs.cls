@@ -56,6 +56,9 @@
 \RequirePackage{subfigure}
 \RequirePackage{palatino}
 \RequirePackage{textcomp}
+
+\RequirePackage{xr-hyper}
+
 \RequirePackage[
     colorlinks, bookmarksopen, bookmarksnumbered,
     pdfpagemode=UseOutlines,
