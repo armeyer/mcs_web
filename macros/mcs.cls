@@ -122,7 +122,6 @@
 \newcommand{\edge}[2]{#1\text{---}#2}
 \newcommand{\diredge}[2]{#1 \to #2}
 
-
 %  text highlighting
 
 \newcommand{\floatingtextbox}[1]{
@@ -144,10 +143,6 @@
  
 %%% Ugly box of red text that we can't ignore for too long :) 
 \newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
-
-
-%%% Parameters/Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newlength{\strutheight}
 
 %%% Text --- Abbreviations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\apriori}{\textit{a~priori}\xspace~}
@@ -292,9 +287,10 @@
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
 
-
-
 %%%%%%%%%%%%%%%%%%%% Misc. - taken from ln and cp to avoid multiply def'd ref's
+
+%% Ick. [dmj]
+
 \newcommand{\corresp}{\ \longleftrightarrow\ }
 
 \newcommand{\prq}{\rightarrow}  %prerequisite
@@ -356,6 +352,10 @@
 
 
 %%% Math --- Probability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Parameters/Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\strutheight}
+
 \newcommand{\sspace}{\mathcal{S}}
 
 \newcommand{\pr}[1]{\mathop{\textup{Pr}}\nolimits\left\{#1\right\}}
@@ -382,51 +382,65 @@
 \newcommand{\cdf}{\textsc{CDF}}
 
 %%% Math --- Theorems & Proofs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{falsethm}[theorem]{False Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{claim}[theorem]{Claim}
-\newtheorem{falseclm}[theorem]{False Claim}
-\newtheorem{rul}[theorem]{Rule}
 
+\theoremstyle{plain}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem*{theorem*}{Theorem}
+
+\newtheorem{falsethm}[theorem]{False Theorem}
+\newtheorem*{falsethm*}{False Theorem}
+
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem*{lemma*}{Lemma}
+
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem*{proposition*}{Proposition}
+
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem*{corollary*}{Corollary}
+
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem*{claim*}{Claim}
+
+\newtheorem{falseclm}[theorem]{False Claim}
+\newtheorem*{falseclm*}{False Claim}
+
+\newtheorem{rul}[theorem]{Rule}
+\newtheorem*{rul*}{Rule}
 
 \newtheorem{mathrule}{Rule}
 \newtheorem*{mathrule*}{Rule}
 
 
-\newtheorem*{theorem*}{Theorem}
-\newtheorem*{falsethm*}{False Theorem}
-\newtheorem*{lemma*}{Lemma}
-\newtheorem*{proposition*}{Proposition}
-\newtheorem*{corollary*}{Corollary}
-\newtheorem*{claim*}{Claim}
-\newtheorem*{falseclm*}{False Claim}
-\newtheorem*{rul*}{Rule}
-
 \theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{fact}[theorem]{Fact}
-\newtheorem{axiom}[theorem]{Axiom}
 
+\newtheorem{definition}[theorem]{Definition}
 \newtheorem*{definition*}{Definition}
+
+\newtheorem{fact}[theorem]{Fact}
 \newtheorem*{fact*}{Fact}
+
+\newtheorem{axiom}[theorem]{Axiom}
 \newtheorem*{axiom*}{Axiom}
 
 \theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{xample}[theorem]{Example}
 
+\newtheorem{remark}[theorem]{Remark}
 \newtheorem*{remark*}{Remark}
+
+\newtheorem{example}[theorem]{Example}
 \newtheorem*{example*}{Example}
+
+\newtheorem{xample}[theorem]{Example}
 \newtheorem*{xample*}{Example}
 
-\newenvironment{falseproof}
-{\begin{proof}[False proof]}
-{\end{proof}}
+\newenvironment{falseproof}{
+    \proof[False proof]%
+}{
+    \endproof
+    \@endpefalse
+}
 
 \newenvironment{bogusproof}
 {\begin{proof}[Bogus proof]}
@@ -455,10 +469,10 @@
 %% pcomments is an itemized list environment that shows up only when 
 %%  the standalone version of the problem is compiled. 
 %%
-\newenvironment{pcomments}
-  {{\bf COMMENTS:}\inmcsprob{\begin{itemize}}}
-  {\inmcsprob{\end{itemize}}}
-\newcommand{\pcomment}[1]{\inmcsprob{\item#1}}
+
+\newenvironment{pcomments}{}{}
+
+\newcommand{\pcomment}{\gobble@text}
 
 %%%%%%%%%%%%
 %% pkeywords attaches a string of whitespace-delimited (including newline) 
@@ -467,7 +481,7 @@
 %%
 %% Usage: \pkeywords{keyword_1 keyword_2 keyword_3}
 %%
-\newcommand{\pkeywords}[1]{\inmcsprob{\it {\bf keywords} = [#1]}}
+\newcommand{\pkeywords}{\gobble@text}
 
 \newcounter{documentdepth}
 
@@ -877,7 +891,38 @@
 %%% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\keywords}[1]{\@bsphack\@esphack}
+\def\@sanitize@some{%
+    \@makeother\\%
+    \@makeother\$%
+    \@makeother\&%
+    \@makeother\#%
+    \@makeother\^%
+%    \@makeother\_%
+    \catcode`\_=\active
+    \@makeother\%%
+    \@makeother\~%
+}
+
+\begingroup
+\catcode`\_=\active
+
+\def_{\texttt{\_}}
+
+\endgroup
+
+\newcommand{\gobble@text}{%
+    \@bsphack
+    \begingroup
+        \@sanitize@some
+        \@gobble@text
+}
+
+\newcommand{\@gobble@text}[1]{%
+        \endgroup
+    \@esphack
+}
+
+\newcommand{\keywords}{\gobble@text}
 
 %%% Tags %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\PTAGfilename}[1]{}
@@ -885,35 +930,49 @@
 \newcommand{\PTAGkeywords}[1]{}
 
 %%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newlength{\standardproblemsep}
 \newlength{\standardproblempartsep}
 \newlength{\problemsep}
 \newlength{\problempartsep}
-\setlength{\standardproblemsep}{1cm}
+
+\setlength{\standardproblemsep}{\medskipamount}
 \setlength{\standardproblempartsep}{1ex}
 \setlength{\problemsep}{\standardproblemsep}
 \setlength{\problempartsep}{\standardproblempartsep}
 
-\theoremstyle{definition}
-\newtheorem{problemthm}{Problem}
 \newcommand{\countersunderproblem}{
   \renewcommand{\thetheorem}{\theproblemthm.\arabic{theorem}}}
+
+% \theoremstyle{definition}
+
+\newtheoremstyle{mcsproblem}
+                {\problemsep}{\problemsep}
+                {\normalfont\parindent\z@}
+                {0pt}{\bfseries}{.}{ }
+                {}
+
+\theoremstyle{mcsproblem}
+
+\newtheorem{problemthm}{Problem}
 \newtheorem*{problemthm*}{Problem}
 
 %%% Simple problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newenvironment{simpleproblem}
-  {\vspace{\problemsep}
-   \begin{problemthm}%
-   \pdfbookmark[1]{Problem~\theproblemthm}{Problem\theproblemthm}%
-   \setlength{\parindent}{0pt}%
-   \setcounter{outerproblempart}{0}}
-  {\end{problemthm}}
-\newenvironment{simpleproblem*}
-  {\vspace{\problemsep}
-   \begin{problemthm*}%
-   \setlength{\parindent}{0pt}%
-   \setcounter{outerproblempart}{0}}
-  {\end{problemthm*}}
+
+\newenvironment{simpleproblem}{%
+    \begin{problemthm}%
+    \pdfbookmark[1]{Problem~\theproblemthm}{Problem\theproblemthm}%
+    \setcounter{outerproblempart}{0}%
+}{%
+    \end{problemthm}%
+}
+
+\newenvironment{simpleproblem*}{%
+    \begin{problemthm*}%
+    \setcounter{outerproblempart}{0}%
+}{%
+    \end{problemthm*}%
+}
 
 %%% Exam problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -950,9 +1009,11 @@
    \immediate\unexpandedwrite\@auxout{%
      \g@addto@macro\examtablecontents{%
        \addtocounter{problemthm}{1}\theproblemthm&#1&&\\\hline}}}
+
 \newcommand{\examtotalupdate}[1]{
    \immediate\unexpandedwrite\@auxout{%
      \addtocounter{examtotal}{#1}}}
+
 \newcommand{\examtableupdatefinish}{%
      \unexpandedwrite\@auxout{%
         \gdef\examtable{
@@ -973,6 +1034,7 @@
 % the pdf bookmarks are suppressed, so that the bookmarks created by
 % the \newproblem command are effective.
 %
+
 \newenvironment{repositoryproblem}
   {\vspace{\problemsep}
    \begin{problemthm}%
@@ -994,17 +1056,21 @@
   {\end{problemthm}}
 
 %%% Problems & problem parts %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newenvironment{problem}[1][0]
   {\begin{simpleproblem}}
   {\end{simpleproblem}}
+
 \newenvironment{problem*}[1][0]
   {\begin{simpleproblem*}}
   {\end{simpleproblem*}}
+
 \newcommand{\usesimpleproblems}{
   \renewenvironment{problem}[1][0]
     {\begin{simpleproblem}}
     {\end{simpleproblem}}
   \renewcommand{\problempart}[1][0]{\item}}
+
 \newcommand{\usescoredproblems}{
   \renewenvironment{problem}[1][0]
     {\inhandout{\begin{examproblem}{##1}}%
@@ -1012,6 +1078,7 @@
     {\inhandout{\end{examproblem}}%
      \inbook{\end{simpleproblem}}}
   \renewcommand{\problempart}[1][0]{\item}}
+
 \newcommand{\useexamproblems}{
   \renewenvironment{problem}[1][0]
     {\inhandout{\begin{examproblem}{##1}}%
@@ -1023,10 +1090,12 @@
     \item(##1 point\ifthenelse{1=##1}{}{s})\;%
     \problempartbookmark}%
     \inbook{\item}}}
+
 \newcommand{\userepositoryproblems}{
   \renewenvironment{problem}[1][0]
     {\begin{repositoryproblem}}
     {\end{repositoryproblem}}}
+
 \newcommand{\usenotesproblems}{
   \renewenvironment{problem}[1][0]
     {\begin{notesproblem}}
@@ -1036,6 +1105,7 @@
 \newcounter{outerproblempart}
 \newcounter{problempart}
 \renewcommand{\theproblempart}{\alph{problempart}}
+
 \newenvironment{problemparts}
   {\begin{list}
          {\textbf{(\alph{problempart})}}
@@ -1051,8 +1121,10 @@
    \setcounter{problempart}{\value{outerproblempart}}}
   {\setcounter{outerproblempart}{\value{problempart}}
    \end{list}}
+
 \newcommand{\problempartbookmark}{%
   \pdfbookmark[2]{(\theproblempart)}{Problem\theproblemthm\theproblempart}}
+
 \newcommand{\problempart}[1][0]{\item\problempartbookmark}
 
 \newcommand{\pref}[1]{(\ref{#1})}
@@ -1069,20 +1141,24 @@
 
 \theoremstyle{definition}
 \newtheorem*{solution*}{Solution}
+
 \newcommand{\showsolution}[1]{%
   \begin{solution*}%
   \setlength{\parindent}{0pt}%
   #1%
   \hfill$\blacksquare$
   \end{solution*}}
+
 \newcommand{\solution}[2][]{
   \ifshowsolutions
   \showsolution{#2}
   \else
   \inhandout{#1}
   \fi}
+
 \newcommand{\insolutions}[1]{%
   \ifshowsolutions#1\fi}
+
 \newcommand{\instatements}[1]{%
   \ifshowsolutions\else#1\fi}
 
@@ -1099,6 +1175,7 @@
     \typeout{Solutions *NOT INCLUDED*.} 
     \global\showsolutionsfalse
   \fi}
+
 \newcommand{\decideaboutsolutions}{
   \askaboutsolutions
   \countersunderproblem
@@ -1112,10 +1189,9 @@
 
 \newcommand{\showsolutions}{
   \renewcommand{\askaboutsolutions}{\showsolutionstrue}}
+
 \newcommand{\hidesolutions}{
   \renewcommand{\askaboutsolutions}{\showsolutionsfalse}}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting a paper %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1136,10 +1212,9 @@
 %
 % [ The command is the Same as \formatpages, but the paper release
 % date is communicated via the paper id. ]  
-%
+
 \newcommand{\paper}[4][\stamp]{%
   \formatpages[#1]{#3}{#4}{\releasedateofpaper{#2}}}
-
 
 % Starts an exam paper (that has been defined in course.dat), given the
 % paper's id and title.
@@ -1157,10 +1232,9 @@
 % [ The command is the Same as \formatexampages, but the paper's
 % release is communicated via the paper id. ]  
 %
+
 \newcommand{\exampaper}[3][\stamp]{%
   \formatexampages[#1]{#3}{\releasedateofpaper{#2}}}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Repository %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1249,8 +1323,6 @@
    \end{tabular}
    \end{fminipage}}
 
-
-
 %%% In the document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Extracts a problem from a repository, for use in a document. 
@@ -1265,12 +1337,10 @@
 %
 % Usage  :  \getproblem{repository file name}{problem label}
 % Example:  \getproblem{logic}{logic-7}
-%
+
 \newcommand{\getproblem}[2]{
   \renewcommand{\repositoryselector}{#2}
   \input{\repositorydir/#1}}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting lecture notes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1285,12 +1355,10 @@
 %
 % Usage  : \lecturenotes[revision info]{number}{title}
 % Example: \lecturenotes[v1.1]{1}{Proofs}
-%
+
 \newcommand{\lecturenotes}[3][\stamp]{%
   \usenotesproblems
   \paper[#1]{ln#2}{Course Notes, Week~#2}{#3}}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting a problem list %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1309,7 +1377,7 @@
 %
 % Usage  : \problemset[revision info]{number}
 % Example: \problemset[v1.1]{13}   % for Problem Set #13, v1.1
-%
+
 \newcommand{\problemset}[2][\stamp]{%
   \decideaboutsolutions
   \ifshowsolutions
@@ -1326,7 +1394,9 @@
 % Prints the reading note that appears on the first page of a problem
 % set, right after the title. The \reading command should be redefined
 % every week, to reflect the new reading.
+
 \newcommand{\readingnote}{\par\noindent\textbf{Reading:} \reading}
+
 \newcommand{\reading}{%
   Redefine the $\backslash$\texttt{reading} command to get this week's 
   reading assignment here!%
@@ -1347,6 +1417,7 @@
 % Usage  : \inclassproblems[revision info]{code}
 % Example: \inclassproblems[v1.1]{3W} % for Class Problems 3-W, v1.1 
 %
+
 \newcommand{\inclassproblems}[2][\stamp]{%
   \decideaboutsolutions
   \ifshowsolutions
@@ -1354,7 +1425,6 @@
   \else
     \paper[#1]{cp#2}{}{In-Class Problems Week #2}
   \fi}
-
 
 \newcommand{\recitationproblems}[2][\stamp]{%
   \decideaboutsolutions
@@ -1382,6 +1452,7 @@
 % Usage  : \quiz[revision info]{number}
 % Example: \quiz[v1.1]{3}   % for Quiz #3, v1.1
 %
+
 \newcommand{\quiz}[2][\stamp]{%
   \decideaboutsolutions
   \useexamproblems
@@ -1508,9 +1579,6 @@
   \setlength{\problemsep}{0pt}
   \renewcommand{\repositoryselector}{**}
   \input{\repositorydir/#1}}
-
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
