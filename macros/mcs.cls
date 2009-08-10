@@ -8,7 +8,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 
-\ProvidesClass{mcs}[2009/08/03 v1.03]
+\ProvidesClass{mcs}
 
 \newif\ifhandout
 \handouttrue
@@ -28,6 +28,7 @@
 \DeclareOption{handout}{%
     \handouttrue
     \PassOptionsToClass{10pt}{book}
+    \def\@class@option@file{handout.opt}%
 }
 
 \DeclareOption{problem}{%
@@ -74,6 +75,12 @@
         \ClassWarning{mcs}{Can't find problem `#1'}%
     }%
 }
+
+%% Normally LaTeX will complain if it encounters another
+%% \documentclass command after the \begin{document}, but that
+%% interferes with the special processing of problems.  The following
+%% code removes \documentclass from the list of commands that can only
+%% appear in the preamble.
 
 \begingroup
 
