@@ -12,12 +12,12 @@ clean veryclean:
 .PHONY: showsolutions
 
 showsolutions:
-	echo '\showsolutionstrue' > $(SOLUTIONSPOLICY)
+	echo '\showsolutions' > $(SOLUTIONSPOLICY)
 
 .PHONY: hidesolutions
 
 hidesolutions:
-	echo '\showsolutionsfalse' > $(SOLUTIONSPOLICY)
+	echo '\hidesolutions' > $(SOLUTIONSPOLICY)
 
 .PHONY: asksolutions
 

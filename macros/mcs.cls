@@ -1,17 +1,15 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-*-TeX-*-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% IDENTIFICATION & PACKAGE LOADING
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                        CLASS DECLARATIONS                        %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}
 
 \ProvidesClass{mcs}
 
 \newif\ifhandout
-\handouttrue
+\handoutfalse
 
 \newif\ifproblemonly
 \problemonlyfalse
@@ -21,19 +19,18 @@
 
 \let\@class@option@file\@empty
 
-\DeclareOption{book}{%
-    \handoutfalse
-}
+\DeclareOption{book}{}
 
 \DeclareOption{handout}{%
     \handouttrue
     \PassOptionsToClass{10pt}{book}
-    \def\@class@option@file{handout.opt}%
+    \def\@class@option@file{handout}%
 }
 
 \DeclareOption{problem}{%
     \problemonlytrue
-    \def\@class@option@file{problem.opt}%
+    \handouttrue
+    \def\@class@option@file{problem}%
 }
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
@@ -44,18 +41,24 @@
 
 \LoadClass{book}[2005/09/16]
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                        STANDARD PACKAGES                         %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{amsmath}
 \RequirePackage{amsthm}
 \RequirePackage{amssymb}
 \RequirePackage{xspace}
-\RequirePackage{graphics}
+\RequirePackage{graphicx}
 \RequirePackage[usenames,dvipsnames]{color}
-\RequirePackage[pdflatex]{graphicx}
 \RequirePackage{subfigure}
 \RequirePackage{palatino}
 \RequirePackage{textcomp}
+\RequirePackage{verbatim}
 
 \RequirePackage{xr-hyper}
 
@@ -65,19 +68,11 @@
     linkcolor=blue, citecolor=blue,
     urlcolor=blue, backref, pagebackref]{hyperref}
 
-% I don't think we actually use this. [dmj]
-
-% \RequirePackage{xmpincl}
-
-\newcommand{\linput}{\input}
-
-\newcommand{\pinput}[1]{%
-    \IfFileExists{#1}{%
-        \input{#1}%
-    }{%
-        \ClassWarning{mcs}{Can't find problem `#1'}%
-    }%
-}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                         LOW-LEVEL MACROS                         %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Normally LaTeX will complain if it encounters another
 %% \documentclass command after the \begin{document}, but that
@@ -86,86 +81,155 @@
 %% appear in the preamble.
 
 \begingroup
-
-\def\do#1{%
-    \ifx\documentclass#1\else\@onlypreamble#1\fi
-}
-
-\let\@tempa\@preamblecmds
-
-\global\let\@preamblecmds\@empty
-
-\@tempa
-
+    \def\do#1{%
+        \ifx\documentclass#1\else\@onlypreamble#1\fi
+    }
+    
+    \let\@tempa\@preamblecmds
+    
+    \global\let\@preamblecmds\@empty
+    
+    \@tempa
 \endgroup
+
+%% Now redefine \documentclass as a no-op.
 
 \renewcommand{\documentclass}[2][]{}
 
-\newcommand{\scorestats}[3]{\textbf{Scores: --Mean #1, --Median #2, --St.dev #3}}
+%% Keyword processing: We want to disable certain special characters
+%% inside the argument of \pkeywords and related macros.  This is
+%% similar to LaTeX's \@sanitize, except that (a) We don't want the
+%% space character to be touched and (b) we want some characters to
+%% print as themselves so they can be used in keywords.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% TEXT & MATHEMATICS
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\@sanitize@keywords{%
+    \@makeother\\%
+    \@makeother\$%
+    \@makeother\&%
+    \@makeother\^%
+    \@makeother\~%
+    \catcode`\_=\active
+    \catcode`\#=\active
+    \catcode`\%=\active
+}
 
-%From Eric Lehman, Fall 04
+\begingroup
+    \catcode`\_=\active
+    \catcode`\#=\active
+    \catcode`\%=\active
+    \gdef%{\%}
+    \gdef#{\#}
+\endgroup
 
-\newcommand{\mfigure}[3]{\bigskip\centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}\bigskip}
+%% \gobble@text eats its argument in a safe way; \@bsphack and
+%% \@esphack keep a use of the macro from inserting extra horizontal
+%% space in certain contexts.
 
-%%%from light.sty
+\newcommand{\gobble@text}{%
+    \@bsphack
+    \begingroup
+        \@sanitize@keywords
+        \@gobble@text
+}
 
-%\newcommand{\term}[1]{\textbf{\textit{#1}}}
+\newcommand{\@gobble@text}[1]{%
+        \endgroup
+    \@esphack
+}
+
+% Use this command to write unexpanded material to a file 
+% [The TeXbook, pages 376-377]. 
+%
+\def\\{\let\stoken= } \\
+\long\def\unexpandedwrite#1#2{\def\finwrite{\write#1}%
+  {\aftergroup\finwrite\aftergroup{\sanitize#2\endsanity}}}
+\def\sanitize{\futurelet\next\sanswitch}
+\def\sanswitch{\let\n@xt\endsanity \ifx\next\endsanity
+  \else\ifcat\noexpand\next\stoken\aftergroup\space\let\n@xt=\eat
+  \else\ifcat\noexpand\next\bgroup\aftergroup{\let\n@xt=\eat
+  \else\ifcat\noexpand\next\egroup\aftergroup}\let\n@xt=\eat
+  \else\let\n@xt=\copytok\fi\fi\fi\fi \n@xt}
+\def\eat{\afterassignment\sanitize \let\next= }
+\long\def\copytok#1{\ifcat\noexpand#1\relax\aftergroup\noexpand\fi
+  \ifcat\noexpand#1\noexpand~\aftergroup\noexpand\fi
+  \aftergroup#1\sanitize}
+\def\endsanity\endsanity{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                    CONDITIONAL TEXT INCLUSION                    %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\let\inbook\@firstofone
+\let\inhandout\gobble@text
+\let\inmcsprob\gobble@text
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                 TEXT/MATH ALIASES AND SHORTCUTS                  %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mfigure}[3]{%
+    \bigskip
+    \centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}%
+    \bigskip
+}
+
+%  text highlighting
+
+\newcommand{\floatingtextbox}[1]{%
+  \begin{figure}[htbp]
+    \textbox{#1}
+  \end{figure}%
+}
+
+\newcommand{\textbox}[1]{%
+    \begin{center}
+        \fbox{%
+            \begin{minipage}[t]{\textwidth}
+                \setlength{\parindent}{3ex}
+                \setlength{\parskip}{\medskipamount}
+                \vspace{0.5ex} #1 \vspace{0.5ex}%
+            \end{minipage}%
+        }%
+    \end{center}%
+}
+
+\newcommand{\textboxtitle}[1]{%
+    \begin{center}
+        \textbf{\Large #1}%
+    \end{center}%
+}
+ 
+%%% Ugly box of red text that we can't ignore for too long :) 
+
+\newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
+
 \newcommand{\term}[1]{\emph{#1}}
-\newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
-\newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
 
 \newcommand{\edge}[2]{#1\text{---}#2}
 \newcommand{\diredge}[2]{#1 \to #2}
 
-%  text highlighting
+%% Text -- Abbreviations
 
-\newcommand{\floatingtextbox}[1]{
-  \begin{figure}[htbp]
-  \textbox{#1}
-  \end{figure}}
-
-\newcommand{\textbox}[1]{
-  \begin{center}\fbox{\begin{minipage}[t]{\textwidth}
-  \setlength{\parindent}{3ex}
-  \setlength{\parskip}{\medskipamount}
-  \vspace{0.5ex} #1 \vspace{0.5ex}
-  \end{minipage}}\end{center}}
-
-\newcommand{\textboxtitle}[1]{
-  \begin{center}
-  {\textbf{\Large #1}}
-  \end{center}}
- 
-%%% Ugly box of red text that we can't ignore for too long :) 
-\newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
-
-%%% Text --- Abbreviations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\apriori}{\textit{a~priori}\xspace~}
-\newcommand{\aposter}{\textit{a~posteriori}\xspace~}
-\newcommand{\etal}{\textit{et~al}.\@\xspace}
-\newcommand{\ie}{\textit{i.e.}\xspace,\xspace}
-\newcommand{\eg}{\textit{e.g.}\xspace,\xspace}
-%\newcommand{\etc}{\textit{etc}.\@\xspace}
+\newcommand{\ie}{\emph{i.e.},\xspace}
+\newcommand{\eg}{\emph{e.g.},\xspace}
 \newcommand{\etc}{etc.\@\xspace}
-\newcommand{\cf}{\textit{cf.}\xspace,\xspace}
-\newcommand{\viz}{\textit{viz.}\xspace,\xspace}
 
-%%% Text --- Constructs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\IQ}{\text{IQ\@\xspace}}
+
+%% Text -- Constructs
+
 \newcommand{\hint}{\emph{Hint: }}
 \newcommand{\brule}[1]{\underline{\hspace{#1}}}
 %\newenvironment{optional}[1]{\small [Optional] #1}{}
 \newenvironment{optional}[1]{\footnotesize [Optional] #1}{}
 %\newenvironment{optional}{\begin{quotation}\small [Optional]}{\end{quotation}}
 
-%%% Math --- General %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Math -- General
+
 \newcommand{\paren}[1]{\left(#1\right)}
 \newcommand{\ang}[1]{\left\langle#1\right\rangle}
 \newcommand{\brac}[1]{\left[#1\right]}
@@ -185,7 +249,11 @@
 \newcommand{\mrelt}[1]{\mathrel{\mathrm{#1}}}
 \newcommand{\mtt}[1]{\mathtt{#1}}
 
-%%% Math --- Logic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Math -- Logic
+
+\newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
+\newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
+
 \renewcommand{\And}{\wedge}
 \newcommand{\conj}{\And}
 \newcommand{\smand}{\And}
@@ -217,34 +285,30 @@
 \newcommand{\QNOT}{\mopt{\textsc{not}}}
 
 \newcommand{\nand}{\mathbin{\mid}}
-%\newcommand{\nand}{\mid}
 
-\newcommand{\Rule}[2] 
-{\[
-\begin{array}{c}
-#1 \\
-\hline
-#2
-\end{array}
-\]
+\newcommand{\Rule}[2]{%
+    \[
+        \begin{array}{c}
+            #1 \\ \hline
+            #2%
+        \end{array}
+    \]
 }
 
-\newcommand{\LabelRule}[3]
-{\[
-\begin{array}{cr}
-#1 \\
-\hline & \text{#3}\\
-#2
-\end{array}
-\]
+\newcommand{\LabelRule}[3]{%
+    \[
+        \begin{array}{cr}
+              #1 \\ \hline
+            & \text{#3}\\
+              #2
+        \end{array}
+    \]
 }
-
-
 
 \newcommand{\ruleref}[1]{Rule \ref{#1}}
 
+%% Math -- Set theory
 
-%%% Math --- Set theory %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\card}[1]{\left|#1\right|}
 \newcommand{\lnth}[1]{\left|#1\right|}
@@ -267,18 +331,20 @@
 
 \newcommand{\degr}[1]{\text{deg}(#1)}
 
+%% Math -- Languages
 
-%%% Math --- Languages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\emptystring}{\lambda}
 
-%%% Math --- Famous sets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Math -- Famous sets
+
 \newcommand{\naturals}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\rationals}{\mathbb{Q}}
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
 
-%%% Math --- Arithmetic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Math -- Arithmetic
+
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
@@ -290,7 +356,7 @@
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
 
-%%%%%%%%%%%%%%%%%%%% Misc. - taken from ln and cp to avoid multiply def'd ref's
+%% Misc. - taken from ln and cp to avoid multiply def'd ref's
 
 %% Ick. [dmj]
 
@@ -353,10 +419,10 @@
 \newcommand{\leafq}{\text{leaf?}}
 \fi
 
+%% Math -- Probability
 
-%%% Math --- Probability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Parameters/Variables
 
-%%% Parameters/Variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newlength{\strutheight}
 
 \newcommand{\sspace}{\mathcal{S}}
@@ -364,12 +430,17 @@
 \newcommand{\pr}[1]{\mathop{\textup{Pr}}\nolimits\left\{#1\right\}}
 \newcommand{\prob}[1]{\pr{#1}}
 \newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#2}}\nolimits\left\{#1\right\}}
+
 \newcommand{\prcond}[2]{%
-  \ifinner \settoheight{\strutheight}{$#1 #2$}
-  \else    \settoheight{\strutheight}{$\displaystyle#1 #2$} \fi%
-  \mathop{\textup{Pr}}\nolimits\left\{
-    #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
-  \right\}}
+    \ifinner
+        \settoheight{\strutheight}{$#1 #2$}%
+    \else
+        \settoheight{\strutheight}{$\displaystyle#1 #2$}%
+     \fi
+    \mathop{\textup{Pr}}\nolimits\left\{
+        #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
+    \right\}%
+}
 
 \newcommand{\Ex}{\mathop{\textup{E}}\nolimits}
 \newcommand{\Var}{\mathop{\textup{Var}}\nolimits}
@@ -384,7 +455,13 @@
 \newcommand{\pdf}{\textsc{PDF}}
 \newcommand{\cdf}{\textsc{CDF}}
 
-%%% Math --- Theorems & Proofs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                          THEOREMS, ETC.                          %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% THEOREM-LIKE
 
 \theoremstyle{plain}
 
@@ -415,6 +492,7 @@
 \newtheorem{mathrule}{Rule}
 \newtheorem*{mathrule*}{Rule}
 
+%% DEFINITION-LIKE
 
 \theoremstyle{definition}
 
@@ -427,6 +505,8 @@
 \newtheorem{axiom}[theorem]{Axiom}
 \newtheorem*{axiom*}{Axiom}
 
+%% REMARK-LIKE
+
 \theoremstyle{remark}
 
 \newtheorem{remark}[theorem]{Remark}
@@ -438,60 +518,227 @@
 \newtheorem{xample}[theorem]{Example}
 \newtheorem*{xample*}{Example}
 
-\newenvironment{falseproof}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                              PROOFS                              %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{falseproof}{%
     \proof[False proof]%
-}{
+}{%
     \endproof
-    \@endpefalse
 }
 
-\newenvironment{bogusproof}
-{\begin{proof}[Bogus proof]}
-{\end{proof}}
+\newenvironment{bogusproof}{%
+    \proof[Bogus proof]%
+}{%
+    \endproof
+}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% FORMATTING
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                             PROBLEMS                             %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Course handouts vs. book only
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% pcomments is an itemized list environment that shows up only when
+%% the standalone version of the problem is compiled.
 
-\newcommand{\inhandout}[1]{%
-  \ifhandout#1\fi}
-\newcommand{\inbook}[1]{%
-  \ifhandout\else#1\fi}
-\newcommand{\inmcsprob}[1]{%
- \ifproblemonly#1\fi}
+\let\pcomments\comment
+\let\endpcomments\endcomment
 
-%%%%%%%%%%%%
-%% pcomments is an itemized list environment that shows up only when 
-%%  the standalone version of the problem is compiled. 
-%%
-
-\newenvironment{pcomments}{}{}
-
-\newcommand{\pcomment}{\gobble@text}
-
-%%%%%%%%%%%%
 %% pkeywords attaches a string of whitespace-delimited (including newline) 
 %%  keywords to problems and prints out the list when the standalone version 
 %%  of the problem is compiled.
 %%
 %% Usage: \pkeywords{keyword_1 keyword_2 keyword_3}
 %%
+
 \newcommand{\pkeywords}{\gobble@text}
 
-\newcounter{documentdepth}
+%% Input a problem.
 
-\newcommand{\ifstandalone}{\ifnum\value{documentdepth}=0}
+\newcommand{\pinput}[1]{%
+    \IfFileExists{#1}{%
+        \input{#1}%
+    }{%
+        \ClassWarning{mcs}{Can't find problem `#1'}%
+    }%
+}
 
-%% executes #2 only when the documentdepth counter is equal to #1
-\newcommand{\atDocDepth}[2]{\ifthenelse{\value{documentdepth}=#1}{#2}{}}
+%% The basic problem environment.
+
+\newlength{\standardproblemsep}
+\newlength{\standardproblempartsep}
+
+\newlength{\problemsep}
+\newlength{\problempartsep}
+
+\setlength{\standardproblemsep}{\medskipamount}
+\setlength{\standardproblempartsep}{1ex}
+
+\setlength{\problemsep}{\standardproblemsep}
+\setlength{\problempartsep}{\standardproblempartsep}
+
+\newcommand{\theoremsunderproblems}{%
+    \renewcommand{\thetheorem}{\theproblem.\arabic{theorem}}%
+}
+
+\def\pdf@problem@bookmark{%
+    \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
+}
+
+\newtheoremstyle{problem}
+                {\problemsep}               % preskip
+                {\problemsep}               % postskip
+                {\normalfont\parindent\z@}  % body style
+                {0pt}                       % indent
+                {\bfseries}                 % head style
+                {.}                         % post-head punct
+                {\newline}                  % post-head space
+                {% custom head-spec
+    \thmname{#1}%
+    \thmnumber{\@ifnotempty{#1}{\pdf@problem@bookmark\space}\@upn{#2}}%
+    \thmnote{ {\the\thm@notefont(#3)}}%
+}                          
+
+\theoremstyle{problem}
+
+\newtheorem{problem}{Problem}[chapter]
+\newtheorem*{problem*}{Problem}
+
+%%% Notes problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Very similar to the ``simpleproblem'' environment.  Difference is that
+% the pdf bookmarks are suppressed, so that they don't mess up with
+% the standard section bookmarking.  Also, there is no extra space added
+% before the problem.
+
+\newtheoremstyle{notesproblem}
+                {\problemsep}               % preskip
+                {\problemsep}               % postskip
+                {\normalfont\parindent\z@}  % body style
+                {0pt}                       % indent
+                {\bfseries}                 % head style
+                {:}                         % post-head punct
+                { }                         % post-head space
+                {}                          % custom head-spec
+
+\theoremstyle{notesproblem}
+
+\newtheorem*{notesproblem}{Quickie Exercise}
+
+%% subproblems
+
+\newcounter{problempart}[problem]
+\renewcommand{\theproblempart}{\alph{problempart}}
+\newcommand{\labelproblempart}{(\theproblempart)}
+
+\newenvironment{problemparts}{%
+    \list{\textbf{\labelproblempart}}{%
+        \@nmbrlisttrue
+        \def\@listctr{problempart}%
+        \settowidth{\labelwidth}{\textbf{(m)}}%
+        \setlength{\labelsep}{1ex}%
+        \setlength{\leftmargin}{0pt}%
+        \setlength{\itemindent}{\labelwidth}%
+        \addtolength{\itemindent}{\labelsep}%
+        \setlength{\rightmargin}{0pt}%
+        \setlength{\listparindent}{0pt}%
+        \setlength{\itemsep}{\problempartsep}%
+        \topsep\z@
+    }%
+}{%
+    \endlist
+}
+
+% \newcommand{\problempartbookmark}{%
+%     \pdfbookmark[2]{(\theproblempart)}{Problem\theproblem\theproblempart}%
+% }
+
+% \newcommand{\problempart}[1][0]{\item\problempartbookmark}
+
+\newcommand{\problempart}[1][0]{\item}%
+
+\newcommand{\pref}[1]{(\ref{#1})}
+\newcommand{\ppref}[2]{\ref{#1}(\ref{#2})}
+
+\newcommand{\bparts}{\begin{problemparts}}
+\newcommand{\eparts}{\end{problemparts}}
+\newcommand{\ppart}{\problempart}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                            SOLUTIONS                             %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Copy the amsthm proof environment, with 3 changes:
+%% a) Default label is ``Solution'', not ``Proof''
+%% b) label is typeset in bold, not italics
+%% c) Use a black square instead of an open square for the QED symbol.
+
+\newenvironment{solution}[1][Solution]{%
+    \par
+    \def\qedsymbol{\ensuremath{\blacksquare}}%
+    \pushQED{\qed}%
+    \normalfont
+    \topsep6\p@\@plus6\p@\relax
+    \trivlist
+    \item[\hskip\labelsep\bfseries#1\@addpunct{.}]%
+    \ignorespaces
+}{%
+    \popQED
+    \endtrivlist
+    \@endpefalse
+}
+
+\AtBeginDocument{%
+    \ifshowsolutions
+        \typeout{^^JSolutions *INCLUDED*.^^J}%
+        \let\insolutions\@firstofone
+        \let\instatements\gobble@text
+        \problemsep2\standardproblemsep
+    \else
+        \typeout{^^JSolutions *NOT INCLUDED*.^^J}%
+        \let\insolutions\gobble@text
+        \let\instatements\@firstofone
+        \let\solution\comment
+        \let\endsolution\endcomment
+    \fi
+}
+
+\newcommand{\askaboutsolutions}{%
+    \typeout{}
+    \typein[\answer]{Include solutions? (y/n) }%
+    \ify\answer
+        \global\showsolutionstrue
+    \else
+        \global\showsolutionsfalse
+    \fi
+}
+
+\newcommand{\decideaboutsolutions}{%
+    \askaboutsolutions
+    \theoremsunderproblems
+}
+
+\newcommand{\showsolutions}{%
+    \showsolutionstrue
+    \let\askaboutsolutions\@empty
+}
+
+\newcommand{\hidesolutions}{%
+    \showsolutionsfalse
+    \let\askaboutsolutions\@empty
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                              EXAMS                               %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% \examspace produces vertical space only in handouts without solutions. 
 %%   If no argument is passed then it starts a new page, otherwise inserts
@@ -510,73 +757,6 @@
 %%   handouts without solutions). 
 \newcommand{\exambox}[3]{\inhandout{\instatements{
   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Page formatting %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\setlength{\parindent}{0.125in}                     
-\setlength{\parskip}{0in}            
-\hoffset        = -1.0 in
-\voffset        = -1.25 in
-\paperheight    =  9.0 in
-\paperwidth     =  7.0 in
-\topmargin      = 0.375 in
-\headheight     = 3\baselineskip
-\headsep        = 2\baselineskip
-\footskip       = 0.3 in
-\textheight     = \paperheight
-\addtolength{\textheight}{-\topmargin}
-\addtolength{\textheight}{-\headheight}
-\addtolength{\textheight}{-\headsep}
-\addtolength{\textheight}{-\footskip}
-\textwidth      = \paperwidth
-\oddsidemargin  = 1.0 in
-\evensidemargin = 1.0 in
-\addtolength{\textwidth}{-\oddsidemargin}
-\addtolength{\textwidth}{-\evensidemargin}
-\linewidth      = \textwidth
-
-\newcommand{\printlayout}{%
-  \typeout{----------------------- LaTeX Page Layout Parameters}
-  \typeout{\string\paperwidth\space\space\the\paperwidth}
-  \typeout{\string\paperheight\space\the\paperheight}
-  \typeout{\string\textwidth\space\space\the\textwidth}
-  \typeout{\string\textheight\space\the\textheight}
-  \typeout{\string\oddsidemargin\space\space\the\oddsidemargin}
-  \typeout{\string\evensidemargin\space\the\evensidemargin}
-  \typeout{\string\topmargin\space\space\the\topmargin}
-  \typeout{\string\headheight\space\the\headheight}
-  \typeout{\string\headsep\space\the\headsep}
-  \typeout{\string\footskip\space\space\space\the\footskip}
-  \typeout{\string\marginparwidth\space\the\marginparwidth}
-  \typeout{\string\marginparsep\space\space\space\the\marginparsep}
-  \typeout{\string\hoffset\space\the\hoffset}
-  \typeout{\string\voffset\space\the\voffset}
-  \typeout{(1in=72.27pt, 1cm=28.45pt)}
-  \typeout{-----------------------------------------}%
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Mini pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Generates a _framed_ minipage with its width as an optional argument.
-% If the width is not specified, \linewidth is used. 
-%
-% Usage  :  \begin{fminibox}{width} ... \end{fminibox}
-% Example:  \begin{fminibox}{3in}  blah, blah... \end{fminibox}
-%
-\newsavebox{\fminibox}
-\newlength{\fminilength}
-\newenvironment{fminipage}[1][\linewidth]%
-{% begin fminipage
-  \setlength{\fminilength}{#1}
-  \addtolength{\fminilength}{-2\fboxsep}
-  \addtolength{\fminilength}{-2\fboxrule}
-  \begin{lrbox}{\fminibox}\begin{minipage}{\fminilength}}%
-{% end fminipage
-  \end{minipage}\end{lrbox}\noindent\fbox{\usebox{\fminibox}}}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -597,7 +777,7 @@
 %
 %       The commands \courseinstitute, \coursetitle, \coursenumber,
 % \courseprofessors are used, meant to be renewed by the user (in
-% course.dat, once at the beginning of the term) to contain the
+% 00course.dat, once at the beginning of the term) to contain the
 % appropriate info. The current definitions are just informative
 % warnings. Here is an example of how the commands are meant to be
 % renewed:  
@@ -694,7 +874,7 @@
 %
 \newcommand{\formatpages}[4][\stamp]{%
   \thispagestyle{empty}
-  \markboth{\@ifnonempty{#2}{#2: }#3}{\@ifnonempty{#2}{#2: }#3}
+  \markboth{\@ifnotempty{#2}{#2: }#3}{\@ifnotempty{#2}{#2: }#3}
   \pagestyle{myheadings}
   \formattitle[#1]{#2}{#3}{#4}
 }
@@ -814,7 +994,7 @@
 % Example: \coversheet{13}
 %
 %       The commands \courseassistants and \collaborationnote
-% are used, meant to be renewed by the user (in course.dat, once at
+% are used, meant to be renewed by the user (in 00course.dat, once at
 % the beginning of the term) to contain the appropriate info. The
 % current definitions are just informative warnings. Here is an
 % example of how the commands are meant to be renewed:  
@@ -864,7 +1044,7 @@
       \newcounter{rowcounter}
       \newcommand{\tablerows}{}
       \loop
-         \ifnum\value{rowcounter}<\value{problemthm}
+         \ifnum\value{rowcounter}<\value{problem}
          \g@addto@macro\tablerows{%
              \addtocounter{rowcounter}{1}
              \therowcounter&\\\hline}
@@ -885,97 +1065,9 @@
   \message{^^JCourse assistants list *INCORRECT*.^^J^^J}}
 \newcommand{\collaborationnote}{%
   You have to renew $\backslash$\texttt{collaborationnote} in
-  \texttt{course.dat} to have a collaboration statement form printed 
+  \texttt{00course.dat} to have a collaboration statement form printed 
   in this space!
   \message{^^JCollaboration statement form *INCORRECT*.^^J^^J}}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\def\@sanitize@some{%
-    \@makeother\\%
-    \@makeother\$%
-    \@makeother\&%
-    \@makeother\#%
-    \@makeother\^%
-%    \@makeother\_%
-    \catcode`\_=\active
-    \@makeother\%%
-    \@makeother\~%
-}
-
-\begingroup
-\catcode`\_=\active
-
-\def_{\texttt{\_}}
-
-\endgroup
-
-\newcommand{\gobble@text}{%
-    \@bsphack
-    \begingroup
-        \@sanitize@some
-        \@gobble@text
-}
-
-\newcommand{\@gobble@text}[1]{%
-        \endgroup
-    \@esphack
-}
-
-\newcommand{\keywords}{\gobble@text}
-
-%%% Tags %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\PTAGfilename}[1]{}
-\newcommand{\PTAGhistory}[1]{}
-\newcommand{\PTAGkeywords}[1]{}
-
-%%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newlength{\standardproblemsep}
-\newlength{\standardproblempartsep}
-\newlength{\problemsep}
-\newlength{\problempartsep}
-
-\setlength{\standardproblemsep}{\medskipamount}
-\setlength{\standardproblempartsep}{1ex}
-\setlength{\problemsep}{\standardproblemsep}
-\setlength{\problempartsep}{\standardproblempartsep}
-
-\newcommand{\countersunderproblem}{
-  \renewcommand{\thetheorem}{\theproblemthm.\arabic{theorem}}}
-
-% \theoremstyle{definition}
-
-\newtheoremstyle{mcsproblem}
-                {\problemsep}{\problemsep}
-                {\normalfont\parindent\z@}
-                {0pt}{\bfseries}{.}{ }
-                {}
-
-\theoremstyle{mcsproblem}
-
-\newtheorem{problemthm}{Problem}
-\newtheorem*{problemthm*}{Problem}
-
-%%% Simple problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newenvironment{simpleproblem}{%
-    \begin{problemthm}%
-    \pdfbookmark[1]{Problem~\theproblemthm}{Problem\theproblemthm}%
-    \setcounter{outerproblempart}{0}%
-}{%
-    \end{problemthm}%
-}
-
-\newenvironment{simpleproblem*}{%
-    \begin{problemthm*}%
-    \setcounter{outerproblempart}{0}%
-}{%
-    \end{problemthm*}%
-}
 
 %%% Exam problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -999,19 +1091,22 @@
 \newenvironment{examproblem}[1]
   {% Formatting : 
    \vspace{\problemsep}
-   \begin{problemthm}[\textbf{#1 point\ifthenelse{1=#1}{}{s}}]%
-   \pdfbookmark[1]{Problem~\theproblemthm}{Problem\theproblemthm}%
+   \begin{problem}[\textbf{#1 point\ifthenelse{1=#1}{}{s}}]%
+   \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
    \setlength{\parindent}{0pt}%
-   \setcounter{outerproblempart}{0}%
    % Updating .aux file :
    \examtableupdate{#1}%
    \examtotalupdate{#1}}
-  {\end{problemthm}}
+  {\end{problem}}
 
-\newcommand{\examtableupdate}[1]{
-   \immediate\unexpandedwrite\@auxout{%
-     \g@addto@macro\examtablecontents{%
-       \addtocounter{problemthm}{1}\theproblemthm&#1&&\\\hline}}}
+\newcommand{\examtableupdate}[1]{%
+    \immediate\unexpandedwrite\@auxout{%
+        \g@addto@macro\examtablecontents{%
+            \stepcounter{problem}%
+            \theproblem&#1&&\\\hline
+        }%
+    }%
+}
 
 \newcommand{\examtotalupdate}[1]{
    \immediate\unexpandedwrite\@auxout{%
@@ -1028,179 +1123,14 @@
           Total   & \theexamtotal & &        \\\hline
           \end{tabular}
           \end{center}
-          \setcounter{problemthm}{0}}}}
+          \setcounter{problem}{0}}}}
 \AtEndDocument{\examtableupdatefinish}
-
-%%% Repository problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Very similar to the ``simpleproblem'' environment.  Difference is that
-% the pdf bookmarks are suppressed, so that the bookmarks created by
-% the \newproblem command are effective.
-%
-
-\newenvironment{repositoryproblem}
-  {\vspace{\problemsep}
-   \begin{problemthm}%
-   \setlength{\parindent}{0pt}%
-   \setcounter{outerproblempart}{0}}
-  {\end{problemthm}}
-
-%%% Notes problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Very similar to the ``simpleproblem'' environment.  Difference is that
-% the pdf bookmarks are suppressed, so that they don't mess up with
-% the standard section bookmarking.  Also, there is no extra space added
-% before the problem.
-%
-\newenvironment{notesproblem}
-  {\begin{problemthm}%
-   \setlength{\parindent}{0pt}%
-   \setcounter{outerproblempart}{0}}
-  {\end{problemthm}}
-
-%%% Problems & problem parts %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newenvironment{problem}[1][0]
-  {\begin{simpleproblem}}
-  {\end{simpleproblem}}
-
-\newenvironment{problem*}[1][0]
-  {\begin{simpleproblem*}}
-  {\end{simpleproblem*}}
-
-\newcommand{\usesimpleproblems}{
-  \renewenvironment{problem}[1][0]
-    {\begin{simpleproblem}}
-    {\end{simpleproblem}}
-  \renewcommand{\problempart}[1][0]{\item}}
-
-\newcommand{\usescoredproblems}{
-  \renewenvironment{problem}[1][0]
-    {\inhandout{\begin{examproblem}{##1}}%
-     \inbook{\begin{simpleproblem}}}
-    {\inhandout{\end{examproblem}}%
-     \inbook{\end{simpleproblem}}}
-  \renewcommand{\problempart}[1][0]{\item}}
-
-\newcommand{\useexamproblems}{
-  \renewenvironment{problem}[1][0]
-    {\inhandout{\begin{examproblem}{##1}}%
-     \inbook{\begin{simpleproblem}}}
-    {\inhandout{\end{examproblem}}%
-     \inbook{\end{simpleproblem}}}
-  \renewcommand{\problempart}[1][0]{%
-    \inhandout{%
-    \item(##1 point\ifthenelse{1=##1}{}{s})\;%
-    \problempartbookmark}%
-    \inbook{\item}}}
-
-\newcommand{\userepositoryproblems}{
-  \renewenvironment{problem}[1][0]
-    {\begin{repositoryproblem}}
-    {\end{repositoryproblem}}}
-
-\newcommand{\usenotesproblems}{
-  \renewenvironment{problem}[1][0]
-    {\begin{notesproblem}}
-    {\end{notesproblem}}
-  \renewcommand{\problempart}[1][0]{\item}}
-
-\newcounter{outerproblempart}
-\newcounter{problempart}
-\renewcommand{\theproblempart}{\alph{problempart}}
-
-\newenvironment{problemparts}
-  {\begin{list}
-         {\textbf{(\alph{problempart})}}
-         {\usecounter{problempart}
-          \settowidth{\labelwidth}{\textbf{(m)}}
-          \setlength{\labelsep}{1ex}
-          \setlength{\leftmargin}{0pt}
-          \setlength{\itemindent}{\labelwidth}
-            \addtolength{\itemindent}{\labelsep}
-          \setlength{\rightmargin}{0pt}
-          \setlength{\listparindent}{0pt}
-          \setlength{\itemsep}{\problempartsep}}
-   \setcounter{problempart}{\value{outerproblempart}}}
-  {\setcounter{outerproblempart}{\value{problempart}}
-   \end{list}}
-
-\newcommand{\problempartbookmark}{%
-  \pdfbookmark[2]{(\theproblempart)}{Problem\theproblemthm\theproblempart}}
-
-\newcommand{\problempart}[1][0]{\item\problempartbookmark}
-
-\newcommand{\pref}[1]{(\ref{#1})}
-\newcommand{\ppref}[2]{\ref{#1}(\ref{#2})}
-
-\newcommand{\bparts}{\begin{problemparts}}
-\newcommand{\eparts}{\end{problemparts}}
-\newcommand{\ppart}{\problempart}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Solutions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\theoremstyle{definition}
-\newtheorem*{solution*}{Solution}
-
-\newcommand{\showsolution}[1]{%
-  \begin{solution*}%
-  \setlength{\parindent}{0pt}%
-  #1%
-  \hfill$\blacksquare$
-  \end{solution*}}
-
-\newcommand{\solution}[2][]{
-  \ifshowsolutions
-  \showsolution{#2}
-  \else
-  \inhandout{#1}
-  \fi}
-
-\newcommand{\insolutions}[1]{%
-  \ifshowsolutions#1\fi}
-
-\newcommand{\instatements}[1]{%
-  \ifshowsolutions\else#1\fi}
-
-\newcommand{\askaboutsolutions}{
-  \typeout{}
-  \typein[\answer]{Include solutions? (y/n) }
-  \def\yes{y}
-  \ifx\answer\yes
-    \typeout{}
-    \typeout{Solutions *INCLUDED*.} 
-    \global\showsolutionstrue
-  \else
-    \typeout{}
-    \typeout{Solutions *NOT INCLUDED*.} 
-    \global\showsolutionsfalse
-  \fi}
-
-\newcommand{\decideaboutsolutions}{
-  \askaboutsolutions
-  \countersunderproblem
-  \ifshowsolutions
-    \setlength{\problemsep}{2\standardproblemsep}
-    \setlength{\problempartsep}{\standardproblemsep}
-  \else
-    \setlength{\problemsep}{\standardproblemsep}
-    \setlength{\problempartsep}{\standardproblempartsep}
-  \fi}
-
-\newcommand{\showsolutions}{
-  \renewcommand{\askaboutsolutions}{\showsolutionstrue}}
-
-\newcommand{\hidesolutions}{
-  \renewcommand{\askaboutsolutions}{\showsolutionsfalse}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting a paper %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Starts any paper (that has been defined in course.dat), given the
+% Starts any paper (that has been defined in 00course.dat), given the
 % paper's id, supertitle, and title.
 %       The optional argument allows for revision info: if used, the 
 % specified revision info is printed; if not, the \stamp info is
@@ -1209,7 +1139,7 @@
 % Usage  : \paper[revision info]{paper id}{supertitle}{title}
 % Example: Assuming the definition 
 %               \newpaper{ln1}{Sep 5, 2001}{}
-%          in course.dat, the command
+%          in 00course.dat, the command
 %               \paper[v1.1]{ln1}{Lecture Notes~1}{Proofs}
 %          starts v1.1 of the first lecture notes, titled ``Proofs''. 
 %
@@ -1219,7 +1149,7 @@
 \newcommand{\paper}[4][\stamp]{%
   \formatpages[#1]{#3}{#4}{\releasedateofpaper{#2}}}
 
-% Starts an exam paper (that has been defined in course.dat), given the
+% Starts an exam paper (that has been defined in 00course.dat), given the
 % paper's id and title.
 %       The optional argument allows for revision info: if used, the 
 % specified revision info is printed; if not, the \stamp info is
@@ -1228,7 +1158,7 @@
 % Usage  : \exam[revision info]{paper id}{paper title}
 % Example: Assuming the definition 
 %               \newpaper{ex1}{Sep 31, 2001}{}
-%          in course.dat, the command
+%          in 00course.dat, the command
 %               \exampaper[v1.1]{ex1}{Surprise Exam 1}
 %          starts v1.1 of the first surprise exam. 
 %
@@ -1240,117 +1170,11 @@
   \formatexampages[#1]{#3}{\releasedateofpaper{#2}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Repository %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%% Parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\repositorydir}{.}                  % No trailing slash!
-\newcommand{\repositoryselector}{**}
-
-%%% In the repository %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Introduces the repository. If in ``plain repository'' mode, the
-% appropriate first page title is printed; if in ``get problem''
-% mode, the command is ignored. 
-%       The unique argument should be the repository's name (typically
-% a description of the general topic covered by the problems). 
-%
-% Usage  : \repositoryname{name}
-% Example: \repositoryname{Logic}
-%
-\newcommand{\repositoryname}[1]{
-  \ifthenelse{\equal{\repositoryselector}{**}}
-  {\formatpages{}{Repository of Problems in #1}{}}
-  {}}
-
-% Introduces a new repository problem. If in ``plain repository''
-% mode, the problem is printed after a label containing all the
-% editor's information. If in ``get problem'' mode, the
-% \repositoryselector is checked: if it matches the problem's label, 
-% the problem is printed (without the label above); otherwise the
-% problem is ignored. 
-%       The arguments should be:
-% 1. a unique (within the specific repository) label for the problem,  
-% 2. the topic of the problem (typically something more specific than
-%    the topic for the entire repository), 
-% 3. the source of the problem (where did we first find it), 
-% 4. the place we last used this problem (typically a term and a
-%    problem set/tutorial number), 
-% 5. the last author/revisor of the problem, 
-% 6. the date of the last revision, 
-% 7. the problem content (exactly as it would be formated in the
-%    actual document it is supposed to be incorporated.
-%
-% Usage   : \newproblem {label}
-%                       {topic}
-%                       {source}
-%                       {last use}
-%                       {author(s)}
-%                       {date}
-%                       {content}
-% Example : \newproblem {logic-7}
-%                       {Logic} 
-%                       {Velleman, Problem 6.17, p.~243}
-%                       {Spring 2002, Problem Set~7}
-%                       {Christos Kapoutsis}
-%                       {February 9, 2002}
-%                       {...}
-%
-%\newcommand{\newproblem}[7]{
-%  \ifthenelse{\equal{\repositoryselector}{**}}
-%  {\vspace{1cm}
-%   \begin{fminipage}
-%   \begin{tabular}{rl}
-%     \textbf{Topic:}     & #2 \\
-%     \textbf{Source:}    & #3 \\
-%     \textbf{Last used:} & #4 \\
-%     \textbf{Author:}    & #5 \\
-%     \textbf{Date:}      & #6 \\
-%     \textbf{Label:}     & #1
-%   \end{tabular}
-%   \pdfbookmark[1]{Problem~[#1]}{Problem:#1}%
-%   \end{fminipage}%
-%   \nopagebreak%
-%   #7}
-%  {\ifthenelse{\equal{\repositoryselector}{#1}}
-%   {#7}
-%   {}}}
-\newcommand{\problemdata}[5]{
-   \begin{fminipage}
-   \begin{tabular}{rl}
-     \textbf{Topic:}     	& #2 \\
-     \textbf{Source:}    	& #3 \\
-     \textbf{Usage:}     	& #4 \\
-     \textbf{Last revision:}    & #5 \\
-     \textbf{Label:}     	& #1
-   \end{tabular}
-   \end{fminipage}}
-
-%%% In the document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Extracts a problem from a repository, for use in a document. 
-%       The first argument should be the name of the file containing
-% the repository. All names are supposed to hang under the path
-% contained in \repositorydir; hence, the typical value of this 
-% argument is just a file name, no directories in it. If the file's
-% extension is ``.tex'', it may be omitted. 
-%       The second argument should be the label of a problem in the
-% specific repository (as defined via the first argument of the
-% \newproblem command). 
-%
-% Usage  :  \getproblem{repository file name}{problem label}
-% Example:  \getproblem{logic}{logic-7}
-
-\newcommand{\getproblem}[2]{
-  \renewcommand{\repositoryselector}{#2}
-  \input{\repositorydir/#1}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting lecture notes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Starts lecture notes, given the lecture notes number and title. The
-% corresponding paper must have been defined in course.dat, with id:
+% corresponding paper must have been defined in 00course.dat, with id:
 %       ln<number>
 % The optional argument allows for revision info: if used, the
 % specified revision info is printed; if not, the \stamp info is
@@ -1371,7 +1195,7 @@
 % should be included. If the answer is yes, the corresponding
 % solutions paper is started. (Use \showsolutions or \hidesolutions
 % to preselect the answer before the query ---and skip the query). The
-% corresponding papers must have been defined in course.dat, with ids:   
+% corresponding papers must have been defined in 00course.dat, with ids:   
 %       ps<number>      (for the problem statements only), 
 %       pss<number>     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1382,7 +1206,7 @@
 % Example: \problemset[v1.1]{13}   % for Problem Set #13, v1.1
 
 \newcommand{\problemset}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \ifshowsolutions
     \paper[#1]{pss#2}{}{Solutions to Problem Set #2}
     \readingnote
@@ -1410,7 +1234,7 @@
 % corresponding solutions paper is started. (Use \showsolutions or
 % \hidesolutions to preselect the answer before the query ---and skip
 % the query). The corresponding papers must have been defined in
-% course.dat, with ids:    
+% 00course.dat, with ids:    
 %       cp<code>      (for the statements only), 
 %       cps<code>     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1422,7 +1246,7 @@
 %
 
 \newcommand{\inclassproblems}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \ifshowsolutions
     \paper[#1]{cps#2}{}{Solutions to In-Class Problems Week #2}
   \else
@@ -1430,7 +1254,7 @@
   \fi}
 
 \newcommand{\recitationproblems}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \ifshowsolutions
     \paper[#1]{recs#2}{}{Solutions to Recitation Problems Week #2}
   \else
@@ -1445,7 +1269,7 @@
 % should be included. If the answer is yes, the corresponding
 % solutions paper is started. (Use \showsolutions or \hidesolutions
 % to preselect the answer before the query ---and skip the query). The
-% corresponding papers must have been defined in course.dat, with ids:   
+% corresponding papers must have been defined in 00course.dat, with ids:   
 %       qu<number>      (for the problem statements only), 
 %       qus<number>     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1457,7 +1281,7 @@
 %
 
 \newcommand{\quiz}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{qus#2}{}{Solutions to Quiz #2}
@@ -1466,7 +1290,7 @@
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
@@ -1478,7 +1302,7 @@
 % should be included. If the answer is yes, the corresponding
 % solutions paper is started. (Use \showsolutions or \hidesolutions
 % to preselect the answer before the query ---and skip the query). The
-% corresponding papers must have been defined in course.dat, with ids:   
+% corresponding papers must have been defined in 00course.dat, with ids:   
 %       pq<number>      (for the problem statements only), 
 %       pqs<number>     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1489,7 +1313,7 @@
 % Example: \practicequiz[v1.1]{3}   % for Practice Quiz #3, v1.1
 %
 \newcommand{\practicequiz}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{pqs#2}{}{Solutions to Practice Quiz #2}
@@ -1501,7 +1325,7 @@
 % the answer is yes, the corresponding solutions paper is
 % started. (Use \showsolutions or \hidesolutions to preselect the
 % answer before the query ---and skip the query). The corresponding
-% papers must have been defined in course.dat, with ids:    
+% papers must have been defined in 00course.dat, with ids:    
 %       fe      (for the problem statements only), 
 %       fes     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1512,7 +1336,7 @@
 % Example: \final[v1.1]  % for v1.1 of the Final Exam
 %
 \newcommand{\final}[1][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{fes}{}{Solutions to the Final Examination}
@@ -1521,7 +1345,7 @@
   \fi}
 
 \newcommand{\conflictfinal}[1][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{cfes}{}{Solutions to the Conflict Final}
@@ -1534,7 +1358,7 @@
 % corresponding solutions paper is started. (Use \showsolutions or
 % \hidesolutions to preselect the answer before the query ---and skip
 % the query). The corresponding papers must have been defined in
-% course.dat, with ids:    
+% 00course.dat, with ids:    
 %       pe<number>      (for the problem statements only), 
 %       pes<number>     (for the solutions).
 % The optional argument allows for revision info: if used, the
@@ -1545,7 +1369,7 @@
 % Example: \practiceexam[v1.1]{3}   % for Practice Exam #3, v1.1
 %
 \newcommand{\practiceexam}[2][\stamp]{%
-  \decideaboutsolutions
+    \theoremsunderproblems
   \useexamproblems
   \ifshowsolutions
     \paper[#1]{pes#2}{}{Solutions to Practice Exam #2}
@@ -1559,30 +1383,6 @@
   \else
     \exampaper[#1]{pe#2}{Practice Exam #2}
   \fi}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Starting a repository %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Starts a repository, given the name of the file containing it. This
-% name is supposed to hang under the directory contained in
-% \repositorydir. 
-% The optional argument allows for revision info: if used, the
-% specified revision info is printed; if not, the \stamp info is
-% printed.  
-%
-% Usage  : \repository{repository file name}
-% Example: \repository{logic}
-%
-\newcommand{\repository}[1]{
-  \decideaboutsolutions
-  \userepositoryproblems
-  \setlength{\problemsep}{0pt}
-  \renewcommand{\repositoryselector}{**}
-  \input{\repositorydir/#1}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1628,75 +1428,78 @@
     }%
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                           PAGE LAYOUT                            %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hoffset        = -1.0 in
+\voffset        = -1.25 in
+
+\setlength{\parindent}{0.125in}                     
+\setlength{\parskip}{0in}            
+\paperheight    =  9.0 in
+\paperwidth     =  7.0 in
+\topmargin      = 0.375 in
+\headheight     = 3\baselineskip
+\headsep        = 2\baselineskip
+\footskip       = 0.3 in
+
+\textheight     = \paperheight
+\addtolength{\textheight}{-\topmargin}
+\addtolength{\textheight}{-\headheight}
+\addtolength{\textheight}{-\headsep}
+\addtolength{\textheight}{-\footskip}
+
+\textwidth      = \paperwidth
+\oddsidemargin  = 1.0 in
+\evensidemargin = 1.0 in
+\addtolength{\textwidth}{-\oddsidemargin}
+\addtolength{\textwidth}{-\evensidemargin}
+
+\newcommand{\printlayout}{%
+  \typeout{----------------------- LaTeX Page Layout Parameters}
+  \typeout{\string\paperwidth\space\space\the\paperwidth}
+  \typeout{\string\paperheight\space\the\paperheight}
+  \typeout{\string\textwidth\space\space\the\textwidth}
+  \typeout{\string\textheight\space\the\textheight}
+  \typeout{\string\oddsidemargin\space\space\the\oddsidemargin}
+  \typeout{\string\evensidemargin\space\the\evensidemargin}
+  \typeout{\string\topmargin\space\space\the\topmargin}
+  \typeout{\string\headheight\space\the\headheight}
+  \typeout{\string\headsep\space\the\headsep}
+  \typeout{\string\footskip\space\space\space\the\footskip}
+  \typeout{\string\marginparwidth\space\the\marginparwidth}
+  \typeout{\string\marginparsep\space\space\space\the\marginparsep}
+  \typeout{\string\hoffset\space\the\hoffset}
+  \typeout{\string\voffset\space\the\voffset}
+  \typeout{(1in=72.27pt, 1cm=28.45pt)}
+  \typeout{-----------------------------------------}%
+}
+
 % Loads the definitions of all papers for the current term. This data
-% file (course.dat) should be kept in the same directory as this 
-% style file (course.sty).
+% file (00course.dat) should be kept in semester-specific directory.
 
 \IfFileExists{00course.dat}{\input{00course.dat}}{}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% BACKWARDS COMPATIBILITY            
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Use this command in the preamble, if you want some of the old
-% features included. Please use  `course.old'  to add material that is
-% needed for backwards compatibility only.
-\newcommand{\backwardscompatibility}{\input{course.old}}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% DIRTY HACKING      
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Use this command to write unexpanded material to a file 
-% [The TeXbook, pages 376-377]. 
-%
-\def\\{\let\stoken= } \\
-\long\def\unexpandedwrite#1#2{\def\finwrite{\write#1}%
-  {\aftergroup\finwrite\aftergroup{\sanitize#2\endsanity}}}
-\def\sanitize{\futurelet\next\sanswitch}
-\def\sanswitch{\let\n@xt\endsanity \ifx\next\endsanity
-  \else\ifcat\noexpand\next\stoken\aftergroup\space\let\n@xt=\eat
-  \else\ifcat\noexpand\next\bgroup\aftergroup{\let\n@xt=\eat
-  \else\ifcat\noexpand\next\egroup\aftergroup}\let\n@xt=\eat
-  \else\let\n@xt=\copytok\fi\fi\fi\fi \n@xt}
-\def\eat{\afterassignment\sanitize \let\next= }
-\long\def\copytok#1{\ifcat\noexpand#1\relax\aftergroup\noexpand\fi
-  \ifcat\noexpand#1\noexpand~\aftergroup\noexpand\fi
-  \aftergroup#1\sanitize}
-\def\endsanity\endsanity{}
-
-% To do something only when an argument is nonempty & not `\empty'.
-% If #1 is empty, \ifx compares \empty with \else, finds them
-%   different and just gobbles up everything up to \fi, doing nothing.
-% Otherwise: if #1 is the \empty command, \ifx compares it with
-%   \empty, finds them identical, executes everything (nothing) upto
-%   the \else command and ignores everything else upto \fi. So, in
-%   total, it does nothing at all.
-% Otherwise: if #1 is not the \empty command, \ifx compares \empty
-%   with (the starting of) #1, finds them different, gobbles up
-%   everything up to \else, and executes #2.
-% Apparently, #1 shouldn't contain an unmatched \else.
-\def\@ifnonempty#1#2{\ifx\empty#1\else#2\fi}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                      LOADING CLASS OPTIONS                       %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \ifx\@class@option@file\@empty\else
-    \input{\@class@option@file}
+    \input{\@class@option@file.clo}
 \fi
 
-%% If it exists, .solutionspolicy will contain either
-%% \showsolutionstrue or \showsolutionsfalse.
+%% Sticky solutions policy: If it exists, .solutionspolicy will
+%% contain either \showsolutions or \hidesolutions.
 
 \IfFileExists{.solutionspolicy}{%
     \input{.solutionspolicy}%
-    \let\askaboutsolutions\@empty
 }{}
+
+\decideaboutsolutions
 
 \endinput
