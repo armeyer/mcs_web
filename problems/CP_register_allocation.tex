@@ -1,0 +1,119 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp6r}
+  \pcomment{from: S07.cp6m}
+\end{pcomments}
+
+\pkeywords{
+  graph_coloring
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A portion of a computer program consists of a sequence of calculations
+where the results are stored in variables, like this:
+\[
+\begin{array}{rrrcl}
+&& \text{Inputs:} &  & a, b \\
+\text{Step } 1. & \hspace{0.5in} & c & = & a + b \\
+2. && d & = & a * c \\
+3. && e & = & c + 3 \\
+4. && f & = & c - e \\
+5. && g & = & a + f \\
+6. && h & = & f + 1 \\
+&& \text{Outputs:} & & d, g, h
+\end{array}
+\]
+A computer can perform such calculations most quickly if the value of
+each variable is stored in a {\em register}, a chunk of very fast
+memory inside the microprocessor.  Computers usually have few
+registers, however, so they must be used wisely and reused often.  The
+problem of assigning each variable in a program to a register is
+called {\em register allocation}.
+
+In the example above, variables $a$ and $b$ must be assigned different
+registers, because they hold distinct input values.  Furthermore, $c$
+and $d$ must be assigned different registers; if they used the same
+one, then the value of $c$ would be overwritten in the second step and
+we'd get the wrong answer in the third step.  On the other hand,
+variables $b$ and $d$ may use the same register; after the first step,
+we no longer need $b$ and can overwrite the register that holds its
+value.  Also, $f$ and $h$ may use the same register; once $f + 1$ is
+evaluated in the last step, the register holding the value of $f$ can
+be overwritten.(Assume that the computer carries out each step in the 
+order listed and that each step is completed before the next is begun.)
+
+\bparts
+
+\ppart Recast the register allocation problem as a question
+about graph coloring.  What do the vertices correspond to?  Under what
+conditions should there be an edge between two vertices?  Construct
+the graph corresponding to the example above.
+
+\solution{There is one vertex for each variable.  An edge
+between two vertices indicates that the values of the variables must
+be stored in different registers.
+
+We can classify each appearance of a variable in the program as either
+an {\em assignment} or a {\em use}.  In particular, an appearance is
+an assignment if the variable is on the left side of an equation or on
+the ``Inputs'' line.  An appearance of a variable is a use if the
+variable is on the right side of an equation or on the ``Outputs'' line.
+The {\em lifetime} of a variable is the segment of code extending from
+the initial assignment of the variable until the last use.  There is
+an edge between two variables if their lifetimes overlap.  This rule
+generates the following graph:
+
+\mfigure{5in}{!}{figures/register1}}
+
+\ppart Color your graph using as few colors as you can.  Call
+the computer's registers $R1$, $R2$, etc.  Describe the assignment of
+variables to registers implied by your coloring.  How many registers
+do you need?
+
+\solution{Four registers are needed.
+
+One possible assignment of variables to registers is indicated in 
+the figure above. In general, coloring a graph using the minimum 
+number of colors is quite difficult; no efficient procedure is known.  
+However, the register allocation problem always leads to an {\em 
+interval graph}.For interval graphs, there are efficient coloring 
+procedures, which can be incorporated into a compiler.}
+
+\ppart Suppose that a variable is assigned a value more than
+once, as in the code snippet below:
+\begin{eqnarray*} 
+  & \ldots & \\
+t & = & r + s \\
+u & = & t * 3 \\
+t & = & m - k \\
+v & = & t + u \\  
+& \ldots &
+\end{eqnarray*}
+
+How might you cope with this complication?
+
+\solution{Each time a variable is reassigned, we could
+regard it as a completely new variable.  Then we would regard the
+example as equivalent to the following:
+\begin{eqnarray*}
+  & \ldots & \\
+t & = & r + s \\
+u & = & t * 3 \\
+t' & = & m - k \\
+v & = & t' + u \\
+  & \ldots &
+\end{eqnarray*}
+
+We can now proceed with graph construction and coloring as before.}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

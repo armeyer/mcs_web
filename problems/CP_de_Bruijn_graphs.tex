@@ -1,0 +1,112 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp7r}
+  \pcomment{commented out in S09 but should be in pretty good shape}
+\end{pcomments}
+
+\pkeywords{
+  digraphs
+  Euler_circuit
+  binary
+  strings
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+  A $3$-bit string is a string made up of $3$ characters, each a $0$
+  or a $1$.  Suppose you'd like to write out, in one string, all eight
+  of the 3-bit strings in any convenient order.  For example, if you
+  wrote out the $3$-bit strings in the usual order starting with
+  000 001 010\dots, you could concatenate them together to get a
+  length $3\cdot 8 = 24$ string that started 000001010\dots.
+
+  But you can get a shorter string containing all eight $3$-bit
+  strings by starting with 00010\dots.  Now $000$ is present as bits
+  $1$ through $3$, $001$ is present as bits $2$ through $4$, $010$ is
+  present as bits $3$ through $5$, \dots.
+
+\bparts
+
+\ppart Take a few moments to see how short a string you can make that
+contains every $3$-bit string as $3$ consecutive bits somewhere in it.
+Can you see why $10$ bits is the absolute minimum length for such a
+string?
+
+\solution{$0001110100$ does it with $10$ bits and you can't do better:
+  there must be two bits to start and each additional bit can yield at
+  most one new $3$-bit string.}
+
+\mfigure{!}{3in}{figures/debruijn}
+
+\ppart Imagine that the labels on the vertices of the graph above
+represent the last two digits in a string you build by adding one bit
+at a time.  Convince yourself that the graph completely describes how
+the last two digits of your string can change throughout this process.
+
+
+\solution{No matter what the last two bits of your current string $x$
+  are, say $ab$, there is a vertex representing that.  And, no matter
+  what bit you want to use to extend $x$, say $c$, there is an edge
+  directed from your current state, $ab$, to the vertex $bc$ that
+  represents your new state, the last two bits of $xc$.  Furthermore,
+  these are the only types of vertices and edges in the graph.  As a
+  bonus, every edge $(s,s')$ is also labeled with the bit that was
+  added to the string when going from the state $s$ to $s'$.}
+
+
+\ppart Find a directed path in this graph starting at some vertex, $v$,
+that traverses every edge exactly once.  Note that vertices will have to
+be used more than once and the path wil have to end in $v$.
+
+\solution{Many: $00,00,01,11,11,10,01,10,00$ is one.}
+
+\ppart Explain how such a path provides a shortest possible solution
+to the original problem.
+
+\solution{Build a solution $x$ using the path.  Start with $x$ equal
+  to the two digits in the label of the first vertex on the path.
+  Then for every edge used after that, add on the bit labelling that
+  edge to the string.  For example, the path given in last part's
+  solution, yields the string $x=0001110100$.
+  
+  Sincce there are $8$ edges, the string will be of length $10$, the
+  minimum possible.
+
+  Furthermore, the label of the first vertex of the graph, followed by
+  the label of the first edge, give the first $3$-bit substring in
+  $x$. The next vertex and edge, give the next $3$-bit substring, and
+  so on.  Since all possible $2$-bit vertex labels appear exactly
+  once, and each vertex has a $1$ edge and a $0$ edge departing from
+  it, every $3$-bit string corresponds to a unique vertex/out-edge
+  combination.  The path uses every possible vertex/out-edge
+  combination exactly once, so the string contains every $3$-bit
+  sequence exactly once.}
+
+\ppart What about $k$-bit substrings, $k = 4, 5, \ldots$?  Can you define
+the appropriate generalization of the useful graph above?  (They're called
+de Bruijn graphs.) If you do it sucessfully, you should be able to see
+that the in-degree (as well as the out-degree) of every vertex is $2$.
+
+It is a theorem that if the in-degree is equal to the out-degree at
+every vertex of a digraph (and if the graph is connected when all the
+edges are considered undirected edges) then a directed path can be
+drawn in that digraph that uses every edge exactly once.  You might
+want to think about why this should be true or how you might find such
+a path.
+
+But if you do believe it, you should be able to see why all $2^k$
+$k$-bit strings can be written as substrings of a string of length
+$2^k + k-1$.  (These strings are essentially de Bruijn strings.)
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

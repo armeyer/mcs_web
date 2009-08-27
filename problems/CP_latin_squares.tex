@@ -1,0 +1,185 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp6r}
+  \pcomment{from: S04.cp5f (edited ARM in S08)}
+  \pcomment{This problem has a lot of commented out material that should be cleaned up.}
+\end{pcomments}
+
+\pkeywords{
+  bipartite_matching
+  degree-constrained
+  graph_coloring
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+A \term{Latin square} is $n \times n$ array whose entries are the number
+$1,\dots,n$.  These entries satisfy two constraints: every row contains
+all $n$ integers in some order, and also every column contains all $n$
+integers in some order.  Latin squares come up frequently in the design of
+scientific experiments for reasons illustrated by a little story in a
+footnote\footnote{At Guiness brewery in the eary 1900's, W. S. Gosset (a 
+chemist) and E.  S. Beaven (a ``maltster'') were trying to improve the 
+barley used to make the brew.  The brewery used different varieties of 
+barley according to price and availability, and their agricultural 
+consultants suggested a different fertilizer mix and best planting month 
+for each variety.
+
+Somewhat sceptical about paying high prices for customized fertilizer,
+Gosset and Beavan planned a season long test of the influence of
+fertilizer and planting month on barley yields.  For as many months as
+there were varieties of barley, they would plant one sample of each
+variety using a different one of the fertilizers.  So every month, they
+would have all the barley varieties planted and all the fertilizers
+used, which would give them a way to judge the overall quality of that
+planting month.  But they also wanted to judge the fertilizers, so they
+wanted each fertilizer to be used on each variety during the course of
+the season.  Now they had a little mathematical problem, which we can
+abstract as follows.
+
+Suppose there are $n$ barley varieties and an equal number of
+recommended fertilizers.  Form an $n \times n$ array with a column for
+each fertilizer and a row for each planting month.  We want to fill in
+the entries of this array with the integers 1,\dots,$n$ numbering the
+barley varieties, so that every row contains all $n$ integers in some
+order (so every month each variety is planted and each fertilizer is
+used), and also every column contains all $n$ integers (so each
+fertilizer is used on all the varieties over the course of the growing
+season).}  
+
+For example, here is a $4 \times 4$ Latin square:
+{\Large
+\[
+\begin{array}{|c|c|c|c|}
+\hline
+1 & 2 & 3 & 4 \\ 
+\hline
+3 & 4 & 2 & 1 \\ 
+\hline
+2 & 1 & 4 & 3 \\ 
+\hline
+4 & 3 & 1 & 2 \\ 
+\hline
+\end{array}
+\]
+}
+
+\bparts
+
+\ppart
+
+\iffalse
+Before deciding to chuck it all and relax drinking a barrel of their
+own product, the brewers has worked out the following \fi
+
+Here are three rows of what could be part of a $5 \times 5$ Latin square:
+
+{\Large
+\[
+\begin{array}{|c|c|c|c|c|}
+\hline
+2 & 4 & 5 & 3 & 1 \\ 
+\hline
+4 & 1 & 3 & 2 & 5 \\ 
+\hline
+3 & 2 & 1 & 5 & 4 \\ 
+\hline
+  &   &   &   &   \\ 
+\hline
+  &   &   &   &   \\
+\hline
+\end{array}
+\]
+}
+Fill in the last two rows to extend this ``Latin rectangle'' to a complete
+Latin square.
+
+\solution{Here is one possible solution:
+
+{\Large
+\[
+\begin{array}{|c|c|c|c|c|}
+\hline
+2 & 4 & 5 & 3 & 1 \\ 
+\hline
+4 & 1 & 3 & 2 & 5 \\ 
+\hline
+3 & 2 & 1 & 5 & 4 \\ 
+\hline
+1 & 5 & 2 & 4 & 3 \\ 
+\hline
+5 & 3 & 4 & 1 & 2 \\ 
+\hline
+\end{array}
+\]
+}}
+
+%There are some nice connections between Latin squares and graph theory.
+\iffalse 
+
+\ppart
+Construct a graph $G_n$ with $n^2$ vertices such that there is a
+one-to-one correspondence between $n \times n$ Latin squares and valid
+$n$-colorings of $G_n$.
+
+\solution{Create a vertex in $G$ for each entry in the Latin Square.
+Then connect each vertex to every other vertex in the same row and to
+every other vertex in the same column.  Now color the graph with $n$
+colors, each corresponding to a number between 1 and $n$.
+Notice that every pair of vertices in the same row are connected, so
+no two vertices in the same row can get the same color.  Similarly,
+since every pair of vertices in the same column are connected, no two
+vertices in the same column can get same color either.  These coloring
+constraint match the constraints on Latin squares, so there is a
+one-to-one correspondence between colorings of $G$ and $n \times n$
+Latin squares.}
+
+\eparts
+
+Of course coloring problems can be difficult, so formulating Latin square
+construction as a coloring problem is no direct help in finding them.  But
+there's another approach to constructing Quadra\footnote{Get it? That's  
+Latin for ``squares''.  Latin -- squares :-) Okay, we'll stop making bad 
+puns and let you get on with the problem.} based on bipartite matching.
+
+\bparts
+\fi
+
+\ppart Show that filling in the next row of an $n \times n$ Latin
+rectangle is equivalent to finding a matching in some $2n$-vertex
+bipartite graph.
+
+\solution{Construct a bipartite graph as follows. One set of vertices 
+are  the columns of the Latin rectangle, and the other set is the 
+numbers $1$  to $n$. Put an edge between a column and a number if the 
+number has \emph{not yet appeared} in the column. Thus, a matching in
+this graph would associate each column with a distinct number that has 
+not yet appeared in that column. These numbers would form the next row 
+of the Latin rectangle.}
+
+\ppart Prove that a matching must exist in this bipartite graph and,
+consequently, a Latin rectangle can always be extended to a Latin square.
+
+\solution{Suppose the Latin rectangle has $k$ rows of width $n$. Then
+each column-vertex has degree $n-k$ because its edges go to the $n - k$ 
+numbers missing from the column.  Also, each number-vertex also has
+degree $n - k$.  That's because each number appears exactly once in each
+of the $k$ rows and at most once in each column, so each number must be
+missing from exactly $n-k$ columns.
+
+So the graph is degree-constrained and therefore has a matching.
+This  implies that we can add rows to the Latin rectangle by the procedure
+described above as long as $k < n$.  At that point, we have a Latin
+square.}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

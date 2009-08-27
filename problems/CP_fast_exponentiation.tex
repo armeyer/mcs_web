@@ -1,0 +1,124 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp5t}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The most straightforward way to compute the $b$th power of a number, $a$,
+is to multiply $a$ by itself $b$ times.  This of course requires $b-1$
+multiplications.  There is another way to do it using considerably fewer
+multiplications.  This algorithm is called \emph{Fast Exponentiation}:
+
+Given inputs $a \in \reals, b \in \naturals$,
+initialize registers $x,y,z$ to $a,1,b$ respectively,
+and repeat the following sequence of steps until termination:
+\begin{itemize}
+\item if $z=0$ \textbf{return} $y$ and terminate
+\item $r := \text{remainder}(z,2)$
+\item $z := \text{quotient}(z,2)$
+\item if $r = 1$, then $y := xy$
+\item $x := x^2$
+\end{itemize}
+We claim this algorithm always terminates and leaves $y = a^b$.
+
+\bparts
+
+\ppart  Model this algorithm with a state
+machine, carefully defining the states and transitions.
+
+\solution{
+\begin{enumerate}
+\item The set of states is $\reals \cross \reals \cross \naturals$,
+\item The start state is $(a,1,b)$,
+\item the transitions are defined by the rule
+\begin{equation*}
+(x,y,z) \rightarrow
+\begin{cases}
+(x^2, y, \text{quotient}(z,2)) & \text{if $z$ is positive and even},\\
+(x^2, xy, \text{quotient}(z,2)) & \text{if $z$ is positive and odd}.
+\end{cases}
+\end{equation*}
+\end{enumerate}
+}
+
+\ppart Let $d \eqdef a^b$.  Verify that the following predicate, $P$, is
+a preserved invariant:
+\[
+P((x,y,z)) \eqdef\ \ [yx^z = d].
+\]
+
+\solution{
+We show that $P$ is preserved, namely, assuming $P((x,y,z))$, that is,
+\begin{equation}\label{yxzd}
+yx^z = d
+\end{equation}
+holds and $(x,y,z) \rightarrow (x_t,y_t,z_t)$ is a transition, then
+$P((x_t,y_t,z_t))$, that is,
+\[
+y_tx_t^{z_t} = d
+\]
+holds.
+
+We consider two cases:
+
+If $z > 0$ and is even, then we have that $x_t = x^2, y_t = y, z_t =
+\quotient(z,2)$.  Therefore,
+\begin{align*}
+y_tx_t^{z_t} &  = yx^{2 \cdot \quotient(z,2)}\\
+           & = yx^{2 \cdot \frac{z}{2}}\\
+           & = yx^z\\
+          & = d & \mbox{(by~\eqref{yxzd})}
+\end{align*}
+
+If $z > 0$ and is odd, then we have that $x_t = x^2, y_t = xy, z_t =
+\quotient(z,2)$. Therefore,
+\begin{align*}
+y_tx_t^{z_t} & = xyx^{2 \cdot \quotient(z,2)}\\
+& = yx^{1+2 \cdot \frac{z-1}{2}}\\
+& = yx^{1+(z-1)}\\
+& = yx^z\\
+& = d & \mbox{(by~\eqref{yxzd})}
+\end{align*}
+
+So in both cases, $P((x_t,y_t,z_t))$ holds, proving that $P$ is a
+preserved invariant.}
+
+\ppart Prove that the algorithm is partially correct: if it halts, it does
+so with $y=d$.
+
+\solution{$P$ holds for the start state $(a,1,b)$ since $1\cdot a^b = a^b
+  =d$ by definition.  So by the Invariant Theorem, $P$ holds for all
+  reachable states.  But a terminal state must have $z = 0$, so if any
+  terminal state $(x,y,0)$ is reachable, then $y = yx^0 = d$ as required.}
+
+\ppart Prove that the algorithm terminates.
+
+\solution{Just notice that $z$ is a natural-number-valued variable that
+gets smaller at every transition.  So by the Well-Ordering Principle, when
+this variable reaches its minimum value, the algorithm terminates.}
+
+\ppart In fact, prove that it requires at most $2 \log_2 b$
+multiplications for the Fast Exponentiation algorithm to compute $a^b$ for
+$b>1$.
+
+\solution{The value of $z$ is initially $b$ and gets halved at least at
+every step.  So it can't be halved more than $\log_2 b$ times before
+hitting zero.}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

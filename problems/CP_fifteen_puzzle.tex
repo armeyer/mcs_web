@@ -1,0 +1,157 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.cp5t}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  unreachable_states
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem} 
+  By now you are very familiar with the
+  \href{http://courses.csail.mit.edu/6.042/spring09}{6.042 icon} that
+  appears on the course webpage and lecture slides.  This icon is a
+  picture of a game called the \textbf{Fifteen Puzzle}.  In this problem
+  you will establish a basic property of the Fifteen Puzzle using the
+  method of invariants, which may help you appreciate why this icon was
+  chosen as the course logo.
+
+The Fifteen Puzzle consists of sliding square tiles numbered $1,\dots,15$
+held in a $4\times4$ frame with one empty square.  Any tile adjacent to
+the empty square can slide into it.
+
+The standard initial position is
+\[\begin{array}{|c|c|c|c|}
+\hline 1 & 2 & 3 & 4\\
+\hline 5 & 6 & 7 & 8\\
+\hline 9 & 10 & 11 & 12\\
+\hline 13 & 14  & 15 &  \\
+\hline
+\end{array}\]
+We would like to reach the target position (known in my youth as ``the
+impossible'' --- ARM):
+\[\begin{array}{|c|c|c|c|}
+\hline 15 & 14 & 13 & 12\\
+\hline 11 & 10 & 9 & 8\\
+\hline7 & 6 & 5 & 4\\
+\hline3 & 2 & 1 & \\
+\hline
+\end{array}\]
+
+A state machine model of the puzzle has states consisting of a $4\times 4$
+matrix with 16 entries consisting of the integers $1,\dots,15$ as well as
+one ``empty'' entry---like each of the two arrays above.
+
+The state transitions correspond to exchanging the empty square and an
+adjacent numbered tile.  For example, an empty at position $(2,2)$ can
+exchange position with tile above it, namely, at position $(1,2)$:
+\[\begin{array}{|c|c|c|c|}
+\hline n_1 & n_2 & n_3 & n_4\\
+\hline n_5 &  & n_6 & n_7\\
+\hline n_8  & n_9 & n_{10} & n_{11}\\
+\hline n_{12} & n_{13} & n_{14}  & n_{15}\\
+\hline
+\end{array} \longrightarrow
+\begin{array}{|c|c|c|c|}
+\hline n_1 &   & n_3 & n_4\\
+\hline n_5 & n_2 & n_6 & n_7\\
+\hline n_8  & n_9 & n_{10} & n_{11}\\
+\hline n_{12} & n_{13} & n_{14}  & n_{15}\\
+\hline
+\end{array} 
+\]
+
+We will use the invariant method to prove that there is no way to reach
+the target state starting from the initial state.
+
+We begin by noting that a state can also be represented as a pair
+consisting of two things:
+\begin{enumerate}
+\item a list of the numbers $1,\dots,15$ in the order in which they
+appear---reading rows left-to-right from the top row down, ignoring the
+empty square, and
+\item the coordinates of the empty square---where the upper left
+square has coordinates $(1,1)$, the lower right $(4,4)$.
+\end{enumerate}
+
+\bparts
+\ppart Write out the ``list'' representation of the start state and the
+``impossible'' state.
+
+\solution{
+start: $((1\ 2\ \dots\ 15), (4,4))$,
+
+impossible: $((15\ 14\ \dots\ 1), (4,4))$. 
+}
+\eparts
+
+Let $L$ be a list of the numbers $1,\dots,15$ in some order.  A pair of
+integers is an \emph{out-of-order pair} in $L$ when the first element of
+the pair both comes \emph{earlier} in the list and \emph{is larger}, than
+the second element of the pair.  For example, the list $1,2,4,5,3$ has two
+out-of-order pairs: (4,3) and (5,3).  The increasing list $1,2\dots n$ has
+no out-of-order pairs.
+
+Let a state, $S$, be a pair $(L, (i,j))$ described above.  We define the
+\emph{parity} of $S$ to be the mod 2 sum of the number, $p(L)$, of
+out-of-order pairs in $L$ and the row-number of the empty square, that is
+the parity of $S$ is $p(L) + i \pmod 2$.
+
+\begin{problemparts}
+
+\problempart Verify that the parity of the start state and the target
+state are different.
+
+\solution{The parity of the start state is
+\[
+(0+4) \bmod 2 = 0.
+\]
+The parity of the target is 
+\[
+((15 \cdot 14/ 2) + 4) \bmod 2 = 1.
+\]
+}
+
+\problempart Show that the parity of a state is preserved under
+transitions.  Conclude that ``the impossible'' is impossible to reach.
+
+\solution{To show that the parity is constant, consider how moves may
+affect the parity.  There are only 4 types of moves: a move to the
+left, a move to the right, a move to the row above, or a move to the row
+below.
+
+Note that horizontal moves change nothing, and vertical moves both change
+$i$ by 1, and move a tile three places forward or back in the list, $L$.
+To consider how the parity is changed in this case, we need to consider
+only the 3 pairs in $L$ that are between the tile's old and new position.
+(The other pairs are not effected by the tile's move).  This reverses the
+order of three pairs in $L$, changing the number of inversions by 3 or 1,
+but always by an odd amount.
+
+To confirm this last remark, note that if the 3 pairs were all out of
+order or all in order before, the amount is changed by 3.  If two pairs
+were out of order and 1 pair was in order or if one pair was out of order
+and two were in order, this will change the amount by 1.  So the sum of
+$i$ and the number of out-of-order pairs changes by an even amount (either
+1+3 or 1+1), which implies that its parity remains the same.  Since the
+initial state has parity 0 (even), all states reachable from the initial
+state must have parity 0, so the target state with parity 1 can't be
+reachable.}
+
+\end{problemparts}
+
+By the way, if two states have the same parity, then in fact there
+\emph{is} a way to get from one to the other.  If you like puzzles, this
+is a good one to think about on your own after class.
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
