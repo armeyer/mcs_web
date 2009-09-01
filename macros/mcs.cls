@@ -209,6 +209,10 @@
 
 \newcommand{\term}[1]{\emph{#1}}
 
+\newcommand{\SET}[1]{\textsc{#1}}
+\newcommand{\STR}[1]{\texttt{#1}}
+\newcommand{\CMD}[1]{\textsc{\bf#1}}
+
 \newcommand{\edge}[2]{#1\text{---}#2}
 \newcommand{\diredge}[2]{#1 \to #2}
 
