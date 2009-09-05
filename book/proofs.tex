@@ -199,21 +199,18 @@ Every even integer greater than 2 is the sum of two primes.
 No one knows whether this proposition is true or false.  This is the
 ``Goldbach Conjecture,'' which dates back to 1742.
 
-\iffalse
-
-For a Computer Scientist, some of the most important questions are about
-program and system ``correctness'' -- whether a program or system does what
-it's supposed to.  Programs are notoriously buggy, and there's a growing
-community of researchers and practitioners trying to find ways to prove
-program correctness.  These efforts have been successful enough in the case
-of CPU chips that they are now routinely used by leading chip manufacturers
-to prove chip correctness and avoid mistakes like the notorious Intel
-division bug in the 1990's.
+For a Computer Scientist, some of the most important things to prove are
+the ``correctness'' programs and systems ---whether a program or system
+does what it's supposed to.  Programs are notoriously buggy, and there's a
+growing community of researchers and practitioners trying to find ways to
+prove program correctness.  These efforts have been successful enough in
+the case of CPU chips that they are now routinely used by leading chip
+manufacturers to prove chip correctness and avoid mistakes like the
+notorious Intel division bug in the 1990's.
 
 Developing mathematical methods to verify programs and systems remains an
 active research area.  We'll consider some of these methods later in the
 course.
-\fi
 
 \hyperdef{preds}{preds}{\section{Predicates}}
 
@@ -313,13 +310,13 @@ Logical deductions or \emph{inference rules} are used to prove new
 propositions using previously proved ones.
 
 A fundamental inference rule is \emph{modus ponens}.  This rule says that
-a proof of $P$ together with a proof of $P \implies Q$ is a proof of
+a proof of $P$ together with a proof that $P \QIMPLIES Q$ is a proof of
 $Q$.
 
 Inference rules are sometimes written in a funny notation.  For example,
 \emph{modus ponens} is written:
 \begin{rul*}
-\Rule{P, \quad P \implies Q}{Q}
+\Rule{P, \quad P \QIMPLIES Q}{Q}
 \end{rul*}
 
 When the statements above the line, called the \emph{antecedents}, are
@@ -333,20 +330,22 @@ sound inference rules, everything we prove will also be true.
 
 There are many other natural, sound inference rules, for example:
 \begin{rul*}
-\Rule{P \implies Q, \quad Q \implies R}{P \implies R}
+  \Rule{P \QIMPLIES Q, \quad Q \QIMPLIES R}{P \QIMPLIES R}
 \end{rul*}
 
+\iffalse
 \begin{rul*}
-\Rule{\neg{P} \implies Q, \quad \neg{Q}}{P}
+\Rule{(\QNOT P) \QIMPLIES Q, \quad \QNOT(Q)}{P}
 \end{rul*}
+\fi
 
 \begin{rul*}
-\Rule{\neg{P} \implies \neg{Q}}{Q \implies P}
+  \Rule{\QNOT(P) \implies \QNOT{Q}}{Q \QIMPLIES P}
 \end{rul*}
 
 On the other hand,
 \begin{rul*}
-\Rule{\neg{P} \implies \neg{Q}}{P \implies Q}
+\Rule{\QNOT(P) \QIMPLIES \QNOT(Q)}{P \QIMPLIES Q}
 \end{rul*}
 is not sound: if $P$ is assigned $\true$ and $Q$ is assigned $\false$, then
 the antecedent is true and the consequent is not.
@@ -360,9 +359,6 @@ As with axioms, we will not be too formal about the set of legal inference
 rules.  Each step in a proof should be clear and ``logical''; in
 particular, you should state what previously proved facts are used to
 derive each new conclusion.
-
-
-
 
 \subsection{Patterns of Proof}
 
@@ -393,8 +389,8 @@ loss.
 \label{sec:prove_implies}
 
 Propositions of the form ``If $P$, then $Q$'' are called
-\term{implications}.  This implication is often rephrased as ``$P$ implies
-$Q$.''
+\term{implications}.  This implication is often rephrased as ``$P
+\QIMPLIES Q$.''
 
 Here are some examples:
 %
@@ -414,7 +410,7 @@ There are a couple of standard methods for proving an implication.
 
 \subsection{Method \#1}
 
-In order to prove that $P$ implies $Q$:
+In order to prove that $P \QIMPLIES Q$:
 %
 \begin{enumerate}
 \item Write, ``Assume $P$.''
@@ -488,11 +484,11 @@ these conventions is to clarify where proofs begin and end.
 
 \subsection{Method \#2 - Prove the Contrapositive}
 
-An implication (``$P$ implies $Q$'') is logically equivalent to its
-\emph{contrapositive} ``not $Q$ implies not $P$''; proving one is as good
-as proving the other, and proving the contrapositive is sometimes easier
-than proving the original statement.  If so, then you can proceed as
-follows:
+An implication (``$P \QIMPLIES Q$'') is logically equivalent to its
+\emph{contrapositive} ``$(\QNOT Q) \QIMPLIES (\QNOT P)$''; proving one is
+as good as proving the other, and proving the contrapositive is sometimes
+easier than proving the original statement.  If so, then you can proceed
+as follows:
 %
 \begin{enumerate}
 \item Write, ``We prove the contrapositive:'' and then state the
@@ -550,8 +546,8 @@ abbreviated ``iff''.
 
 \subsection{Method \#1:  Prove Each Statement Implies the Other}
 
-The statement ``$P$ iff $Q$'' is equivalent to the two statements ``$P$
-implies $Q$'' and ``$Q$ implies $P$''.  So you can prove an ``iff'' by
+The statement ``$P \QIFF Q$'' is equivalent to the two statements ``$P
+\QIMPLIES Q$'' and ``$Q \QIMPLIES P$''.  So you can prove an ``iff'' by
 proving \textit{two} implications:
 %
 \begin{enumerate}
@@ -561,40 +557,6 @@ of the methods in Section~\ref{sec:prove_implies}.
 \item Write, ``Now, we show $Q$ implies $P$.''  Again, do this by
 one of the methods in Section~\ref{sec:prove_implies}.
 \end{enumerate}
-
-\iffalse
-
-\subsection*{Example}
-
-Two sets are defined to be equal if they contain the same elements; that
-is, $X = Y$ means $z \in X$ if and only if $z \in Y$.  (This is actually
-the first of the ZFC axioms.)  So set equality theorems can be stated and
-proved as ``iff'' theorems.
-
-\begin{theorem}[Distributive Law for Sets]
-Let $A$, $B$, and $C$ be sets.  Then:
-%
-\[
-A \cap (B \cup C) = (A \cap B) \cup (A \cap C)
-\]
-\end{theorem}
-
-\begin{proof}
-We show $z \in A \cap (B \cup C)$ implies $z \in (A \cap B) \cup (A
-\cap C)$ and vice-versa.
-
-First, we show $z \in A \cap (B \cup C)$ implies $z \in (A \cap B)
-\cup (A \cap C)$.  Assume $z \in A \cap (B \cup C)$.  Then $z$ is in
-$A$ and $z$ is also in $B$ or $C$.  Thus, $z$ is in either $A \cap B$
-or $A \cap C$, which implies $z \in (A \cap B) \cup (A \cap C)$.
-
-Second, we show $z \in (A \cap B) \cup (A \cap C)$ implies $z \in A \cap
-(B \cup C)$.  Assume $z \in (A \cap B) \cup (A \cap C)$.  Then $z$ is
-in both $A$ and $B$ or else $z$ is in both $A$ and $C$.  Thus, $z$ is
-in $A$ and $z$ is also in $B$ or $C$.  This implies $z \in A \cap (B
-\cup C)$.
-\end{proof}
-\fi
 
 \subsection{Method \#2:  Construct a Chain of Iffs}
 In order to prove that $P$ is true iff $Q$ is true:
