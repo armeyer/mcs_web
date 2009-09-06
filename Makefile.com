@@ -15,6 +15,13 @@ FORCE:
 
 .PRECIOUS: %.pdf
 
+.PHONY: all
+
+all:
+	for tex_file in *.tex; do \
+		$(MAKE) $${tex_file%.tex}; \
+	done
+
 .PHONY: clean
 
 clean:
