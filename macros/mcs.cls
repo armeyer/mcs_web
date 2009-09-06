@@ -752,7 +752,7 @@
 \newcommand{\askaboutsolutions}{%
     \typeout{}
     \typein[\answer]{Include solutions? (y/n) }%
-    \ify\answer
+    \if y\answer
         \global\showsolutionstrue
     \else
         \global\showsolutionsfalse
