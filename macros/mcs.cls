@@ -472,6 +472,35 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Due to an apparent bug in amsthm.sty, something like this
+%%
+%%    \begin{problem}
+%%        \begin{lemma}
+%%        \end{lemma}
+%%    \end{problem}
+%%
+%% where problem has a custom head specification and lemma doesn't,
+%% causes lemma to inherit the custom head specification from problem.
+%% This patches the three standard theorem styles to fix that problem.
+
+\def\th@plain{%
+    \let\thmhead\thmhead@plain
+    \itshape % body font
+}
+
+\def\th@definition{%
+    \let\thmhead\thmhead@plain
+    \normalfont % body font
+}
+
+\def\th@remark{%
+    \let\thmhead\thmhead@plain
+    \thm@headfont{\itshape}%
+    \normalfont % body font
+    \thm@preskip\topsep \divide\thm@preskip\tw@
+    \thm@postskip\thm@preskip
+}
+
 %% THEOREM-LIKE
 
 \theoremstyle{plain}
