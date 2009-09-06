@@ -33,6 +33,13 @@
     \def\@class@option@file{problem}%
 }
 
+\DeclareOption{debug}{%
+    \tracingoutput=1
+    \showboxbreadth=2147483647
+    \showboxdepth=\showboxbreadth
+    \let\@fix@nominalspinewidth\@empty
+}
+
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 
 \ExecuteOptions{11pt,twoside,book}
@@ -762,6 +769,29 @@
 \newcommand{\exambox}[3]{\inhandout{\instatements{
   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Mini pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Generates a _framed_ minipage with its width as an optional argument.
+% If the width is not specified, \linewidth is used. 
+%
+% Usage  :  \begin{fminibox}{width} ... \end{fminibox}
+% Example:  \begin{fminibox}{3in}  blah, blah... \end{fminibox}
+%
+
+\newsavebox{\fminibox}
+\newlength{\fminilength}
+
+\newenvironment{fminipage}[1][\linewidth]{%
+    \setlength{\fminilength}{#1}
+    \addtolength{\fminilength}{-2\fboxsep}
+    \addtolength{\fminilength}{-2\fboxrule}
+    \begin{lrbox}{\fminibox}\begin{minipage}{\fminilength}%
+}{%
+    \end{minipage}\end{lrbox}\noindent\fbox{\usebox{\fminibox}}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Formatting the top/bottom matter%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
