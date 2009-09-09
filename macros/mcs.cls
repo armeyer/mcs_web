@@ -582,6 +582,14 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% problem environments and section headers for use in the book
+\newenvironment{problems}{%
+    \subsection{Problems}%
+}{}
+\newcommand{\practiceproblems}{\subsubsection*{Practice Problems}}
+\newcommand{\classproblems}{\subsubsection*{Class Problems}}
+\newcommand{\homeworkproblems}{\subsubsection*{Homework Problems}}
+
 %% pcomments is an itemized list environment that shows up only when
 %% the standalone version of the problem is compiled.
 
