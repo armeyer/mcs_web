@@ -23,7 +23,7 @@
 
 \DeclareOption{handout}{%
     \handouttrue
-    \PassOptionsToClass{10pt}{book}
+    \PassOptionsToClass{11pt}{book}
     \def\@class@option@file{handout}%
 }
 
@@ -615,7 +615,7 @@
 \newlength{\problemsep}
 \newlength{\problempartsep}
 
-\setlength{\standardproblemsep}{\medskipamount}
+\setlength{\standardproblemsep}{1cm}
 \setlength{\standardproblempartsep}{1ex}
 
 \setlength{\problemsep}{\standardproblemsep}
