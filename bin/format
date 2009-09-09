@@ -363,6 +363,8 @@ sub unresolved_xrefs( $ ) {
 sub summarize_errors( $ ) {
     my $chapter = shift;
 
+    my $has_solutions = 0;
+
     (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
 
     if ($OPT{include}) {
@@ -371,6 +373,14 @@ sub summarize_errors( $ ) {
 
     print "\nScanning log file for errors and warnings\n";
 
+    if (! -e $log_file) {
+        die "No file $log_file\n";
+    }
+
+    if (! -r $log_file) {
+        die "Can't read $log_file\n";
+    }
+
     my $found = 0;
 
     open(my $log, "<", $log_file) or die "Can't open $log_file: $!\n";
@@ -378,6 +388,12 @@ sub summarize_errors( $ ) {
     local $_;
 
     while (<$log>) {
+        /Solutions \*INCLUDED\*/ and do {
+            $has_solutions = 1;
+
+            next;
+        };
+
         # Avoid any !'s that occur as part of an overfull or underfull
         # box warning.
 
@@ -444,7 +460,7 @@ sub summarize_errors( $ ) {
         print "No errors found\n";
     }
 
-    return;
+    return $has_solutions;
 }
 
 sub process_chapter($) {
@@ -532,22 +548,38 @@ sub process_chapter($) {
         }
     }
 
-    summarize_errors($chapter);
+    my $has_solutions = summarize_errors($chapter);
 
-    my $generated_pdf = "$DRIVER.pdf";
-    my $target_pdf    = "$chapter.pdf";
+    my $generated_pdf;
+    my $generated_log;
 
-    if ($OPT{include} && $generated_pdf ne $target_pdf) {
+    if ($OPT{include}) {
+        $generated_pdf = "$DRIVER.pdf";
+        $generated_log = "$DRIVER.log";
+    } else {
+        $generated_pdf = "$chapter.pdf";
+        $generated_log = "$chapter.log";
+    }
+
+    my $target_pdf = "$chapter.pdf";
+    my $target_log = "$chapter.log";
+
+    if ($has_solutions) {
+        $target_pdf = "${chapter}sol.pdf";
+        $target_log = "${chapter}sol.log";
+    }
+
+    if ($generated_pdf ne $target_pdf) {
         print "\nMoving $generated_pdf to $target_pdf\n";
 
         rename($generated_pdf, $target_pdf) or do {
             die "Can't rename $generated_pdf to $target_pdf: $!\n";
         };
 
-        print "Moving $DRIVER.log to $chapter.log\n";
+        print "Moving $generated_log to $target_log\n";
 
-        rename "$DRIVER.log", "$chapter.log" or do {
-            die "Can't rename $DRIVER.log to $chapter.log: $!\n";
+        rename($generated_log, $target_log) or do {
+            die "Can't rename $generated_log to $target_log: $!\n";
         };
 
         if ($SAVED_DRIVER_PDF) {
