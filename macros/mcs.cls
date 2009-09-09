@@ -761,7 +761,7 @@
 
 \newcommand{\decideaboutsolutions}{%
     \askaboutsolutions
-    \theoremsunderproblems
+%    \theoremsunderproblems
 }
 
 \newcommand{\showsolutions}{%
