@@ -270,6 +270,8 @@
 
 \newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
 \newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
+\newcommand{\True}{\ensuremath{\mathbf{True}}}
+\newcommand{\False}{\ensuremath{\mathbf{False}}}
 
 \renewcommand{\And}{\wedge}
 \newcommand{\conj}{\And}
@@ -1097,7 +1099,7 @@
   \vfill}
 \newcommand{\useStandardMiniquizPreamble}{
 \renewcommand{\exampreamble}{   % !! renew \exampreamble
-  \textbf{Circle the name of your TA/LA}:
+  \textbf{Circle the name of your TA}:
   \begin{center}
   \renewcommand{\arraystretch}{2.5}
   \begin{tabular}{c}
@@ -1107,7 +1109,7 @@
   \begin{itemize}
 
   \item
-   This quiz is \textbf{closed book}.  Total time is 30 minutes.
+   This quiz is \textbf{closed book}.  Total time is 25 minutes.
 
   \item
    Write your solutions in the space provided.  If you need more
