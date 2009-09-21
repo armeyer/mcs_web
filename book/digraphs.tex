@@ -1,3 +1,201 @@
 \chapter{Directed Graphs}
 
+a\section{Digraphs} 
+
+\hyperdef{directed}{graph}{A \emph{directed graph}} (\emph{digraph} for
+short) is formally the same as a binary relation, $R$, on a set, $A$, but
+we picture the digraph geometrically by representing elements of $A$ as
+points on the plane, with an arrow from the point for $a$ to the point for
+$b$ exactly when $(a,b) \in \graph{R}$.  The elements of $A$ are referred
+to as the \emph{vertices} of the digraph, and the pairs $(a,b) \in
+\graph{R}$ are called its \emph{directed edges}.  We use the notation
+$\diredge{a}{b}$ as an alternative notation for the pair $(a,b)$.
+
+For example, the divisibility relation on $\set{1,2,\dots,12}$ is
+represented by the digraph:
+\begin{figure}[h]
+\centering \includegraphics{figures/divisibility.pdf}
+\caption{The Digraph for Divisibility on $\set{1,2,\dots,12}$.}
+\label{fig:divisibility-digraph}
+\end{figure}
+
+%\hfill
+%\includegraphics{divi2.pdf}
+%{figures/divide12.mps}
+
+\subsection{Paths in Digraphs}\label{paths}
+
+Pictured with points and arrows, a length $k$ path in a digraph looks like
+a line that starts at a point, $a_0$, and traverses $k$ arrows between
+successive points, $a_1,a_2,\dots$ to end at a point, $a_k$.  Note that
+$k$ may be 0 ---a single vertex counts as length zero path to itself, just
+as for simple graphs.  The precise definitions are very similar to those
+for simple graphs:
+
+\begin{definition}
+A \emph{path in a digraph} is a sequence of vertices $a_0,\dots,a_k$ with
+$k \ge 0$ such that $\diredge{a_i}{a_{i+1}}$ is an edge for every $i \geq
+0$ such that $i < k$.  The path is said to \emph{start} at $a_0$, to
+\emph{end} at $a_k$, and the \emph{length} of the path is defined to be
+$k$.  The path is \emph{simple} iff all the $a_i$'s are different, that
+is, $a_i = a_j$ only if $i=j$.
+\end{definition}
+
+Many of the relational properties have geometric descriptions in terms of
+digraphs.  For example:
+\begin{description}
+
+\item[Reflexivity:] All vertices have self-loops (a \emph{self-loop} at a
+vertex is an arrow going from the vertex back to itself).
+
+\item[Irreflexivity:] No vertices have self-loops.
+
+\item[Asymmetry:] No self-loops and at most one (directed) edge between
+any two vertices.
+
+\item[Symmetry:] A binary relation $R$ is
+\hyperdef{graphs}{symmetric}{\term{symmetric}} iff $aRb$ implies $bRa$ for
+all $a,b$ in the domain of $R$.  So if there is an edge from $a$ to $b$,
+there is also one in the reverse direction.  So edges may as well be
+represented without arrows, indicating that they can be followed in either
+direction.
+
+\item[Transitivity:] Short-circuits---for any path through the graph,
+there is an arrow from the first vertex to the last vertex on the path.
+\end{description}
+
+We can define some new relations based on paths.  Let $R$ be the edge
+relation of a digraph.  Define relations $R^*$ and $R^+$ on the vertices
+by the conditions that for all vertices $a,b$:
+\begin{eqnarray*}
+a\, R^*\, b &\eqdef& \mbox{there is a path in $R$ from $a$ to $b$},\\
+a\, R^+\, b &\eqdef& \mbox{there is a positive length path in $R$ from $a$ to $b$}.
+\end{eqnarray*}
+
+$R^*$ is called the \emph{path relation}\footnote{In many texts, $R^*$ is
+called the \emph{transitive closure} of $R$.} of $R$.  It follows from the
+definition of path that $R^*$ is transitive.  It is also reflexive
+(because of the length-zero paths) and it contains the graph of $R$
+(because of the length-one paths).  $R^+$ is called the
+\emph{positive-length path relation}; it also contains $\graph{R}$ and is
+transitive.
+
+\subsection{Computer Representations \iffalse
+of DIgraph\fi
+}
+
+\TBA{Adjacency matrix}, list of edges, list of neighbors, connection matrix.
+$R^k$ and matrx power. 
+
+
+\subsection{Directed Acyclic Graphs}\label{sec:dag}
+
+\begin{definition}
+A \emph{cycle} in a digraph is a path that begins and ends at the same
+vertex.  Note that by convention, a single vertex is considered to be a
+cycle of length 0 that begins and ends at the vertex.  A \emph{directed
+acyclic graph (DAG)} is a directed graph with no positive length cycles.
+
+A \emph{simple cycle} in a digraph is a cycle whose vertices are distinct
+except for the beginning and end vertices.
+\end{definition}
+
+\iffalse
+In contrast to undirected graphs, a single vertex \emph{is} considered to
+be a simple cycle.
+\fi
+
+DAG's are an economical way to represent partial orders.  For example, the
+\href{http://courses.csail.mit.edu/6.042/spring09/ln3.pdf#partial.orders}
+{direct prerequisite} relation between MIT subjects described in Week 3
+Notes was used to determine the partial order of indirect prerequisites on
+subjects.  This indirect prerequisite partial order is precisely the
+positive length path relation of the direct prerequisites.
+
+\begin{lemma}
+If $D$ is a DAG, then $D^+$ is a strict partial order.
+\end{lemma}
+
+\begin{proof}
+We know that $D^+$ is transitive.  Also, a positive length path from a
+vertex to itself would be a cycle, so there are no such paths.  This means
+$D^+$ is irreflexive, which implies it is a strict partial order (see
+\href{http://courses.csail.mit.edu/6.042/spring09/cp3r.pdf}{Week 3,
+Wednesday, Class Problem 2}).
+\end{proof}
+
+It's easy to check that conversely, the graph of any strict partial order
+is a DAG.
+
+\begin{notesproblem}
+Verify that any strict partial order is a DAG.
+
+\solution{
+Suppose the graph representation of a partial order $\prec$ has a cycle
+$a_1,\dots,a_k,a_1$.  Then by transitivity of $\prec$ (with an induction
+hiding inside) we have $a_1 \prec a_k$.  We also have $a_k \prec a_1$.
+This violates the asymmetry of $\prec$, a contradiction.
+}
+\end{notesproblem}
+
+
+The divisibility partial order can also be more economically represented by
+the path relation in a DAG.  \hyperdef{divisibility}{DAG}{A DAG whose
+\emph{path} relation is divisibility} on $\set{1,2,\dots,12}$ is shown in
+Figure~\ref{fig:divisibility-DAG}; the arrowheads are omitted in the
+Figure, and edges are understood to point upwards.
+
+\begin{figure}[h]
+%\centering \includegraphics{figures/divi2.pdf}
+\begin{center}
+\input{figures/divi2.tex}
+\end{center}
+\caption{A DAG whose Path Relation is Divisibility on $\set{1,2,\dots,12}$.}
+\label{fig:divisibility-DAG}
+\end{figure}
+
+The minimum edge DAG whose path relation is a given finite partial order is
+unique, and is easy to find.  This is explained in the following problem.
+
+\begin{notesproblem}
+If $a$ and $b$ are distinct nodes of a digraph, then $a$ is said to
+\emph{cover} $b$ if there is an edge from $a$ to $b$ and there is no other
+path from $a$ to $b$.  If $a$ covers $b$, the edge from $a$ to $b$ is
+called a covering edge.
+
+\bparts
+
+\ppart Show that if two DAG's have the same positive path relation, then
+they have the same set of covering edges.
+
+\iffalse
+
+\ppart Describe two graphs with vertices $\set{1,2}$ which have the same
+set of covering edges, but not the same positive path relation (\hint They
+can't be DAG's.)
+
+\solution{Let one graph have edges $\set{(1,2), (1,1)}$ and the other
+$\set{(1,1),(2,1)}$.  They have the same set of covering edges, namely,
+none.  The reason is that if a vertex is on a positive length cycle, then
+no edge incident to it can be a covering edge.}
+\fi
+
+\ppart For any DAG, $D$, let $\widehat{D}$ be the subgraph of $D$
+consisting of only the covering edges.  Show that if $D$ is finite, then
+$D$ and $\widehat{D}$ have the same positive path relation, that is $D^+ =
+\widehat{D}^+$.
+ 
+\ppart Conclude that if $D$ is a finite DAG, then $\widehat{D}$ is the
+unique DAG with the smallest number of edges among all digraphs with the same
+positive path relation.
+
+\ppart Show that the previous result is not true for the infinite DAG
+corresponding to the total order on the rational numbers.
+
+\solution{In the DAG for $<$ on the $\rationals$, there are no covering
+edges, so $\widehat{<}$ has no edges.}
+
+\eparts
+\end{notesproblem}
+
 \endinput
