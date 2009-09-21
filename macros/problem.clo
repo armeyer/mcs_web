@@ -1,4 +1,4 @@
-\ProvidesFile{problem.opt}
+\ProvidesFile{problem.clo}
 
 \externaldocument{book/mcs}[http://people.csail.mit.edu/meyer/mcs-web/mcs.pdf]
 
@@ -18,6 +18,44 @@
 }{%
     \real@endproblem
     \enddocument
+}
+
+\def\mcs@thm#1#2#3{%
+    \def\mcs@thm@type{#3}%
+    \ifhmode\unskip\unskip\par\fi
+    \normalfont
+    \trivlist
+    \let\thmheadnl\relax
+    \let\thm@swap\@gobble
+    \thm@notefont{\fontseries\mddefault\upshape}%
+    \thm@headpunct{.}% add period after heading
+    \thm@headsep 5\p@ plus\p@ minus\p@\relax
+    \thm@space@setup
+    #1% style overrides
+    \@topsep \thm@preskip               % used by thm head
+    \@topsepadd \thm@postskip           % used by \@endparenv
+    \def\@tempa{#2}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\@begintheorem{#3}{}}[]}%
+    \else
+        \@ifundefined{r@\jobname}{%
+            \refstepcounter{#2}%
+            \def\@tempb{\csname the#2\endcsname}%
+            \def\mcs@thm@type{New #3}%
+        }{%
+            \edef\@tempb{%
+                \@nx\protected@edef\@nx\@tempb{%
+                    \@nx\mcs@get@label\csname r@\jobname\endcsname \@nx\@nil
+                }%
+            }%
+            \@tempb
+            \protected@edef\@currentlabel{\@tempb}%
+        }%
+    \def\@tempa{%
+        \@oparg{\@begintheorem{\mcs@thm@type}{\@tempb}}[]%
+    }%
+    \fi
+    \@tempa
 }
 
 \renewenvironment{pcomments}{

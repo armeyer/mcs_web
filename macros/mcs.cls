@@ -27,6 +27,11 @@
     \def\@class@option@file{handout}%
 }
 
+\DeclareOption{quiz}{%
+    \ExecuteOptions{handout}%
+    \def\@class@option@file{quiz}%
+}
+
 \DeclareOption{problem}{%
     \problemonlytrue
     \handouttrue
@@ -61,6 +66,7 @@
 \RequirePackage{amssymb}
 \RequirePackage{xspace}
 \RequirePackage{graphicx}
+\RequirePackage{keyval}
 \RequirePackage[usenames,dvipsnames]{color}
 \RequirePackage{subfigure}
 \RequirePackage{palatino}
@@ -605,14 +611,35 @@
 
 \newcommand{\pkeywords}{\gobble@text}
 
+\define@key{mcsprob}{points}{\def\mcsprob@points{#1}}
+\define@key{mcsprob}{title}{\def\mcsprob@title{#1}}
+
+\def\mcsprob@points{0}
+\let\mcsprob@title\@empty
+\let\mcsprob@filename\@empty
+
+\newif\if@optional@problem
+\@optional@problemfalse
+
 %% Input a problem.
 
-\newcommand{\pinput}[1]{%
-    \IfFileExists{#1}{%
-        \input{#1}%
-    }{%
-        \ClassWarning{mcs}{Can't find problem `#1'}%
-    }%
+\newcommand{\pinput}{%
+    \begingroup
+        \@optional@problemfalse
+        \@ifstar{\@optional@problemtrue\@pinput}\@pinput
+}
+
+\newcommand{\@pinput}[2][]{%
+        \def\mcsprob@filename{#2}%
+        \let\mcsprob@points\@empty
+        \let\mcsprob@title\@empty
+        \setkeys{mcsprob}{#1}%
+        \IfFileExists{\mcsprob@filename}{%
+            \input{\mcsprob@filename}%
+        }{%
+            \ClassWarning{mcs}{Can't find problem `\mcsprob@filename'}%
+        }%
+    \endgroup
 }
 
 %% The basic problem environment.
@@ -645,16 +672,58 @@
                 {\bfseries}                 % head style
                 {.}                         % post-head punct
                 {\newline}                  % post-head space
-                {% custom head-spec
-    \thmname{#1}%
-    \thmnumber{\@ifnotempty{#1}{\pdf@problem@bookmark\space}\@upn{#2}}%
-    \thmnote{ {\the\thm@notefont(#3)}}%
-}                          
+                {\mcs@problem@heading{#1}{#2}{#3}}% custom head-spec
 
 \theoremstyle{problem}
 
 \newtheorem{problem}{Problem}[chapter]
 \newtheorem*{problem*}{Problem}
+
+\def\problem{%
+    \mcs@thm{\let\thm@swap\@gobble\th@problem}{problem}{Problem}%
+}
+
+\def\mcs@get@label#1#2\@nil{#1}
+
+\def\mcs@thm#1#2#3{%
+    \ifhmode\unskip\unskip\par\fi
+    \normalfont
+    \trivlist
+    \let\thmheadnl\relax
+    \let\thm@swap\@gobble
+    \thm@notefont{\fontseries\mddefault\upshape}%
+    \thm@headpunct{.}% add period after heading
+    \thm@headsep 5\p@ plus\p@ minus\p@\relax
+    \thm@space@setup
+    #1% style overrides
+    \@topsep \thm@preskip               % used by thm head
+    \@topsepadd \thm@postskip           % used by \@endparenv
+    \def\@tempa{#2}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\mcs@begintheorem{#3}{}}[]}%
+    \else
+        \refstepcounter{#2}%
+        \ifx\mcsprob@filename\@empty\else
+            \label\mcsprob@filename
+        \fi
+        \def\@tempa{\@oparg{\mcs@begintheorem{#3}{\csname the#2\endcsname}}[]}%
+    \fi
+    \@tempa
+}
+
+\def\mcs@begintheorem#1#2[#3]{%
+    \ifx\mcsprob@title\@empty
+        \@begintheorem{#1}{#2}[#3]%
+    \else
+        \@begintheorem{#1}{#2}[\mcsprob@title]%
+    \fi
+}
+
+\def\mcs@problem@heading#1#2#3{%
+    \thmname{#1}%
+    \thmnumber{\@ifnotempty{#1}{\pdf@problem@bookmark\space}\@upn{#2}}%
+    \thmnote{ {\the\thm@notefont(#3)}}%
+}
 
 %%% Notes problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -1159,16 +1228,16 @@
 \newcounter{examtotal}
 \newcommand{\examtablecontents}{}
 
-\newenvironment{examproblem}[1]
-  {% Formatting : 
-   \vspace{\problemsep}
-   \begin{problem}[\textbf{#1 point\ifthenelse{1=#1}{}{s}}]%
-   \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
-   \setlength{\parindent}{0pt}%
-   % Updating .aux file :
-   \examtableupdate{#1}%
-   \examtotalupdate{#1}}
-  {\end{problem}}
+%%  \newenvironment{examproblem}[1]
+%%    {% Formatting : 
+%%     \vspace{\problemsep}
+%%     \begin{problem}[\textbf{#1 point\ifthenelse{1=#1}{}{s}}]%
+%%     \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
+%%     \setlength{\parindent}{0pt}%
+%%     % Updating .aux file :
+%%     \examtableupdate{#1}%
+%%     \examtotalupdate{#1}}
+%%    {\end{problem}}
 
 \newcommand{\examtableupdate}[1]{%
     \immediate\unexpandedwrite\@auxout{%
@@ -1353,7 +1422,7 @@
 
 \newcommand{\quiz}[2][\stamp]{%
     \theoremsunderproblems
-  \useexamproblems
+  %\useexamproblems
   \ifshowsolutions
     \paper[#1]{qus#2}{}{Solutions to Quiz #2}
   \else
@@ -1361,8 +1430,8 @@
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
-    \theoremsunderproblems
-  \useexamproblems
+     \theoremsunderproblems
+   %\useexamproblems
   \ifshowsolutions
     \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
   \else
@@ -1385,7 +1454,7 @@
 %
 \newcommand{\practicequiz}[2][\stamp]{%
     \theoremsunderproblems
-  \useexamproblems
+  %\useexamproblems
   \ifshowsolutions
     \paper[#1]{pqs#2}{}{Solutions to Practice Quiz #2}
   \else
@@ -1408,7 +1477,7 @@
 %
 \newcommand{\final}[1][\stamp]{%
     \theoremsunderproblems
-  \useexamproblems
+  %\useexamproblems
   \ifshowsolutions
     \paper[#1]{fes}{}{Solutions to the Final Examination}
   \else
@@ -1417,7 +1486,7 @@
 
 \newcommand{\conflictfinal}[1][\stamp]{%
     \theoremsunderproblems
-  \useexamproblems
+  %\useexamproblems
   \ifshowsolutions
     \paper[#1]{cfes}{}{Solutions to the Conflict Final}
   \else
@@ -1441,7 +1510,7 @@
 %
 \newcommand{\practiceexam}[2][\stamp]{%
     \theoremsunderproblems
-  \useexamproblems
+  %\useexamproblems
   \ifshowsolutions
     \paper[#1]{pes#2}{}{Solutions to Practice Exam #2}
   \else
