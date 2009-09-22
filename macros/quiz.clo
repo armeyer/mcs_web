@@ -3,21 +3,33 @@
 \input handout.clo
 
 \renewcommand{\problempart}[1][0]{%
-    \item(#1 point\ifthenelse{1=#1}{}{s})\;%
+    \item\print@points({)\;}#1%
 }%
 
 \def\problem{%
     \mcs@thm{\let\thm@swap\@gobble\th@problem}{problem}{Problem}%
     \ifx\mcsprob@points\else
         \examtableupdate\mcsprob@points
-        \examtotalupdate\mcsprob@points
     \fi
 }
 
 \def\mcs@begintheorem#1#2[#3]{%
-    \@begintheorem{#1}{#2}[\textbf{\mcsprob@points\ point\ifthenelse{1=\mcsprob@points}{}{s}}]%
+    \@begintheorem{#1}{#2}[\textbf{\print@points\@empty\@empty\mcsprob@points}]%
     \examtableupdate\mcsprob@points
-    \examtotalupdate\mcsprob@points
+}
+
+\def\mcs@thm@#1#2{%
+    \def\@tempa{#1}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{}}[]}%
+    \else
+        \refstepcounter{#1}%
+        \ifx\mcsprob@filename\@empty\else
+            \label\mcsprob@filename
+        \fi
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{\csname the#1\endcsname}}[]}%
+    \fi
+    \@tempa
 }
 
 \endinput

@@ -688,6 +688,7 @@
 \def\mcs@get@label#1#2\@nil{#1}
 
 \def\mcs@thm#1#2#3{%
+    \def\mcs@thm@type{#3}%
     \ifhmode\unskip\unskip\par\fi
     \normalfont
     \trivlist
@@ -700,15 +701,19 @@
     #1% style overrides
     \@topsep \thm@preskip               % used by thm head
     \@topsepadd \thm@postskip           % used by \@endparenv
-    \def\@tempa{#2}%
+    \mcs@thm@{#2}{#3}%
+}
+
+\def\mcs@thm@#1#2{%
+    \def\@tempa{#1}%
     \ifx\@empty\@tempa
-        \def\@tempa{\@oparg{\mcs@begintheorem{#3}{}}[]}%
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{}}[]}%
     \else
-        \refstepcounter{#2}%
+        \refstepcounter{#1}%
         \ifx\mcsprob@filename\@empty\else
             \label\mcsprob@filename
         \fi
-        \def\@tempa{\@oparg{\mcs@begintheorem{#3}{\csname the#2\endcsname}}[]}%
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{\csname the#1\endcsname}}[]}%
     \fi
     \@tempa
 }
@@ -725,6 +730,23 @@
     \thmname{#1}%
     \thmnumber{\@ifnotempty{#1}{\pdf@problem@bookmark\space}\@upn{#2}}%
     \thmnote{ {\the\thm@notefont(#3)}}%
+}
+
+\def\print@points#1#2{%
+    \begingroup
+        \def\@tempa{#1}%
+        \def\@tempb{#2}%
+        \afterassignment\print@points@
+        \@tempcnta=
+}
+
+\def\print@points@{%
+        \ifnum\@tempcnta = \z@\else
+            \@tempa
+            \the\@tempcnta\ point\ifnum\@tempcnta=\@ne\else s\fi
+            \@tempb
+        \fi
+    \endgroup
 }
 
 %%% Notes problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1119,15 +1141,40 @@
   \item
    GOOD LUCK!
   \end{itemize}}}
-\newcommand{\examtable}{
-  \vfill
-  \begin{center}
-  This is where the grades table is supposed to be printed. Compile
-  the paper once more to get it right. See \texttt{course.sty} for
-  details.
-  \end{center}%
-  \message{^^JGrades table was *NOT PRINTED*.^^J^^J}
-  \vfill}
+
+\newcommand{\examtable}{%
+    \ifx\examtablecontents\@empty
+        \vfill
+        \begin{center}
+        This is where the grades table is supposed to be printed. Compile
+        the paper once more to get it right. See \texttt{course.sty} for
+        details.
+        \end{center}
+        \message{^^JGrades table was *NOT PRINTED*.^^J^^J}
+        \vfill
+    \else
+        \print@examtable
+    \fi
+}
+
+\def\print@exam@line#1#2{%
+    \global\advance\@tempcnta #2\relax
+    #1&#2&&\\\hline
+}
+
+\def\print@examtable{%
+    \begin{center}
+        \let\@elt\print@exam@line
+        \@tempcnta\z@
+        \renewcommand{\arraystretch}{1.5}
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            Problem & Points & Grade  & Grader \\\hline\hline
+            \examtablecontents                   \hline
+            Total   & \the\@tempcnta & &        \\\hline
+        \end{tabular}
+    \end{center}
+}
 
 % Formats the cover sheet (for the student's solutions) provided at
 % the end of every problem set, given the problem set number. 
@@ -1227,46 +1274,23 @@
 % compile the paper twice; the second time the correct grades table
 % will appear on the front page of the exam.
 %
-\newcounter{examtotal}
-\newcommand{\examtablecontents}{}
+\let\examtablecontents\@empty
 
-%%  \newenvironment{examproblem}[1]
-%%    {% Formatting : 
-%%     \vspace{\problemsep}
-%%     \begin{problem}[\textbf{#1 point\ifthenelse{1=#1}{}{s}}]%
-%%     \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
-%%     \setlength{\parindent}{0pt}%
-%%     % Updating .aux file :
-%%     \examtableupdate{#1}%
-%%     \examtotalupdate{#1}}
-%%    {\end{problem}}
-
-\newcommand{\examtableupdate}[1]{%
-    \immediate\unexpandedwrite\@auxout{%
-        \g@addto@macro\examtablecontents{%
-            \stepcounter{problem}%
-            \theproblem&#1&&\\\hline
-        }%
-    }%
+\newcommand{\examtableupdate}{%
+    \begingroup
+        \afterassignment\examtableupdate@
+        \@tempcnta=
 }
 
-\newcommand{\examtotalupdate}[1]{
-   \immediate\unexpandedwrite\@auxout{%
-     \addtocounter{examtotal}{#1}}}
-
-\newcommand{\examtableupdatefinish}{%
-     \unexpandedwrite\@auxout{%
-        \gdef\examtable{
-          \begin{center}
-          \renewcommand{\arraystretch}{1.5}
-          \begin{tabular}{|c|c|c|c|}           \hline
-          Problem & Points & Grade  & Grader \\\hline\hline
-          \examtablecontents                   \hline
-          Total   & \theexamtotal & &        \\\hline
-          \end{tabular}
-          \end{center}
-          \setcounter{problem}{0}}}}
-\AtEndDocument{\examtableupdatefinish}
+\newcommand{\examtableupdate@}{%
+        \let\@elt\relax
+        \protected@write\@auxout{}{%
+            \protect\g@addto@macro\protect\examtablecontents{%
+                 \protect\@elt{\theproblem}{\the\@tempcnta}%
+             }%
+         }%
+    \endgroup
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting a paper %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1309,7 +1333,8 @@
 %
 
 \newcommand{\exampaper}[3][\stamp]{%
-  \formatexampages[#1]{#3}{\releasedateofpaper{#2}}}
+    \formatexampages[#1]{#3}{\releasedateofpaper{#2}}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting lecture notes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1432,13 +1457,13 @@
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
-     \theoremsunderproblems
-   %\useexamproblems
-  \ifshowsolutions
-    \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
-  \else
-    \exampaper[#1]{mqu#2}{Mini-Quiz #2}
-  \fi}
+    \theoremsunderproblems
+    \ifshowsolutions
+        \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
+    \else
+        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
+    \fi
+}
 
 % Starts a Practice Quiz, given its number. Asks whether solutions
 % should be included. If the answer is yes, the corresponding
