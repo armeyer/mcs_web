@@ -1,0 +1,117 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+## CATCODE CATEGORIES
+
+my $ESCAPE      = qr{\\};                               #  0
+my $BEGIN_GROUP = qr/\{/;                               #  1
+my $END_GROUP   = qr/\}/;                               #  2
+my $MATH_SHIFT  = qr{\$};                               #  3
+my $ALIGNMENT   = qr{&};                                #  4
+my $END_OF_LINE = qr{\r};                               #  5
+my $PARAMETER   = qr{\#};                               #  6
+my $SUPERSCRIPT = qr{[\^]};                             #  7
+my $SUBSCRIPT   = qr{_};                                #  8
+my $IGNORED     = qr{\x7F};                             #  9 [*]
+my $SPACE       = qr{[ \t]};                            # 10
+my $LETTER      = qr{(?: [a-zA-Z] )}smx;                # 11
+my $OTHER       = qr{[\n!\"\'-\@\[\]\`|\x80-\xFF]};     # 12
+my $ACTIVE      = qr{[~\f]};                            # 13
+my $COMMENT     = qr{[%]};                              # 14
+my $INVALID     = qr{[\x01-\x08\x0B\x0E-\x1F\x7F]};     # 15 [**]
+
+## [*] Unlike plain TeX, in LaTeX, DEL (\x7F) is actually INVALID, not
+## IGNORED and, in fact, there are no IGNORED characters in LaTeX.
+## However, it would be pedagogically awkward to have $IGNORED be the
+## null pattern, so in a petulant attempt to have my cake and eat it
+## too, I've listed DEL as both IGNORED and INVALID.  In input_line,
+## I'll process $INVALID first, so this will have no effect on the
+## output of the parser.
+
+## [**] NUL is not here.
+
+## These are the characters that can appear as control symbol names.
+
+my $NON_LETTER  = qr{
+    (?: $ESCAPE | $BEGIN_GROUP | $END_GROUP | $MATH_SHIFT
+     | $ALIGNMENT | $PARAMETER | $SUPERSCRIPT | $SUBSCRIPT
+     | $SPACE | $OTHER | $ACTIVE | $COMMENT )
+}smx;
+
+my $CONTROL_WORD     = qr{ $ESCAPE ( $LETTER+ ) }smx;
+
+my $CONTROL_SYMBOL   = qr{ $ESCAPE ( $NON_LETTER ) }smx;
+
+my $CONTROL_SEQUENCE = qr{ (?: $CONTROL_SYMBOL | $CONTROL_WORD ) }smx;
+
+my $BALANCED_TEXT;
+
+{
+    use re 'eval';
+
+    $BALANCED_TEXT = qr{
+        (?> $CONTROL_SEQUENCE | [^{}]+ | \{ (??{ $BALANCED_TEXT }) \} )*
+    }smx;
+}
+
+sub do_svn( $ ) {
+    my $cmd = shift;
+
+    my $status = system("svn $cmd");
+
+    # It's probably ok if these fail, so don't bother checking.
+
+    # if ($status != 0) {
+    #     warn "";
+    # }
+
+    return;
+}
+
+sub process_problem( $ ) {
+    my $file = shift;
+
+    do_svn("add $file");
+
+    do_svn("propset svn:eol-style native $file");
+
+    do_svn("commit -m 'Imported $file' $file");
+
+
+    my $backup = "$file~";
+
+    rename($file, $backup) or die "Can't rename $file to $backup: $!\n";
+
+
+    open(my $in, "<", $backup) or die "Can't open $backup: $!\n";
+
+    local $/ = undef;
+
+    my $contents = <$in>;
+
+    close($in);
+
+
+    $contents =~ s{\\solution \s* \{ \s* ($BALANCED_TEXT) \s* \} }
+                  {\\begin{solution}\n$1\n\\end{solution}}smxg;
+
+
+    open(my $out, ">", $file) or die "Can't overwrite $file: $!\n";
+
+    print { $out } $contents;
+
+    close($out);
+
+
+    do_svn("commit -m 'Converted solutions markup' $file");
+
+    return;
+}
+
+while (my $file = shift) {
+    process_problem($file);
+}
+
+__END__
