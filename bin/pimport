@@ -56,6 +56,14 @@ my $BALANCED_TEXT;
     }smx;
 }
 
+my $OLD_PREAMBLE = q{\input{latex-macros/handout-preamble.tex}
+\inhandout{
+\decideaboutsolutions
+\usesimpleproblems
+}};
+
+my $OLD_POSTAMBLE = q{\input{latex-macros/handout-postamble.tex}};
+
 sub do_svn( $ ) {
     my $cmd = shift;
 
@@ -93,10 +101,12 @@ sub process_problem( $ ) {
 
     close($in);
 
+    $contents =~ s{\Q$OLD_PREAMBLE\E\s*}{\\documentclass[problem]{mcs}\n\n}smx;
 
     $contents =~ s{\\solution \s* \{ \s* ($BALANCED_TEXT) \s* \} }
                   {\\begin{solution}\n$1\n\\end{solution}}smxg;
 
+    $contents =~ s{\Q$OLD_POSTAMBLE\E\s*}{\\endinput\n};
 
     open(my $out, ">", $file) or die "Can't overwrite $file: $!\n";
 
