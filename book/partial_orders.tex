@@ -2,16 +2,13 @@
 
 \chapter{Partial Orders}
 
-In this chapter we'll focus on \emph{partial orders}, which are a class of
-binary relations of particular importance in Computer Science, with direct
-applications that include task scheduling, database concurrency control,
-and proving that computations terminate.
+Partial orders are a kind of binary relation that come up a lot.  The
+familiar $\leq$ order on numbers is a kind of partial order, but so is the
+containment relation on sets and the divisibility relation on integers.
 
-The idea of an ordering relation is already familiar to you -- the 
-``less-than'' relation on the integers captures the idea of precedence 
-required to order the set from smallest to largest.  Here we will 
-generalize this notion to analyze orderings on more complicated sets.
-
+Partial orders have particular importance in Computer Science because they
+capture key concepts used, for example, in solving task scheduling
+problems, analyzing concurrency control, and proving program termination.
 
 %% Axioms for Partial Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Axioms for Partial Orders}
@@ -144,63 +141,76 @@ For integers, $m,n$ we write $m \divides n$ to mean that $m$
 The divides relation is a weak partial order on the nonnegative integers.
 \end{example}
 
-%% Axioms for Partial Orders Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\startclassproblems
-\pinput{CP_prerequisite_relation}
-\pinput{CP_transitive_irreflexive_implies_SPO}
-\pinput{CP_binary_relations_on_01}
-
-
-%% Representing Partial Orders by Set Containment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Representing Partial Orders by Set Containment}
-
-When a class of objects are defined by axioms, like the axioms for partial
-orders, it can help to have a way to ``represent'' them explicitly by
-known objects.  Partial orders can be represented by the subset relation
-on a collection of sets.  Namely, if $R$ is a weak partial order on a set,
-$A$, we can let each element $a \in A$ correspond to the set $R\set{a}$.
-
-\TBA{INSERT EXAMPLE}
-
-In this way we have completely captured the weak partial
-order $R$ by the subset relation on the corresponding sets.  Formally, we
-have
-\begin{lemma}\label{rgb}
-\begin{enumerate}
-\item the mapping from $a$ to $R\set{a}$ is an injection
-\item $a \mrel{R} b  \qiff  R\set{a} \subseteq R\set{b}$
-for all $a,b \in A$.
-\end{enumerate}
-\end{lemma}
-A similar
-correspondence shows that strict partial orders can be represented by the
-proper subset relation, $\subset$.
-
-
-\TBA{move to pset probs}
-
-\begin{notesproblem}
-Prove the Lemma~\ref{rgb}.
-\end{notesproblem}
-
-\begin{notesproblem}
-Verify that the relations in Examples~\ref{supset} and~\ref{divides} are
-partial orders.
-\end{notesproblem}
-
-\begin{definition}
-  A relation, $R$, on a set, $A$, is \emph{irreflexive} iff $\QNOT(a
-  \mrel{R} a)$ for all $a \in A$.
-\end{definition}
-
-\TBA{create quickie environment}
-\textbf{Quick exercise:}  Why doesn't divisibility define a partial order
+\textbf{Quick question:}  Why doesn't divisibility define a partial order
 on the integers rather than the nonnegative integers?
 \medskip
 
-%% Representing Partial Orders by Set Containment Problems %%%%%%%%%%%%%%%%%%%%
-%\startclassproblems
-%\pinput{CP_}
+\begin{problems}
+\classproblems
+\pinput{CP_divisibility_partial_order}
+\pinput{CP_binary_relations_on_01}
+\pinput{CP_prerequisite_relation}
+\pinput{CP_transitive_irreflexive_implies_SPO}
+\pinput{CP_inverse_partial_order}
+
+\end{problems}
+
+\section{Representing Partial Orders by Set Containment}
+
+Axioms can be a great way to abstract and reason about important
+properties of objects, but it helps to have a clear picture of the things
+that satisfy the axioms.  We'll show that every partial order can be
+pictured as a collection of sets related by containment.  That is, every
+partial order has the ``same shape'' as such a collection.  The technical
+word for ``same shape'' is ``isomorphic.''
+
+\begin{definition}\label{relation-isomorphism}
+  A binary relation, $R$, on a set, $A$, is
+  \term{isomorphic to} a relation, $S$, on a set $D$ iff there is a
+  relation-preserving bijection from $A$ to $D$.  That is, there is
+  bijection $f:A \to D$, such that for all $a,a' \in A$,
+  \[
+  a \mrel{R} a'\ \qiff\ f(a) \mrel{S} f(a').
+  \]
+\end{definition}
+
+\begin{theorem}
+Every partial order, $\preceq$, is isomorphic to the subset relation,
+$\subseteq$, on a collection of sets.
+\end{theorem}
+
+To picture a partial order, $\preceq$, on a set, $A$, as a collection of
+sets, we simply represent each element $A$ by the set of elements
+that are $\preceq$ to that element, that is,
+\[
+a \corresp \set{b \in A \suchthat b \preceq a}.
+\]
+For example, if $preceq$ is the divisibility relation on the set of
+integers, $\set{1,3,4,6,8,12}$, then we represent each of these integers
+by the set of integers in $A$ that divides it.  So
+\begin{align*}
+1 & \corresp \set{1}\\
+3 & \corresp \set{1,3}\\
+4 & \corresp \set{1,4}\\
+6 & \corresp \set{1,3,6}\\
+8 & \corresp \set{1,4,8}\\
+12 & \corresp \set{1,3,4,6, 12}
+\end{align*}
+So, the fact that $3 \divides 12$ corresponds to the fact that $\set{1,3}
+\subseteq \set{1,3,4,6, 12}$.
+
+In this way we have completely captured the weak partial order $\preceq$ by the
+subset relation on the corresponding sets.  Formally, we have
+\begin{lemma}\label{rgb}
+Let $\preceq$ be a weak partial order on a set, $A$.  Then $\preceq$ is
+isomorphic to the subset relation, $\subseteq$ on the the collection of
+inverse images $\preceq\set{a}$ of elements $a \in A$.
+\end{lemma}
+
+\begin{problems}
+\homeworkproblems
+\pinput{PS_partial_order_isomorphic_to_subset}
+\end{problems}
 
 
 %% Total Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,21 +280,15 @@ transitive, then so is $R_1 \cross R_2$.  The same holds for reflexivity,
 irreflexivity, and antisymmetry.  This implies that if $R_1$ and $R_2$ are
 both partial orders, then so is $R_1 \cross R_2$.
 
-\iffalse
-\textbf{Quick Exercise:} Verify that if \emph{either} of $R_1$ or $R_2$ is
-irreflexive, then so is $R_1 \cross R_2$.
-\medskip
-\fi
-
 On the other hand, the property of being a total order is not preserved.
 For example, the age-height relation $Y$ is the product of two total
 orders, but it is not total: the age 240 months, height 68 inches pair,
 (240,68), and the pair (228,72) are incomparable under $Y$.
 
-%% Product Orders Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\startclassproblems
-%\pinput{CP_}
-
+\begin{problems}
+\classproblems
+\pinput{CP_product_relation_properties}
+\end{problems}
 
 %% Scheduling %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scheduling}
@@ -395,37 +399,12 @@ So our construction shows:
 Every partial order on a finite set has a topological sort.
 \end{theorem}
 
-In fact, the domain of the partial order need not be finite: we won't 
-prove it, but \emph{all} partial orders, even infinite ones, have 
-topological sorts.
-
 There are many other ways of constructing topological sorts.  For example,
 instead of starting ``from the bottom'' with minimal elements, we could
-start ``from the top'' by picking \term{maximal} elements:
-
-\begin{definition}
-Let $\preceq$ be a partial order on a set, $A$.  An element $a \in A$ is
-\term{maximum} iff every other element of $A$ is $\preceq a$.  The element
-$a$ is \term{maximal} iff $a$ is not $\preceq$ to other element.
-\end{definition}
-
-
-\TBA{Move this to a CP...}
-
-\begin{notesproblem}
-
-\bparts
-
-\ppart
-Prove that there is at most one minim\emph{um} element in any partial
-order.
-
-\ppart Give an example of a partial order with exactly one minimal
-element, but no minimum element.  \hint It will have to be infinite.
-
-\eparts
-\end{notesproblem}
-
+build a total starting \emph{anywhere} and simply keep putting additional
+elements into the total order wherever they will fit.  In fact, the domain
+of the partial order need not be finite: we won't prove it, but \emph{all}
+partial orders, even infinite ones, have topological sorts.
 
 \subsection{Parallel Task Scheduling}
 
@@ -563,7 +542,7 @@ ending at $a$, we obtain a chain of size $i+1$ ending at $b$,
 contradicting the assumption that $b\in B_i$.
 \end{proof}
 
-\subsection{Dilworth's Lemma}
+\section{Dilworth's Lemma}
 
 We can use the Corollary~\ref{cor:parallel} to prove a famous
 result\footnote{Lemma~\ref{lem:Dilworth} also follows from a more general
@@ -627,6 +606,6 @@ which makes for an amusing in-class demo.
 
 \end{problems}
 
-\TBA{Conclusion...}
+%\TBA{Conclusion...}
 
 \endinput

@@ -420,6 +420,11 @@
 
 \newcommand{\inv}[1]{#1^{-1}}
 
+\newcommand{\surj}{\mrelt{surj}}
+\newcommand{\inj}{\mrelt{inj}}
+\newcommand{\bij}{\mrelt{surj}}
+\newcommand{\strict}{\mrelt{strict}}
+
 \iffalse
 \newcommand{\ms}[1]{\text{#1}}
 \newcommand{\tg}{\text{2PTG}}
