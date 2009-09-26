@@ -4,7 +4,7 @@
 
 \begin{pcomments}
   \pcomment{from: S06.cp2f; revised by ARM 9/20/09}
-  \pcomments{needs Russell paradox in Appendix}
+  \pcomments{needs handy copy of Russell paradox or Theorem~ref{powbig}}
 \end{pcomments}
 
 \pkeywords{
@@ -19,8 +19,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-\bparts
-
 Let's refer to a programming procedure (written in your favorite
 programming language ---C++, or Java, or Python, \dots) as a \term{string
   procedure} when it is applicable to data of type \texttt{string} and
@@ -29,21 +27,21 @@ $P$, applied to a \texttt{string}, $s$, returns \True, we'll say that $P$
 \term{recognizes} $s$.  If $\mathcal{R}$ is the set of strings that $P$
 recognizes, we'll call $P$ a \term{recognizer} for $\mathcal{R}$.
 
-\ppart Describe how a recognizer for the set of strings that are the
-arabic (decimal) numeral for an odd number would work.  (Even better,
-actually write a recognizer procedure in your favorite programming
+\bparts
+
+\ppart\label{odd_numeral} Describe how a recognizer for the set of strings
+that are the arabic (decimal) numeral for an odd number would work.  (Even
+better, actually write a recognizer procedure in your favorite programming
 language).
 
 \begin{solution}
-  Of course if your programming language has a built-in
+  Of course if your programming language has a commonly built-in
   \texttt{string->number} procedure, this is trivial: when applied to an
   input \texttt{string}, $s$, your procedure applies
   \texttt{string->number} to $s$ and checks that the resulting number is
-  odd.
-
-  Now not many languages have such a \texttt{string->number} procedure,
-  but it wouldn't be hard to write such a procedure and then to use it as
-  above.
+  odd.  (Better watch out though, how does your built-in procedure handle
+  strings with leading zeros? ---the arabic numeral for 170 is
+  ``\texttt{170},'' not ``\texttt{00017}.'')
 
   There's also a simpler approach than writing a general
   \texttt{string->number} procedure.  All the standard programming
@@ -63,18 +61,48 @@ there is a recognizer procedure for it.
 When you actually program a procedure, you have to type the program text
 into a computer system.  This means that every procedure is described by
 some \texttt{string} of typed characters.  If a \texttt{string}, $s$, is
-actually the typed description of some string procedure, let's refer to that
-procedure as $P_s$.
+actually the typed description of some string procedure, let's refer to
+that procedure as $P_s$.  You can think of $P_s$ as the result of
+compiling $s$.\footnote{The string, $s$, and the procedure, $P_s$, have to
+  be distinguished to avoid a type error: you can't apply a string to
+  string.  For example, let $s$ be the string that you wrote as your
+  program to answer part~\eqref{odd_numeral}.  Applying $s$ to a string
+  argument, say \texttt{27309}, should throw a type exception; what you
+  need to do is apply the procedure $P_s$ to \texttt{27309}.  This should
+  result in a returned value \True, since \texttt{27309} is the numeral for
+  an odd number.}
 
 In fact, it will be helpful to associate every string, $s$, with a
 procedure, $P_s$; we can do this by defining $P_s$ to be some fixed string
 procedure ---it doesn't matter which one ---whenever $s$ is not the typed
-description of an actual \texttt{string} procedure.
+description of an actual procedure that can be applied to
+\texttt{string}s.  The result of this is that we have now defined a total
+function, $f$, mapping every \texttt{string}, $s$, to the set, $f(s)$, of
+\texttt{string}s recognized by $P_s$.  That is we have a total function,
+\begin{equation}\label{f:s-to-Ps}
+f: \mtt{string} \to \power(\mtt{string}).
+\end{equation}
 
-We're going to define a set, $\mathcal{N}$, of strings that is \emph{not}
-recognizable.  The definition of $\mathcal{N}$ is based on the proof of
-Rusell's Paradox, and involves applying string procedures to \emph{their
-  own descriptions}.
+\bparts
+
+\ppart
+Explain why the actual range of $f$ is the set of all recognizable sets of
+strings.
+
+\begin{solution}
+Since $f(s)$ is the set of strings recogized by $P_s$, everything in
+$\range{f}$ is a recogizable set.  Conversely,  every recogizable set is
+in $\range{f}$: if $\mathcal{R}$ is a recognizable
+set, then by definition, there is a procedure, $P$, that recognizes $R$.  So
+if $r$ is the input program from which $P$ was compiled, then
+$\mathcal{R} = f(r)$.
+\end{solution}
+
+\eparts
+
+This is exactly the set up we need to apply the reasoning behind Russell's
+Paradox to define a set that is not in the range of $f$, that is, a set of
+strings, $\mathcal{N}$, that is \emph{not} recognizable.
 
 \bparts
 
@@ -115,6 +143,12 @@ P_w\text{ applied to $w$ does not return \True}
 
 This contradiction implies that the assumption that $\mathcal{N}$ was
 recognizable must be false.
+
+Notice that $\mathcal{N}$ could have been described as $\set{s \in
+  \texttt{string} \suchthat s \not f(s)}$ for $f$ defined
+in~\eqref{f:s-to-Ps}.  Using this description of $\mathcal{N}$, the proof
+above would be exactly the same as the proof in the Notes of
+Theorem~\ref{powbig} that the powerset of $A$ is strictly bigger than $A$.
 \end{solution} 
 
 \ppart Discuss what the conclusion of part~\eqref{Ps-to-s} implies about
@@ -157,8 +191,8 @@ as inputs and analyze their behavior.
   logically impossible to write analyzers for completely general programs
   does not mean that you can't do a very good job analyzing interesting
   programs that come up in practice.  In fact these ``interesting''
-  programs are commonly intended to be analyzable in order to confirm that
-  they do what they're supposed to do.
+  programs are commonly \emph{intended} to be analyzable in order to
+  confirm that they do what they're supposed to do.
 
   So it's not clear how much of a hurdle this theoretical limitation
   implies in practice.  What the theory does provide is some perspective
@@ -166,13 +200,13 @@ as inputs and analyze their behavior.
   us that people who make such claims either
 
 \begin{itemize}
-\item are exaggerating the power (if any) of their methods to make a sale,
-  or
+\item are exaggerating the power (if any) of their methods ---say to get a
+  grant or make a sale, or
 
-  \item are trying to keep things simple by not going into the technical
-    limitations they're aware of, or
+\item are trying to keep things simple by not going into technical
+  limitations they're aware of, or
 
-  \item perhaps most commonly, are so excited about some useful practical
+\item perhaps most commonly, are so excited about some useful practical
     successes of their methods, that they haven't bothered to think about
     their limitations.
 \end{itemize}  
