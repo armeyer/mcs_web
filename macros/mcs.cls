@@ -668,7 +668,7 @@
 }
 
 \def\pdf@problem@bookmark{%
-    \pdfbookmark[1]{Problem~\theproblem}{Problem\theproblem}%
+    \pdfbookmark[1]{Problem~\@currentlabel}{Problem \@currentlabel}%
 }
 
 \newtheoremstyle{problem}
