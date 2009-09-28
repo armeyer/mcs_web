@@ -348,7 +348,8 @@
 \newcommand{\codomain}[1]{\mathop{\textup{codomain}}\nolimits\left(#1\right)}
 \newcommand{\graph}[1]{\mathop{\textup{graph}}\nolimits\left(#1\right)}
 
-\newcommand{\degr}[1]{\text{deg}(#1)}
+%\newcommand{\degr}[1]{\text{deg}(#1)}
+\newcommand{\degr}[1]{\mathop{\textup{deg}}\nolimits\left(#1\right)}
 
 %% Math -- Languages
 
