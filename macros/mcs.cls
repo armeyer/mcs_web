@@ -675,7 +675,7 @@
 \newtheoremstyle{problem}
                 {\problemsep}               % preskip
                 {\problemsep}               % postskip
-                {\normalfont\parindent\z@}  % body style
+                {\normalfont}               % body style
                 {0pt}                       % indent
                 {\bfseries}                 % head style
                 {.}                         % post-head punct
@@ -765,7 +765,7 @@
 \newtheoremstyle{notesproblem}
                 {\problemsep}               % preskip
                 {\problemsep}               % postskip
-                {\normalfont\parindent\z@}  % body style
+                {\normalfont}               % body style
                 {0pt}                       % indent
                 {\bfseries}                 % head style
                 {:}                         % post-head punct
@@ -1610,7 +1610,11 @@
 \hoffset        = -1.0 in
 \voffset        = -1.25 in
 
-\setlength{\parindent}{0.125in}                     
+% An indent of 1/8" (9pt) is far too little.  For this textwidth, you
+% want a minimum of 1em (10pt) and something approaching 2em wouldn't
+% be out of the question.  The LaTeX default of 15pt is pretty good.
+
+%\setlength{\parindent}{0.125in}
 \setlength{\parskip}{0in}            
 \paperheight    =  9.0 in
 \paperwidth     =  7.0 in
