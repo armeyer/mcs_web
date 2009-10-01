@@ -1,6 +1,5 @@
 FORMAT = ../bin/format
 
-
 export DRIVER_FILE = mcs
 
 book: $(DRIVER_FILE)
@@ -36,5 +35,3 @@ veryclean: clean
 
 showsolutions hidesolutions asksolutions:
 	$(MAKE) -C .. $@
-
-# 000010160008
