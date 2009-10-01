@@ -1,0 +1,175 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: F06.ps8}
+\end{pcomments}
+
+\pkeywords{
+   %I don't know the format for these keywords, how do I look them up?
+	recursion
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem} %from Leighton's PS8
+Less well-known than the Towers of Hanoi--- but no less fascinating---
+are Towers of Sheboygan, WI.  As in Hanoi, the puzzle in Sheboygan
+involves 3 posts and $n$ disks of different sizes.  Initially, all the
+disks are on post \#1:
+
+\begin{center}
+\unitlength=0.6pt
+\begin{picture}(600,190)(0,-30)
+% \put(0,-30){\dashbox(600,190){}} % bounding box
+
+\put(99,0){\dashbox(2,140){}}
+\put(99,140){\framebox(2,20){}}
+\put(30,0){\framebox(140,20){}}
+\put(40,20){\framebox(120,20){}}
+\put(50,40){\framebox(100,20){}}
+\put(60,60){\framebox(80,20){}}
+\put(70,80){\framebox(60,20){}}
+\put(80,100){\framebox(40,20){}}
+\put(90,120){\framebox(20,20){}}
+\put(299,0){\framebox(2,160){}}
+\put(499,0){\framebox(2,160){}}
+\put(0,-5){\framebox(600,5){}}
+\put(100,-20){\makebox(0,0){Post \#1}}
+\put(300,-20){\makebox(0,0){Post \#2}}
+\put(500,-20){\makebox(0,0){Post \#3}}
+\end{picture}
+\end{center}
+
+The objective is to transfer all $n$ disks to post \#2 via a sequence
+of moves.  A move consists of removing the top disk from one post and
+dropping it onto another post with the restriction that a larger disk
+can never lie above a smaller disk.  Furthermore, a local ordinance
+requires that \textit{a disk can be moved only from post \#1 to post
+\#2, from \#2 to \#3, or from \#3 to \#1.}  Thus, for example, moving
+a disk directly from post \#1 to post \#3 is not permitted.
+\end{problem}
+
+\bparts
+\ppart Briefly describe a solution to the Towers of Sheboygan puzzle.
+
+\begin{solution} 
+Use a recursive procedure: to move an initial stack of $n$
+blocks to the next post, move the top stack of $n-1$ disks to the furthest
+post by moving it to the next post two times, then move the big, $n$th
+disk to the next post, and finally move the top stack another two times to
+land on top of the big disk.
+
+This procedure leads to a simple linear recurrence, and gets full credit
+as an answer.  But it turns out not to be the most efficient procedure for
+moving the stack.
+
+Namely, a better (indeed optimal, but we won't prove this) procedure can
+be defined in terms of two mutually recursive procedures, procedure
+$P_1(n)$ for moving a stack of $n$ disks 1 pole forward, and $P_2(n)$
+for moving a stack of $n$ disks 2 poles forward.  It's obvious how to do
+this for $n=1$.  For $n>1$, define:
+
+$P_1(n)$: Apply $P_2(n-1)$ to move the top $n-1$ disks two poles forward
+to the third pole.  Then move the remaining big disk once to land on
+the second pole.  Then apply $P_2(n-1)$ again to move the stack of $n-1$
+disks two poles forward from the third pole to land on top of the big
+disk.
+
+$P_2(n)$: Apply $P_2(n-1)$ to move the top $n-1$ disks two poles forward
+to land on the third pole.  Then move the remaining big disk to the second
+pole.  Then apply $P_1(n-1)$ to move the stack of $n-1$ disks one pole
+forward to land on the first pole.  Now move the big disk 1 pole forward
+again to land on the third pole.  Finally, apply $P_2(n-1)$ again to move
+the stack of $n-1$ disks two poles forward to land on the big disk.
+\end{solution} 
+
+\ppart Let $S_n$ be the number of moves needed to solve the $n$-disk
+problem.  Express $S_n$ with a recurrence equation and sufficient base
+cases.
+
+\begin{solution} 
+For the first procedure, we have
+\begin{align}
+S_1 & = 1,\notag\\
+S_n & = 2S_{n-1} + 1 + 2S_{n-1} = 4S_{n-1} + 1 & \text{for }n > 1\label{4S}.
+\end{align}
+
+For the second procedure, in addition to the number, $S_n$, of steps to
+move a stack of $n$ disks one pole forward a stack of $n$, let 
+$T_n$ be the number of steps to move a stack of $n$ disks two poles
+forward.  From the definitions of procedures $P_1$ and $P_2$ we have
+\begin{align}
+S_1 & = 1,\notag\\
+T_1 & = 2,\notag\\
+S_n & = T_{n-1} + 1 + T_{n-1} & \text{for } n > 1,\label{ST}\\
+T_n & = T_{n-1} + 1 + S_{n-1} + 1 + T_{n-1} & \text{for } n > 1.\label{TT}
+\end{align}
+From these equations we first calculate that $T_2=7$.  Then,
+using~\eqref{ST} to substitute for $S_{n-1}$ in~\eqref{TT}, we conclude
+that for $n > 2$,
+\begin{equation}\label{Trec}
+T_n = 2T_{n-1} + 2 + (2T_{n-2} +1) = 2T_{n-1} + 2T_{n-2} + 3.
+\end{equation}
+\end{solution} 
+
+\ppart Find a closed-form expression for $S_n$ by solving the
+recurrence.
+
+\begin{solution} 
+For recurrence~\eqref{4S}, Plug \& Chug works nicely:
+\begin{align*}
+S_{n} & = 4S_{n-1} + 1\\
+      & = 4(4S_{n-2}+1) + 1\\
+      & = 4^2 S_{n-2} + 4 + 1\\
+      & = 4^2 (4S_{n-3}+1) + 4 + 1\\
+      & = 4^3 S_{n-3}+ 4^2 + 4 + 1 = \dots\\
+      & = 4^{n-1} S_1 + 4^{n-2} + \dots + 4^2 + 4 + 1\\
+      & = 4^{n-1} + (4^{n-1}-1)/3\\
+      & = \frac{4^n - 1}{3}
+\end{align*}
+
+For recurrence~\eqref{Trec}, we apply the general approach for
+inhomogeneous linear recurrences: the characteristic polynomial is $x^2 -
+2x - 2 $ with roots $1 \pm \sqrt{3}$, so the general solution to the
+homogenous part of~\eqref{Trec} is
+\[
+A(1 + \sqrt{3})^n + B(1 - \sqrt{3})^n.
+\]
+
+Since the inhomogeneous term of~\eqref{Trec} is constant, we guess that a
+particular solution will be some constant, $c$.  This requires that $c =
+2c + 2c + 3$, namely, $c=-1$.  So the most general solution
+to~\eqref{Trec} is of the form
+\begin{equation}\label{AB}
+A(1 + \sqrt{3})^n + B(1 - \sqrt{3})^n - 1.
+\end{equation}
+Now we use the boundary conditions $T_1 =2, T_2 = 7$ and~\eqref{AB} to
+obtain linear equations in $A$ and $B$:
+\begin{align*}
+A(1 + \sqrt{3}) + B(1 - \sqrt{3}) - 1 & = 2\\
+A(1 + \sqrt{3})^2 + B(1 - \sqrt{3})^2 - 1 & = 7.
+\end{align*}
+
+
+Solving these equations, we find $A = (3+2\sqrt{3})/6$ and $B =
+(3-2\sqrt{3})/6$, so
+\[
+T_n = \frac{3+2\sqrt{3}}{6} (1 + \sqrt{3})^n + \frac{3-2\sqrt{3}}{6} (1 - \sqrt{
+3})^n
+      -1.
+\]
+Now using~\eqref{ST}, we conclude that
+\[
+S_n = \frac{3+2\sqrt{3}}{3}(1 + \sqrt{3})^{n-1} + \frac{3-2\sqrt{3}}{3}(1 - \sqr
+t{3})^{n-1} - 1.
+\]
+In particular, we conclude that $S_n = \Theta((1+ \sqrt{3})^n) = o(4^n)$,
+so the second procedure for moving a stack of $n$ disks is vastly more
+efficient thah the first one.
+\end{solution}
+
+\eparts
+
+
