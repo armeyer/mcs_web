@@ -189,22 +189,27 @@ sub copy_idx_entries($$) {
     my $aux_file = shift;
     my $idx_file = shift;
 
+    return unless -e $aux_file;
+
     open(my $aux, "<", $aux_file) or do {
         warn "Can't read $aux_file: $!\n";
         return;
     };
+
+    my $num_entries = 0;
 
     while (<$aux>) {
         chomp;
 
         /\A \\\@v?writefile \{default\} \{ (.*?) \} $/smx and do {
             fwrite $idx_file, $1, "\n";
+            $num_entries++;
         };
     }
 
     close($aux);
 
-    return;
+    return $num_entries;
 }
 
 sub make_sort_key( $ ) {
@@ -306,10 +311,15 @@ sub makeindex( $ ) {
 
         open(my $idx, ">", $idx_file) or die "Can't write $idx_file: $!\n";
 
-        copy_idx_entries($aux_file, $idx);
-        copy_idx_entries("$DRIVER.aux", $idx);
+        my $num_entries = copy_idx_entries($aux_file, $idx);
+        $num_entries += copy_idx_entries("$DRIVER.aux", $idx);
 
         close($idx) or die "Error writing $idx_file: $!\n";
+
+        if ($num_entries == 0) {
+            unlink $idx_file;
+            return;
+        }
     }
 
     munge_idx_file("$chapter.idx");
