@@ -167,7 +167,7 @@ called \emph{deterministic}.  The Die Hard machine is
 \emph{nondeterministic} because some states have transitions to several
 different states.
 
-\textbf{Quickie exercise:} Which states of the Die Hard 3 machine have
+\textbf{Quick exercise:} Which states of the Die Hard 3 machine have
 direct transitions to exactly two states?
 
 \end{example}
@@ -191,7 +191,6 @@ reachable.
 machine is to identify properties of states that are preserved by
 transitions.  
 
- \emph{invariant}
 \begin{definition}
   A \term{preserved invariant} of a state machine is a predicate, $P$, on
   states, such that whenever $P(q)$ is true of a state, $q$, and $q
@@ -199,10 +198,10 @@ transitions.
 \end{definition}
 
 \textbox{\begin{center}
-{\LARGE The Invariant Principle}
+{\Large The Invariant Principle}
 \end{center}
 
-{\Large
+{\large
 \noindent If a preserved invariant of a state machine is true for the
 start state,\\
 then it is true for all reachable states.}}
@@ -284,7 +283,7 @@ attempt for a preserved invariant is the predicate $P(q)$ that $q \neq (1,
 Unfortunately, this is not going to work.  Consider the state $(2,1)$.
 Clearly $P(2,1)$ holds because $(2,1) \neq (1, 0)$.  And of course
 $P(1,0)$ does not hold.  But $(2,1) \movesto (1,0)$, so this choice of $P$
-will not yield a predicate invariant.
+will not yield a preserved invariant.
 
 We need a stronger predicate.  Looking at our example execution you might
 be able to guess a proper one, namely, that the sum of the coordinates is
@@ -316,22 +315,12 @@ or $i + j \pm 2$, all of which are even.
 The robot cannot reach $(1, 0)$.
 \end{corollary}
 
-\begin{notesproblem}
-A robot moves on the two-dimensional integer grid.  It starts out at
-$(0,0)$, and is allowed to move in any of these four ways:
-\begin{enumerate}
-\item (+2,-1)   Right 2, down 1
-\item (-2,+1)   Left 2, up 1 
-\item (+1,+3) 
-\item (-1,-3) 
-\end{enumerate}
+\begin{problems}
+\classproblems
+\pinput{CP_robot_invariant}
 
-Prove that this robot can never reach (1,1).
+\end{problems}
 
-\insolutions{A simple preserved invariant that does the job is defined on
-  states $(i,j)$ by the predicate: $i + 2j$ is an integer multiple of $7$.
-}
-\end{notesproblem}
 
 \textbox{
 \begin{center}
@@ -447,9 +436,16 @@ For all $m,n \in \naturals$ such that $n \neq 0$,
 \gcd(m,n) = \gcd(n,\remainder(m,n)).
 \end{equation}
 \end{lemma}
-Lemma~\ref{gcd} is easy to prove, and we'll leave it to the reader (a
-proof will appear in later Notes on Elementary Number Theory).  So by the
-Invariant Principle, $P$ holds for all reachable states.
+
+Lemma~\ref{gcd} is easy to prove: let $q$ be the quotient and $r$ be
+the remainder of $m$ divided by $n$.  Then $m = qn +r$ by definition.
+So any factor of both $r$ and $n$ will be a factor of $m$, and
+similarly any factor of both $m$ and $n$ will be a factor of $r$.  So
+$r,n$ and $m,n$ have the same common factors and therefore the same
+gcd.
+\iffalse and we'll leave it to the reader (a proof will appear in
+later Notes on Elementary Number Theory).\fi
+Now by the Invariant Principle, $P$ holds for all reachable states.
 
 Since the only rule for termination is that $y=0$, it follows that if
 $(x,y)$ is a terminal state, then $y=0$.  If this terminal state is
@@ -484,10 +480,19 @@ linear combination of $a$ and $b$, that is,
 \begin{equation}\label{sa}
 \gcd(a,b) = sa+ tb
 \end{equation}
-for some $s,t \in \integers$.  We'll see some nice proofs of~\eqref{sa}
-later when we study Number Theory, but there is also an extension of the
-Euclidean Algorithm that efficiently, if obscurely, produces the desired
-$s$ and $t$.
+for some $s,t \in \integers$.  We'll see some nice proofs
+of~\eqref{sa} later when we study Number Theory, but now we'll look
+at an extension of the Euclidean Algorithm that efficiently, if
+obscurely, produces the desired $s$ and $t$.  It is presented here
+simply as another example of application of the Invariant Method
+(plus, we'll need a procedure like this when we take up number theory
+based cryptography in a couple of weeks).
+
+\emph{Don't worry if you find this Extended Euclidean Algorithm hard
+  to follow, and you can't imagine where it came from.  In fact,
+  that's good, because this will illustrate an important point: given
+  the right prserved invariant, you can verify programs you aren't
+  expected to understand.}
 
 In particular, given nonnegative integers $x$ and $y$, with $y>0$, we
 claim the following procedure\footnote{This procedure is adapted from Aho,
@@ -589,22 +594,23 @@ invariant, you:
 \item haven't read this far.
 
 \end{itemize}
-If none of the above apply to you, we can offer some reassurance: you're
-not expected to understand this program.  It was presented here simply as
-another example of application of the invariant method (plus, we'll need a
-procedure like this when we take up number theory based cryptography in a
-couple of weeks).
+If none of the above apply to you, we can offer some reassurance by
+repeating that you're not expected to understand this program.
 
 We've already observed that a preserved invariant is really just an
-induction hypothesis, and as with induction, finding the right hypothesis
-is usually the hard part.  Once the right hypothesis or preserved
-invariant is found, checking that it works is usually routine, as this
-program illustrates:
+induction hypothesis.  As with induction, finding the right hypothesis
+is usually the hard part.
 \begin{quote}
-  \textbf{Given the right preserved invariant, it can be easy to verify a
+a  \textbf{Given the right preserved invariant, it can be easy to verify a
     program even if you don't understand it.}
 \end{quote}
+The Extended Euclidean Algorithm is an illustration of this point.
 
+\iffalse
+Once the right hypothesis or preserved
+invariant is found, checking that it works is usually routine, as this
+program illustrates.
+\fi
 
 \subsection{Derived Variables}
 
@@ -655,6 +661,8 @@ Of course we could prove Theorem~\ref{th:decr} by induction on the value
 of $f(q)$, but think about what it says: ``If you start counting down at
 some nonnegative integer $f(q)$, then you can't count down more than
 $f(q)$ times.''  Put this way, it's obvious.
+
+\iffalse
 
 There are cases where it's easier to prove termination based on more
 general partial orders than ``less-than'' on $\naturals$.  Termination is
@@ -767,6 +775,9 @@ $f((x',y')) \lex< f((x,y))$.  In particular, $f$ is a strictly
 $\lex<$-decreasing derived variable, so
 Theorem~\ref{well-founded-decreasing} proves that the robot always get
 stuck as claimed.
+\fi
+
+
 
 \iffalse
 
