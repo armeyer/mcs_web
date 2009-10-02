@@ -1,0 +1,217 @@
+%PS_brents_theorem
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: F06 pset5Back.tex, maybe same as F04 pset5}
+\end{pcomments}
+
+\pkeywords{
+  partial_orders
+  chains
+  antichain
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We consider DAG's where each vertex represents a task to be completed.  If
+there is a path from one vertex, $v$, to another vertex, $w$, then the $v$
+task must be completed before the $w$ task.  Assuming all tasks take unit
+time to complete, we showed in the Notes that the minimum time schedule to
+complete all the tasks is the size (number of vertices), $t$, of the
+longest path (chain) in the DAG.
+
+Formally, a \emph{schedule} for a DAG is a partition of the vertices.
+Each block of the partition is supposed to correspond to a set of tasks
+that are to be performed simultaneously.  The \emph{number of processors
+required} by a schedule is the maximum number of tasks that are scheduled
+to be performed simultaneously.
+\bparts
+
+\ppart Describe purely in terms of graph, partition, and partial order
+properties (no informal descriptions in terms of ``jobs,'' ``parallel
+processing,'' etc.):
+
+\begin{itemize}
+\item exactly the properties a vertex partition of a DAG must satisfy in
+order to represent a possible schedule for the vertex tasks,
+\item the total time required to complete a schedule,
+\item the number of processors required by a schedule.
+
+\end{itemize}
+
+\begin{solution}
+
+\begin{itemize}
+
+\item A schedule for a DAG, $G$, is a partition of the edges of $G$ into a
+sequence of blocks, $B_1,B_2,\dots, B_k$ such that if $a \in B_i$, $b\in
+B_j$, and $a < b$ (that is, there is a path of positive length from vertex
+$a$ to vertex $b$), then $i < j$.  Another way to say this is that the
+blocks are anti-chains, and the sequence consisting of the elements in
+$B_1$ in any order, followed by the elements of $B_2$ in any order,
+through the elements of $B_k$, is a topological sort of the partial order
+defined by $G$.
+
+\item The total time required to complete a schedule is the number, $k$,
+of blocks it has.
+
+\item The number of processors required by a schedule is the size of the
+largest block.
+\end{itemize}
+
+\end{solution}
+
+\ppart Give a small example of a DAG with more than one minimum time
+schedule.
+
+\begin{solution}
+
+$V= \set{1,2,3}, E= \set{\diredge{1}{2}}$.  There are two minimum time
+schedules: $\set{\set{1,3}\set{2}}$ and $\set{\set{1}\set{2,3}}$.
+
+\end{solution}
+
+\ppart Explain why any schedule that requires only $p$ processors to
+complete $n$ tasks must take time at least $\ceil{n/p}$.
+
+\begin{solution}
+ If there are $k < \ceil{n/p}$, then the integer $k$ is less
+than $n/p$.  
+\end{solution}
+
+\ppart\label{timeD} Let $D_{n,t}$ be the DAG with $n$ vertices that
+consists of a directed path of $t-1$ vertices ending with edges from the
+final, $(t-1)$st, vertex on the path directly to each of the remaining
+$n-(t-1)$ vertices, as in the following figure:
+
+\mfigure{!}{2.5in}{pset5-hasse}
+
+What is the minimum time schedule for $D_{n,t}$?  Explain why it is
+unique.  How many processors does it require?
+
+\begin{solution}
+There's no choice but to schedule each of the $t-1$ vertices on
+the path one at a time in order.  A minimum time schedule then does all
+the remaining $n-(t-1)$ vertices at the $t$th time interval.  The number
+of processors required is therefore $n-t+1$.  
+\end{solution}
+
+\ppart Describe a minimum time $p$-processor schedule for $D_{n,t}$.
+Write a simple formula for this minimum time, $M(n,t,p)$.
+
+\begin{solution}
+As in part~\eqref{timeD}, there's no choice but to schedule each
+of the $t-1$ vertices on the path one at a time in order.  A minimum time
+schedule then does all the remaining $n-(t-1)$ vertices $p$ at a time, for
+a total time of
+\begin{equation}\label{tnp}
+M(n,t,p) \eqdef (t-1) + \ceil{\frac{n-(t-1)}{p}}.
+\end{equation}
+
+\end{solution}
+
+\ppart Show that \emph{every} DAG with $n$ vertices and maximum chain
+size, $t$, has a $p$-processor schedule that runs in time $M(n,t,p)$.
+
+\hint Induction -- you decide on what variable.  You may find it
+helpful to use the fact that if $a\geq b\geq 0$, then
+\begin{equation}\label{cab}
+\ceil{a-b} \leq 1 + \ceil{a} - \ceil{b}
+\end{equation}
+for all real numbers $a,b$.
+
+\begin{solution}
+
+\begin{proof}
+Induction on $t$.  Induction hypothesis:
+\begin{quote}
+$P(t) \eqdef \forall \text{ DAGs } G, \forall n,p \in \naturals^+$, if $G$
+has $n$ vertices and maximum chain size $t$, then there is a $p$-processor
+schedule for $G$ that takes time $M(n,t,p)$.
+\end{quote}
+
+\textbf{Base case $t=1$:} In this case there are $n$ vertices and no edges
+between them.  So any partition of the vertices into $\ceil{n/p}$ blocks
+of size at most $p$ will be a $p$-processor schedule taking time
+$\ceil{n/p} = 0 + \ceil{(n-0)/p} = M(n,1,p)$.
+
+\textbf{Inductive step:}
+Assume $P(t)$ and conclude $P(t+1)$ where $t \geq 1$.
+
+Let $G$ be any DAG with $n$ vertices and maximum chain size $t+1$.
+Suppose $k$ vertices are endpoints of maximum-size chains in $G$.  Note
+that no edge can leave any of these endpoint vertices, for otherwise there
+would be a chain of length one more than the maximum chain size.  Let $H$
+be the subgraph of $G$ obtained by removing these $k$ vertices.
+
+Now $H$ is a DAG with $n-k$ vertices and maximum chain size $t$, so by
+Induction Hypothesis, there is a $p$-processor schedule for $H$ taking
+time $M(n-k,t,p)$.
+
+This $p$-processor schedule for $H$ can be extended to one for $G$ by
+adding $\ceil{k/p}$ disjoint blocks of the endpoints, all of size $\leq p$.
+So the time for this schedule for $G$ is
+\begin{align}
+\lefteqn{M(n-k,t,p) + \ceil{\frac{k}{p}}}\notag\\
+  & = (t-1) + \ceil{\frac{n-k-(t-1)}{p}} + \ceil{\frac{k}{p}} & \text{(def of $M$)}\notag\\
+  & = (t-1) + \ceil{\frac{n-t}{p} - \frac{k-1}{p}} + \ceil{\frac{k}{p}}
+\label{t1}
+\end{align}
+
+We complete the proof by showing that the expression~\eqref{t1} is $\leq
+M(n, t+1, p)$.  To do this, we consider two cases:
+
+\begin{itemize}
+
+\item \textbf{Case 1} ($k-1$ is not a multiple of $p$):
+We have
+\begin{equation}\label{k1}
+\ceil{\frac{k-1}{p}} = \ceil{\frac{k}{p}},
+\end{equation}
+so
+\begin{align*}
+\text{\eqref{t1}}
+   & \leq (t-1) + \left(1+ \ceil{\frac{n-t}{p}} -
+   \ceil{\frac{k-1}{p}}\right) + \ceil{\frac{k}{p}} & \text{(by~\eqref{cab})}\\
+   & = (t-1) + \left(1+ \ceil{\frac{n-t}{p}} -
+      \ceil{\frac{k}{p}}\right) + \ceil{\frac{k}{p}} & \text{(by~\eqref{k1})}\\
+   & = t + \ceil{\frac{n-t}{p}}\\
+   & = M(n, t+1, p). & \text{(def of $M$)}
+\end{align*}
+
+\item \textbf{Case 2} ($k-1$ is a multiple of $p$): 
+Now we have
+\begin{equation}
+\ceil{\frac{k}{p}}=1+\frac{k-1}{p},\label{k+}
+\end{equation}
+so
+\begin{align*}
+\text{\eqref{t1}}
+  & = (t-1) + \left(\ceil{\frac{n-t}{p}} - \frac{k-1}{p}\right) +
+       \ceil{\frac{k}{p}} & \text{(since $(k-1)/p \in \integers$)}\\
+  & = (t-1) + \ceil{\frac{n-t}{p}} - \frac{k-1}{p} +
+  \left(1+\frac{k-1}{p}\right) & \text{(by~\eqref{k+})}\\
+   & = t + \ceil{\frac{n-t}{p}}\\
+   & = M(n, t+1, p). & \text{(def of $M$)}
+\end{align*}
+
+\end{itemize}
+\end{proof}
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
