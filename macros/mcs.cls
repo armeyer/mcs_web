@@ -177,7 +177,7 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\idx}[1]{\index{#1}#1\xspace}
+\newcommand{\idx}[1]{\index{#1}#1}
 
 \newcommand{\printchapindex}[1]{%
     \def\@indextype{default}%
