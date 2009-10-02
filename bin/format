@@ -189,7 +189,10 @@ sub copy_idx_entries($$) {
     my $aux_file = shift;
     my $idx_file = shift;
 
-    open(my $aux, "<", $aux_file) or die "Can't read $aux_file: $!\n";
+    open(my $aux, "<", $aux_file) or do {
+        warn "Can't read $aux_file: $!\n";
+        return;
+    };
 
     while (<$aux>) {
         chomp;
@@ -225,6 +228,8 @@ sub munge_idx_file( $ ) {
     my $idx_file = shift;
 
     print "\nScanning $idx_file to adjust sort keys\n\n";
+
+    next unless -e $idx_file;
 
     my $saved_idx_file = "$idx_file.original";
 
