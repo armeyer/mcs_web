@@ -63,7 +63,7 @@ if ($ENV{TEXINPUTS}) {
 ##                                                                  ##
 ######################################################################
 
-our %OPT = (index    => 0,
+our %OPT = (index    => 1,
             bibtex   => 0,
             xrefs    => 1,
             max_runs => 4,
@@ -122,10 +122,10 @@ sub latex( $ ) {
             # if ($OPT{bibtex}) {
             #     $first_line .= qq{\\AtEndDocument{\\printchapbib{$chapter}}};
             # }
-            # 
-            # if ($OPT{index}) {
-            #     $first_line .= qq{\\AtEndDocument{\\printchapindex{$chapter}}};
-            # }
+
+            if ($OPT{index}) {
+                $first_line .= qq{\\AtEndDocument{\\printchapindex{$chapter}}};
+            }
         }
 
         $first_line .= qq{\\input{$DRIVER}};
@@ -309,29 +309,9 @@ sub makeindex( $ ) {
 
     munge_idx_file("$chapter.idx");
 
-    # [lyn, 12/21/07] I changed "makeindex $chapter" to "makeindex $chapter.idx" 
-    #   since for certain chapters (but only some, like Syntax and Abstract Types) 
-    #   makeindex was looking for index information in the chapter rather than chapter.idx.
-    #   Only I experienced this problem; Mark did not.  Weird!
-    # 
-    #     This is makeindex, version 2.13 [07-Mar-1997] (using kpathsea).
-    #     Scanning input file syntax...done (0 entries accepted, 0 rejected).
-    #     Nothing written in syntax.ind.
-    #     Transcript written in syntax.ilg.
-    # 
-    # and now after the change:
-    #
-    #     This is makeindex, version 2.13 [07-Mar-1997] (using kpathsea).
-    #     Scanning input file syntax.idx....done (167 entries accepted, 0 rejected).
-    #     Sorting entries....done (1254 comparisons).
-    #     Generating output file syntax.ind....done (229 lines written, 0 warnings).
-    #     Output written in syntax.ind.
-    #     Transcript written in syntax.ilg.
-
-    # [jems, 4/25/08] adding -l as per dmj to get letter-by-letter
-    #   (not word-by-word) alphabetization (which also knows to ignore commas)
-    # [dmj, 4/27/08] -r option prevents making consecutive pages into ranges
-    #system "makeindex $chapter.idx"; 
+    # -r : Don't automatically convert consecutive page numbers into
+    #      -page ranges
+    # -l : "letter-by-letter" alphabetization
 
     system "makeindex -l -r $chapter.idx"; 
 }

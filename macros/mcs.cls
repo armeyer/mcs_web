@@ -72,6 +72,7 @@
 \RequirePackage{palatino}
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
+\RequirePackage{index}
 
 \RequirePackage{xr-hyper}
 
@@ -150,24 +151,6 @@
     \@esphack
 }
 
-% Use this command to write unexpanded material to a file 
-% [The TeXbook, pages 376-377]. 
-%
-\def\\{\let\stoken= } \\
-\long\def\unexpandedwrite#1#2{\def\finwrite{\write#1}%
-  {\aftergroup\finwrite\aftergroup{\sanitize#2\endsanity}}}
-\def\sanitize{\futurelet\next\sanswitch}
-\def\sanswitch{\let\n@xt\endsanity \ifx\next\endsanity
-  \else\ifcat\noexpand\next\stoken\aftergroup\space\let\n@xt=\eat
-  \else\ifcat\noexpand\next\bgroup\aftergroup{\let\n@xt=\eat
-  \else\ifcat\noexpand\next\egroup\aftergroup}\let\n@xt=\eat
-  \else\let\n@xt=\copytok\fi\fi\fi\fi \n@xt}
-\def\eat{\afterassignment\sanitize \let\next= }
-\long\def\copytok#1{\ifcat\noexpand#1\relax\aftergroup\noexpand\fi
-  \ifcat\noexpand#1\noexpand~\aftergroup\noexpand\fi
-  \aftergroup#1\sanitize}
-\def\endsanity\endsanity{}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                    CONDITIONAL TEXT INCLUSION                    %%
@@ -187,6 +170,20 @@
 %% Can't use \let here because of hyperref.
 
 \def\bref{\ref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                             INDEXING                             %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\idx}[1]{\index{#1}#1\xspace}
+
+\newcommand{\printchapindex}[1]{%
+    \def\@indextype{default}%
+    \let\index@prologue\@empty
+    \@input@{#1.ind}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -230,7 +227,11 @@
 
 \newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
 
-\newcommand{\term}[1]{\emph{#1}}
+\newcommand{\term}[1]{%
+    \@ifstar
+        {\emph{#1}}%
+        {\emph{\idx{#1}}}%
+}
 
 \newcommand{\SET}[1]{\textsc{#1}}
 \newcommand{\STR}[1]{\texttt{#1}}
