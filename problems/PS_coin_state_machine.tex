@@ -1,0 +1,135 @@
+%PS_card_shuffle_state_machine.tex
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{F03.ps4}
+
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Start with 102 coins on a table, 98 showing ``heads'' and 4 showing
+``tails.''  There are two ways to change the coins:
+\begin{enumerate}
+\item[(i)] flip over any ten coins, or
+
+\item[(ii)] let $n$ be the number of coins on the table showing heads.  Place
+$n+1$ additional coins on the table, with all the new coins initially
+showing tails.
+\end{enumerate}
+
+For example, you might begin by flipping nine heads and one tail,
+yielding 90 heads and 12 tails, then add 91 tails, yielding 90 heads and
+103 tails.
+
+\bparts
+\ppart
+Model this situation as a state machine, carefully defining the set of
+states, the start state and the possible state transitions.
+
+\begin{solution}
+ This can be modeled by a state machine $M \eqdef
+\set{Q,Q_0,\delta}$, where:
+
+\begin{itemize}
+\item $Q\eqdef \naturals\times\naturals$, the first integer is the number of
+heads and the second integer is the number of tails;
+
+\item  $Q_0 \eqdef \set{(98,4)}$
+
+\item  $\delta$ is given by the rule
+\[
+(h,t) \to 
+\begin{cases}
+(h-a+(10-a),t+a-(10-a)), &\mbox{ for } 0\leq a\leq 10,\ a\leq h,\ 10-a\leq t,\\
+(h,t+h+1).
+\end{cases}
+\]
+\end{itemize}
+
+%\vskip0.5in
+%{\bf Comment:} Most students forgot to specify the range of $a$ precisely
+%for the first transition.
+
+\end{solution}
+
+\ppart Explain how to reach a state with exactly one tail showing.
+
+\begin{solution}
+
+\begin{enumerate}
+
+\item Do operation 2 three times, yielding $(98, 4+3\cdot99)= (98,301)$.
+
+\item Repeat 30 times: Do operation 1 to flip 10 tails into heads. This
+will result in the state $(398,1)$, which is the desired state.
+\end{enumerate}
+
+\end{solution}
+
+
+\ppart
+Define the following derived variables of a state $q$:
+\begin{eqnarray*}
+ C(q) & \eqdef & \mbox{ the number of coins on the table},\\
+ H(q) & \eqdef & \mbox{ the number of heads},\\
+ T(q) & \eqdef & \mbox{ the number of tails},\\
+ C_2(q) & \eqdef & \mbox{remainder}(C(q)/ 2),\\
+ H_2(q) & \eqdef & \mbox{remainder}(H(q)/ 2),\\
+ T_2(q) & \eqdef & \mbox{remainder}(T(q)/ 2).
+\end{eqnarray*}
+
+Which of these variables is
+\begin{enumerate}
+
+\item strictly increasing \solution{NONE}
+\item weakly increasing \solution{$C$, $H_2$}
+\item strictly decreasing \solution{NONE}
+\item weakly decreasing \solution{$H_2$}
+\item constant \solution{$H_2$}
+\end{enumerate}
+
+\begin{solution}
+{\bf Comment:} Notice that a constant variable like $H_2$ is
+also weakly decreasing and weakly increasing, by definition.
+\end{solution}
+
+
+\ppart Prove that it is not possible to reach a state in which there is
+exactly one head showing.
+
+\begin{solution}
+
+We claimed above that $H_2(q)$ is an invariant value, that is, it does not
+change under state tramsitions.  To prove this, let $(h,t)$ be a state
+with $h$ even.  For the next state, we have two cases to consider:
+\begin{enumerate}
+\item The first operation is executed:
+$(h,t)\rightarrow(h-2a+10,t+2a-10)$.  Since $-2a+10$ is even, $H_2((h,t))=
+H_2(h-2a+10, t+2a-10)$.
+
+\item The second operation is executed: $(h,t)\rightarrow(h,t+h+1)$. The
+number of heads does not change in this case, so $H_2$ does not change.
+\end{enumerate}
+Since the initial number of heads, 98, is even, that is, $H_2((98,4))=0$,
+the Invariant Method now implies that the number of heads in a reachable
+state is always even.  But since one is odd, it is not possible to reach a
+state in which there is exactly one head showing.
+
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput

@@ -1,0 +1,158 @@
+%PS_parenthesis_good_count
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: F04.ps5, S02.ps5}
+  \pcomment{related to PS_parenthesis_count_well}
+}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  matching_parentheses
+  recursive_data
+  strings
+  structural_induction  
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}
+Suppose we start with a sequence of fully parenthesized arithmetic or
+Scheme expressions, and then erase all the alphanumeric characters other
+than parentheses.  The result is a string of parentheses which ``match
+up''.
+
+For example, erasing non-parenthesis characters from the expression
+\texttt{(if (or x y) u v)} leaves the string \texttt{(())}.  Similarly,
+erasing non-parentheses from the sequence of three arithmetic expressions
+\[
+\texttt{(x * x), (y + (3 * (z - 9))), ((x + y) * (u + w))}
+\]
+leaves the string
+\[
+\texttt{()((()))(()())}.
+\]
+On the other hand, even though the string \texttt{())(()} has an equal
+number of left and right parentheses, it cannot be obtained by erasing in
+this way---because the two middle parentheses don't match up.  Also, no
+string of parentheses which begins with a right parenthesis or ends with a
+left parenthesis can match up.
+
+We can give an inductive definition of the set, $\RM$, of ``Strings which
+Match Up'', as follows:
+
+\begin{itemize}
+\item The empty string (consisting of no parentheses) is an $\RM$.
+
+\item If $s$ and $t$ are $\RM$'s, then the string $\texttt{(}s\texttt{)}t$
+is an $\RM$.  That is, the new string starts with a left parenthesis which
+is followed by the parenthesis characters in the string $s$, followed by a
+right parenthesis, followed by the parenthesis characters in the string
+$t$.
+
+\end{itemize}
+
+There is a simple test to determine whether a string of parentheses is an
+$\RM$: starting with zero, read the string from left to right adding one for
+each left parenthesis and -1 for each right parenthesis.  A string
+\emph{counts well} when the count never goes negative and is back to zero
+by the end of the string.  Let CW be the set of strings of parentheses
+which Count Well.
+
+\begin{problemparts}
+\problempart Prove that CW contains $\RM$ by structural induction on the
+definition of $\RM$.
+
+\begin{solution}
+We prove by induction on the definition of $\RM$ (that is,
+structural induction) that every element of $\RM$ counts well, so $\RM$ is
+contained in CW.  The induction hypothesis is
+\[
+P(s) ::\equiv s \in \mbox{CW}.
+\]
+\begin{proof}
+
+{\bf Base Case}: $P(\mbox{empty string})$ holds since the count of the
+empty string ends when it starts at zero.
+
+{\bf Inductive Step:} Assume $P(s)$ and $P(t)$ are true.  We need to show
+that $P(\texttt{(}s\texttt{)}t)$ is true.
+
+The count values for $\texttt{(}s\texttt{)}t$ start with 0.  Reading the
+initial left parenthesis yields 1 as the next count value.  This 1 serves
+as the start of a series of count values exactly equal to the count values
+of $s$, with each value incremented by one.  Since $s \in \mbox{CW}$ by
+hypothesis, these incremented count values begin with 1, always stay
+positive, and end with 1.  The right parenthesis immediately after $s$
+reduces the ending count to 0.  This 0 serves as the start of the
+remaining count values which are exactly the count values of $t$.  Since
+$t \in \mbox{CW}$, these remaining values never go negative and end at 0.
+Hence the entire sequence of count values for $\texttt{(}s\texttt{)}t$
+starts with 0, never goes negative, and ends with 0, which proves that
+$\texttt{(}s\texttt{)}t \in \mbox{CW}$.
+
+\end{solution}
+
+\problempart Conversely, prove that $\RM$ contains CW.
+
+\begin{solution}
+We show that every string $r\in \mbox{CW}$ is an $\RM$ by
+strong induction on the length of $r$.  The induction hypothesis is
+\[Q(n) ::\equiv \forall r \in \mbox{CW}(\mbox{if $r$ is length $n$, then
+$r \in \mbox{$\RM$}$}).\]
+\begin{proof}
+
+{\bf Base Case} $n = 0$: In this case there is only one string of length
+$n$, namely the empty string, which is in $\RM$ by definition, proving
+$Q(0)$.
+
+{\bf Inductive Step:} Assume that $Q(k)$ is true for all $k\leq n$, we
+need to prove that $Q(n+1)$ is also true.
+
+So suppose $r$ is a length $n+1$ string that counts well.  We must prove
+that $r \in \mbox{$\RM$}$.
+
+Now since $r$ counts well, it must start with a left parenthesis (or else
+the count would immediately go negative).  Likewise, since the count for
+$r$ returns to the value 0 by the end, $r$ must end with right
+parenthesis.  So there must be a \emph{first} right parenthesis in $r$
+after which the count returns to 0.  Let $s$ be the substring of $r$
+between the initial left parenthesis and this right parenthesis.  So
+\[
+r = \texttt{(}s\texttt{)}t
+\]
+for some string $t$.
+
+Since counts only change by one as each parenthesis character is read, and
+the count for $r$ \emph{first} returns to 0 after the right parenthesis
+following $s$, the count during $s$ must start and end with 1 and must
+stay \emph{positive} in between.  But this implies that a count for $s$
+alone, which would start with 0, would also end with 0 and stay
+\emph{nonnegative} in between.  That is, $s$ by itself counts well.  Since
+the length of $s \in \mbox{CW}$ is less than the length of $r$, we have by
+strong induction that $s \in \mbox{$\RM$}$.
+
+Further, we know the count for $r$ returns to 0 after the right
+parenthesis following $s$, and since $r \in \mbox{CW}$, the count ends
+with 0 again and stays nonnegative in between.  But this implies that $t$
+counts well, and since the length of $t$ is less than the length of $r$,
+we have by strong induction that $t \in \mbox{$\RM$}$.  Now by the second
+case in the definition of $\RM$, we conclude $\texttt{(}s\texttt{)}t$,
+namely $r$, is in $\RM$.
+
+\end{solution}
+
+\end{problemparts}
+\end{problem}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

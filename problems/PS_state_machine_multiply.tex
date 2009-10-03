@@ -1,0 +1,154 @@
+%PS_state_machine_multiply
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{S07.miniquiz-3-07}
+
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  algorithm
+  multiply
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+%Tests state machine understanding, invariant method, termination arguments.
+%IMPORTANT: If reusing this problem, the second part should be split into 2 parts:
+% 1. Prove the invariant., 2. Apply invariant principle...
+
+The following state machine describes a procedure that terminates with the
+product of two nonnegative integers $x$ and $y$ in register $a$.  Its
+states are triples of nonnegative integers $(r,s,a)$.  The initial state
+is $(x,y,0)$.  The transitions are given by the rule that for $s>0$:
+\[
+(r,s,a)\rightarrow\begin{cases}
+        (2r,s/2,a) &\text{if $s$ is even},\\
+        (2r,(s-1)/2,a+r) &\text{otherwise}.
+       \end{cases}
+\]
+
+%\iffalse
+%\solution{
+%\medskip
+%\textbf{Solution:}
+%\begin{description}
+%\item $Q=\{(r,s,a,x, n) | r,s,a,x, n\in \mathbb{N}\}$
+%\item $Q_0=\{(x, n,0,x, n)\}$
+%\item $\delta: (r,s,a,x, n)\rightarrow (3r,s',a',x, n)$, where \\
+%If $s \equiv 0 \pmod{3}$: $s'=s/3$, and $a'=a$ \\
+%If $s \equiv 1 \pmod{3}$: $s'=(s-1)/3$, and $a'=a+r$\\
+%If $s \equiv 2 \pmod{3}$: $s'=(s-2)/3$, and $a'=a+2r$
+%\end{description}
+%}
+%\fi
+
+\bparts
+
+\ppart\label{rsa} Circle the predicates below that are invariant for
+this state machine:
+\begin{itemize}
+\item $P((r,s,a)) \eqdef\quad [r+a = xy]$
+\item $P((r,s,a)) \eqdef\quad [s+a = xy]$
+\item $P((r,s,a)) \eqdef\quad [rs+a = xy]$
+\item $P((r,s,a)) \eqdef \quad [r=r+1]$
+
+\end{itemize}
+
+\begin{solution}
+$[rs+a = xy]$ and $[r=r+1]$ are invariants.  The second of these
+  is vacuously invariant because it is always false.
+\end{solution}
+
+\iffalse
+
+\ppart Prove that the predicate you picked in \emph{Part a} holds for
+the base case and is invariant under all possible transitions.
+\begin{solution}
+Let
+\[
+P((r,s,a)) \eqdef\quad [rs+a = xy].
+\]
+
+Clearly, $P$ holds for the start state because
+\[
+P((x,y,0)) \qiff [xy+0 = xy].
+\]
+
+Now, we show that $P$ is indeed invariant, namely, assuming $P((r,s,a))$,
+\begin{equation}\label{inv}
+rs+a = xy,
+\end{equation}
+holds and $(r,s,a) \to (r',s',a')$ is a transition, then $P((a',b',p'))$,
+\begin{equation}\label{inv'}
+r's'+a' = xy,
+\end{equation}
+holds.
+
+We consider 2 cases:
+
+If $2 \divides s$, then we have that $r' = 2r, s' = s/2, a'=a$.
+Therefore,
+\begin{align*}
+  r's' + a' = & 2r \cdot \frac{s}{2} + a\\
+            = & rs+a\\
+            = & xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+Otherwise, we have $r' = 2r, s' = (s-1)/2,a = a+r$.  So:
+\begin{align*}
+  r's' + a'  = & 2r \cdot \frac{s-1}{2} + a+r\\
+   = & r\cdot(s-1) + a + r\\
+   = & rs+a\\
+   = & xy & \text{(by~\eqref{inv})}.
+\end{align*}
+So in both cases,~\eqref{inv'} holds, proving that $P$ is indeed an
+invariant.
+\end{solution}
+\fi
+
+\ppart Use an invariant from part~\eqref{rsa} to prove that the
+algorithm is partially correct ---that is, if the machine terminates (that
+is, reachs a state from which no transition is possible), then $a = xy$.
+(You do \textbf{not} have to prove that the invariant you select from
+part~\eqref{rsa} actually \emph{is} an invariant.)
+
+\begin{solution}
+Since the procedure's only termination
+  condition is that $s=0$, partial correctness will follow if we can show
+  that if $s=0$, then $a=xy$.  But this follows immediately from the
+  invariant $[rs+a = xy]$.
+\end{solution}
+
+%\instatements{\newpage}
+
+\ppart Briefly explain why this state machine will in fact terminate
+for all $x,y \in \naturals$.
+
+
+\begin{solution}
+We'll actually prove something stronger, namely,
+  that the algorithm terminates after at most $1+\log_2 y$ executions of
+  \texttt{do} statement.  We first notice that $s \in \naturals$ is an
+  invariant.  Also, each transition corresponds to an execution of the
+  \texttt{do} statement body, and at each transition, $s$ is reduced by a
+  factor of at most $1/2$.  Hence, after at most $1+ \log_2 y$ executions
+  of the body, the final value of $s$ is at most $1/2^{1+ \log_2 y} =
+  1/2y$ times its initial value, $y$.  This means the value of $s$ will be
+  less than 1, and since the value is a nonnegative integer, $s$ must be 0
+  at this point if it wasn't 0 earlier.  But with $s=0$, the procedure
+  terminates.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
