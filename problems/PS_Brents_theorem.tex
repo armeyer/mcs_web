@@ -4,6 +4,7 @@
 
 \begin{pcomments}
   \pcomment{from: F06 pset5Back.tex, maybe same as F04 pset5}
+  \pcomment{major revision by ARM 10/3/09}
 \end{pcomments}
 
 \pkeywords{
@@ -17,58 +18,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-We consider DAG's where each vertex represents a task to be completed.  If
-there is a path from one vertex, $v$, to another vertex, $w$, then the $v$
-task must be completed before the $w$ task.  Assuming all tasks take unit
-time to complete, we showed in the Notes that the minimum time schedule to
-complete all the tasks is the size (number of vertices), $t$, of the
-longest path (chain) in the DAG.
+  We consider a finite strict partial order where each element in the
+  domain represents a task to be completed.
 
-Formally, a \emph{schedule} for a DAG is a partition of the vertices.
-Each block of the partition is supposed to correspond to a set of tasks
-that are to be performed simultaneously.  The \emph{number of processors
-required} by a schedule is the maximum number of tasks that are scheduled
-to be performed simultaneously.
 \bparts
 
-\ppart Describe purely in terms of graph, partition, and partial order
-properties (no informal descriptions in terms of ``jobs,'' ``parallel
-processing,'' etc.):
-
-\begin{itemize}
-\item exactly the properties a vertex partition of a DAG must satisfy in
-order to represent a possible schedule for the vertex tasks,
-\item the total time required to complete a schedule,
-\item the number of processors required by a schedule.
-
-\end{itemize}
+\ppart Give a small example of a strict partial order with more than one
+minimum time schedule.
 
 \begin{solution}
-
-\begin{itemize}
-
-\item A schedule for a DAG, $G$, is a partition of the edges of $G$ into a
-sequence of blocks, $B_1,B_2,\dots, B_k$ such that if $a \in B_i$, $b\in
-B_j$, and $a < b$ (that is, there is a path of positive length from vertex
-$a$ to vertex $b$), then $i < j$.  Another way to say this is that the
-blocks are anti-chains, and the sequence consisting of the elements in
-$B_1$ in any order, followed by the elements of $B_2$ in any order,
-through the elements of $B_k$, is a topological sort of the partial order
-defined by $G$.
-
-\item The total time required to complete a schedule is the number, $k$,
-of blocks it has.
-
-\item The number of processors required by a schedule is the size of the
-largest block.
-\end{itemize}
-
-\end{solution}
-
-\ppart Give a small example of a DAG with more than one minimum time
-schedule.
-
-\begin{solution}
+\TBA{revise to p.o. instead of DAG}
 
 $V= \set{1,2,3}, E= \set{\diredge{1}{2}}$.  There are two minimum time
 schedules: $\set{\set{1,3}\set{2}}$ and $\set{\set{1}\set{2,3}}$.
@@ -83,10 +42,10 @@ complete $n$ tasks must take time at least $\ceil{n/p}$.
 than $n/p$.  
 \end{solution}
 
-\ppart\label{timeD} Let $D_{n,t}$ be the DAG with $n$ vertices that
-consists of a directed path of $t-1$ vertices ending with edges from the
-final, $(t-1)$st, vertex on the path directly to each of the remaining
-$n-(t-1)$ vertices, as in the following figure:
+\ppart\label{timeD} Let $D_{n,t}$ be the strict partial order with $n$
+elements that consists of a chain of $t-1$ elements, with the largest
+element in the chain being a prerequisite of all the remaining elements as
+in the following figure:
 
 \mfigure{!}{2.5in}{pset5-hasse}
 
@@ -100,8 +59,8 @@ the remaining $n-(t-1)$ vertices at the $t$th time interval.  The number
 of processors required is therefore $n-t+1$.  
 \end{solution}
 
-\ppart Describe a minimum time $p$-processor schedule for $D_{n,t}$.
-Write a simple formula for this minimum time, $M(n,t,p)$.
+\ppart Write a simple formula, $M(n,t,p)$, for the minimum time of a
+$p$-processor schedule to complete $D_{n,t}$.
 
 \begin{solution}
 As in part~\eqref{timeD}, there's no choice but to schedule each
@@ -117,92 +76,20 @@ M(n,t,p) \eqdef (t-1) + \ceil{\frac{n-(t-1)}{p}}.
 \ppart Show that \emph{every} DAG with $n$ vertices and maximum chain
 size, $t$, has a $p$-processor schedule that runs in time $M(n,t,p)$.
 
-\hint Induction -- you decide on what variable.  You may find it
-helpful to use the fact that if $a\geq b\geq 0$, then
-\begin{equation}\label{cab}
-\ceil{a-b} \leq 1 + \ceil{a} - \ceil{b}
-\end{equation}
-for all real numbers $a,b$.
-
 \begin{solution}
 
 \begin{proof}
-%There has to be a simpler proof than this mess of calculations with
-%fractions --ARM 10/3/09
+Define the \term*{height} of a task to be the length of the longest chain
+among its prerequisites.  Start off by scheduling as many tasks as
+possible at time 1, namely, the smaller of $p$ and the number of height
+zero tasks.  At each successive time $i$ for $1 < i <t$, schedule the
+smaller of $p$ and the number of unscheduled tasks of height less than
+$i$, with lower height tasks scheduled before higher height tasks.
 
-Induction on $t$.  Induction hypothesis:
-\begin{quote}
-$P(t) \eqdef \forall \text{ DAGs } G, \forall n,p \in \naturals^+$, if $G$
-has $n$ vertices and maximum chain size $t$, then there is a $p$-processor
-schedule for $G$ that takes time $M(n,t,p)$.
-\end{quote}
+Since at least one task will be scheduled at each time from 1 to $t-1$,
+\TBA{there are ...}
 
-\textbf{Base case $t=1$:} In this case there are $n$ vertices and no edges
-between them.  So any partition of the vertices into $\ceil{n/p}$ blocks
-of size at most $p$ will be a $p$-processor schedule taking time
-$\ceil{n/p} = 0 + \ceil{(n-0)/p} = M(n,1,p)$.
-
-\textbf{Inductive step:}
-Assume $P(t)$ and conclude $P(t+1)$ where $t \geq 1$.
-
-Let $G$ be any DAG with $n$ vertices and maximum chain size $t+1$.
-Suppose $k$ vertices are endpoints of maximum-size chains in $G$.  Note
-that no edge can leave any of these endpoint vertices, for otherwise there
-would be a chain of length one more than the maximum chain size.  Let $H$
-be the subgraph of $G$ obtained by removing these $k$ vertices.
-
-Now $H$ is a DAG with $n-k$ vertices and maximum chain size $t$, so by
-Induction Hypothesis, there is a $p$-processor schedule for $H$ taking
-time $M(n-k,t,p)$.
-
-This $p$-processor schedule for $H$ can be extended to one for $G$ by
-adding $\ceil{k/p}$ disjoint blocks of the endpoints, all of size $\leq p$.
-So the time for this schedule for $G$ is
-\begin{align}
-\lefteqn{M(n-k,t,p) + \ceil{\frac{k}{p}}}\notag\\
-  & = (t-1) + \ceil{\frac{n-k-(t-1)}{p}} + \ceil{\frac{k}{p}} & \text{(def of $M$)}\notag\\
-  & = (t-1) + \ceil{\frac{n-t}{p} - \frac{k-1}{p}} + \ceil{\frac{k}{p}}
-\label{t1}
-\end{align}
-
-We complete the proof by showing that the expression~\eqref{t1} is $\leq
-M(n, t+1, p)$.  To do this, we consider two cases:
-
-\begin{itemize}
-
-\item \textbf{Case 1} ($k-1$ is not a multiple of $p$):
-We have
-\begin{equation}\label{k1}
-\ceil{\frac{k-1}{p}} = \ceil{\frac{k}{p}},
-\end{equation}
-so
-\begin{align*}
-\text{\eqref{t1}}
-   & \leq (t-1) + \left(1+ \ceil{\frac{n-t}{p}} -
-   \ceil{\frac{k-1}{p}}\right) + \ceil{\frac{k}{p}} & \text{(by~\eqref{cab})}\\
-   & = (t-1) + \left(1+ \ceil{\frac{n-t}{p}} -
-      \ceil{\frac{k}{p}}\right) + \ceil{\frac{k}{p}} & \text{(by~\eqref{k1})}\\
-   & = t + \ceil{\frac{n-t}{p}}\\
-   & = M(n, t+1, p). & \text{(def of $M$)}
-\end{align*}
-
-\item \textbf{Case 2} ($k-1$ is a multiple of $p$): 
-Now we have
-\begin{equation}
-\ceil{\frac{k}{p}}=1+\frac{k-1}{p},\label{k+}
-\end{equation}
-so
-\begin{align*}
-\text{\eqref{t1}}
-  & = (t-1) + \left(\ceil{\frac{n-t}{p}} - \frac{k-1}{p}\right) +
-       \ceil{\frac{k}{p}} & \text{(since $(k-1)/p \in \integers$)}\\
-  & = (t-1) + \ceil{\frac{n-t}{p}} - \frac{k-1}{p} +
-  \left(1+\frac{k-1}{p}\right) & \text{(by~\eqref{k+})}\\
-   & = t + \ceil{\frac{n-t}{p}}\\
-   & = M(n, t+1, p). & \text{(def of $M$)}
-\end{align*}
-
-\end{itemize}
+\iffalse  %Ugly, cumbersome propf from F06 was cut by ARM 10/3/09 \fi
 \end{proof}
 
 \end{solution}

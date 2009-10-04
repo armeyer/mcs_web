@@ -411,7 +411,7 @@
 \newcommand{\msubst}[2]{\mopt{subst}(#1,#2)}  %#2[x \leftarrow #1]}
 
 \newcommand{\prodsym}{\ast}
-\newcommand{\minussym}{\mopt{--}}
+\newcommand{\minussym}{\mopt{-}}
 \newcommand{\sumsym}{\mbint{+}}
 
 \newcommand{\btg}{\text{binary-2PTG}}
@@ -434,7 +434,7 @@
 
 \newcommand{\surj}{\mrelt{surj}}
 \newcommand{\inj}{\mrelt{inj}}
-\newcommand{\bij}{\mrelt{surj}}
+\newcommand{\bij}{\mrelt{bij}}
 \newcommand{\strict}{\mrelt{strict}}
 
 \iffalse
