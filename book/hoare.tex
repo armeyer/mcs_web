@@ -1,0 +1,341 @@
+\hyperdef{while}{programs}{\section{Reasoning About \textbf{While} Programs}}
+
+\def\movesto{\mathrel{\longrightarrow}}
+\newcommand{\while}{\text{\textbf{while}}}
+\newcommand{\docomm}{\text{\textbf{do}}}
+\newcommand{\odcomm}{\text{\textbf{od}}}
+\newcommand{\wloop}[2]{\while\ #1\ \docomm\ #2\ \odcomm}
+%\newcommand{\wpr}{\while\text{ program}}
+\newcommand{\assigned}{\mathbin{\mathtt{:=}}}
+\newcommand{\condif}{\text{\textbf{if}}}
+\newcommand{\condthen}{\text{\textbf{then}}}
+\newcommand{\condelse}{\text{\textbf{else}}}
+\newcommand{\condcomm}[3]{\condif\ #1\ \condthen\ #2\ \condelse\ #3}
+\newcommand{\seqcomm}[2]{#1\mathbf{;}#2}
+\newcommand{\Env}{\text{Env}}
+\newcommand{\halt}{\text{\textbf{Halt}}}
+\newcommand{\state}[2]{\ang{#1,\, #2}}
+\newcommand{\step}[4]{\state{#1}{#2} \movesto \state{#3}{#4}}
+\newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^*  \state{\halt}{#3}}
+\newcommand{\after}[3]{#1 \: \set{#2}\: #3}
+
+Real programs and programming languages are often huge and complicated,
+making them hard to model and even harder to reason about.  Still, making
+programs ``reasonable'' is a crucial aspect of software engineering.  In
+these notes we'll illustrate what it means to have a clean mathematical
+model of a simple programming language and reasoning principles that go
+with it.  If only real programming languages allowed for such simple,
+accurate modeling.
+
+\subsection{\textbf{While} Programs}
+
+The programs we'll study are called ``\while\ programs.''  We can define
+them as a recursive data type:
+\begin{definition}\label{whiledef} \mbox{}
+
+\textbf{base cases:}
+\begin{itemize}
+
+\item $x \assigned e$ is a \while\ program, called an \emph{assignment
+    statement}, where $x$ is a variable and $e$ is an expression.
+
+\item $\halt$ is a \while\ program.
+
+\end{itemize}
+
+\textbf{constructor cases:}
+If $C$ and $D$ are \while\ programs, and $T$ is a test, then the following are also
+\while\ programs:
+\begin{itemize}
+
+\item $\seqcomm{C}{D}$
+---called the \term{sequencing} of $C$ and $D$,
+
+\item $\condcomm{T}{C}{D}$ ---called a \term{conditional} with
+  \term{test}, $T$, and \term{branches}, $C$ and $D$,
+
+\item $\wloop{T}{C}$
+---called a \term{while loop} with \term{test}, $T$, and \term{body}, $C$.
+
+\end{itemize}
+\end{definition}
+
+For simplicity we'll stick to \while\ programs operating on integers.  So by
+\term{expressions} we'll mean any of the familiar integer valued
+expressions involving integer constants and operations such as addition,
+multiplication, exponentiation, quotient or remainder.  As \emph{tests},
+we'll allow propositional formulas built from basic formulas of the form
+$e \leq f$ where $e$ and $f$ are expressions.  For example, here is the
+Euclidean algorithm for $\gcd(a,b)$ expressed as a \while\ program.
+\begin{tabbing}
+XXX\=XXX\=XXX\=XXX\kill
+$x \assigned a$\textbf{;} \\
+$y \assigned b$\textbf{;} \\
+\while\ $y \neq 0$ \docomm\\
+   \> $t \assigned y$\textbf{;}\\
+   \> $y \assigned \rem{x}{y}$\textbf{;}\\
+   \> $x \assigned t$
+\odcomm\\
+\end{tabbing}
+
+\subsection{The  \textbf{While}  Program State Machine}
+
+A \while\ program acts as a pure command: it is run solely for its side effects on
+stored data and it doesn't return a value.  The data consists of integers
+stored as the values of variables, namely environments:
+\begin{definition}
+An \term{environment} is a total function from variables to integers.
+Let $\Env$ be set of all environments.
+\end{definition}
+So if $\rho$ is an environment and $x$ is a variable, then $\rho(x)$ is an
+integer.  More generally, the environment determines the integer value of
+each expression, $e$, and the truth value of each test, $T$.  We can think
+of an expression, $e$ as defining a function $\mean{e}:\Env \to
+\integers$, and refer to this function, $\mean{e}$ as the \term{meaning}
+of $e$, and likewise for tests.
+
+It's standard in programming language theory to write $\mean{e}\rho$ as
+shorthand for $\mean{e}(\rho)$, that is, applying the \emph{meaning},
+$\mean{e}$, of $e$ to $\rho$.  (A variable is a special case of an
+expression, so $\mean{x}\rho \eqdef \rho(x)$.)
+
+Executing a program causes a succession of changes to the environment
+which may continue until the program halts.  Actually the only command
+which immediately alters the environment is an assignment command.
+Namely, the effect of the command
+\[
+x \assigned e
+\]
+on an environment is that the value assigned to the variable $x$ is
+changed to the value of $e$ in the original environment.  We can say this
+precisely and concisely using the following notation for functions:
+\begin{definition}
+If $F:A \to B$ is a function and $a,b$ are arbitrary elements, define
+  \[
+\patch{F}{a}{b}
+\]
+to be the function $G$ such that
+\begin{equation*}
+G(u) = \begin{cases}
+         b & \text{ if } u = a.\\
+         F(u) & \text{otherwise.}
+       \end{cases}
+\end{equation*}
+\end{definition}
+
+Now we can specify the step-by-step execution of a \while\ program as a state
+machine, where the states of the machine consist of a \while\ program paired with an
+environment.  The transitions of this state machine are defined
+recursively on the definition of \while\ programs.
+
+\begin{definition}
+
+The transitions $\step{C}{\rho}{D}{\rho'}$ of the \while\ program state machine are
+defined as follows:
+
+\textbf{base cases:}
+
+\[
+\step{x \assigned e}{\rho}{\halt}{\patch{\rho}{x}{\mean{e}\rho}}
+\]
+
+\textbf{constructor cases:}
+If $C$ and $D$ are \while\ programs, and $T$ is a test, then:
+
+\begin{itemize}
+
+\item if $\step{C}{\rho}{C'}{\rho'}$, then
+\[
+\step{\seqcomm{C}{D}}{\rho}{C';D}{\rho'}.
+\]
+Also,
+\[
+\step{\seqcomm{\halt}{D}}{\rho}{D}{\rho}.
+\]
+
+\item if $\mean{T}\rho = \true$, then
+\[
+\step{\condcomm{T}{C}{D}}{\rho}{C}{\rho},
+\]
+or if $\mean{T}\rho = \false$, then
+\[
+\step{\condcomm{T}{C}{D}}{\rho}{D}{\rho}.
+\]
+
+\item if $\mean{T}\rho = \true$, then
+\[
+\step{\wloop{T}{C}}{\rho}{\seqcomm{C}{\wloop{T}{C}}}{\rho}
+\]
+or if $\mean{T}\rho = \false$, then
+\[
+\step{\wloop{T}{C}}{\rho}{\halt}{\rho}.
+\]
+\end{itemize}
+\end{definition}
+
+Now \while\ programs are probably going to be the simplest kind of programs you will
+ever see, but being condescending about them would be a mistake.  It turns
+that \emph{every function on nonnegative integers that can be computed by
+  any program} on any machine whatsoever can also be computed by \while\ programs
+(maybe more slowly).  We can't take the time to explain how such a
+sweeping claim can be justified, but you can find out by taking a course
+in computability theory such as 6.045, 6.844, or 6.840.
+
+\subsection{Denotational Semantics}
+
+The net effect of starting a \while\ program in some environment is reflected in the
+final environment when the program halts.  So we can think of a \while\ program, $C$,
+as defining a function, $\mean{C}:\Env \to \Env$, from initial
+environments to environments at halting.  The function $\mean{e}$ is
+called the \term{meaning} of $C$.
+
+$\mean{C}$ of a \while\ program, $C$ to be a partial function from $\Env$ to $\Env$
+mapping an initial environment to the final halting environment.
+
+We'll need one bit of notation first.  For any function $f:S \to S$, let
+$f^{(n)}$ be the composition of $f$ with itself $n$ times where $n \in
+\naturals$.   Namely,
+\begin{align*}
+f^{(0)} & \eqdef \ident{S}\\
+f^{(n+1)} & \eqdef f \compose f^{(n)},
+\end{align*}
+where ``$\compose$'' denotes functional composition.
+
+The recursive definition of the meaning of a program follows the
+definition of the \while\ program recursive data type.
+\begin{definition}
+
+\textbf{base cases:}
+\begin{itemize}
+
+\item $\mean{x \assigned e}$ is the function from $\Env$ to $\Env$ defined
+  by the rule:
+\[
+\mean{x \assigned e}\rho \eqdef \patch{\rho}{x}{\mean{e}\rho}.
+\]
+
+\item
+\[
+\mean{\halt} \eqdef \ident{\Env}
+\]
+where $\ident{\Env}$ is the identity function on $\Env$.  In other words,
+$\mean{\halt}\rho \eqdef \rho$.
+
+\end{itemize}
+
+\textbf{constructor cases:}
+If $C$ and $D$ are \while\ programs, and $T$ is a test, then:
+\begin{itemize}
+
+\item
+\[
+\mean{\seqcomm{C}{D}} \eqdef \mean{D} \compose \mean{C}
+\]
+That is,
+\[
+\mean{\seqcomm{C}{D}}\rho \eqdef \mean{D}(\mean{C}\rho).
+\]
+
+\item
+\[
+\mean{\condcomm{T}{C}{D}}\rho
+\eqdef
+\begin{cases}
+\mean{C}\rho & \text{if } \mean{T}\rho = \true\\
+\mean{D}\rho & \text{if } \mean{T}\rho = \false.
+\end{cases}
+\]
+
+\item
+\[
+\mean{\wloop{T}{C}}\rho \eqdef \mean{C}^{(n)}\rho
+\]
+where $n$ is the least nonnegative integer such that
+$\mean{T}(\mean{C}^{(n)}\rho) = \false$.  (If there is no such $n$, then
+$\mean{\wloop{T}{C}}\rho$ is undefined.)
+\end{itemize}
+
+\end{definition}
+
+We can use the denotational semantics of \while\ programs to reason about
+\while\ programs using structural induction on programs, and this is often
+much simpler than reasoning about them using induction on the number of
+steps in an execution.  This is OK as long as the denotational semantics
+accurately captures the state machine behavior.  In particular, using the
+notation $\movesto^*$ for the transitive closure of the transition
+relation:
+\begin{theorem}
+\[
+\haltswith{C}{\rho}{\rho'} \qiff \mean{C}\rho = \rho'
+\]
+\end{theorem}
+
+\subsection{Logic of Programs}
+
+A typical program specification describes the kind of inputs and
+environments the program should handle, and then describes what should
+result from an execution.  The specification of the inputs or initial
+environment is called the \term{precondition} for program execution, and
+the prescription of what the result of execution should be is called the
+\emph{postcondition}.  So if $P$ is a formula expressing the precondition
+for a program, $C$, and likewise $Q$ expresses the postcondition, the 
+specification requires that
+\begin{quote}
+If $P$ holds when $C$ is started, then $Q$ will hold if and when $C$ halts.
+\end{quote}
+We'll express this requirement as a formula
+\[
+\after{P}{C}{Q}.
+\]
+
+For example, if $E$ is \while\ program above for the Euclidean algorithm, then the
+partial correctness of $E$ can be expressed as
+\begin{equation}\label{eucpc}
+\after{\paren{a, b \in \naturals\ \QAND\  x \neq 0}}{C}
+                   {\paren{x = \gcd(a,b)}}.
+\end{equation}
+Now we can build up rules for proving these kinds of partial correctness
+formulas.  The rules below were formulated in the early 1970's
+%%check ref
+by Tony Hoare at Univ. Dublin and are known as \term{Hoare Logic}.
+
+The first rule captures the fact that strengthening the preconditions and
+weakening the postconditions makes a specification easier to satisfy:
+
+\Rule{P \ \QIMPLIES\  R,
+     \quad \after{R}{C}{S},
+     \quad S \ \QIMPLIES\  Q}{\after{P}{C}{Q}}
+
+The rest of the logical rules follow the recursive definition of \while\ programs.
+There are axioms for the base case commands:
+\[\begin{array}{c}
+  \after{P(x)}{x \assigned e}{P(e)}\\
+  \after{P}{\halt}{P},
+\end{array}\]
+and proof rules for the constructor cases:
+
+\begin{itemize}
+
+\item
+\Rule{\after{P}{C}{Q} \ \QAND\  \after{Q}{D}{R}}{\after{P}{\seqcomm{C}{D}}{R}}
+
+
+\item
+\Rule{\after{P\ \QAND\ T}{C}{Q}}
+        {\after{P\ \QAND\ T}{\condcomm{T}{C}{D}}{Q\ \QAND\ T}}
+
+
+\item
+\Rule{\after{P\ \QAND\ T}{C}{P}}
+     {\after{P}{\wloop{T}{C}}{P\ \QAND\ \QNOT(T)}}
+
+
+\end{itemize}
+
+\begin{example}
+\textbf{Proof of partial correctness~\eqref{eucpc} for the Euclidean algorithm.}
+\end{example}
+
+\TBA{Brief discussion of ``relative completeness''.}
+
+\endinput

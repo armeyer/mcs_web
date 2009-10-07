@@ -1,0 +1,701 @@
+\def\vl{\text{value}}
+
+
+\chapter{Well-Founded Partial Orderings}
+
+\subsection{A Long-jumping Robot}
+
+\iffalse Begin by defining the trivial ``pick how long'' game: P1 picks $n
+\in \naturals$, the P2 and P1 alternate making forced moves.  The game
+ends after $n$ forced moves; the last person to move wins.  So P1 strategy
+is ``pick and even number.''  Insert here the discussion of ``terminates,
+but no bound on number of steps...'' used below.
+
+May also tell the ``guess a bigger number game''joke.
+\fi
+
+Suppose we had a robot that moved to points in the plane with natural
+number coordinates, that is, at an integer lattice-point in the Northeast
+quadrant of the plane.  At every second the robot must move a unit
+distance South or West until it can no longer move without leaving the
+quadrant.  It may also jump \emph{any} integer distance East, but at every
+point in its travels, the number of jumps East is not allowed to be more
+than twice the number of previous moves South.
+
+For example, suppose the robot starts at the position (9,8).  It can now
+move South to (9,7) or West to (8,8); it can't jump East because there
+haven't been any previous South moves.
+
+The robot's moves might continue along the following trajectory: South to
+(9,7), East to (23,7), South to (23,6), East to (399,6), West to (398,6),
+East to (511,6), West to (510,6), and East to $(10^5,6)$.  At this point
+it has moved South twice and East four times, so it can't jump East again
+until it makes another move South.
+
+\begin{claim}\label{robotcl}
+The robot will always get stuck at the origin.
+\end{claim}
+
+If we think of the robot as a nondeterministic state machine, then
+Claim~\ref{robotcl} is a termination assertion.  The Claim may seem
+obvious, but it really has a different character than the termination
+results for the algorithms we've considered so far.  That's because, even
+knowing that the starting position was (9,8), for example, there is no
+way to bound the total number of moves the robot can make before it gets
+stuck.  So we will not be able to prove termination using the
+natural-number-valued decreasing variable method of Theorem~\ref{th:decr}.
+The robot can delay getting stuck at the origin for as many seconds as it
+wants; nevertheless, it can't avoid getting stuck eventually.
+
+Does Claim~\ref{robotcl} still seem obvious?  Before reading further, it's
+worth thinking how you might prove it.
+
+\iffalse
+First give simple proof using Least Num Principle, first on number of
+South moves to show robot reaches row 0, then number of East moves in row
+0, then number of West moves in row 0.  Then segue into well-founded
+decreasing variables.
+\fi
+
+We will prove that the robot always gets stuck at the origin by
+generalizing the decreasing variable method, but with decreasing values
+that are more general than nonnegative integers.  Namely, the traveling robot
+can be modeled with a state machine with states of the form $((x,y),s,e)$
+where
+\begin{itemize}
+\item $(x,y) \in \naturals^2$ is the robot's position,
+\item $s$ is the number of moves South the robot took to get to this
+position, and
+\item $e \le 2s$ is the number of moves East the robot took to get to this
+position. 
+\end{itemize}
+
+Now we define a derived variable $\vl:\text{States}\to \naturals^3$:
+\[
+\vl(((x,y),s,e)) \ \eqdef\quad (y,2s-e,x),
+\]
+and we order the values of states with the \emph{lexicographic} order,
+$\lexle$, on $\naturals^3$:
+\begin{equation}\label{lex3}
+(k,l,m) \lexle (k',l',m') \ \eqdef\quad k < k' \text{ or } (k=k' \text{
+and } l < l') \text{ or } (k=k' \text{ and } l = l' \text{ and } m \le m')
+\end{equation}
+
+Let's check that values are lexicographically decreasing.  Suppose the
+robot is in state $((x,y),s,e)$.
+\begin{itemize}
+\item If the robot moves West it enters state $((x-1,y),s,e)$, and
+\[
+\vl(((x-1,y),s,e)) = (y,2s-e,x-1) \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+
+\item If the robot jumps East it enters a state $((z,y),s,e+1)$ for some
+$z>x$.  Now
+\[
+\vl(((z,y),s,e+1)) = (y,2s-(e+1),z) = (y,2s-e-1,z),
+\]
+but since $2s-e-1 < 2s-e$, the rule~(\ref{lex3}) implies that
+\[
+\vl(((z,y),s,e+1)) = (y,2s-e-1,z)  \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+\item If the robot moves South it enters state $((x,y-1),s+1,e)$, and
+\[
+\vl(((x,y-1),s+1,e)) = (y-1,2(s+1)-e,x) \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+\end{itemize}
+
+So indeed state-value is a decreasing variable under lexicographic order.
+We'll show in the next section that it is impossible for a
+lexicographically-ordered value to be decreased an infinite number of
+times.  That's just what we need to finish verifying Claim~\ref{robotcl}.
+
+\subsection{Well-founded Partial Orders}
+
+\begin{definition}\label{wfpo}
+  A partial order is \emph{well-founded} iff every nonempty subset of its
+  domain has a minim\emph{al} element.
+\end{definition}
+
+\iffalse
+That is, $m \in S$ is minimal if $m' \preceq m$ implies that $m' =
+m$ for all $m' \in S$.\fi
+
+So the Well Ordering Principle is equivalent to the assertion that the
+nonnegative integers are well-founded under $\leq$.  But well-foundedness
+makes sense much more generally than for just nonnegative integers.
+\iffalse
+
+For example, by Lemma~\ref{finmin}, every partially ordered finite set has
+a minimal element, so all finite partial orders are automatically well
+founded.  Note that in this case we can't expect to find a minim\emph{um}
+element, since even in a finite partial order, there often isn't any
+minimum.
+
+
+\textbf{Quick Exercise:} Give an example of a partial order with a
+\emph{unique} minim\emph{al} element but no minim\emph{um} element.
+
+\hint It can't be a finite partial order.
+
+\solution{The set of all real numbers totally ordered by $\leq$ has no
+minimal element.  We can regard $\le$ as a partial order on $\reals \union
+\set{i}$, where $i$ is the complex number $\sqrt{-1}$, by agreeing that $i$
+is not comparable to every real number.  This makes $i$ the unique minimal
+element -- it's also the unique maximal element -- but there is no minimum
+element.}
+\fi
+
+There is another helpful way to characterize well-founded partial orders:
+\hyperdef{infinite}{decreasing}
+{\begin{lemma}\label{d-chain}
+A partial order is well-founded iff it has no infinite decreasing chain.
+\end{lemma}}
+
+Saying that the partial order $\preceq$ has no infinite decreasing chain
+means there is no infinite sequence $p_1,p_2,\dots,p_n\dots$ of elements
+in $P$ such that
+\[
+p_1 \succ p_2 \succ \dots \succ p_n \dots.
+\]
+Here we're using the notation ``$p \succ q$'' to mean [$q \preceq p$ and
+  $q \neq p$].  That's so we can read the decreasing chain left to right,
+as usual in English.
+
+\begin{proof}
+(\textbf{left to right}) (By contradiction) If there was such an infinite
+decreasing sequence, then the set of elements in the sequence itself would
+be a nonempty subset without a minimal element.
+
+(\textbf{right to left}) (By contradiction) Suppose $\preceq$ was not
+well-founded.  So there is some subset $S \subseteq \domain{\preceq}P$,
+such that $S$ has at least one element, $s_1$, but $S$ has no minimal
+element.  In particular, since $s_1$ is not minimal, there must be
+\emph{another} element $s_2 \in S$ such that $s_1 \succ s_2$.  Similarly,
+since $s_2$ is not minimal, there must be still another element $s_3 \in S$
+such that $s_2 \succ s_3$.  Continuing in this way, we can construct an
+infinite decreasing chain $s_1 \succ s_2 \succ s_3 \cdots$ in $S$.
+\end{proof}
+
+It now follows immediately from Lemma~\ref{d-chain} that every finite
+partial order is well-founded ---without needing the counting argument
+used to prove this in Lemma~\ref{finmin}.
+
+\begin{problem}
+Let $D$ be the usual \emph{dictionary order} on finite sequences of letters
+of the alphabet.  Show that neither $D$ nor $D^{-1}$ is well-founded.
+
+\solution{\[
+a\ D\ aa\ D\ aaa D\dots
+\]
+is an infinite $D$-increasing sequence, and so is an infinite
+$D^{-1}$-decreasing sequence, proving that $D^{-1}$ is not well-founded.
+To show $D$ is not well-founded, we describe 
+an infinite $D^{-1}$-increasing sequence:
+\[
+b\ D^{-1}\ ab\ D^{-1}\ aab\  D^{-1}\ aaab \dots.
+\]
+}
+\end{problem}
+
+\section{Termination}
+
+We can formulate our general termination method as follows:
+
+\begin{definition}
+  Let $\prec$ be a strict partial order on a set, $A$.  A derived variable
+  $f : \text{states } \to A$ is \emph{strictly decreasing} iff
+\[
+q \movesto q' \text{  implies  } f(q') \prec f(q).
+\]
+\end{definition}
+
+We confirmed termination of the GCD and Extended GCD procedures by finding
+derived variables, $y$ and \texttt{Y}, respectively, that were nonnegative
+integer-valued and strictly decreasing.  We can summarize this approach to
+proving termination as follows:
+\begin{theorem}
+\label{th:decr}
+If $f$ is a strictly decreasing $\naturals$-valued derived variable of a
+state machine, then the length of any execution starting at state $q$ is
+at most $f(q)$.
+\end{theorem}
+
+Of course we could prove Theorem~\ref{th:decr} by induction on the value
+of $f(q)$, but think about what it says: ``If you start counting down at
+some nonnegative integer $f(q)$, then you can't count down more than
+$f(q)$ times.''  Put this way, it's obvious.
+
+There are cases where it's easier to prove termination based on more
+general partial orders than ``less-than'' on $\naturals$.  Termination is
+guaranteed whenever there is a derived variable that strictly decreases with
+respect to any well-founded partial order.
+
+\iffalse
+We now define some other useful flavors of derived variables taking values
+over partial ordered sets.  We'll use the notational convention that when
+$\prec$ denotes a strict partial order on some set, then $\preceq$ is the
+corresponding \emph{weak} partial order
+\[
+a\preceq a' \ \eqdef\quad a \prec a' \lor a = a'.
+\]
+
+A relation like $\prec$ is called a \emph{strict} partial order.  It is
+transitive, antisymmetric, and but \emph{non}reflexive in the strongest
+sense: $a \not\prec a$ for every $a \in A$.\footnote{In other words, if $a
+\prec b$, then it is not the case that $b \prec a$.  This property is also
+called \emph{a}symmetry.}\fi
+
+\begin{definition}
+Let $\prec$ be a strict partial order on a set, $A$.  A derived variable
+$f : Q \to A$ is \emph{strictly decreasing} with respect to $\prec$ iff
+\[
+q \movesto q' \text{ implies } f(q') \prec f(q).
+\]
+Also, $f$ is \emph{weakly decreasing} iff
+\[
+q \movesto q' \text{  implies  } f(q') \preceq f(q).
+\]
+where $\preceq$ is the weak partial order corresponding to $\prec$,
+namely,
+\[
+[a_1 \preceq a_2] \eqdef [(a_1 \prec a_2) \text{ or } (a_1=a_2)].
+\]
+
+\emph{Strictly increasing} and \emph{weakly increasing} derived variables
+are defined similarly.\footnote{Weakly increasing variables are often also
+called \emph{nondecreasing}.  We will avoid this terminology to prevent
+confusion between nondecreasing variables and variables with the much
+weaker property of \emph{not} being a decreasing variable.}
+\end{definition}
+
+\begin{theorem}\label{well-founded-decreasing}
+  If there exists a derived variable for a state machine that is strictly
+  decreasing with respect to some well-founded partial order, then every
+  execution terminates.
+\end{theorem}
+
+Theorem~\ref{well-founded-decreasing} follows immediately from the
+\href{http://courses.csail.mit.edu/6.042/spring08/ln3.pdf#infinite.decreasing}
+{observation in Notes 3} that a well-founded partial order has no infinite
+decreasing sequences.
+
+Note that the existence of a nonnegative integer-valued \emph{weakly}
+decreasing derived variable does not guarantee that every execution
+terminates.  That's because an infinite execution could proceed through
+states in which a weakly decreasing variable remained constant.
+
+\subsubsection{A Southeast Jumping Robot}
+
+\iffalse Begin by defining the trivial ``pick how long'' game: P1 picks $n
+\in \naturals$, the P2 and P1 alternate making forced moves.  The game
+ends after $n$ forced moves; the last person to move wins.  So P1 strategy
+is ``pick and even number.''  Insert here the discussion of ``terminates,
+but no bound on number of steps...'' used below.
+
+May also tell the ``guess a bigger number game''joke.
+\fi
+
+Here's a contrived but simple example of proving termination based on a
+variable that is strictly decreasing over a well-founded order.  Let's
+think about a robot positioned at an integer lattice-point in the
+Northeast quadrant of the plane, that is, at $(x,y) \in \naturals^2$.
+
+At every second when it is away from the origin, $(0,0)$, the robot must
+make a move, which may be
+\begin{itemize}
+
+\item a unit distance West when it is not at the boundary of the Northeast
+  quadrant (that is, $(x,y) \movesto (x-1,y)$ for $x>0$), or
+
+\item a unit distance South combined with an arbitrary jump East (that is,
+     $(x,y) \movesto (z,y-1)$ for $z\geq x$).
+
+\end{itemize}
+\begin{claim}\label{robotcl}
+The robot will always get stuck at the origin.
+\end{claim}
+
+If we think of the robot as a nondeterministic state machine, then
+Claim~\ref{robotcl} is a termination assertion.  The Claim may seem
+obvious, but it really has a different character than termination based on
+nonnegative integer-valued variables.  That's because, even knowing that
+the robot is at position $(0,1)$, for example, there is no way to bound
+the time it takes for the robot to get stuck.  It can delay getting stuck
+for as many seconds as it wants by making its next move to a distant point
+in the Far East.  This rules out proving termination using
+Theorem~\ref{th:decr}.
+
+So does Claim~\ref{robotcl} still seem obvious?
+
+Well it is if you see the trick: if we reverse the coordinates, then every
+robot move goes to a position that is smaller under lexicographic order.
+More precisely, let $f:\naturals^2 \to \naturals^2$ be the derived variable
+mapping a robot state ---its position $(x,y)$ ---to $(y,x) \in
+\naturals^2$.  Now $(x,y)\movesto (x',y')$ is a legitimate robot move iff
+$f((x',y')) \lex< f((x,y))$.  In particular, $f$ is a strictly
+$\lex<$-decreasing derived variable, so
+Theorem~\ref{well-founded-decreasing} proves that the robot always get
+stuck as claimed.
+\fi
+
+
+\TBA{A REPEAT:?}
+
+We will prove that the robot always gets stuck at the origin by
+generalizing the decreasing variable method, but with decreasing values
+that are more general than nonnegative integers.  Namely, the traveling robot
+can be modeled with a state machine with states of the form $((x,y),s,e)$
+where
+\begin{itemize}
+\item $(x,y) \in \naturals^2$ is the robot's position,
+\item $s$ is the number of moves South the robot took to get to this
+position, and
+\item $e \le 2s$ is the number of moves East the robot took to get to this
+position. 
+\end{itemize}
+
+Now we define a derived variable $\vl:\text{States}\to \naturals^3$:
+\[
+\vl(((x,y),s,e)) \ \eqdef\quad (y,2s-e,x),
+\]
+and we order the values of states with the \emph{lexicographic} order,
+$\lexle$, on $\naturals^3$:
+\begin{equation}\label{lex3}
+(k,l,m) \lexle (k',l',m') \ \eqdef\quad k < k' \text{ or } (k=k' \text{
+and } l < l') \text{ or } (k=k' \text{ and } l = l' \text{ and } m \le m')
+\end{equation}
+
+Let's check that values are lexicographically decreasing.  Suppose the
+robot is in state $((x,y),s,e)$.
+\begin{itemize}
+\item If the robot moves West it enters state $((x-1,y),s,e)$, and
+\[
+\vl(((x-1,y),s,e)) = (y,2s-e,x-1) \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+
+\item If the robot jumps East it enters a state $((z,y),s,e+1)$ for some
+$z>x$.  Now
+\[
+\vl(((z,y),s,e+1)) = (y,2s-(e+1),z) = (y,2s-e-1,z),
+\]
+but since $2s-e-1 < 2s-e$, the rule~(\ref{lex3}) implies that
+\[
+\vl(((z,y),s,e+1)) = (y,2s-e-1,z)  \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+\item If the robot moves South it enters state $((x,y-1),s+1,e)$, and
+\[
+\vl(((x,y-1),s+1,e)) = (y-1,2(s+1)-e,x) \lex< (y,2s-e,x) = \vl(((x,y),s,e)),
+\]
+as required.
+
+\end{itemize}
+
+So indeed state-value is a decreasing variable under lexicographic order.
+But since lexicographic order is well-founded, it is impossible for a
+lexicographically-ordered value to be decreased an infinite number of
+times.  That's just what we need to finish verifying Claim~\ref{robotcl}.
+
+\iffalse
+Now notice that the lexicographic order on $\naturals^3$ defined in the
+previous section (by the condition~(\ref{lex3})) is exactly the same as
+$\lexle$ on $\naturals^3$ according to Definition~\ref{lexn}.
+
+But we already proved that the value of the robot's state decreases at
+every step.  And we have just proved that the order on these values is
+well-founded.  So Lemma~\ref{d-chain} implies that the values cannot keep
+decreasing forever.  That means the robot cannot keep moving forever: it
+must always terminate.
+\fi
+
+
+
+\subsection{Product Partial Orders}
+
+An easy way to construct well-founded partial orders is by taking products
+of well-founded partial orders.  For example, the nonnegative integers are
+well-founded under $\leq$, so the product partial order $(\leq \cross
+\leq)$ on pairs of nonnegative integers is going to be well-founded.
+
+\iffalse
+
+But why stop at $n$ when we can be much more general without being any more
+complicated?
+
+The idea is that a Cartesion product, $A_1 \cross A_2 \cross \dots \cross
+A_n$ of sets $A_1,A_2, \dots, A_n$ consists of all the $n$-tuples
+$\ang{a_1,a_2,\dots,a_n}$ such that $a_i \in A_i$ for $1 \le i \le n$.  But
+any such $n$-tuple can be represented by the function, $f$, where $f(i)
+\eqdef a_i$.
+
+GO ON TO DEFINE: a \emph{dependent-type} is a set-valued total function.
+For example, for $r \in \reals$, define the dependent-type, $F_0$, by the
+rule:
+\[
+F_0(r) \eqdef\ \ \set{t \in \reals \suchthat t \neq r}.
+\]
+
+If $F$ is a dependent-type, then an \emph{element of type, $F$,} is
+defined to be a total function, $f$, with the same domain as $F$, and such
+that
+\[
+\forall a \in \domain(F)\ f(a) \in F(a).
+\]
+
+AND SO ON...
+\fi
+
+To prove this, we first generalize partial orders on pairs of integers
+to partial orders pairs of elements from \emph{any} partial orders.
+
+\begin{definition}\label{lex-coord-def}
+Let $\preceq_1$ and $\preceq_2$ be partial orders with domains $A_1$
+and $A_2$.
+
+The \hyperdef{coordinatewise}{po}{\term{coordinatewise partial
+    order}}, $\coordle$, is defined to be the product relation,
+$\paren{\preceq_1 \cross \preceq_2}$, which we observed in
+Section~\ref{prodsec} really is a partial order when $\preceq_1$ and
+$\preceq_2$ are.
+
+The \emph{lexicographic partial order}, $\lexle$, for $\preceq_1$ and
+$\preceq_2$ is defined by the conditions:
+\begin{eqnarray*}
+%\label{lexc2}
+\domain{\lexle} &\eqdef& A_1 \cross A_2\\
+(a_1,a_2) \lexle (b_1,b_2) & \qiff & a_1 \prec_1 b_1\text{ or } (a_1=b_1 \text{
+and } a_2 \preceq_2 b_2).
+\end{eqnarray*}
+
+\end{definition}
+
+It's easy to check that $\lexle$ is also a partial order, so we're
+justified in calling it that.  But not only are coordinatewise and
+lexicographic partial orders really partial orders, but they will also be
+well-founded providing $\preceq_1$ and $\preceq_2$ are well-founded.
+Namely,
+
+\hyperdef{lex}{order}{\begin{theorem}}\label{lex-coord-thm} For
+well-founded partial orders, $\preceq_1$ and $\preceq_2$, let $\coordle$
+be their coordinatewise partial order and $\lexle$ be their lexicographic
+partial order.  Then
+\begin{enumerate}
+
+\iffalse
+\item\label{Lpo} $\lexle$ and $\coordle$ are partial orders.  Moreover,
+\fi
+
+\item\label{Cwf} $\coordle$ is well-founded,
+
+\item\label{Lexwf} $\lexle$ is well-founded,
+
+\item\label{Lto} if $\preceq_1$ and $\preceq_2$ are both total orders,
+then so is $\lexle$.
+\end{enumerate}
+\end{theorem}
+
+The proof of part~\ref{Cwf} is easy: a coordinatewise minimal element of
+any nonempty subset, $S$, of $A_1 \cross A_2$ is simply a pair $(m_1,m_2)$
+consisting of a minimal element, $m_1 \in A_1$, among the first
+coordinates of pairs in $S$, and a minimal element, $m_2 \in A_2$, among
+the second coordinates of pairs in $S$.
+
+A refinement of this idea works for lexicographic order.  To find a
+minimal element of $S$ under $\lexle$, let $m_1 \in A_1$, be minimal among
+the first coordinates of pairs in $S$, as before.  But now find a minimal
+element $n_2 \in A_2$ among the second coordinates pairs in $S$
+\emph{whose first coordinate is $m_1$}.  It's not hard to see that the
+element $(m_1,n_2) \in S$ must be a lexicographically minimal element of
+$S$.
+
+\textcolor{red}{Watch out!}  When we, or any other author, says ``It's not
+hard to see,'' a savvy reader should quickly check if it really is easy,
+and if it doesn't seem to be, they should suspect that the author is being
+lazy or possibly wrong.
+
+In this case, we're not being lazy ---we're just omitting an almost
+automatic (and uninformative) series of simple proof steps, which it would
+be more educational for you work out yourself than to see written out by
+us.  For the same reason, we'll let you verify the last Part~\ref{Lto}.\
+that lexicographic order determined by two total orders is also a total
+order.
+
+\iffalse
+But to build your faith in us ---we hope you'll be ready to buy a used car
+from us at the end of the term ---and to show we're not lazy, we present
+this step by step proof below.  We hope that not many readers will need to
+take the time to plow through it.
+
+\begin{proof} (of part~\ref{Lexwf}.)
+
+  Suppose $S$ is a nonempty subset of $A_1 \cross A_2$.  We must show that
+  $S$ has a $\lexle$-minimal element.
+
+  We begin by noting that
+  \[
+  S_1 \eqdef\ \ \set{a_1 \in A_1 \suchthat (a_1,a_2) \in S \mbox{ for some
+    } a_2 \in A_2}
+  \]
+  is a nonempty subset of $A_1$, and so has a $\preceq_1$-minimal element,
+  $m_1$.  This means the set
+  \[
+  S_{12} \eqdef\ \ \set{a_2 \in A_2 \suchthat (m_1,a_2) \in S}
+  \]
+  is a nonempty subset of $A_2$ and so has a $\preceq_2$-minimal element,
+  $m_2$.  We claim that $(m_1,m_2)$ is a minimal element of $S$ under
+  $\lexle$.
+
+To check this, note first that $(m_1,m_2) \in S$ by definition.  So to show
+it is minimal, we need only show that if
+\begin{eqnarray}
+(a_1,a_2) & \in & S,\text{ and }\label{aaS}\\
+(a_1,a_2) & \preceq_{\text{lex}} & (m_1,m_2)\label{mmaa}
+\end{eqnarray}
+then
+\begin{eqnarray}\label{aamm}
+(a_1,a_2) = (m_1,m_2).
+\end{eqnarray}
+But
+\begin{align}
+a_1 & \in S_1
+       & \text{by~(\ref{aaS}) and def.\ of $S_1$},\label{e0}\\
+a_1 & \preceq_1 m_1
+       & \text{by~(\ref{mmaa}) and def.\ of $\lexle$},\label{e1}\\
+a_1 & =_1 m_1
+      &  \text{by~(\ref{e0}),~(\ref{e1}),
+               and minimality of $m_1$ in $S_1$},\label{ln4.e2}\\
+a_2 & \in S_{12}
+        &  \text{by~(\ref{aaS}),~(\ref{ln4.e2}) and def.\ of $S_{12}$},\label{e3}\\
+a_2 & \preceq_2 m_2
+      & \text{by~(\ref{mmaa}),~(\ref{ln4.e2}), and def.\ of $\lexle$},\label{e4}\\
+a_2 & = m_2
+      & \text{by~(\ref{e3}),~(\ref{e4}), and minimality of $m_1$ in
+       $S_{12}$}. \label{e5}
+\end{align}
+
+Now~(\ref{aamm}) follows from~(\ref{ln4.e2}) and~(\ref{e5}), completing
+the proof of part~\ref{Lexwf}.
+\end{proof}
+\fi
+
+This completes the proof of Theorem~\ref{lex-coord-thm}.
+
+
+Of course \iffalse the values of states for the robot in the previous
+section were triples not pairs, but\fi
+we can easily define the
+lexicographic partial order on $n$-tuples for any $n\ge 1$.  Namely,
+\begin{definition}\label{lexn}
+  Suppose $\preceq_1,\dots, \preceq_n$ are partial orders with domains
+  $A_1, \dots, A_n$, and define the partial order, $\lexle$, with domain,
+  $A_1 \cross \cdots \cross A_n$, recursively in $n$:
+\begin{eqnarray*}
+\ang{a_1} \lexle \ang{b_1} &\qiff& a_1 \preceq_1 b_1\\
+\ang{a_1,\dots,a_n,a_{n+1}} \lexle \ang{b_1,\dots,b_n,b_{n+1}} &\qiff&
+  a_1 \preceq_1 b_1\ \QAND\
+    \ang{a_2,\dots,a_{n+1}} \lexle \ang{b_2,\dots,b_{n+1}}
+\end{eqnarray*}
+\end{definition}
+Theorem~\ref{lex-coord-thm} now generalizes straightforwardly to
+$n$-tuples.  In particular, we conclude that since $\le$ is a well-founded
+total order on $\naturals$, lexicographic order is a well-founded total
+order on $\naturals^n$ for all $n \ge 1$.
+
+
+\subsection{Well founded recursive definitions}
+
+Ackermann's function is an extremely fast-growing function of two
+nonegative arguments, which means its inverse is extremely slow-growing.
+For example, its inverse grows slower than $\log n$, $\log \log n$, $\log
+\log \log n$, \dots, but it does grow unboundly.  It turns out that this
+extremely slow growing function actually comes up in the study of
+algorithms.  It is the coefficient of $n$ in a formula for the average
+number of steps used by a \emph{Union-Find algorithm} to process $n$
+queries and declarations of equivalence between pairs of elements of a
+set.  Since the coefficient of $n$ grows unboundly, the Union-Find
+algorithm theoretically uses a nonlinear number of operations.  But it may
+as well be linear, since the coefficient is less than 5 for any $n$ that
+could conceivably be achieved.
+
+You will learn about Union-Find if you take the Algorithms course, 6.046.
+We're mentioning this story to motivate an examination of the somewhat
+unusual recursive definition of Ackermann's function, $A(m,n)$.
+
+Ackermann's function can be defined recursively as the function, $f$,
+given by the following rules:
+\begin{align}
+f(m,n) &=  2n, &&\text{if $m=0$ or $n \le 1$},\label{Am0}\\ 
+f(m,n) &=  f(m-1,f(m,n-1)), &&\text{otherwise}.\label{AA}
+\end{align}
+
+Now these rules are unusual because the definition of $f(m,n)$ involves an
+evaluation of $f$ at arguments that may be a lot bigger than $m$ and $n$.
+Definitions of values at small arguments in terms of larger arguments can
+easily lead to divergent (non terminating) evaluations, so how can we be
+sure this one is ok?  The simple answer is that the definition of $f(m,n)$
+actually doesn't involve evaluation at bigger arguments than $(m,n)$ if we
+think of the right way to order the arguments.  In this case,
+lexicographic order does the job.
+
+Being an ok definition means that equations~(\ref{Am0}) and~(\ref{AA})
+define a \emph{unique}, \emph{total} function, $f$.  We'll focus on
+proving uniqueness.  Namely, if $g$ satisfies the same equations, that is,
+\begin{align}
+g(m,n) &=  2n, &&\text{if $m=0$ or $n \le 1$},\label{gm0}\\ 
+g(m,n) &=  g(m-1,g(m,n-1)), &&\text{otherwise},\label{gg}
+\end{align}
+then $f=g$.
+
+We'll give a simple proof of this using the well foundedness of
+lexicographic order, $\lexle$, on $\naturals^2$.  Namely, assume for the
+sake of contradiction that $f \neq g$.  Then the set, $S$, of pairs
+$(m,n)$ such that $f(m,n) \ne g(m,n)$ is not empty, so by well-foundedness
+of lexicographic order, there is a $\lex<$-\emph{least} element $(m_0,n_0)
+\in S$.  In other words,
+
+\begin{equation}\label{m0n0}
+f(m_0,n_0) \neq g(m_0,n_0),
+\end{equation}
+but
+\begin{eqnarray}\label{<m0n0}
+f(m,n) = g(m,n) \text{ for } (m,n) \lex< (m_0,n_0).
+\end{eqnarray}
+
+Now if $m_0 = 0$ or $n_0 \le 1$, then $f(m_0,n_0)$ and $g(m_0,n_0)$ both
+equal $2n_0$ by~\eqref{Am0} and~\eqref{gm0}, which
+contradicts~\eqref{m0n0}.  So it must be that $m_0 >0$ and $n_0 > 1$.
+This implies
+\begin{equation}\label{fm0f}
+f(m_0,n_0) = f(m_0-1,f(m_0,n_0-1)),
+\end{equation}
+and
+\begin{equation}\label{gm0g}
+g(m_0,n_0) = g(m_0-1,g(m_0,n_0-1)),
+\end{equation}
+by~\eqref{AA} and~\eqref{gg}.
+
+Next, by definition of lexicographic order, $(m_0,n_0-1) \lex< (m_0,n_0)$,
+so~\eqref{<m0n0} implies that
+\[f(m_0,n_0-1)) \text{ and } g(m_0,n_0-1))\text{ have the same value, } v.
+\]
+
+Similarly, $(m_0-1,v)\lex< (m_0,n_0)$ by definition of $\lex<$,
+so~\eqref{<m0n0} also implies that
+\begin{equation}
+f(m_0-1,v) = g(m_0-1,v)
+\end{equation}
+which by~\eqref{fm0f} and~\eqref{gm0g}, implies that $f(m_0,n_0) =
+g(m_0,n_0)$.  But this contradicts~\eqref{m0n0}, which completes the
+proof.
+
+
+\endinput
