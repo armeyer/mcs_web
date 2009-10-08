@@ -3,7 +3,7 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{from: F03.ps4; F00.ps5}
+  \pcomment{from: F03.ps4; F00.ps5; revised by ARM 10/08/09}
 \end{pcomments}
 
 \pkeywords{
@@ -19,81 +19,73 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  Consider an instance of the matching problem with $n$ boys and $n$
-  girls.  Call a person \iffalse \term\fi \emph{unlucky} if they are
-  matched up with one of their $\floor{n/2}$ last choices.  In this
-  problem, we will prove the following:
+  In a stable matching between $n$ boys and girls produced by the Mating
+  Ritual, call a person \term*{lucky} if they are matched up with one of
+  their $\floor{n/2}$ top choices.  We will prove:
+\begin{theorem}\label{luckyperson}
+  There must be at least one lucky person.
+\end{theorem}
 
-\begin{theorem*}
-The matching algorithm from class never produces a
-matching in which every person is unlucky.
-\end{theorem*}
-
-Fix an execution of the matching algorithm.  Define the variables 
-$B_i, G_i, i \in \set{ 1, 2, \ldots, n}$ as follows:
+To prove this, define the following derived variables for the Mating Ritual:
 \begin{description}
 \item $B_i = j$ if the $i$th boy is currently courting the $j$th girl
-on his list
+on his list.
 \item $G_i$ is the number of boys that the $i$th girl has rejected.
 \end{description}
 
 \begin{problemparts}
 
-\ppart
-Show that
+\ppart\label{Ssame}
+Let
 \[
-\sum_{i=1} ^n B_i - \sum_{i=1} ^n G_i
+S \eqdef \sum_{i=1} ^n B_i - \sum_{i=1} ^n G_i.
 \]
-is preserved at each step of the matching algorithm.
+Show that $S$ remains the same from one day to the next in the Mating
+Ritual.
 
 \begin{solution}
-Let $S = \sum_{i=1} ^n B_i - \sum_{i=1} ^n G_i$.  Suppose that at step
-$t$, boy $b_i$ proposes to girl $g_j$.  There are three possible outcomes:
-
-If $g_j$ has not had any previous proposals, she must accept.  In this
-case, none of the $B_i$s and none of the $G_j$s change, so $S$ is preserved.
-
-If $g_j$ rejects, then $G_j$ increases by 1, $B_i$ increases by 1, and
-the other $B$s and $G$s remain the same.  $S$ is preserved again.
-
-If $g_j$ accepts $b_i$ because she likes him better than her current
-mate $b_{i'}$, then $G_j$ increases by 1, $B_{i'}$ increases by 1, and
-the other $B$s and $G$s remain the same.  $S$ is preserved in this case
-as well.
+  Suppose the Mating Ritual is under way.  If the $j$th girl has $m>1$ suitors
+  then she will reject $m-1$ of them, so $G_j$ will increase by $m-1$.  But
+  $B_j$ increases by 1 for each rejected suitor, $b_j$, so
+  the $G_j - \sum_{b_k \in \text{suitors}(G_j)}B_k$ will be the same
+  tomorrow.  Hence $S$ will also be the same tomorrow.
 \end{solution}
 
-\ppart
-Formulate a preserved invariant that you can use to prove the theorem, and 
-verify that your invariant is preserved.
+\ppart Prove Theorem~\ref{luckyperson}.
 
 \begin{solution}
+Note that on the first morning, the $n$ boys are courting their first
+choice girl and the girls haven't rejected anyone yet.  So $S=n$.
+By part~\eqref{Ssame}, $S$ remains equal to $n$ every day.
 
-Let $P : S = n$. From part (a) it follows that
-all transitions preserve the truth value of $P$.  Therefore $P$ is an
-invariant.
+Now suppose to the contrary that no person is lucky.  Since the $j$th boy
+is, by definition, lucky iff $B_j \leq \floor{n/2}$, we have
+\[
+B_i \geq \floor{\frac{n}{2}} + 1
+\]
+for $1 \leq i \leq n$.
 
-\end{solution}
+Now the rank of a girl's suitor will be higher than the ranks of any
+she has rejected, so she will certainly by lucky if she has rejected
+$\floor{n/2}$ suitors, so
+\[
+G_i \leq \floor{\frac{n}{2}} - 1,
+\]
+for $1 \leq i \leq n$.
 
-\ppart Use your preserved invariant to prove the theorem.
-
-\begin{solution}
-We prove the statement by contradiction.  Consider a match M in which
-every person is unlucky.  Then:
-
-\begin{description}
-\item For every $i \in \{ 1, \ldots, n \}$, 
-$B_i \geq \ceil{\frac{n}{2}} + 1$, and
-\item For every $i \in \{ 1, \ldots, n \}$,
-$G_i \leq \floor{\frac{n}{2}} - 1$.
-\end{description}
-
-It follows that $\sum_{i=1} ^n B_i - \sum_{i=1} ^n G_i \geq 2n$.  This
-violates the invariant $P$.
+It follows that $2n \leq \sum_{i=1} ^n B_i - \sum_{i=1} ^n G_i = S$, contradicting
+the fact that $S=n$.
 
 \end{solution}
 
 \end{problemparts}
 
 \end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \endinput
