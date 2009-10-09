@@ -1,0 +1,213 @@
+
+\begin{problem}
+
+  The $n$-dimensional hypercube, $H_n$, is a graph with whose vertices are
+  the binary strings of length $n$.  Two vertices are adjacent if and only
+  if they differ in exactly $1$ bit.  For example, in $H_3$, vertices
+  \texttt{111} and \texttt{011} are adjacent because they differ only in
+  the first bit, while vertices \texttt{101} and \texttt{011} are not
+  adjacent because they differ at both the first and second bits.
+
+\iffalse
+The \term{$n$-dimensional hypercube} is a graph, $H_n$, whose vertices are
+the length-$n$ binary strings, with an edge between two vertices iff they
+differ in only one position.  For $n=4$, for example, vertex \texttt{0000}
+is adjacent to the length-4 binary strings with exactly one \texttt{1},
+namely, the four strings \texttt{1000}, \texttt{0100}, \texttt{0010},
+\texttt{0001}.
+\fi
+
+\bparts
+
+\ppart Prove that it is impossible to find two spanning trees of $H_3$
+that do not share some edge.
+
+\begin{solution}
+$H_3$ has 8 vertices so every spanning tree has 7 edges.  But $H_3$ has
+only 12 edges, so any two sets of 7 edges must overlap.
+\end{solution}
+
+\ppart Verify that for any two vertices $x \neq y$ of $H_3$, there are $3$
+paths from $x$ to $y$ in $H_3$, such that, besides $x$ and $y$, no two of
+those paths have a vertex in common.
+
+\begin{solution}
+Define the distance between two binary strings of length $n$ to be the
+number of positions at which they differ (this is known as the
+\term{Hamming distance} between the strings).
+
+To show that there are 3 paths between any two distance 1 strings, we can,
+by symmetry, just consider paths between the vertices \texttt{000} and
+\texttt{001}.
+
+Paths from \texttt{000} to \texttt{001}:
+\begin{align*}
+\mtt{000, 001}\\
+\mtt{000, 010, 011, 001}\\
+\mtt{000, 100, 101, 001}
+\end{align*}
+
+Likewise for distance 2, it is enough to find paths between
+\texttt{000} and \texttt{011}:
+
+\begin{align*}
+\mtt{000, 010, 011}\\
+\mtt{000, 001, 011}\\
+\mtt{000, 100, 110, 111, 011}
+\end{align*}
+
+Finally, for distance 3 from \texttt{000} to \texttt{111}:
+\begin{align*}
+\mtt{000, 001, 011, 111}\\
+\mtt{000, 010, 110, 111}\\
+\mtt{000, 100, 101, 111}
+\end{align*}\end{solution}
+
+\ppart Explain why this implies that $H_3$ is $3$-connected.
+
+\begin{solution}Since there are three paths from $x$ to $y$ in $H_3$ that share
+  no edges with one another, removing any two edges will leave one of
+  these paths intact, so $x$ and $y$ remain connected.  So removing two
+  edges from $H_3$ does not disconnect it.\end{solution}
+
+\ppart What is the connectivity of $H_3$ (the minimum number of edges that
+must be deleted to disconnect it)?
+
+\begin{solution}Removing all $3$ edges incident to any vertex, disconnects
+  $H_3$.  Thus the minimum number of edges necessary to disconnect $H_3$
+  is $3$.\end{solution}
+
+\ppart What about $H_4$?  (In fact, the connectivity of $H_n$ is $n$ for
+all $n \geq 1$.  A proof will appear in the solution to this problem.)
+
+\begin{solution}
+Two paths in a graph \emph{cross} when they have a vertex in common other
+than their endpoints.  A set of paths in a graph \emph{don't cross} when no
+two paths in the set cross.  A graph is \emph{$k$-routed} if between every
+pair of distinct vertices in the graph there is a set of $k$ paths that
+don't cross.
+
+We'll show that
+\hyperdef{H}{n}{
+\begin{equation}\label{hn}
+H_n \text{ is $n$-routed for all } n \geq 1.
+\end{equation}
+}
+
+Since $H_n$ can be disconnected by deleting the $n$ edges incident to any
+vertex, this implies that $H_n$ has connectivity $n$.
+
+\begin{proof}
+The proof is by induction on $n$ with induction hypothesis,
+  $P(n)$, given by~\eqref{hn}.
+
+\textbf{base case} [$n=1$]: Since $H_1$ consists of two
+vertices connected by an edge, so $P(1)$ is immediate.
+
+\textbf{base case} [$n=2$]: $H_2$ is a square.  Vertices on opposite
+corners are obviously connected by two length 2 paths that don't cross, and
+adjacent vertices are connected by a length 1 path and a length 3 path.
+
+\textbf{inductive step:} We prove $P(n+1)$ for $n \geq 2$ by letting $v$
+and $w$ be two vertices of $H_{n+1}$ and describing $n+1$ paths between them
+that don't cross.
+
+Let $R$ by any positive length path in $H_n$, say
+\[
+R = r_0,r_1,\dots, r_k.
+\]
+For $b \in \set{\mtt{0,1}}$ define the $H_{n+1}$ path
+\[
+bR \eqdef br_0, br_1,  \dots, br_k.
+\]
+
+\textbf{case 1:} The distance from $v$ to $w$ is $d \leq n$.  In this
+case, the $(n+1)$-bit strings $v$ and $w$ agree in one or more positions.
+By symmetry, we can assume without loss of generality that $v$ and $w$
+both start with \texttt{0}.  That is $v=\mtt{0}v'$ and $w=\mtt{0}w'$ for
+some $n$-bit strings $v', w'$.  Now by induction, there are paths, $Q_i$
+for $1 \leq i \leq n$, that don't cross going between $v'$ and $w'$ in
+$H_n$.
+
+Define the first $n$ paths in $H_{n+1}$ between $v$ and $w$ to be
+\[
+\pi_i \eqdef \mtt{0}Q_i
+\]
+for $1 \leq i \leq n$.  These paths don't cross since the $Q_i$'s don't
+cross.
+
+Then define the $n+1$st path
+\[
+\pi_{n+1} \eqdef v,\ \mtt{1}\pi_{v',w'},\ w
+\]
+where $\pi_{v',w'}$ is any simple path from $v'$ to $w'$ in $H_n$.
+Then $\pi_{n+1}$ obviously does not cross any of the other paths since
+$\mtt{1}\pi_{v',w'}$ is vertex disjoint from $\mtt{0}Q_i$ for $1 \leq i \leq n$.
+
+This proves that $P(n+1)$ hold in this case.
+
+\textbf{case 2:} The distance from $v$ to $w$ is $n+1$.  By symmetry, we
+can assume without loss of generality that $v=\mtt{0}^{n+1}$ and
+$w=\mtt{1}^{n+1}$.
+
+Now by induction, there are $n$ paths from $\mtt{0}^n$ to $\mtt{1}^n$ in
+$H_n$ that don't cross in $H_n$.  It is clearly safe to assume that each
+of these paths is simple.
+
+Removing the shared first vertex, $\mtt{0}^n$, of these paths yields paths
+$R_1,R_2,\dots,R_n$.  Now the $R_i$'s are vertex disjoint except for their
+common endpoint, $1^n$.  Let $s_i$ be the start vertex of the $R_i$ for $1
+\leq i \leq n$.
+
+We now define $n+1$ paths in $H_{n+1}$ from $\mtt{0}^{n+1}$ to
+$\mtt{1}^{n+1}$ that don't cross.
+
+The first of these paths will be
+\[
+\pi_1 \eqdef \mtt{0}^{n+1}, \mtt{1}\mtt{0}^{n}, 1R_1.
+\]
+
+For $2 \leq i \leq n$, the $i$th of these paths will be
+\[
+\pi_i \eqdef \mtt{0}^{n+1}, \mtt{0}s_i, 1R_i.
+\]
+These paths don't cross because
+
+\begin{itemize}
+
+\item the paths $1R_i$ for $1 \leq i \leq n$ are vertex disjoint except
+  for their common endpoint, $\mtt{1}^{n+1}$, because the $R_i$'s are
+  vertex disjoint except for their common endpoint, $\mtt{1}^n$,
+
+\item a vertex $0s_i$ does not appear on $\pi_j$ for any for $j \neq i$
+  because the $s_i \neq s_j$ for $j \neq i$, and the other vertices on
+  the $\pi_j$'s start with \texttt{1},
+
+\item the vertex $\mtt{1}\mtt{0}^{n}$ appears only on $\pi_1$.  This follows
+  because if it appeared on $\pi_i$ for $i \neq 1$ it must appear on $1R_i$.
+  That would imply that $\mtt{0}^{n}$ appears on $R_i$, contradicting the
+  fact that $H_i$ is simple.
+
+\end{itemize}      
+
+Finally, the $n+1$st path will be
+\[
+\pi_{n+1} \eqdef 0R_1, \mtt{1}^{n+1}.
+\]
+Note that, since all but the final vertex on $\pi_{n+1}$ start with
+\texttt{0}, the only vertices besides the endpoints that $\pi_{n+1}$ could
+share with another path would be $\mtt{0}s_i$ for $2 \leq i \leq n$.  But
+none of these appear on $\pi_{n+1}$ because, except for their shared
+endpoint, $R_1$ is vertex disjoint from all the other $R_i$'s.
+
+This proves that $P(n+1)$ holds in case~2, and therefore holds in all
+cases, which completes the proof by induction.
+\end{proof}
+
+Note that this proof implicitly defines a recursive procedure that, for
+any two vertices in $H_n$, finds between the two vertices $n$ simple paths
+of length at most $n+1$ that don't cross.\end{solution} 
+
+\eparts
+
+\end{problem}

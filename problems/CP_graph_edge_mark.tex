@@ -1,0 +1,68 @@
+
+\begin{problem}
+Procedure $Mark$ starts with a connected, simple graph with all edges
+unmarked and then marks some edges.  At any point in the procedure a path
+that traverses only marked edges is called a \emph{fully marked} path, and
+an edge that has no fully marked path between its endpoints is called
+\emph{eligible}.
+
+Procedure $Mark$ simply keeps marking eligible edges, and terminates when
+there are none.
+
+Prove that $Mark$ terminates, and that when it does, the set of marked
+edges forms a spanning tree of the original graph.
+
+\begin{solution}As a state machine, the start state of $Mark$ is some given
+connected graph, $G$.  The rest of the states are copies of $G$ with some
+edges marked.
+
+$Mark$ terminates because the number of unmarked edges decreases by one at
+each transition, so this number is a strictly decreasing nonnegative
+integer-valued variable, which we know implies termination.  (A common
+mistake in arguing termination of $Mark$ was to instead say that the number
+of eligible edges was strictly decreasing, without any additional
+reasoning.  This is true, but can't be taken for granted: you have to
+explain why removing an eligible edge does not result in new edges becoming
+eligible.)
+
+To prove partial correctness, we show if $Mark$ terminates, the marked
+edges of the final state form a spanning tree of $G$.  So we must show
+that the marked edges form an acyclic connected graph with the same set of
+vertices as $G$.
+
+To do this we verify the invariant:
+\begin{quote}
+The marked edges form an acyclic graph.  (*)
+\end{quote}
+
+To verify~(*) is an invariant, consider a step $H\to H'$, where $H$
+satisfies~(*).  This means that $H$ has no fully marked cycles, and $H'$
+is the same as $H$ with an edge, $e$, that was one eligible in $H$, now
+marked in $H'$.  But in $H'$, the only fully marked path between the
+endpoints of $e$ must be the edge $e$ itself, by definition of
+``eligible.''  So $e$ is not on a fully marked simple cycle in $H'$.
+Since $H$ and $H'$ are otherwise the same, there is no fully marked simple
+cycle elsewhere in $H'$.  That is, $H'$ satisfies~(*).
+
+Since the start state $G$ has no marked edges, it satisfies~(*) trivially.
+Hence, by the Invariant Principle, any final state of $Mark$
+satisfies~(*).
+
+We also claim that in any final state, there is a fully marked path
+between any two vertices.  To prove this assume to the contrary that there
+were two vertices, $u$ and $v$, with no fully marked path between them.
+Since there is a path in $G$ between $u$ and $v$, there must be a path
+between $u$ and $v$ traversing the smallest number of unmarked edges, and
+this path must contain at least one unmarked edge, $e$.  Now if there was
+a fully marked path between the endpoints of $e$, we could replace $e$ by
+this path to obtain a path between $u$ and $v$ with fewer unmarked edges.
+So there can't be a fully marked path between the endpoints of $e$, which
+means that $e$ is eligible, contradicting the fact the state was final.
+
+So in any final state, the marked edges determine an acyclic, connected
+graph on the vertices of $G$.  That is, the marked edges determine a
+spanning tree of $G$.
+\end{solution}
+
+\end{problem}
+
