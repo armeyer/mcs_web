@@ -669,7 +669,7 @@
 \newlength{\problemsep}
 \newlength{\problempartsep}
 
-\setlength{\standardproblemsep}{1cm}
+\setlength{\standardproblemsep}{0.5cm}
 \setlength{\standardproblempartsep}{1ex}
 
 \setlength{\problemsep}{\standardproblemsep}
@@ -785,7 +785,7 @@
 
 \theoremstyle{notesproblem}
 
-\newtheorem*{notesproblem}{Quickie Exercise}
+\newtheorem*{notesproblem}{Quick Exercise}
 
 %% subproblems
 
