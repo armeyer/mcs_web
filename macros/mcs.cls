@@ -185,6 +185,38 @@
     \@input@{#1.ind}%
 }
 
+\renewenvironment{theindex}{%
+    \edef\indexname{\the\@nameuse{idxtitle@\@indextype}}%
+    \if@twocolumn
+        \@restonecolfalse
+    \else
+        \@restonecoltrue
+    \fi
+    \columnseprule \z@
+    \columnsep 35\p@
+    \twocolumn[%
+        \phantomsection
+        \addcontentsline{toc}{chapter}{\indexname}%
+        \@makeschapterhead{\indexname}%
+        \ifx\index@prologue\@empty\else
+            \index@prologue
+            \bigskip
+        \fi
+    ]%
+    \@mkboth{\MakeUppercase\indexname}%
+            {\MakeUppercase\indexname}%
+    \thispagestyle{plain}%
+    \parindent\z@
+    \parskip\z@ \@plus .3\p@\relax
+    \let\item\@idxitem
+}{%
+    \if@restonecol
+        \onecolumn
+    \else
+        \clearpage
+    \fi
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                 TEXT/MATH ALIASES AND SHORTCUTS                  %%
