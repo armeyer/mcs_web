@@ -227,10 +227,12 @@
 
 \newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
 
-\newcommand{\term}[1]{%
-    \@ifstar
-        {\emph{#1}}%
-        {\emph{\idx{#1}}}%
+\newcommand{\term}{%
+    \@ifstar\emph\idx@term
+}
+
+\newcommand{\idx@term}[1]{%
+    \emph{\idx{#1}}%
 }
 
 \newcommand{\SET}[1]{\textsc{#1}}
