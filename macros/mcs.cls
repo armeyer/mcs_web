@@ -1037,10 +1037,10 @@
     \coursecopyrightnames.}}
 
 \newcommand{\coursecopyrightyear}{
-  0000%
+  2009%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 \newcommand{\coursecopyrightnames}{%
-  Prof.~Somebody%
+  Prof.~Albert R Meyer%
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
 
