@@ -19,6 +19,11 @@ showsolutions:
 hidesolutions:
 	echo '\hidesolutions' > $(SOLUTIONSPOLICY)
 
+.PHONY: togglesolutions
+
+togglesolutions:
+	sed -i -e "s/hide/show/;t;s/show/hide/" $(SOLUTIONSPOLICY)
+
 .PHONY: asksolutions
 
 asksolutions:

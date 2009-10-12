@@ -31,7 +31,7 @@ clean:
 veryclean: clean
 	-rm -f *.aux *.pdf
 
-.PHONY: showsolutions hidesolutions asksolutions
+.PHONY: showsolutions hidesolutions togglesolutions asksolutions
 
-showsolutions hidesolutions asksolutions:
+showsolutions hidesolutions togglesolutions asksolutions:
 	$(MAKE) -C .. $@
