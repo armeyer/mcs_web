@@ -648,6 +648,7 @@
 \newcommand{\practiceproblems}{\subsubsection*{Practice Problems}}
 \newcommand{\classproblems}{\subsubsection*{Class Problems}}
 \newcommand{\homeworkproblems}{\subsubsection*{Homework Problems}}
+\newcommand{\examproblems}{\subsubsection*{Exam Problems}}
 
 %% pcomments is an itemized list environment that shows up only when
 %% the standalone version of the problem is compiled.
