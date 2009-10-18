@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use version; our $VERSION = qv '0.2.0';
+use version; our $VERSION = qv '1.0.0';
 
 use File::Basename;
 use File::Spec::Functions qw(rel2abs catdir);
+use File::Temp qw(tempdir);
 
 use Getopt::Long qw(:config no_ignore_case);
 
@@ -18,7 +19,11 @@ use Parse::BooleanLogic;
 ##                                                                  ##
 ######################################################################
 
-my %OPT = (verbose => 0);
+my %OPT = (debug   => 0,
+           print   => 1,
+           verbose => 0,
+           tex     => 0,
+    );
 
 ######################################################################
 ##                                                                  ##
@@ -116,6 +121,36 @@ sub nonempty(;$) {
     my $string = @_ == 1 ? shift : $_;
 
     return defined $string && $string !~ /^\s*$/;
+}
+
+sub typeset_problems( @ ) {
+    my @files = @_;
+
+    my $tex_file = '00SEARCH.tex';
+
+    open(my $fh, ">", $tex_file) or die "Can't open $tex_file: $!\n";
+
+    print { $fh } "\\documentclass[problems]{mcs}\n\n";
+
+    print { $fh } "\\begin{document}\n\n";
+
+    for my $file (@files) {
+        (my $problem = $file) =~ s/\.tex//;
+
+        (my $title = $problem) =~ s/_/\\_/g;
+
+        print { $fh } "\\subsection*{Problem: $title}\n\n";
+
+        print { $fh } "\\pinput{$problem}\n\n";
+    }
+
+    print { $fh } "\\end{document}\n";
+
+    close($fh);
+
+    system "$ROOT/bin/format 00SEARCH";
+
+    return;
 }
 
 ######################################################################
@@ -218,7 +253,7 @@ sub slurp_file( $ ) {
 sub extract_keywords( $ ) {
     my $file = shift;
 
-    print STDERR "Extracting keywords from $file\n" if $OPT{verbose};
+    print STDERR "Extracting keywords from $file\n" if $OPT{debug};
 
     my $contents = slurp_file($file);
 
@@ -231,7 +266,7 @@ sub extract_keywords( $ ) {
         $keywords = trim($keywords);
     }
 
-    print STDERR "$file: keywords = $keywords\n" if $OPT{verbose};
+    print STDERR "$file: keywords = $keywords\n" if $OPT{debug};
 
     return $keywords;
 };
@@ -241,7 +276,7 @@ sub find_matching_files( $@ ) {
     my @files = @_;
 
     chdir("$ROOT/problems") or do {
-        die "Can't connext to problems directory: $!\n";
+        die "Can't connect to problems directory: $!\n";
     };
 
     if (@files == 0) {
@@ -250,8 +285,10 @@ sub find_matching_files( $@ ) {
 
     my $grepper = make_grepper($expression);
 
+    my @matching_files;
+
     for my $file (@files) {
-        print STDERR "Searching $file\n" if $OPT{verbose};
+        print STDERR "Searching $file\n" if $OPT{debug};
 
         my $keywords = eval { extract_keywords($file) };
 
@@ -262,7 +299,23 @@ sub find_matching_files( $@ ) {
 
         next unless nonempty($keywords);
 
-        print "$file\n" if $grepper->($keywords);
+        if ($grepper->($keywords)) {
+            push @matching_files, $file;
+
+            if ($OPT{print}) {
+                print $file;
+
+                if ($OPT{verbose}) {
+                    print ": $keywords";
+                }
+
+                print "\n";
+            }
+        }
+    }
+
+    if ($OPT{tex}) {
+        typeset_problems(@matching_files);
     }
 
     return;
@@ -274,7 +327,9 @@ sub find_matching_files( $@ ) {
 ##                                                                  ##
 ######################################################################
 
-GetOptions("verbose!" => \$OPT{verbose},
+GetOptions("debug!"   => \$OPT{debug},
+           "verbose!" => \$OPT{verbose},
+           "tex!"     => sub { $OPT{tex} = $_[1]; $OPT{print} = ! $_[1] },
     ) or usage;
 
 usage() unless @ARGV > 0;

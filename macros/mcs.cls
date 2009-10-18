@@ -8,12 +8,6 @@
 
 \ProvidesClass{mcs}
 
-\newif\ifhandout
-\handoutfalse
-
-\newif\ifproblemonly
-\problemonlyfalse
-
 \newif\ifshowsolutions
 \showsolutionsfalse
 
@@ -22,7 +16,6 @@
 \DeclareOption{book}{}
 
 \DeclareOption{handout}{%
-    \handouttrue
     \PassOptionsToClass{11pt}{book}
     \def\@class@option@file{handout}%
 }
@@ -33,9 +26,11 @@
 }
 
 \DeclareOption{problem}{%
-    \problemonlytrue
-    \handouttrue
     \def\@class@option@file{problem}%
+}
+
+\DeclareOption{problems}{%
+    \def\@class@option@file{problems}%
 }
 
 \DeclareOption{debug}{%
