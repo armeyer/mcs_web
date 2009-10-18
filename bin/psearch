@@ -1,0 +1,269 @@
+#!/usr/local/bin/perl -w
+
+use strict;
+use warnings;
+
+use version; our $VERSION = qv '0.1.0';
+
+use File::Basename;
+use File::Spec::Functions qw(rel2abs catdir);
+
+use Parse::BooleanLogic;
+
+######################################################################
+##                                                                  ##
+##                         GLOBAL VARIABLES                         ##
+##                                                                  ##
+######################################################################
+
+my $ROOT = dirname(rel2abs(dirname $0));
+
+######################################################################
+##                                                                  ##
+##                   SIMPLE-MINDED LATEX PARSING                    ##
+##                                                                  ##
+######################################################################
+
+## CATCODE CATEGORIES
+
+my $ESCAPE      = qr{\\};                               #  0
+my $BEGIN_GROUP = qr/\{/;                               #  1
+my $END_GROUP   = qr/\}/;                               #  2
+my $MATH_SHIFT  = qr{\$};                               #  3
+my $ALIGNMENT   = qr{&};                                #  4
+my $END_OF_LINE = qr{\r};                               #  5
+my $PARAMETER   = qr{\#};                               #  6
+my $SUPERSCRIPT = qr{[\^]};                             #  7
+my $SUBSCRIPT   = qr{_};                                #  8
+my $IGNORED     = qr{\x7F};                             #  9 [*]
+my $SPACE       = qr{[ \t]};                            # 10
+my $LETTER      = qr{(?: [a-zA-Z] )}smx;                # 11
+my $OTHER       = qr{[\n!\"\'-\@\[\]\`|\x80-\xFF]};     # 12
+my $ACTIVE      = qr{[~\f]};                            # 13
+my $COMMENT     = qr{[%]};                              # 14
+my $INVALID     = qr{[\x01-\x08\x0B\x0E-\x1F\x7F]};     # 15 [**]
+
+## [*] Unlike plain TeX, in LaTeX, DEL (\x7F) is actually INVALID, not
+## IGNORED and, in fact, there are no IGNORED characters in LaTeX.
+## However, it would be pedagogically awkward to have $IGNORED be the
+## null pattern, so in a petulant attempt to have my cake and eat it
+## too, I've listed DEL as both IGNORED and INVALID.  In input_line,
+## I'll process $INVALID first, so this will have no effect on the
+## output of the parser.
+
+## [**] NUL is not here.
+
+## These are the characters that can appear as control symbol names.
+
+my $NON_LETTER  = qr{
+    (?: $ESCAPE | $BEGIN_GROUP | $END_GROUP | $MATH_SHIFT
+     | $ALIGNMENT | $PARAMETER | $SUPERSCRIPT | $SUBSCRIPT
+     | $SPACE | $OTHER | $ACTIVE | $COMMENT )
+}smx;
+
+my $CONTROL_WORD     = qr{ $ESCAPE ( $LETTER+ ) }smx;
+
+my $CONTROL_SYMBOL   = qr{ $ESCAPE ( $NON_LETTER ) }smx;
+
+my $CONTROL_SEQUENCE = qr{ (?: $CONTROL_SYMBOL | $CONTROL_WORD ) }smx;
+
+my $BALANCED_TEXT;
+
+{
+    use re 'eval';
+
+    $BALANCED_TEXT = qr{
+        (?> $CONTROL_SEQUENCE | [^{}]+ | \{ (??{ $BALANCED_TEXT }) \} )*
+    }smx;
+}
+
+######################################################################
+##                                                                  ##
+##                           SUBROUTINES                            ##
+##                                                                  ##
+######################################################################
+
+sub usage() {
+    my $program_name = basename($0);
+
+    my $usage = << "EOF";
+Usage: $program_name EXPRESSION [filename...]
+EOF
+
+    print STDERR $usage;
+}
+
+sub trim($) {
+    my $string = defined $_[0] ? $_[0] : '';
+
+    $string =~ s/\s+/ /g;
+    $string =~ s/^ | $//g;
+
+    return $string;
+}
+
+sub nonempty(;$) {
+    my $string = @_ == 1 ? shift : $_;
+
+    return defined $string && $string !~ /^\s*$/;
+}
+
+######################################################################
+##                                                                  ##
+##                          BOOLEAN PARSER                          ##
+##                                                                  ##
+######################################################################
+
+PARSE_BOOLEAN: {
+    my %callback;
+
+    my $expr;
+
+    $callback{open_paren} = sub {
+        $expr .= "(";
+
+        return;
+    };
+
+    $callback{close_paren} = sub {
+        $expr .= ")";
+
+        return;
+    };
+
+    $callback{operator} = sub {
+        my $op = shift;
+
+        if ($op =~ /\A or \z/ismx) {
+            $expr .= " || ";
+        } elsif ($op =~ /\A and \z/ismx) {
+            $expr .= " && ";
+        } else {
+            die "unknown operator: $op\n";
+        }
+
+        return;
+    };
+
+    $callback{operand} = sub {
+        my $operand = shift;
+
+        $expr .= "\$target ";
+
+        if ($operand =~ s/\A \s* ! \s*//smx) {
+            $expr .= '!~ ';
+        } else {
+            $expr .= '=~ ';
+        }
+
+        $expr .= "/$operand/";
+
+        return;
+    };
+
+    sub make_grepper( $ ) {
+        my $string = shift;
+    
+        my $parser = Parse::BooleanLogic->new();
+
+        $expr = "";
+    
+        $parser->parse( string => $string,
+                        callback => \%callback );
+
+        my $grepper = qq{
+            sub {
+                my \$target = shift;
+
+                return $expr;
+            };
+        };
+    
+        return eval $grepper;
+    }
+}
+
+######################################################################
+##                                                                  ##
+##                          FILE SEARCHING                          ##
+##                                                                  ##
+######################################################################
+
+sub slurp_file( $ ) {
+    my $filename = shift;
+
+    open(my $fh, "<", $filename) or do {
+        die "Can't open $filename: $!\n";
+    };
+
+    local $/ = undef;
+
+    my $contents = <>;
+
+    close($fh);
+
+    return $contents;
+}
+
+sub extract_keywords( $ ) {
+    my $file = shift;
+
+    my $contents = slurp_file($file);
+
+    my $keywords;
+
+    if ($contents =~ m{\\pkeywords \s* \{ ($BALANCED_TEXT) \s* \} }smx) {
+        $keywords = $1;
+
+        $keywords =~ s/,//g;
+        $keywords = trim($keywords);
+    }
+
+    return $keywords;
+};
+
+sub find_matching_files( $@ ) {
+    my $expression = shift;
+    my @files = @_;
+
+    chdir("$ROOT/problems") or do {
+        die "Can't connext to problems directory: $!\n";
+    };
+
+    if (@files == 0) {
+        @files = glob("*.tex");
+    }
+
+    my $grepper = make_grepper($expression);
+
+    for my $file (@files) {
+        my $keywords = eval { extract_keywords($file) };
+
+        if ($@) {
+            warn $@;
+            next;
+        }
+
+        next unless nonempty($keywords);
+
+        print "$file\n" if $grepper->($keywords);
+    }
+
+    return;
+}
+
+######################################################################
+##                                                                  ##
+##                               MAIN                               ##
+##                                                                  ##
+######################################################################
+
+usage() unless @ARGV > 0;
+
+my $expression = shift;
+my @files = @ARGV;
+
+find_matching_files($expression, @files);
+
+__END__
+
