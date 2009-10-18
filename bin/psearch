@@ -1,14 +1,24 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w
 
 use strict;
 use warnings;
 
-use version; our $VERSION = qv '0.1.0';
+use version; our $VERSION = qv '0.2.0';
 
 use File::Basename;
 use File::Spec::Functions qw(rel2abs catdir);
 
+use Getopt::Long qw(:config no_ignore_case);
+
 use Parse::BooleanLogic;
+
+######################################################################
+##                                                                  ##
+##                             OPTIONS                              ##
+##                                                                  ##
+######################################################################
+
+my %OPT = (verbose => 0);
 
 ######################################################################
 ##                                                                  ##
@@ -198,7 +208,7 @@ sub slurp_file( $ ) {
 
     local $/ = undef;
 
-    my $contents = <>;
+    my $contents = <$fh>;
 
     close($fh);
 
@@ -207,6 +217,8 @@ sub slurp_file( $ ) {
 
 sub extract_keywords( $ ) {
     my $file = shift;
+
+    print STDERR "Extracting keywords from $file\n" if $OPT{verbose};
 
     my $contents = slurp_file($file);
 
@@ -218,6 +230,8 @@ sub extract_keywords( $ ) {
         $keywords =~ s/,//g;
         $keywords = trim($keywords);
     }
+
+    print STDERR "$file: keywords = $keywords\n" if $OPT{verbose};
 
     return $keywords;
 };
@@ -237,6 +251,8 @@ sub find_matching_files( $@ ) {
     my $grepper = make_grepper($expression);
 
     for my $file (@files) {
+        print STDERR "Searching $file\n" if $OPT{verbose};
+
         my $keywords = eval { extract_keywords($file) };
 
         if ($@) {
@@ -258,6 +274,9 @@ sub find_matching_files( $@ ) {
 ##                                                                  ##
 ######################################################################
 
+GetOptions("verbose!" => \$OPT{verbose},
+    ) or usage;
+
 usage() unless @ARGV > 0;
 
 my $expression = shift;
@@ -266,4 +285,3 @@ my @files = @ARGV;
 find_matching_files($expression, @files);
 
 __END__
-
