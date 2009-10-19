@@ -1,0 +1,195 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{MQ_ambiguous_recursive-def}
+  \pcomment{contributed by ARM 10/18/09}
+\end{pcomments}
+
+\pkeywords{
+ recursive_data
+ matching_parenteses
+ ambiguous_definition
+}
+
+\newcommand{\MB}[1]{\text{MB}_{#1}}
+\newcommand{\lefnum}{\text{numleft}}
+\newcommand{\derlen}{\text{two-t}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}
+\begin{definition*}
+
+  Recursively define the set, $\MB{1}$, of strings of ``matching'' brackets
+  as follows:
+
+\begin{itemize}
+
+\item \textbf{Base case:} $\emptystring \in\MB{1}$.
+
+\item \textbf{Constructor case:} If $s,t \in\MB{1}$, then
+  $\mtt{[}s\mtt{]}t \in \MB{1}$.
+
+\end{itemize}
+
+Recursively define the set, $\MB{2}$, of strings of brackets as follows:
+
+\begin{itemize}
+
+\item \textbf{Base case:} $\emptystring \in \MB{2}$,
+
+\item \textbf{Constructor cases:}
+If $s\neq \emptystring$, $t \neq \emptystring$, and $s,t \in \MB{2}$, then
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\renewcommand{\labelenumi}{(\theenumi)}
+
+\begin{enumerate}
+
+\item $\mtt{[}s\mtt{]}$ is in $\MB{2}$, and
+\item $st$ is in $\MB{2}$.
+
+\end{enumerate}
+
+\end{itemize}
+
+\end{definition*}
+
+These two definitions both specify the same set of strings, that is, $\MB{1}
+= \MB{2}$.
+
+\bparts
+
+\ppart To prove that $\MB{1} = \MB{2}$, you could first prove that
+\[
+\forall r \in \MB{1}.\ r \in \MB{2},
+\]
+and then prove that
+\[
+\forall u \in \MB{2}.\ u \in \MB{1}.
+\]
+Of these two statements, circle the one that would be simpler to prove by
+structural induction directly from the definitions.
+
+\iffalse
+\hint The harder of the two proofs requires first working out an idea like
+``good counting'' to find matching brackets.
+\fi
+
+\begin{solution}
+  It's easy to prove that $\forall r \in \MB{1}.\ r \in \MB{2}$
+  by structural induction on $r \in \MB{1}$.
+
+  That's because if $s,t \in \MB{2}$, then it's obvious that
+  $\mtt{[}s\mtt{]}t \in \MB{2}$, and this immediately proves the inductive
+  step of showing that if $\mtt{[}s\mtt{]}t \in \MB{1}$ then $\mtt{[}s\mtt{]}t \in
+  \MB{2}$.
+
+  On the other hand, proving that if $s,t \in \MB{1}$ then $st \MB{1}$ is
+  what's needed in the inductive step that if $st \in \MB{2}$ then $st \in
+  \MB{1}$.  But proving this requires working out a definition of which
+  bracket matches the initial bracket in a string in $\MB{1}$.  We saw how
+  to do this using the idea of ``good counting,'' but it took some work.
+\end{solution}
+
+\ppart Suppose structural induction was being used to prove that $\MB{2}
+\subseteq \MB{1}$.  Circle the one predicate below that would fit the
+format for a structural induction hypothesis in such a proof.
+
+\begin{itemize}
+
+\item $P_0(n) \eqdef  \lnth{s} \leq n \QIMPLIES s \in \MB{1}$.
+
+\item $P_1(n) \eqdef  \lnth{s} \leq n \QIMPLIES s \in \MB{2}$.
+
+\item $P_2(s) \eqdef s \in \MB{1}$.
+
+\item $P_3(s) \eqdef s \in \MB{2}$.
+
+\item $P_4(s) \eqdef\ (s \in \MB{1} \QIMPLIES s \in \MB{2})$.
+
+\end{itemize}
+
+\begin{solution}
+  $\MB{2} \subseteq \MB{1}$ means that $\forall s \in \MB{2}.\ s \in
+  \MB{1}$.  To prove this, the only hypothesis above that fits the format
+  for a structural induction would be $P_2$ in a structural induction on
+  the definition of $\MB{2}$.
+\end{solution}
+
+\instatements{\newpage}
+\ppart One of these recursive definitions is \emph{ambiguous}.  Verify
+this by giving two different derivations for the string "$\mtt{[\ ][\ ][\ ]}$"
+according to one of these recursive definitions.
+
+\instatements{\vspace{2in}}
+
+\begin{solution}
+  $\MB{2}$ is ambiguous, because "$\mtt{[\ ][\ ][\ ]}" \in \MB{2}$ can be derived
+  from the second constructor with $s = \mtt{[\ ]}$ and $t = [\ ][\ ]$, but also
+  with $s = \mtt{[\ ][\ ]}$ and $t = [\ ]$.
+\end{solution}
+
+
+\ppart Ambiguous definitions can lead to ill-defined recursive definitions
+of functions.  Here are apparent definitions of four functions $\lefnum_i$
+and $\derlen_i$
+\iffalse from $\MB{i} \to \naturals$\fi
+based on the recursive definition of $\MB{i}$, for $i=1,2$.  Circle all the
+apparent definitions which do not, in fact, uniquely determine a function.
+
+\[\begin{array}{rl}
+\lefnum_1(r)  & \eqdef \begin{cases}
+                   0 & \text{ if } r = \emptystring\\
+                   1 + \lefnum_1(s) + \lefnum_1(t)
+                     & \text{ if } r = \mtt{[}s\mtt{]}t.
+                   \end{cases}\\
+\\
+\lefnum_2(r)  & \eqdef \begin{cases}
+                   0 & \text{ if } r = \emptystring\\
+                   1 + \lefnum_2(s)
+                     & \text{ if } r = \mtt{[}s\mtt{]},\\
+                   \lefnum_2(s) + \lefnum_2(t)
+                     & \text{ if } r = st.
+                   \end{cases}\\
+\\
+\derlen_1(r)  & \eqdef \begin{cases}
+                   0 & \text{ if } r = \emptystring\\
+                   1+ \derlen_1(s) + 2\cdot\derlen_1(t)
+                     & \text{ if } r = \mtt{[}s\mtt{]}t.
+                   \end{cases}\\
+\\
+\derlen_2(r)  & \eqdef \begin{cases}
+                   0 & \text{ if } r = \emptystring\\
+                   1 + \derlen_2(s)
+                     & \text{ if } r = \mtt{[}s\mtt{]},\\
+                   \derlen_2(s) + 2 \cdot \derlen_2(t)
+                     & \text{ if } r = st\text{ and } s,t \neq \emptystring.
+                   \end{cases}
+\end{array}\]
+
+\begin{solution}
+$\lefnum_1$ and $\derlen_1$ are well-defined because the definition of
+$\MB{1}$ is unambiguous.
+
+$\derlen_2$ is ill-defined, because
+\[
+5= 3+2\cdot 1 =\derlen_2([\ ][\ ]\cdot[\ ]) = \derlen_2([\ ]\cdot[\ ][\ ]) = 1+2\cdot 3 =7.
+\]
+
+$\lefnum_2(r)$ is well-defined because it equals the number of left
+brackets in $r$, which could be proved by structural induction on the
+definition of $\MB{2}$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
