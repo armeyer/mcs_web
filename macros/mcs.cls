@@ -929,12 +929,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% \examspace produces vertical space only in handouts without solutions. 
-%%   If no argument is passed then it starts a new page, otherwise inserts
-%%   \vspace{arg}.  e.g. \examspace{1in}
-\newcommand{\examspace}[1][\newpage]{\inhandout{\instatements{
- \ifthenelse{\equal{#1}{\newpage}}
-            {\newpage}
-            {\vspace{#1}}}}}
+%%   If no optional argument is passed then it starts a new page,
+%%   otherwise inserts \vspace{arg}.  e.g. \examspace[1in]
+
+\newcommand{\examspace}[1][]{}
+
+\newcommand{\@examspace}[1][]{%
+    \ifshowsolutions\else
+        \ifcat###1##%
+            \newpage
+        \else
+            \vspace{#1}%
+        \fi
+    \fi
+}
 
 %% \examrule creates a \brule only in handouts without solutions.  If
 %%   no argument is passed then the default \hspace is 0.5in
@@ -945,7 +953,6 @@
 %%   handouts without solutions). 
 \newcommand{\exambox}[3]{\inhandout{\instatements{
   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Mini pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
