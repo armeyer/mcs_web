@@ -618,6 +618,27 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% Copy the amsthm proof environment and add code to set the
+%% \if@just@ended@proof@ flag to communicate with an enclosing
+%% solution environment.
+
+\newif\if@just@ended@proof@
+
+\renewenvironment{proof}[1][\proofname]{%
+    \par
+    \pushQED{\qed}%
+    \normalfont
+    \topsep6\p@\@plus6\p@\relax
+    \trivlist
+        \item[\hskip\labelsep \itshape #1\@addpunct{.}]\ignorespaces
+}{%
+        \popQED
+    \endtrivlist
+    \global\@just@ended@proof@true
+    \global\everypar{\global\@just@ended@proof@false}%
+    \@endpefalse
+}
+
 \newenvironment{falseproof}{%
     \proof[False proof]%
 }{%
@@ -862,21 +883,36 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Copy the amsthm proof environment, with 3 changes:
+%% Copy the amsthm proof environment, with 4 changes:
 %% a) Default label is ``Solution'', not ``Proof''
 %% b) label is typeset in bold, not italics
 %% c) Use a black square instead of an open square for the QED symbol.
+%% d) Suppress the normal QED mark if \if@just@ended@proof@ is true
+%%    (see proof environment above).
+
+\DeclareRobustCommand{\solution@qed}{%
+  \ifmmode \mathqed
+  \else
+    \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+    \quad\hbox{\ensuremath{\blacksquare}}%
+  \fi
+}
+
+\def\eatQED@elt#1#2\relax{\gdef\QED@stack{#2}}
 
 \newenvironment{solution}[1][Solution]{%
     \par
-    \def\qedsymbol{\ensuremath{\blacksquare}}%
-    \pushQED{\qed}%
+    \global\@just@ended@proof@false
+    \pushQED{\solution@qed}%
     \normalfont
     \topsep6\p@\@plus6\p@\relax
     \trivlist
-    \item[\hskip\labelsep\bfseries#1\@addpunct{.}]%
-    \ignorespaces
+        \item[\hskip\labelsep\bfseries#1\@addpunct{.}]%
+        \ignorespaces
 }{%
+        \if@just@ended@proof@
+            \let\popQED@elt\eatQED@elt
+        \fi
     \popQED
     \endtrivlist
     \@endpefalse
