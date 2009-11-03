@@ -1,0 +1,143 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{PS_inclusion-exclusion_primes}
+\pcomment{from: S09:cp10r}
+\pcomment{S09 was modified by ARM from S07, ps9, problem 5}
+\end{pcomments}
+
+\pkeywords{
+  counting
+  counting_rules
+  prime
+  inclusion-exclusion
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  How many of the numbers $2, \dots, n$ are prime?  The
+  Inclusion-Exclusion Principle offers a useful way to calculate the
+  answer when $n$ is large.  Actually, we will use Inclusion-Exclusion to
+  count the number of \emph{composite} (nonprime) integers from 2 to $n$.
+  Subtracting this from $n-1$ gives the number of primes.
+
+Let $C_n$ be the set of composites from $2$ to $n$, and let $A_m$ be the
+set of numbers in the range $m+1,\dots,n$ that are divisible by $m$.
+Notice that by definition, $A_m = \emptyset$ for $m \geq n$.
+So
+\begin{equation}\label{CU}
+C_n = \lgunion_{i=2}^{n-1} A_i.
+\end{equation}
+
+\bparts
+
+\ppart Verify that if $m \divides k$, then $A_m \supseteq A_k$.
+
+\solution{
+If $a \in A_k$, then $k \divides a$ by definition of $A_k$, and therefore
+$m \divides a$.  So to show that $a \in A_m$ we need only show that $a$ is
+in the interval $m+1,\dots,n$.  But $a$ is in the interval $k+1,\dots,n$
+by definition of $A_k$, and since $m \divides k$, we have $m+1 \leq k+1$, so
+$a$ is also in the interval $m+1,\dots,n$.
+}
+
+\ppart Explain why the right hand side of~\eqref{CU} equals
+\begin{equation}\label{LU}
+\lgunion_{\text{primes } p \leq \sqrt{n}} A_p.
+\end{equation}
+
+\solution{If $m \divides k$, then $A_m \supseteq A_k$, so there is no need
+  to keep $A_k$ in the right hand side of ~\eqref{CU} as long as $A_m$
+  remains in the union.  Also, any composite $\leq n$ must be
+  divisible by a prime $p \leq \sqrt{n}$ (because it is a product of at
+  least two primes, and they can't both be bigger than $\sqrt{n}$).  So any
+  $A_k$ in the right hand side of ~\eqref{CU} is contained in $A_p$ for
+  some prime $p \leq \sqrt{n}$.}
+
+\ppart Explain why $\card{A_m} = \floor{n/m} - 1$ for $m \geq 2$.
+
+\solution{$m$ divides every $m$th integer from 1 to $n$, so $m$ divides
+  $\floor{n/m}$ integers from 1 to $n$ and therefore divides one fewer
+  integer from $m+1$ to $n$.}
+
+\ppart Consider any two relatively prime numbers $p,q \leq n$.  What
+is the one number in $(A_p \intersect A_q) - A_{p \cdot q}$?
+
+\solution{ By definition, $A_p$ is the set of numbers divisible by $p$
+  in the range $p+1,\ldots,n$.  Similarly, $A_q$ is the set of numbers
+  divisible by $a$ in the range $q+1,\ldots,n$.  Thus, $A_p \intersect
+  A_q$ is the set of numbers divisible by $p$ and $q$, and hence by
+  $pq$ since they are relatively prime, in the range
+  $\max\set{p,q}+1,\ldots,n$.  Notice that the smallest number in this set
+  is $pq$.  Thus, $A_p \intersect A_q$ is the set of numbers divisible
+  by $pq$ in the range $pq,\ldots, n$.  In contrast, $A_{p\cdot q}$ is
+  the set of numbers divisible by $pq$ in the range $pq+1,\ldots,n$.
+  Thus, $pq$ is the only number in $(A_p \intersect A_q) - A_{p \cdot
+    q}$.
+}
+
+\ppart Let $\mathcal{P}$ be a finite set of at least two primes.  Give a
+simple formula for
+\[
+\card{\lgintersect_{p \in \mathcal{P}} A_p}.
+\]
+
+\solution{
+
+\begin{eqnarray*}
+\card{\lgintersect_{p \in P} A_p} &=& \card{A_{\prod_{p \in P} p}} + 1
+\hspace{2cm} \text{by the previous part}\\
+&=& \paren{\floor{\frac{n}{\prod_{p \in P} p}} - 1} + 1 \hspace{2cm}
+\text{by part~(c)}\\
+&=& \floor{\frac{n}{\prod_{p \in P} p}} \ .
+\end{eqnarray*}
+
+}
+
+\ppart Use the Inclusion-Exclusion principle to obtain a formula for
+$\card{C_{150}}$ in terms the sizes of intersections among the sets
+$A_2,A_3,A_5,A_7, A_{11}$.  (Omit the intersections that are empty; for
+example, any intersection of more than three of these sets must be empty.)
+
+\solution{
+\begin{eqnarray*}
+\abs{C} & = & \abs{A_2}+\abs{A_3}+\abs{A_5}+\abs{A_7}+\abs{A_{11}}\\
+& & - \abs{A_2 \cap A_3} - \abs{A_2 \cap A_5} - \abs{A_2 \cap A_7} - \abs{A_2 \cap A_{11}}\\
+& & - \abs{A_3 \cap A_5} - \abs{A_3 \cap A_7} - \abs{A_3 \cap A_{11}}\\
+& & - \abs{A_5 \cap A_7} - \abs{A_5 \cap A_{11}}\\
+& & - \abs{A_7 \cap A_{11}}\\
+& & + \abs{A_2 \cap A_3 \cap A_5} + \abs{A_2 \cap A_3 \cap A_7} + \abs{A_2 \cap A_3 \cap A_{11}}\\
+& & + \abs{A_2 \cap A_5 \cap A_7} + \abs{A_2 \cap A_5 \cap A_{11}}\\
+& & +\abs{A_3 \cap A_5 \cap A_7}
+\end{eqnarray*}
+}
+
+\ppart Use this formula to find the number of primes up to 150.
+
+\solution{We have:
+\begin{eqnarray*}
+\abs{C_{150}} & = & 74+49+29+20+12\\
+& & - 25-15-10-6\\
+& & - 10-7-4\\
+& & - 4 -2\\
+& & - 1\\
+& & + 5+3+2\\
+& & + 2+ 1\\
+& & + 1\\
+& = & 114
+\end{eqnarray*}
+The number of primes from 2 to 150 is $(150-1) - \abs{C_{150}} = 149 -114= 35$.
+}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\endinput
