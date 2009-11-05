@@ -1,0 +1,367 @@
+\input{latex-macros/handout-preamble.tex}
+\inhandout{
+\inclassproblems{8, Thurs.}
+\usesimpleproblems
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems start here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%same as S06, cp7w
+
+
+\begin{problem}
+Let's try out RSA!  There is a complete description of the algorithm at
+the bottom of the page.  You'll probably need extra paper.  \textbf{Check
+your work carefully!}
+
+\bparts
+
+\ppart As a team, go through the \textbf{beforehand} steps.
+
+\begin{itemize}
+
+\item Choose primes $p$ and $q$ to be relatively small, say in the
+range 10-40.  In practice, $p$ and $q$ might contain several hundred
+digits, but small numbers are easier to handle with pencil and paper.
+
+\item Try $e = 3, 5, 7, \ldots$ until you find something that works.
+Use Euclid's algorithm to compute the gcd.
+
+\item Find $d$ (using the Pulverizer ---see appendix for a reminder on how
+the Pulverizer works ---or Euler's Theorem).
+
+\end{itemize}
+
+When you're done, put your public key on the board.  This lets another
+team send you a message.
+
+\ppart Now send an encrypted message to another team using their
+public key.  Select your message $m$ from the codebook below:
+
+\begin{itemize}
+
+\item 2 = Greetings and salutations!
+
+\item 3 = Yo, wassup?
+
+\item 4 = You guys are slow!
+
+\item 5 = All your base are belong to us.
+
+\item 6 = Someone on {\em our} team thinks someone on {\em your} team
+is kinda cute.
+
+\item 7 = You {\em are} the weakest link.  Goodbye.
+
+\end{itemize}
+
+\ppart Decrypt the message sent to you and verify that you received
+what the other team sent!
+
+
+\eparts
+
+
+\begin{center}
+RSA Public Key Encryption
+\fbox{
+\begin{minipage}[t]{6in}
+\vspace{0.1cm}
+\begin{description}
+
+\item[Beforehand] The receiver creates a public key and a secret key
+as follows.
+
+\begin{enumerate}
+
+\item Generate two distinct primes, $p$ and $q$.
+
+\item Let $n = pq$.
+
+\item Select an integer $e$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
+{\em public key} is the pair $(e, n)$.  This should be distributed
+widely.
+
+\item Compute $d$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.\\ The
+{\em secret key} is the pair $(d, n)$.  This should be kept hidden!
+
+\end{enumerate}
+
+\item[Encoding] The sender encrypts message $m$, where $0 \leq m < n$, to
+  produce $m^\prime$ using the public key:
+\[
+m' = \rem{m^e}{n}.
+\]
+
+\item[Decoding] The receiver decrypts message $m'$ back to message $m$
+using the secret key:
+\[
+m = \rem{(m')^d}{n}.
+\]
+
+\end{description}
+
+\vspace{0.1cm}
+\end{minipage}
+}
+\end{center}
+
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\instatements{\newpage}
+\begin{problem}
+  A critical question is whether decrypting an encrypted message always
+  gives back the original message!  That is, whether $\rem{(m^{d})^e}{pq}
+  =m$.  This will follow from something slightly more general:
+\begin{lemma}\label{npdp}
+Let $n$ be a product of distinct primes and $a \equiv 1 \pmod {\phi(n)}$
+for some nonnegative integer, $a$.  Then
+\begin{equation}\label{ma}
+m^a \equiv m \pmod n.
+\end{equation}
+\end{lemma}
+
+\bparts
+
+
+\ppart Explain why Lemma~\ref{npdp} implies that $k$ and $k^5$ have the
+same last digit.  For example:
+%
+\[
+\underline{2}^5 = 3\underline{2}
+\hspace{1in}
+7\underline{9}^5 = 307705639\underline{9}
+\]
+\hint What is $\phi(10)$?
+
+\solution{Two nonnegative integers have the same last digit iff they are
+$\equiv \pmod {10}$.  Now $\phi(10) = \phi(2)\phi(5) = 4$ and $5 \equiv 1 \pmod 4$,
+so by Lemma~\ref{npdp},
+\[
+k^5 \equiv k \pmod {10}.
+\]}
+
+\ppart Explain why Lemma~\ref{npdp} implies that the original message,
+$m$, equals $\rem{(m^e)^d}{pq}$.
+
+\solution{ To apply Lemma~\ref{npdp} to RSA, note that the first condition
+  of the Lemma is that $n$ be a product of primes.  In RSA, $n=pq$ so this
+  condition holds.
+
+  For $n=pq$, the Euler function equations (see the
+  Appendix) imply that $\phi(n) = (p-1)(q-1)$.  So when $d$ and $e$ are
+  chosen according to RSA, $de \equiv 1 \pmod {\phi(n)}$.  So $a \eqdef
+  de$ satisfies the second condition of the Lemma.
+
+  Now, from equation~\eqref{ma} with $n=pq$ and $a=de$, we have
+\[
+(m^e)^d = m^{de} \equiv m \pmod {pq}.
+\]
+Hence,
+\[
+\rem{(m^e)^d}{pq} = \rem{m}{pq},
+\]
+but $\rem{m}{pq} = m$, since $0\leq m<pq$.}
+
+\eparts
+
+\bparts
+
+\ppart\label{pma} Prove that if $p$ is prime, then
+\begin{equation}\label{mp}
+m^a \equiv m \pmod{p}
+\end{equation}
+for all nonnegative integers $a \equiv 1 \pmod {p-1}$.
+
+\solution{
+If $p \divides m$, then equation~\eqref{mp} holds since both sides of the
+congruence are $\equiv 0 \pmod p$.
+
+So assume $p$ does not divide $m$.  Now if $a \equiv 1 \pmod {p-1}$,
+then $a = 1 + (p-1)k$ for some $k$, so
+\begin{align*}
+m^a & = m^{1+ (p-1)k}\\
+    & = m\cdot \paren{m^{p-1}}^k\\
+    & \equiv m\cdot \paren{1}^k \pmod p
+            & \text{(by Fermat's Little Thm.)}\\
+    & \equiv m \pmod p.
+\end{align*}}
+
+\iffalse
+
+\ppart\label{abk} Show that for any positive integers $j,k$,
+if $a \equiv b \pmod k$ and $j \divides k$, then $a \equiv b \pmod j$
+
+\solution{
+$a \equiv b \pmod k$ iff $k \divides (a-b)$.  But if $k \divides (a-b)$
+and $j \divides k$, then also $j \divides (a-b)$, which implies $a \equiv
+b \pmod j$.
+}
+\fi
+
+\ppart\label{abp}
+Prove that if $n$ is a product of distinct primes, and $a \equiv b
+\pmod p$ for all prime factors, $p$, of $n$, then $a \equiv b
+\pmod n$.
+
+\solution{ By definition of congruence, $a \equiv b \pmod k$ iff $k
+\divides (a-b)$.  So if $a \equiv b \pmod p$ for each prime factor, $p$,
+of $n$, then $p \divides (a-b)$ for each prime factor, $p$, and hence, so
+does their product (by the Unique Factorization Theorem).  That is, $n
+\divides (a-b)$, which means $a \equiv b \pmod n$.}
+
+\iffalse
+
+\ppart\label{phip} Verify that for any $n>1$ and any prime divisor, $p$,
+of $n$,
+\[
+\phi(p) \divides \phi(n).
+\]
+
+\solution{Let $p$ be a prime factor of $n$ and factor $n$ as $m\cdot p^k$
+where $p$ does not divide $m$.  By the Euler function equations,
+$\phi(n)=\phi(m)\phi(p^k)$, so $\phi(p^k) \divides \phi(n)$.  But
+$\phi(p) = (p-1)$ which divides $(p-1)p^{k-1} = \phi(p^k)$.}
+\fi
+
+
+\ppart Combine the previous parts to complete the proof of
+Lemma~\ref{npdp}.  \solution{Suppose $n$ is a product of distinct primes,
+  $p_1p_2\cdots p_k$.  Then from the formulas for the Euler function,
+  $\phi$, we have
+\[
+\phi(n) = (p_1 -1)(p_2 -1)\cdots (p_k-1).
+\]
+
+Now suppose $a \equiv 1 \pmod {\phi(n)}$, that is, $a$ is 1 plus a
+multiple of $\phi(n)$, so it is also 1 plus a multiple of $p_i-1$.  That
+is,
+\[
+a \equiv 1 \pmod {p_i-1}.
+\]
+Hence, by part~\eqref{pma},
+\[
+m^a \equiv m \pmod{p_i}
+\]
+for all $m$.  Since this holds for all factors, $p_i$, of $n$, we conclude
+from part~\eqref{abp} that
+\[
+m^a \equiv m \pmod{n},
+\]
+which proves Lemma~\ref{npdp}.}
+
+\eparts
+
+\end{problem}
+
+\instatements{\newpage}
+
+\section*{Appendix}
+
+\subsection*{Inverses, Fermat, Euler}
+
+\begin{lemma*}[Inverses mod $n$]
+If $k$ and $n$ are relatively prime, then there is integer
+$k'$ called the \emph{modulo $n$ inverse} of $k$, such that
+\[
+k \cdot k' \equiv 1 \pmod n.
+\]
+\end{lemma*}
+
+\textbf{Remark:} If $\gcd(k,n) =1$, then $sk+tn = 1$ for some $s,t$, so we
+can choose $k' \eqdef s$ in the previous Lemma.  So given $k$ and $n$, an
+inverse $k'$ can be found efficiently using the Pulverizer.
+
+\begin{theorem*}[Fermat's (Little) Theorem]
+If $p$ is prime and $k$ is not a multiple of $p$, then
+\[
+k^{p-1} \equiv 1 \pmod{p}
+\]
+\end{theorem*}
+
+\begin{definition*}
+The value of \emph{Euler's totient function}, $\phi(n)$, is defined to be
+the number of positive integers less than $n$ that are relatively prime to
+$n$.
+\end{definition*}
+
+\begin{lemma*}[Euler Totient Function Equations]
+\begin{align*}
+\phi(p^k)& = p^k - p^{k-1} & \text{for prime, $p$, and $k>0$},\\
+\phi(mn) & = \phi(m)\cdot \phi(n) &\text{ when } \gcd(m,n)=1.
+\end{align*}
+\end{lemma*}
+
+\begin{theorem*}[Euler's Theorem]
+If $k$ and $n$ are relatively prime, then
+\[
+k^{\phi(n)} \equiv 1 \pmod{n}
+\]
+\end{theorem*}
+
+\begin{corollary*}
+If $k$ and $n$ are relatively prime, then $k^{\phi(n)-1}$ is an inverse
+modulo $n$ of $k$.
+\end{corollary*}
+
+\textbf{Remark:} Using fast exponentiation to compute $k^{\phi(n)-1}$ is
+another efficient way to compute an inverse modulo $n$ of $k$.
+
+\subsection*{The Pulverizer}
+
+Euclid's algorithm for finding the GCD of two numbers relies on
+repeated application of the equation: 
+\[
+\gcd(a, b) = \gcd(b, \rem{a}{b})
+\]
+For example, we can compute the GCD of 259 and 70 as follows:
+\[
+\begin{array}{rclcl}
+\gcd(259, 70)
+    & = & \gcd(70, 49) & \quad & \text{since $\rem{259}{70} = 49$}\\
+    & = & \gcd(49, 21) && \text{since $\rem{70}{49} = 21$} \\
+    & = & \gcd(21, 7) && \text{since $\rem{49}{21} = 7$} \\
+    & = & \gcd(7, 0) && \text{since $\rem{21}{7} = 0$} \\
+    & = & 7.
+\end{array}
+\]
+The Pulverizer goes through the same steps, but requires some extra
+bookkeeping along the way: as we compute $\gcd(a, b)$, we keep track
+of how to write each of the remainders (49, 21, and 7, in the example)
+as a linear combination of $a$ and $b$ (this is worthwhile, because
+our objective is to write the last nonzero remainder, which is the
+GCD, as such a linear combination).  For our example, here is this
+extra bookkeeping:
+\[
+\begin{array}{ccccrcl}
+x & \quad & y & \quad & \rem{x}{y} & = & x - q \cdot y \\ \hline
+259 && 70 && 49 & = &   259 - 3 \cdot 70 \\
+70 && 49 && 21  & = &   70 - 1 \cdot 49 \\
+&&&&            & = &   70 - 1 \cdot (259 - 3 \cdot 70) \\
+&&&&            & = &   -1 \cdot 259 + 4 \cdot 70 \\
+49 && 21 && 7   & = &   49 - 2 \cdot 21 \\
+&&&&            & = &   (259 - 3 \cdot 70) -
+                                2 \cdot (-1 \cdot 259 + 4 \cdot 70) \\
+&&&&            & = &   \fbox{$3 \cdot 259 - 11 \cdot 70$} \\
+21 && 7 && 0
+\end{array}
+\]
+We began by initializing two variables, $x = a$ and $y = b$.  In the
+first two columns above, we carried out Euclid's algorithm.  At each
+step, we computed $\rem{x}{y}$, which can be written in the form $x - q
+\cdot y$.  (Remember that the Division Algorithm says $x = q \cdot y +
+r$, where $r$ is the remainder.  We get $r = x - q \cdot y$ by
+rearranging terms.)  Then we replaced $x$ and $y$ in this equation
+with equivalent linear combinations of $a$ and $b$, which we already
+had computed.  After simplifying, we were left with a linear
+combination of $a$ and $b$ that was equal to the remainder as desired.
+The final solution is boxed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems end here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{latex-macros/handout-postamble.tex}
