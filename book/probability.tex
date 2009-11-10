@@ -299,7 +299,7 @@ that:
 \pr{(A, B, C)} & = \frac{1}{9} \\
                & \text{etc.}
 \end{align*}
-aaa
+
 \subsection{Step 4: Compute Event Probabilities}
 
 We now have a probability for each \textit{outcome}, but we want to
@@ -386,7 +386,7 @@ defined to be the sum of the probabilities of the outcomes in $E$:
 An immediate consequence of the definition of event probability is that
 for \emph{disjoint} events, $E,F$,
 \[
-\pr{E \union F} = \pr{E} +\pr{F}.
+\pr{E \union F} = \pr{E} + \pr{F}.
 \]
 This generalizes to a countable number of events.  Namely, a collection of
 sets is \term{pairwise disjoint} when no element is in more than one of
@@ -463,7 +463,7 @@ Similarly, the Difference Rule implies that
 \hyperdef{ln10}{monotonicity}{
 \begin{equation}\label{LN12:subsetbound}
 \text{If } A \subseteq B, \text{ then } \pr{A} \le \pr{B}.\tag{Monotonicity}
-\end{equation}
+\end{equation}}
 
 
 \subsection{An Infinite Sample Space}
@@ -537,6 +537,84 @@ is a rational number?  We won't take up such problems in this book.
 %% Set Theory and Probability Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\startclassproblems
 
+
+
+%% The Birthday Principle %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Birthday Principle}\label{birthday_principle_sec}
+
+There are 100 students in a lecture hall.  What is the probability that
+some two people share a birthday?  Maybe about $1/3$?  Let's check!  More
+generally, suppose there are $n$ students and $d$ days in the year.
+
+We'll assume that a random choice of a student is made independently of
+the any other choices of students.  For simplicity, we'll assume that the
+probability that a randomly chosen student has a given birthday is $1/d$,
+with $d= 365$ in this case.  This randomness assumption is not really
+true, since more babies are born at certain times of year.  However, our
+analysis of this problem applies to many situations in Computer Science
+that are unaffected by leap days, snow days or Spring fever, so we won't
+dwell on those complications.
+
+A sensible sample space to model this experiment consists of all ways of
+assigning birthdays to the people of the group.  There are $d^n$ such
+assignments, since the first person can have $d$ different birthdays, the
+second person can have $d$ different birthdays, and so forth.
+Furthermore, every such assignment is equally probable by our assumption
+that birthdays are equally likely and independent of each other.
+
+It turns out to be be easier to calculate the complementary probability
+that everyone has a distinct birthday.  This event consists of $d (d - 1)
+(d - 2) \cdots (d - n + 1)$ outcomes, since we can select the birthday of
+the first person in $d$ ways, the birthday of the second person in $d - 1$
+ways, and so forth.  Therefore, the probability that everyone has a
+different birthday is:
+\begin{align*}
+\pr{\text{$n$ different birthdays}} & = \frac{d (d - 1) (d - 2) \cdots (d - n + 1)}{d^n}.
+\end{align*}
+For $n=100$, this probability is actually fantastically small ---less
+than one in a million!  If there are 100 people in a room, two are
+almost certain to share a birthday.
+
+Let's rewrite the right side of the preceding equation in a more
+insightful form that allows us to use the fact that $e^x >1+x$ for all
+$x$.\footnote{This approximation is obtained by truncating the Taylor
+series $e^{-x} = 1 - x + x^2/2! - x^3/3! + \cdots$.  The approximation
+$e^{-x} \approx 1 - x$ is pretty accurate when $x$ is small.}
+\begin{align*}
+\pr{D=0} & = \left(1 - \frac{0}{d}\right)
+           \left(1 - \frac{1}{d}\right)
+           \left(1 - \frac{2}{d}\right) 
+           \cdots
+           \left(1 - \frac{n - 1}{d}\right)\\
+       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \\
+       & = e^{-\frac{\sum_{i=1}^{n-1} i}{d}}\\
+       & = e^{\dfrac{-n(n-1)}{2d}} = e^{-\dfrac{\binom{n}{2}}{d}}.
+\end{align*}
+
+The exponent $\binom{n}{2}/d$ in the final expression above is close to
+$1$ when $n \approx \sqrt{2d}$.  In this case, the probability that two
+people share a birthday is close to $1/e$ which is roughly the break-even
+point, where it's equally likely whether or not a couple of people will
+share a birthday.  This leads to a rule called the \term{Birthday
+Principle}, which is useful in many contexts in Computer Science:
+\begin{quote}
+If there are $d$ days in a year and $\sqrt{2d}$ people in a
+room, then the probability that two share a birthday is about 
+$1 - 1/e \approx 0.632$.
+\end{quote}
+For example, this principle says that if you have $\sqrt{2 \cdot 365}
+\approx 27$ people in a room, then the probability that two share a
+birthday is about $0.632$.  The actual probability is about $0.626$,
+so the approximation is quite good.
+
+The Birthday Principle is a great rule of thumb with surprisingly many
+applications.  For example, cryptographic systems and digital signature
+schemes must be hardened against ``birthday attacks''.  The principle also
+tells us how many items can be inserted into a hash table before one
+starts to experience collisions.
+
+%% The Birthday Principle Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\startclassproblems
 
 %% Conditional Probability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \hyperdef{cond}{prob}{\section{Conditional Probability}}
@@ -883,7 +961,7 @@ the Halting Problem wins the series (event $A$) is equal to the
 probability that it wins the first game (event $B$).  In fact, both
 probabilities are $1/2$.
 
-\iffalse
+%\iffalse
 Such pairs of probabilities are related by Bayes' Rule:
 %
 \begin{theorem}[Bayes' Rule]
@@ -1078,9 +1156,6 @@ For example, the following is \textit{not} a valid identity:
 \end{equation}
 \end{falseclm*}
 
-\textbf{Quick Question} :Give a simple counterexample to~\eqref{LN12:fc}.
-\begin{solution}
-
 A counterexample is shown below.  In this case, $\prcond{A}{B} = 1$,
 $\prcond{A}{C} = 1$, and $\prcond{A}{B \cup C} = 1$.  However, since
 $1 \neq 1 + 1$, the equation above does not hold.
@@ -1091,8 +1166,6 @@ $1 \neq 1 + 1$, the equation above does not hold.
 %
 So you're convinced that this equation is false in general, right?
 Let's see if you \textit{really} believe that.
-
-\end{solution}
 
 \subsection{Discrimination Lawsuit}
 
