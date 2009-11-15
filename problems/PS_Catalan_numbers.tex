@@ -1,0 +1,145 @@
+%PS_binomial_problem
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S08.ps10}
+\end{pcomments}
+
+\pkeywords{
+  generating functions
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem} The method of partial fractions can only be applied
+to rational functions (i.e. quotients of polynomials) and there are 
+many interesting generating functions that are not of this form. 
+Catalan numbers come up frequently in counting the sizes of various 
+recursively defined sets -- there are in fact hundreds of 
+interpretations of these numbers!
+\footnote{\href{http://www-math.mit.edu/~rstan/ec/catadd.pdf}
+               {http://www-math.mit.edu/~rstan/ec/catadd.pdf}}
+
+We are only going to look at one that is relevant to a familiar 
+recursively defined set from the 
+\href{http://courses.csail.mit.edu/6.042/spring08/ln4.pdf#struct.induction}
+     {lecture notes}
+on structural induction:
+     
+\begin{definition}
+\label{M}
+Define the set, $M$, of strings of matched right and left parentheses
+recursively as follows:
+\begin{itemize}
+
+\item \textbf{Base case:} $\lambda \in M$, where $\lambda$ is the
+\emph{empty} string,
+
+\item \textbf{Constructor case:} if $s,t \in M$, then
+$\texttt{(}s\texttt{)}t \in M$.
+
+\end{itemize}
+\end{definition}
+
+The $n$th Catalan number, $c_n$, is equal to the number of strings in 
+$M$ having exactly $n$ left parentheses.
+
+Note that $c_0 = 1$ since $\lambda$ is the only string in $M$ with $0$ 
+left parentheses.
+
+\bparts
+
+\ppart Find a recursive definition for $c_n$ in terms of 
+$c_0, c_1, \ldots c_{n-1}$ for $n \geq 1$. (\emph{Hint: assuming
+$s$ and $t$ are in $M$, what are the possible pairs of integers 
+describing the numbers of left parentheses in each such that 
+$\texttt{(}s\texttt{)}t$ has exactly $n$ left parentheses in total?})
+
+\begin{solution}Define $|s|$ to be the number of left parentheses in the 
+string $s \in M$.  Answering the question posed in the hint, if
+$|\texttt{(}s\texttt{)}t| = n$ then $|s|+|t|=n-1$ and so the 
+possibilities for the pair $(|s|,|t|)$ are $(0,n-1),(1,n-2),
+(n-2,1),(n-1,0)$.
+
+By structural induction we already know the numbers of matched 
+parentheses strings with less than $n$ left parentheses.  Summing
+over all the possible pairs,
+\begin{equation}\label{Cn_recur}
+c_n = \sum_{i=0}^{n-1} c_{i} \cdot c_{n-i-1}
+\end{equation}
+\end{solution}
+
+\ppart Show that the generating function $C(x)$ corresponding to 
+$\ang{c_0, c_1, c_2, \ldots}$ satisfies the following equation
+\begin{equation}\label{Cx_poly}
+C(x) = 1 + xC(x)^2.
+\end{equation}
+
+\begin{solution}By the product rule for generating functions, $c_n$ in
+$\eqref{Cn_recur}$ is the coefficient of $(xC(x)) \cdot C(x)$ for 
+$n>0$.  The coeffecient of $x^0$ in $xC(x)^2$ however is zero 
+whereas the coefficient of $x^0$ in $C(x)$ is $c_0=1$.  Therefore,
+\[
+C(x)-xC(x)^2 = c_0.
+\]
+\end{solution}
+
+Solving for $C(x)$ in $\eqref{Cx_poly}$ shows that one of the two 
+possible generating functions corresponding to the Catalan numbers
+is
+\[
+C(x)=\frac{1-\sqrt{1-4x}}{2x}
+\]
+
+\ppart Use this generating function to show that
+\[
+c_n = \frac{1}{n+1} \binom{2n}{n} \text{ for $n \geq 0$.}
+\] 
+(\emph{Hint: It may be easier to find a closed form for the $n$th 
+coefficient of $2 x C(x)$ first.}) 
+
+\begin{solution}$C(x)$ is not a rational function and therefore cannot 
+be simplified by the method of partial fractions.
+
+Let $D(x) = 2 x C(x) = 1 - (1-4x)^{\frac{1}{2}}$.  By Taylor's 
+theorem, the $n$th coefficient of $D(x)$ is given by 
+$\frac{D^{(n)}(0)}{n!}$.
+
+\begin{align*}
+D'(x)      & = 2 \cdot (1-4x)^{-\frac{1}{2}} \\
+D''(x)     & = 1 \cdot 2^2 \cdot (1-4x)^{-\frac{3}{2}} \\
+D'''(x)    & = 3 \cdot 1 \cdot 2^3 \cdot (1-4x)^{-\frac{5}{2}} \\
+D^{(4)}(x) & = 5 \cdot 3 \cdot 1 \cdot 2^4 \cdot (1-4x)^{-\frac{7}{2}} \\
+D^{(5)}(x) & = 7 \cdot 5 \cdot 3 \cdot 1 \cdot 2^5 \cdot (1-4x)^{-\frac{9}{2}} \\
+D^{(n)}(x) & = (2n-3) \cdot (2n-5) \cdots 5 \cdot 3 \cdot 1 \cdot 2^n \cdot (1-4x)^{\frac{1-2n}{2}}
+\end{align*}
+
+\[
+d_n = D^{(n)}(0)/n! = \frac{(2n-3) \cdot (2n-5) \cdots 5 \cdot 3 \cdot 1 \cdot 2^n}{n!}
+\]
+
+Since $D(x)=2 x C(x)$, 
+\begin{align*}
+c_n   & = \frac{1}{2} d_{n+1}\\
+      & = (2n-1) \cdot (2n-3) \cdots 5 \cdot 3 \cdot 1 \cdot \frac{2^n}{(n+1)!}\\
+      & = \frac{(n) \cdot (2n-1) \cdot (n-1) \cdot (2n-3) \cdot (n-2) \cdots 3 \cdot 1 \cdot 1}
+               {(n) \cdot (n-1) \cdot (n-2) \cdots 1} \cdot
+          \frac{2^n}{(n+1)!}\\
+      & = \frac{2(n) \cdot (2n-1) \cdot 2(n-1) \cdot (2n-3) \cdot 2(n-2) \cdots 3 \cdot 2(1) \cdot 1}
+               {n!} \cdot
+          \frac{1}{(n+1)!}\\
+      & = \frac{2n!}{n!(n+1)!}
+\end{align*}
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
