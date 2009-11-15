@@ -622,6 +622,10 @@
 %% \if@just@ended@proof@ flag to communicate with an enclosing
 %% solution environment.
 
+%% Use a black square instead of an open square for the QED symbol.
+
+\def\qedsymbol{\ensuremath{\blacksquare}}
+
 \newif\if@just@ended@proof@
 
 \renewenvironment{proof}[1][\proofname]{%
@@ -883,27 +887,18 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Copy the amsthm proof environment, with 4 changes:
+%% Copy the amsthm proof environment, with 3 changes:
 %% a) Default label is ``Solution'', not ``Proof''
 %% b) label is typeset in bold, not italics
-%% c) Use a black square instead of an open square for the QED symbol.
-%% d) Suppress the normal QED mark if \if@just@ended@proof@ is true
+%% c) Suppress the normal QED mark if \if@just@ended@proof@ is true
 %%    (see proof environment above).
-
-\DeclareRobustCommand{\solution@qed}{%
-  \ifmmode \mathqed
-  \else
-    \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
-    \quad\hbox{\ensuremath{\blacksquare}}%
-  \fi
-}
 
 \def\eatQED@elt#1#2\relax{\gdef\QED@stack{#2}}
 
 \newenvironment{solution}[1][Solution]{%
     \par
     \global\@just@ended@proof@false
-    \pushQED{\solution@qed}%
+    \pushQED{\qed}%
     \normalfont
     \topsep6\p@\@plus6\p@\relax
     \trivlist
