@@ -1,0 +1,157 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_conditional_probability_problem_errors}
+  \pcomment{from: S09.ps11}
+\end{pcomments}
+
+\pkeywords{
+  conditional probability
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  
+  There is a course ---not 6.042, naturally ---in which $10 \%$ of the
+  assigned problems contain errors.  If you ask a TA whether a problem
+  has an error, then he or she will answer correctly $80\%$ of the
+  time.  This $80 \%$ accuracy holds regardless of whether or not a
+  problem has an error.  Likewise when you ask a lecturer, but with
+  only $75 \%$ accuracy.
+
+  We formulate this as an experiment of choosing one problem randomly and
+  asking a particular TA and Lecturer about it.  Define the following
+  events:
+  \begin{eqnarray*}
+    E & ::= & \mbox{``the problem has an error,''}\\
+    T & ::= & \mbox{``the TA says the problem has an error,''}\\
+    L & ::= & \mbox{``the lecturer says the problem has an error.''}
+  \end{eqnarray*}
+  
+  \bparts
+  
+\ppart Translate the description above into a precise set of equations
+involving conditional probabilities among the events $E,T$, and $L$
+
+\begin{solution}
+The assumptions above tell us:
+    \begin{eqnarray*}
+      \pr{E}        & = & \frac{10}{100} = \frac{1}{10},\\
+      \prcond{T}{E} & = & \prcond{\bar{T}}{\bar{E}} = \frac{80}{100} = \frac{4}{5},\\
+      \prcond{L}{E} & = & \prcond{\bar{L}}{\bar{E}} = \frac{75}{100} = \frac{3}{4},
+    \end{eqnarray*}
+    
+    Also, $T$ and $L$ are independent given $E$, and given $\bar{E}$:
+    \begin{eqnarray*}
+      \prcond{T \intersect L}{E} & = & \prcond{T}{E} \prcond{L}{E}\\
+      \prcond{T \intersect L}{\bar{E}} & = & \prcond{T}{\bar{E}} \prcond{L}{\bar{E}}
+    \end{eqnarray*}
+    Note that while we know that $T$ and $L$ are independent \emph{given} $E$
+    or \emph{given} $\bar{E}$, they are not independent by themselves, see
+    part~\eqref{TL}.
+\end{solution}
+
+  \ppart Suppose you have doubts about a problem and ask a TA about
+  it, and she tells you that the problem is correct.  To double-check,
+  you ask a lecturer, who says that the problem has an error.
+  Assuming that \emph{the correctness of the lecturers' answer and the
+    TA's answer are independent of each other, regardless of whether
+    there is an error}\footnote{This assumption is questionable: by
+    and large, we would expect the lecturer and the TA's to spot the
+    same glaring errors and to be fooled by the same subtle ones.},
+  what is the probability that there is an error in the problem?
+    
+\begin{solution}
+We want to calculate
+    \[
+    \prcond{E}{\bar{T} \intersect L}.
+    \]
+
+    From the definition of conditional probability (this is known as
+    \emph{Bayes' rule}):
+    \begin{equation}\label{eq:B2}
+      \prcond{E}{\bar{T} \intersect L} = \pr{E}
+      \frac{\prcond{\bar{T} \intersect L}{E}}
+      {\pr{\bar{T} \intersect L}}.
+    \end{equation}
+    
+    By the independence assumptions, we have:
+    \begin{eqnarray*}
+      \prcond{\bar{T} \intersect L}{E} & = & \prcond{\bar{T}}{E} \prcond{L}{E}
+      = \frac{1}{5}\frac{3}{4}  = \frac{3}{20},\\
+      \prcond{\bar{T} \intersect L}{\bar{E}} & = &
+      \prcond{\bar{T}}{\bar{E}} \prcond{L}{\bar{E}}
+      = \frac{4}{5} \cdot \frac{1}{4} = \frac{1}{5},\\
+      \pr{\bar{T} \intersect L} & = & \prcond{\bar{T} \intersect L}{E}  \pr{E} +
+      \prcond{\bar{T} \intersect L}{\bar{E}} \pr{\bar{E}}\\
+      & = & \frac{3}{20} \cdot \frac{1}{10} + \frac{1}{5} \cdot \frac{9}{10}
+      = \frac{39}{200}.
+    \end{eqnarray*}
+    
+    Substituting these values in equation~\eqref{eq:B2}, we get
+    \[
+    \prcond{E}{\bar{T} \intersect L} = \frac{1}{10} \cdot \frac{3/20}{39/200} =
+    \frac{1}{13} \approx 0.077.
+    \]
+    So this contradictory information has decreased the probability of an error
+    from $10 \%$ to about $7.7 \%$.
+    
+    The calculations here support the common-sense rule that when two
+    people make contradictory statements, you should be influenced
+    more by the most ``authoritative'' person---the one who is right
+    more often.  But note that this does not mean that you should {\em
+      believe} in what the most authoritative person says, since the
+    probability of an error remains uncomfortably large.
+\end{solution}
+
+  \ppart\label{TL} Is the event that ``the TA says that there is an
+  error'', independent of the event that ``the lecturer says that
+  there is an error''?
+  
+\begin{solution}
+The answer is no.  Because the TA is usually right, when
+    the TA says that the problem has an error, the likelihood that
+    there really is an error is increased.  But the lecturer is also
+    usually right, so increasing the likelihood of there \emph{being}
+    an error also increases the likelihood that the lecturer will
+    \emph{report} an error.
+    
+    We verify this informal argument by actually calculating the
+    probability of each of these events and their conjunction, and
+    observing that the probability that the two events occur is
+    different from the product of the probabilities.  Let events
+    $E,T,L$ be as above.
+
+    \begin{eqnarray*}
+      \pr{T} & = & \pr{T \cap E} + \pr{T \cap \bar{E}}\\
+      & = & \pr{T \mid E} \pr{E}  + \pr{T \mid \bar{E}} \pr{\bar{E}}\\
+      & = & \frac{4}{5} \frac{1}{10} + (1 - \frac{4}{5})
+      (1 - \frac{1}{10}) = \frac{13}{50},\\
+      & & \\
+      \pr{L} & = & \pr{L \cap E} + \pr{L \cap \bar{E}}\\
+      & = & \frac{3}{4} \frac{1}{10} + (1 -\frac{3}{4})(1 - \frac{1}{10}) = \frac{3}{10},\\
+      & & \\
+      \pr{L \cap T} & = & \pr{L \cap T \cap E} + \pr{L \cap T \cap \bar{E}} \\
+      & = & \pr{L \cap T \mid  E} \pr{E} + \pr{L \cap T \mid  \bar E} \pr{\bar E}\\
+      & = & \pr{L \mid E}      \pr{T \mid  E}       \pr{E} +
+      \pr{L \mid \bar E} \pr{T \mid  \bar{E}} \pr{\bar E}\\
+      & = & \frac{3}{4} \cdot \frac{4}{5} \cdot \frac{1}{10}
+      + (1 - \frac{3}{4}) (1 - \frac{4}{5}) \cdot (1 - \frac{1}{10}) = \frac{105}{1000} = 0.105,
+    \end{eqnarray*}
+    which is higher than
+    \[
+    \pr{L}\pr{T} = \frac{3}{10} \cdot \frac{13}{50} = .078.
+    \]
+\end{solution}
+  
+  \eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

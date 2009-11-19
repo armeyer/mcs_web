@@ -1,0 +1,172 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_drunken_sailor}
+  \pcomment{from: S09.ps11}
+\end{pcomments}
+
+\pkeywords{
+  probability
+  random variables
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  A drunken sailor wanders along main street, which conveniently consists
+  of the points along the $x$ axis with integral coordinates.  In each
+  step, the sailor moves one unit left or right along the $x$ axis.  A
+  particular \term{path} taken by the sailor can be described by a
+  sequence of ``left'' and ``right'' steps.  For example,
+  $\ang{\text{left,left,right}}$ describes the walk that goes left twice
+  then goes right.
+
+  We model this scenario with a random walk graph whose vertices are the
+  integers and with edges going in each direction between
+  consecutive integers.  All edges are labelled $1/2$.
+
+  The sailor begins his random walk at the origin.  This is described by
+  an initial distribution which labels the origin with probability 1 and
+  all other vertices with probability 0.  After one step, the sailor is
+  equally likely to be at location 1 or $-1$, so the distribution after
+  one step gives label 1/2 to the vertices 1 and $-1$ and labels all other
+  vertices with probability 0.
+
+\bparts 
+
+\ppart 
+
+Give the distributions after the 2nd, 3rd, and 4th step by filling in the
+table of probabilities below, where omitted entries are 0.  For each row,
+write all the nonzero entries so they have the same denominator.
+\begin{center}
+\begin{tabular}{l|ccccccccc}
+  & \multicolumn{9}{c}{location} \\
+  & -4 & -3 & -2 & -1 & 0 & 1 & 2 & 3 & 4 \\ \hline\hline
+  initially & & & & & $1$ & & & & \\
+  after 1 step & & & & $1/2$ & 0 & $1/2$ & & & \\
+  after 2 steps & & & ? & ? & ? & ? & ? & & \\
+  after 3 steps & & ? & ? & ? & ? & ? & ? & ? &  \\
+  after 4 steps & ? & ? & ? & ? & ? & ? & ? & ? & ?
+\end{tabular}
+\end{center}
+  
+\begin{solution}\ 
+\begin{center}
+  \begin{tabular}{l|ccccccccc}
+    & \multicolumn{9}{c}{location} \\
+    & -4 & -3 & -2 & -1 & 0 & 1 & 2 & 3 & 4 \\ \hline\hline
+    initially & & & & & $1$ & & & & \\
+    after 1 step & & & & $1/2$ & 0 & $1/2$ & & & \\
+    after 2 steps & & & $1/4$ & 0 & $2/4$ & 0 & $1/4$ & & \\
+    after 3 steps & & $1/8$ & 0 & $3/8$ & 0 & $3/8$ & 0 & $1/8$ &  \\
+    after 4 steps & $1/16$ & 0 & $4/16$ & 0 & $6/16$ & 0 & $4/16$ & 0 & $1/16$
+  \end{tabular}
+\end{center}
+\end{solution}
+
+\ppart\label{iright}\ 
+
+\begin{enumerate}
+
+\item  What is the final location of a $t$-step path that moves right exactly
+  $i$ times?
+
+\item How many different paths are there that end at that
+location?
+
+\item What is the probability that the sailor ends at this location?
+
+\end{enumerate}
+
+\begin{solution}
+  If he takes $i$ steps to the right, then he takes $t-i$ steps to the
+  left.  Since steps to the left and right cancel, he nets $i - (t-i)
+  = 2i-t$ steps to the right, ending at location $2i-t$.  
+
+  The number of paths is just the number of length-$t$ sequences that
+  contain $i$ ``right''s, which is $\binom{t}{i}$.  
+
+  Each path is equally likely, so he takes the given path with
+  probability $1/2^t$.  Thus, he ends at the location $2i-t$ with
+  probability
+\[
+2^{-t}\binom{t}{i}.
+\]
+\end{solution}
+
+\ppart Let $L$ be the random variable giving the sailor's location after
+$t$ steps, and let $B \eqdef (L + t)/2$.  Use the answer to
+part~\eqref{iright} to show that $B$ has an unbiased binomial density
+function.
+
+\begin{solution}
+  From the previous part, we have $\pr{L = 2x-t} =
+  2^{-t} \binom{t}{x}$ for $0 \leq x \leq t$.
+
+  
+  We have 
+  \begin{eqnarray*}
+    \pdf_{B}(x) &=& \pr{B = x} \\
+    &=& \pr{(L+t)/2 = x} \\
+    &=& \pr{L = 2x - t}\\
+    &=& \frac{1}{2^t} \binom{t}{x}  \ ,
+  \end{eqnarray*}
+  which is the binomial distribution.
+\end{solution}
+
+\ppart Again let $L$ be the random variable giving the sailor's
+location after $t$ steps, where $t$ is even.  Show that
+\[
+\pr{\abs{L} < \frac{\sqrt{t}}{2}} < \frac{1}{2} \ .
+\] 
+So there is a better than even chance that the sailor ends up at least
+$\sqrt{t}/2$ steps from where he started. 
+
+\hint Work in terms of $B$.  Then you can use an estimate that bounds the
+binomial distribution.  Alternatively, observe that the origin is
+the most likely final location and then use the asymptotic estimate
+\[
+\pr{L = 0} = \pr{B = t/2} \sim \sqrt{\frac{2}{\pi t}}.
+\]
+%together with the Union Bound.
+
+\begin{solution}
+  Translating to $B$, we're looking for 
+\[
+\pr{\abs{L} < \frac{\sqrt{t}}{2}} = \pr{\abs{2B-t} <
+    \frac{\sqrt{t}}{2}} \ .
+\]
+  This expression $\abs{2B-t} < \sqrt{t}/2$ is true for $t/2 -
+  \sqrt{t}/4 < B < t/2 + \sqrt{t}/4$, which allows 
+  $\sqrt{t}/2$ different values of $B$.
+  
+  Since $B$ follows the binomial distribution, we have $\pr{L = 0} =
+  \pr{B = t/2} \leq \sqrt{\frac{2}{\pi t}}$.  Moreover, the peak of
+  the binomial distribution occurs at $B=t/2$.  Thus, any other point is
+  less likely.  Now we have
+  
+%  Now we just take a union bound to complete the proof:
+  
+\begin{eqnarray*}
+    \pr{\abs{L} < \frac{\sqrt{t}}{4}}
+   &=& \pr{\abs{2B-t} < \frac{\sqrt{t}}{4}}\\
+   &=& \sum_{\set{x \suchthat\ \abs{2x-t} < \sqrt{t}/4}} \pr{B = x} \\
+   &\leq& \sum_{\set{x \suchthat\ \abs{2x-t} < \sqrt{t}/4}} \pr{B = t/2} \\
+    &\leq& \sum_{\set{x \suchthat\ \abs{2x-t} < \sqrt{t}/4}} \sqrt{\frac{2}{\pi t}} \\
+    &\leq& \paren{\frac{\sqrt{t}}{2}} \sqrt{\frac{2}{\pi t}}\\
+%    \hspace{1cm} \text{by Union Bound}\\
+    &=& \frac{1}{\sqrt{2\pi}} < \frac{1}{2}.
+  \end{eqnarray*}
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
