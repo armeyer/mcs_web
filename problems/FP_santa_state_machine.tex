@@ -1,0 +1,139 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{adapted from: F09cp5f, spruced up xmas style}
+  \pcomment{from: S09.cp5r}
+  \pcomment{from: F03.ps4}
+  \pcomment{edited S09 by ARM}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  unreachable_states
+  increasing_decreasing_variables
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Santa's elves have decided to pimp his ride. They add spinners, hydraulics and a huge array of lights to the side of Santa's sleigh. The lights can switch between Off, Green and Red, and are controlled by two big buttons:
+\begin{enumerate}
+\item[(i)] Switch the color of any ten lights, chosen by winking at them.
+
+\item[(ii)] Let $n$ be the number of green lights showing.  Turn on $n+1$
+  additional red lights.
+\end{enumerate}
+
+For example, you might begin by flipping nine green lights and one red,
+yielding 90 green and 12 red lights, then add 91 red lights, yielding 90 green and
+103 red lights.
+
+\bparts
+\ppart
+Model this situation as a state machine, carefully defining the set of
+states, the start state and the possible state transitions.
+
+\begin{solution}
+This can be modeled by a state machine.  The state of the
+  machine is the number of green and red lights.  The start state is $(,4)$,
+  and the transitions are:
+\[
+(h,t) \to
+\begin{cases}
+(h-a+(10-a),t+a-(10-a)) &\mbox{for } 10 \leq h+t \&
+                         0\leq a\leq \min{10,h}.\\
+(h,t+h+1).
+\end{cases}
+\]
+
+%\vskip0.5in
+%{\bf Comment:} Most students forgot to specify the range of $a$ precisely
+%for the first transition.
+
+\end{solution}
+
+\ppart Explain how to reach a state with exactly one red light showing.
+
+\begin{solution}
+One way is to:
+\begin{enumerate}
+
+\item Do operation 2 three times, yielding $(98, 4+3\cdot99)= (98,301)$.
+
+\item Repeat 30 times: Do operation 1 to flip 10 red lights to green. This
+will result in the state $(398,1)$, which is the desired state.
+\end{enumerate}
+
+\end{solution}
+
+\ppart
+Define the following derived variables:
+\[\begin{array}{|rcl|rcl|}\hline
+ L & \eqdef & \mbox{the number of active lights on the sleigh},&
+ G & \eqdef & \mbox{the number of green lights},\\
+ R & \eqdef & \mbox{the number of red lights},&
+ R_2 & \eqdef & \remainder(L/ 2),\\
+ G_2 & \eqdef & \remainder(G/ 2),&
+ R_2 & \eqdef & \remainder(R/ 2).\\\hline
+\end{array}\]
+
+Which of these variables is
+\begin{enumerate}\renewcommand{\itemsep}{0pt}
+
+\item strictly increasing \begin{solution}
+NONE
+\end{solution}
+\item weakly increasing \begin{solution}
+$C$, $G_2$
+\end{solution}
+\item strictly decreasing \begin{solution}
+NONE
+\end{solution}
+\item weakly decreasing \begin{solution}
+$G_2$
+\end{solution}
+\item constant \begin{solution}
+$G_2$
+\end{solution}
+\end{enumerate}
+
+\begin{solution}
+{\bf Comment:} Notice that a constant variable like $G_2$ is
+also weakly decreasing and weakly increasing, by definition.
+\end{solution}
+
+\ppart Prove that it is not possible to reach a state in which there is
+exactly one green light showing.
+
+
+\begin{solution}
+
+We claimed above that $G_2$ is an invariant value, that is, it does not
+change under state transitions.  To prove this, let $(g,t)$ be a state
+with $g$ even.  For the next state, we have two cases to consider:
+\begin{enumerate}
+\item The first operation is executed:
+$(h,t)\rightarrow(g-2a+10,r+2a-10)$.  Since $-2a+10$ is even, $G_2((g,t))=
+G_2(g-2a+10, r+2a-10)$.
+
+\item The second operation is executed: $(g,r)\rightarrow(g,r+g+1)$. The
+number of green lights does not change in this case, so $G_2$ does not change.
+\end{enumerate}
+Since the initial number of green lights, 98, is even, that is, $G_2((98,4))=0$,
+the Invariant Method now implies that the number of green lights in a reachable
+state is always even.  But since one is odd, it is not possible to reach a
+state in which there is exactly one green light showing.
+
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
