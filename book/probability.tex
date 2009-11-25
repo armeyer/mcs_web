@@ -1,18 +1,22 @@
 \chapter{Introduction to Probability}\label{probability_chap}
 
 %% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Probability is the last topic in this book and perhaps the most
-important.  Many algorithms rely on randomization.  Investigating
-their correctness and performance requires probability theory.
-Moreover, many aspects of computer systems, such as memory management,
-branch prediction, packet routing, and load balancing are designed
-around probabilistic assumptions and analyses.  Probability also comes
-up in information theory, cryptography, artificial intelligence, and
-game theory.  Beyond these engineering applications, an understanding
-of probability gives insight into many everyday issues, such as
-polling, DNA testing, risk assessment, investing, and gambling.
 
-So probability is good stuff.
+Probability plays a key role in the sciences ---''hard'' and social
+---including Computer Science.  Many algorithms rely on randomization.
+Investigating their correctness and performance requires probability
+theory.  Moreover, computer systems designs, such as memory management,
+branch prediction, packet routing, and load balancing are based on
+probabilistic assumptions and analyses.  Probability is central as well in
+related subjects such as information theory, cryptography, artificial
+intelligence, and game theory.  But we'll start with a more down-to-earth
+application: getting a prize in a game show.
+
+\iffalse
+Beyond these engineering applications,
+probability gives insight into everyday issues like  such as polling, DNA
+testing, risk assessment, investing, and gambling.
+\fi
 
 
 %% Monty Hall %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -376,8 +380,9 @@ the Banach-Tarski ``paradox'' mentioned in Chapter~\ref{setsreallywork}.
 \sum_{w \in \sspace} \pr{w} = 1.
 \]
 
-For any event, $E \subseteq \sspace$, the \term{probability of $E$} is
-defined to be the sum of the probabilities of the outcomes in $E$:
+For any event, $E \subseteq \sspace$, the \index{probability of an event}
+\emph{probability of $E$} is defined to be the sum of the probabilities of
+the outcomes in $E$:
 \[
 \pr{E} \eqdef \sum_{w \in E} \pr{w}.
 \]
@@ -393,7 +398,7 @@ sets is \term{pairwise disjoint} when no element is in more than one of
 them --formally, $A \intersect B = \emptyset$ for all sets $A \neq B$ in
 the collection.
 
-\begin{rul*} [Sum Rule] 
+\begin{rul*} [\idx{Sum Rule}] 
   If $\set{E_0,E_1,\dots}$ is collection of pairwise disjoint events, then
 \[
 \pr{\lgunion_{n\in\naturals}E_n} = \sum_{n\in\naturals} \pr{E_n}.
@@ -424,7 +429,7 @@ America is 70\%.
 Another consequence of the Sum Rule is that $\pr{A} + \pr{\bar{A}} = 1$,
 which follows because $\pr{\sspace}=1$ and $\sspace$ is the union of the
 disjoint sets $A$ and $\bar{A}$.  This equation often comes up in the form
-\begin{rul*} [Complement Rule]
+\begin{rul*} [\idx{Complement Rule}]
 \[
 \pr{\bar{A}}  =  1 - \pr{A}.
 \]
@@ -440,10 +445,11 @@ cardinalities of finite sets.  In particular:
                   \tag{Inclusion-Exclusion}\\
 \pr{A \union B} & \le  \pr{A} + \pr{B}. \tag{Boole's Inequality}
 \end{align}
-The Difference Rule follows from the Sum Rule because $B$ is the union of
-the disjoint sets $B-A$ and $A \intersect B$.  Inclusion-Exclusion then
+The \idx{Difference Rule} follows from the Sum Rule because $B$ is the
+union of the disjoint sets $B-A$ and $A \intersect B$.
+\index{inclusion-exclusion for probabilities} Inclusion-Exclusion then
 follows from the Sum and Difference Rules, because $A \union B$ is the
-union of the disjoint sets $A$ and $B-A$.  Boole's inequality is an
+union of the disjoint sets $A$ and $B-A$.  \idx{Boole's inequality}q is an
 immediate consequence of Inclusion-Exclusion since probabilities are
 nonnegative.
 
@@ -453,10 +459,10 @@ sets.  Boole's inequality also generalizes to
 \begin{equation}
 \pr{E_1 \cup \cdots \cup E_n} \leq \pr{E_1} + \cdots + \pr{E_n}.\tag{Union Bound}
 \end{equation}
-This simple Union Bound is actually useful in many calculations.  For
-example, suppose that $E_i$ is the event that the $i$-th critical
+This simple \idx{Union Bound} is actually useful in many calculations.
+For example, suppose that $E_i$ is the event that the $i$-th critical
 component in a spacecraft fails.  Then $E_1 \cup \cdots \cup E_n$ is the
-event that {\em some} critical component fails.  The Union Bound can give
+event that \emph{some} critical component fails.  The Union Bound can give
 an adequate upper bound on this vital probability.
 
 Similarly, the Difference Rule implies that
@@ -523,97 +529,19 @@ in adding in such an outcome if it makes you happier.  But since it has no
 impact, there's also no harm in simply leaving it out.
 
 The mathematical machinery we've developed is adequate to model and
-analyze many interesting probability problems with infinite sample
-spaces.  However, some intricate infinite processes require more
-powerful (and more complex) measure-theoretic notions of probability.
-For example, if we generate an infinite sequence of random bits $b_1,
-b_2, b_3, \ldots$, then what is the probability that
+analyze many interesting probability problems with infinite sample spaces.
+However, some intricate infinite processes require uncountable sample
+spaces more powerful (and more complex) measure-theoretic notions of
+probability.  For example, if we generate an infinite sequence of random
+bits $b_1, b_2, b_3, \ldots$, then what is the probability that
 \[
 \frac{b_1}{2^1} + \frac{b_2}{2^2} + \frac{b_3}{2^3} + \cdots
 \]
-is a rational number?  We won't take up such problems in this book.
+is a rational number?  Fortunately, we won't have any need to worry about
+such things.
 
 
 %% Set Theory and Probability Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\startclassproblems
-
-
-
-%% The Birthday Principle %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Birthday Principle}\label{birthday_principle_sec}
-
-There are 100 students in a lecture hall.  What is the probability that
-some two people share a birthday?  Maybe about $1/3$?  Let's check!  More
-generally, suppose there are $n$ students and $d$ days in the year.
-
-We'll assume that a random choice of a student is made independently of
-the any other choices of students.  For simplicity, we'll assume that the
-probability that a randomly chosen student has a given birthday is $1/d$,
-with $d= 365$ in this case.  This randomness assumption is not really
-true, since more babies are born at certain times of year.  However, our
-analysis of this problem applies to many situations in Computer Science
-that are unaffected by leap days, snow days or Spring fever, so we won't
-dwell on those complications.
-
-A sensible sample space to model this experiment consists of all ways of
-assigning birthdays to the people of the group.  There are $d^n$ such
-assignments, since the first person can have $d$ different birthdays, the
-second person can have $d$ different birthdays, and so forth.
-Furthermore, every such assignment is equally probable by our assumption
-that birthdays are equally likely and independent of each other.
-
-It turns out to be be easier to calculate the complementary probability
-that everyone has a distinct birthday.  This event consists of $d (d - 1)
-(d - 2) \cdots (d - n + 1)$ outcomes, since we can select the birthday of
-the first person in $d$ ways, the birthday of the second person in $d - 1$
-ways, and so forth.  Therefore, the probability that everyone has a
-different birthday is:
-\begin{align*}
-\pr{\text{$n$ different birthdays}} & = \frac{d (d - 1) (d - 2) \cdots (d - n + 1)}{d^n}.
-\end{align*}
-For $n=100$, this probability is actually fantastically small ---less
-than one in a million!  If there are 100 people in a room, two are
-almost certain to share a birthday.
-
-Let's rewrite the right side of the preceding equation in a more
-insightful form that allows us to use the fact that $e^x >1+x$ for all
-$x$.\footnote{This approximation is obtained by truncating the Taylor
-series $e^{-x} = 1 - x + x^2/2! - x^3/3! + \cdots$.  The approximation
-$e^{-x} \approx 1 - x$ is pretty accurate when $x$ is small.}
-\begin{align*}
-\pr{D=0} & = \paren{1 - \frac{0}{d}}
-             \paren{1 - \frac{1}{d}}
-             \paren{1 - \frac{2}{d}}
-             \cdots
-             \paren{1 - \frac{n - 1}{d}}\\
-       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \\
-       & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\\
-       & = e^{-\paren{n(n-1)/2d}} = e^{-\paren{\binom{n}{2}/d}}.
-\end{align*}
-
-The exponent $\binom{n}{2}/d$ in the final expression above is close to
-$1$ when $n \approx \sqrt{2d}$.  In this case, the probability that two
-people share a birthday is close to $1/e$ which is roughly the break-even
-point, where it's equally likely whether or not a couple of people will
-share a birthday.  This leads to a rule called the \term{Birthday
-Principle}, which is useful in many contexts in Computer Science:
-\begin{quote}
-If there are $d$ days in a year and $\sqrt{2d}$ people in a
-room, then the probability that two share a birthday is about 
-$1 - 1/e \approx 0.632$.
-\end{quote}
-For example, this principle says that if you have $\sqrt{2 \cdot 365}
-\approx 27$ people in a room, then the probability that two share a
-birthday is about $0.632$.  The actual probability is about $0.626$,
-so the approximation is quite good.
-
-The Birthday Principle is a great rule of thumb with surprisingly many
-applications.  For example, cryptographic systems and digital signature
-schemes must be hardened against ``birthday attacks''.  The principle also
-tells us how many items can be inserted into a hash table before one
-starts to experience collisions.
-
-%% The Birthday Principle Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\startclassproblems
 
 %% Conditional Probability %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -680,13 +608,14 @@ betting games.  Yet, the mathematical definition of conditional
 probability given above is very simple and should give you no trouble---
 provided you rely on formal reasoning and not intuition.
 
-\subsection{The Halting Problem}
+\subsection{The ``Halting Problem''}
 
-The {\em Halting Problem} is the canonical undecidable problem in
-computation theory that was first introduced by Alan Turing in his seminal
-1936 paper.  The problem is to determine whether a Turing machine halts on
-a given \dots blah, blah, blah.  But what's \textit{much more important},
-it is the name of the MIT EECS department's famed C-league hockey team.
+The \emph{Halting Problem} was the first example of a property that could
+not be tested by any program.  It was introduced by Alan Turing in his
+seminal 1936 paper.  The problem is to determine whether a Turing machine
+halts on a given \dots yadda yadda yadda \dots what's much \emph{more
+  important}, it was the name of the MIT EECS department's famed C-league
+hockey team.
 
 In a best-of-three tournament, the Halting Problem wins the first game
 with probability $1/2$.  In subsequent games, their
@@ -886,102 +815,6 @@ union is the whole sample space, then:
 
 \end{rul*}
 
-\subsection{\textit{A Posteriori} Probabilities}
-
-Suppose that we turn the hockey question around: what is the
-probability that the Halting Problem won their first game, given that
-they won the series?
-
-This seems like an absurd question!  After all, if the Halting Problem
-won the series, then the winner of the first game has already been
-determined.  Therefore, who won the first game is a question of fact,
-not a question of probability.  However, our mathematical theory of
-probability contains no notion of one event preceding another--- there
-is no notion of time at all.  Therefore, from a mathematical
-perspective, this is a perfectly valid question.  And this is also a
-meaningful question from a practical perspective.  Suppose that you're
-told that the Halting Problem won the series, but not told the results
-of individual games.  Then, from your perspective, it makes perfect
-sense to wonder how likely it is that The Halting Problem won the
-first game.
-
-A conditional probability $\prcond{B}{A}$ is called  \term{a
-posteriori} if event $B$ precedes event $A$ in time.  Here are some
-other examples of a posteriori probabilities:
-%
-\begin{itemize}
-\item The probability it was cloudy this morning, given that it rained
-in the afternoon.
-\item The probability that I was initially dealt two queens in Texas
-No Limit Hold 'Em poker, given that I eventually got four-of-a-kind.
-\end{itemize}
-%
-Mathematically, a posteriori probabilities are \textit{no different}
-from ordinary probabilities; the distinction is only at a higher,
-philosophical level.  Our only reason for drawing attention to them is
-to say, ``Don't let them rattle you.''
-
-Let's return to the original problem.  The probability that the
-Halting Problem won their first game, given that they won the series
-is $\prcond{B}{A}$.  We can compute this using the definition of
-conditional probability and our earlier tree diagram:
-%
-\begin{align*}
-\prcond{B}{A} & = \frac{\pr{B \intersect A}}{\pr{A}} \\
-              & = \frac{1/3 + 1/18}{1/3 + 1/18 + 1/9} \\
-              & = \frac{7}{9}
-\end{align*}
-
-This answer is suspicious!  In the preceding section, we showed that
-$\prcond{A}{B}$ was also $7/9$.  Could it be true that $\prcond{A}{B}
-= \prcond{B}{A}$ in general?  Some reflection suggests this is
-unlikely.  For example, the probability that I feel uneasy, given that
-I was abducted by aliens, is pretty large.  But the probability that I
-was abducted by aliens, given that I feel uneasy, is rather small.
-
-Let's work out the general conditions under which $\prcond{A}{B} =
-\prcond{B}{A}$.  By the definition of conditional probability, this
-equation holds if an only if:
-%
-\[
-\frac{\pr{A \intersect B}}{\pr{B}} = \frac{\pr{A \intersect B}}{\pr{A}}
-\]
-%
-This equation, in turn, holds only if the denominators are equal or
-the numerator is 0:
-%
-\[
-\pr{B} = \pr{A}
-\hspace{0.25in} \text{or} \hspace{0.25in}
-\pr{A \intersect B} = 0
-\]
-%
-The former condition holds in the hockey example; the probability that
-the Halting Problem wins the series (event $A$) is equal to the
-probability that it wins the first game (event $B$).  In fact, both
-probabilities are $1/2$.
-
-%\iffalse
-Such pairs of probabilities are related by Bayes' Rule:
-%
-\begin{theorem}[Bayes' Rule]
-If $\pr{A}$ and $\pr{B}$ are nonzero, then:
-%
-\[
-\prcond{A}{B} \cdot \pr{B} = \prcond{B}{A} \cdot \pr{A}
-\]
-\end{theorem}
-
-\begin{proof}
-When $\pr{A}$ and $\pr{B}$ are nonzero, both sides are equal to $\pr{A
-\intersect B}$ and thus are equal to each other.
-\end{proof}
-
-In the hockey problem, the probability that the Halting Problem wins the
-first game is $1/2$ and so is the probability that the Halting Problem
-wins the series.  Therefore, $\pr{A} = \pr{B} = 1/2$.  This, together with
-Bayes' Rule, explains why $\prcond{A}{B}$ and $\prcond{B}{A}$ turned out to
-be equal in the hockey example.
 
 \iffalse
 \subsection{A Coin Problem}
@@ -1053,7 +886,7 @@ that the first possibility is actually more likely.
 \fi
 
 
-\subsection{Medical Testing}
+\subsection{Medical Testing}\label{med_test-subsection}
 
 There is an unpleasant condition called \emph{BO} suffered by 10\% of the
 population.  There are no prior symptoms; victims just suddenly start to
@@ -1252,6 +1085,108 @@ which the assertions of both the plaintiff and the university hold:
 In this case, a higher percentage of males were accepted in both
 departments, but overall a higher percentage of females were accepted!
 Bizarre!
+
+\subsection{\textit{A Posteriori} Probabilities}
+
+Suppose that we turn the hockey question around: what is the
+probability that the Halting Problem won their first game, given that
+they won the series?
+
+This seems like an absurd question!  After all, if the Halting Problem
+won the series, then the winner of the first game has already been
+determined.  Therefore, who won the first game is a question of fact,
+not a question of probability.  However, our mathematical theory of
+probability contains no notion of one event preceding another--- there
+is no notion of time at all.  Therefore, from a mathematical
+perspective, this is a perfectly valid question.  And this is also a
+meaningful question from a practical perspective.  Suppose that you're
+told that the Halting Problem won the series, but not told the results
+of individual games.  Then, from your perspective, it makes perfect
+sense to wonder how likely it is that The Halting Problem won the
+first game.
+
+A conditional probability $\prcond{B}{A}$ is called  \term{a
+posteriori} if event $B$ precedes event $A$ in time.  Here are some
+other examples of a posteriori probabilities:
+%
+\begin{itemize}
+\item The probability it was cloudy this morning, given that it rained
+in the afternoon.
+\item The probability that I was initially dealt two queens in Texas
+No Limit Hold 'Em poker, given that I eventually got four-of-a-kind.
+\end{itemize}
+%
+Mathematically, a posteriori probabilities are \textit{no different}
+from ordinary probabilities; the distinction is only at a higher,
+philosophical level.  Our only reason for drawing attention to them is
+to say, ``Don't let them rattle you.''
+
+Let's return to the original problem.  The probability that the
+Halting Problem won their first game, given that they won the series
+is $\prcond{B}{A}$.  We can compute this using the definition of
+conditional probability and our earlier tree diagram:
+%
+\begin{align*}
+\prcond{B}{A} & = \frac{\pr{B \intersect A}}{\pr{A}} \\
+              & = \frac{1/3 + 1/18}{1/3 + 1/18 + 1/9} \\
+              & = \frac{7}{9}
+\end{align*}
+
+This answer is suspicious!  In the preceding section, we showed that
+$\prcond{A}{B}$ was also $7/9$.  Could it be true that $\prcond{A}{B}
+= \prcond{B}{A}$ in general?  Some reflection suggests this is
+unlikely.  For example, the probability that I feel uneasy, given that
+I was abducted by aliens, is pretty large.  But the probability that I
+was abducted by aliens, given that I feel uneasy, is rather small.
+
+Let's work out the general conditions under which $\prcond{A}{B} =
+\prcond{B}{A}$.  By the definition of conditional probability, this
+equation holds if an only if:
+%
+\[
+\frac{\pr{A \intersect B}}{\pr{B}} = \frac{\pr{A \intersect B}}{\pr{A}}
+\]
+%
+This equation, in turn, holds only if the denominators are equal or
+the numerator is 0:
+%
+\[
+\pr{B} = \pr{A}
+\hspace{0.25in} \text{or} \hspace{0.25in}
+\pr{A \intersect B} = 0
+\]
+%
+The former condition holds in the hockey example; the probability that
+the Halting Problem wins the series (event $A$) is equal to the
+probability that it wins the first game (event $B$).  In fact, both
+probabilities are $1/2$.
+
+%\iffalse
+Such pairs of probabilities are related by \idx{Bayes' Rule}:
+%
+\begin{theorem}[Bayes' Rule]
+If $\pr{A}$ and $\pr{B}$ are nonzero, then:
+%
+\begin{equation}\label{bayesrule}
+\frac{\prcond{A}{B} \cdot \pr{B}}{\pr{A}} = \prcond{B}{A}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+When $\pr{A}$ and $\pr{B}$ are nonzero, we have
+\[
+\prcond{A}{B} \cdot \pr{B} = \prob{A \intersect B} = \prcond{B}{A} \cdot \pr{A}
+\]
+by definition of conditional probability.  Dividing by $\prob{A}$
+gives~\eqref{bayesrule}.
+
+\end{proof}
+
+In the hockey problem, the probability that the Halting Problem wins the
+first game is $1/2$ and so is the probability that the Halting Problem
+wins the series.  Therefore, $\pr{A} = \pr{B} = 1/2$.  This, together with
+Bayes' Rule, explains why $\prcond{A}{B}$ and $\prcond{B}{A}$ turned out to
+be equal in the hockey example.
 
 
 
@@ -1563,10 +1498,79 @@ on the second line.  Now the probability of a random match is 1 in
 17,000--- a far cry from 1 in 170 million!  And this is the strongest
 conclusion we can reach assuming only pairwise independence.\fi
 
-%% Independence Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% The Birthday Principle %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Birthday Principle}\label{birthday_principle_sec}
 
-%% Conclusion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\TBA{Conclusion...}
+There are 100 students in a lecture hall.  What is the probability that
+some two people share a birthday?  Maybe about $1/3$?  Let's check!  More
+generally, suppose there are $n$ students and $d$ days in the year.
+
+We'll assume that a random choice of a student is made independently of
+the any other choices of students.  For simplicity, we'll assume that the
+probability that a randomly chosen student has a given birthday is $1/d$,
+with $d= 365$ in this case.  This randomness assumption is not really
+true, since more babies are born at certain times of year.  However, our
+analysis of this problem applies to many situations in Computer Science
+that are unaffected by leap days, snow days or Spring fever, so we won't
+dwell on those complications.
+
+A sensible sample space to model this experiment consists of all ways of
+assigning birthdays to the people of the group.  There are $d^n$ such
+assignments, since the first person can have $d$ different birthdays, the
+second person can have $d$ different birthdays, and so forth.
+Furthermore, every such assignment is equally probable by our assumption
+that birthdays are equally likely and independent of each other.
+
+It turns out to be be easier to calculate the complementary probability
+that everyone has a distinct birthday.  This event consists of $d (d - 1)
+(d - 2) \cdots (d - n + 1)$ outcomes, since we can select the birthday of
+the first person in $d$ ways, the birthday of the second person in $d - 1$
+ways, and so forth.  Therefore, the probability that everyone has a
+different birthday is:
+\begin{align*}
+\pr{\text{$n$ different birthdays}} & = \frac{d (d - 1) (d - 2) \cdots (d - n + 1)}{d^n}.
+\end{align*}
+For $n=100$, this probability is actually fantastically small ---less
+than one in a million!  If there are 100 people in a room, two are
+almost certain to share a birthday.
+
+Let's rewrite the right side of the preceding equation in a more
+insightful form that allows us to use the fact that $e^x >1+x$ for all
+$x$.\footnote{This approximation is obtained by truncating the Taylor
+series $e^{-x} = 1 - x + x^2/2! - x^3/3! + \cdots$.  The approximation
+$e^{-x} \approx 1 - x$ is pretty accurate when $x$ is small.}
+\begin{align*}
+\pr{D=0} & = \paren{1 - \frac{0}{d}}
+             \paren{1 - \frac{1}{d}}
+             \paren{1 - \frac{2}{d}}
+             \cdots
+             \paren{1 - \frac{n - 1}{d}}\\
+       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \\
+       & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\\
+       & = e^{-\paren{n(n-1)/2d}} = e^{-\paren{\binom{n}{2}/d}}.
+\end{align*}
+
+The exponent $\binom{n}{2}/d$ in the final expression above is close to
+$1$ when $n \approx \sqrt{2d}$.  In this case, the probability that two
+people share a birthday is close to $1/e$ which is roughly the break-even
+point, where it's equally likely whether or not a couple of people will
+share a birthday.  This leads to a rule called the \term{Birthday
+Principle}, which is useful in many contexts in Computer Science:
+\begin{quote}
+If there are $d$ days in a year and $\sqrt{2d}$ people in a
+room, then the probability that two share a birthday is about 
+$1 - 1/e \approx 0.632$.
+\end{quote}
+For example, this principle says that if you have $\sqrt{2 \cdot 365}
+\approx 27$ people in a room, then the probability that two share a
+birthday is about $0.632$.  The actual probability is about $0.626$,
+so the approximation is quite good.
+
+The Birthday Principle is a great rule of thumb with surprisingly many
+applications.  For example, cryptographic systems and digital signature
+schemes must be hardened against ``birthday attacks''.  The principle also
+tells us how many items can be inserted into a hash table before one
+starts to experience collisions.
 
 \endinput
