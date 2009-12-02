@@ -1342,7 +1342,7 @@ of the following equations must hold:
 %
 As an example, if we toss 100 fair coins and let $E_i$ be the event
 that the $i$th coin lands heads, then we might reasonably assume that
-$E_1, \ldots, E_{100}$ are mutually independent.
+$E_1, \dots, E_{100}$ are mutually independent.
 
 \iffalse
 
@@ -1469,13 +1469,20 @@ Finally, we must check one last condition:
                                 & \neq \pr{A_1} \pr{A_2} \pr{A_3} = \frac{1}{8}
 \end{align*}
 %
-The three events $A_1$, $A_2$, and $A_3$ are not mutually independent,
-even though all \textit{pairs} of events are independent!
+The three events $A_1$, $A_2$, and $A_3$ are not mutually independent
+even though any two of them are independent!  This not-quite
+mutual independence seems weird at first, but it happens.   It even generalizes:
 
-A set of events is \term{pairwise independent} if every pair is
+\begin{definition}\label{kway_independent_events}
+  A set $A_0,A_1,\dots$ of events is \term{$k$-way independent} iff every
+  set of $k$ of these events is mutually independent.  The set is
+  \term{pairwise independent} iff it is 2-way independent.
+\end{definition}
+
+So the sets $A_1,A_2,A_3$ above are pairwise independent, but not mutually
 independent.  Pairwise independence is a much weaker property than mutual
-independence, but we'll see some examples in later notes when pairwise
-independence is all that's needed.
+independence, but it's all that's needed to justify a standard approach to
+making probabilistic estimates that will come up later.
 
 \iffalse
 For example, suppose that the prosecutors in the
@@ -1540,37 +1547,70 @@ insightful form that allows us to use the fact that $e^x >1+x$ for all
 $x$.\footnote{This approximation is obtained by truncating the Taylor
 series $e^{-x} = 1 - x + x^2/2! - x^3/3! + \cdots$.  The approximation
 $e^{-x} \approx 1 - x$ is pretty accurate when $x$ is small.}
-\begin{align*}
+\begin{align}
 \pr{D=0} & = \paren{1 - \frac{0}{d}}
              \paren{1 - \frac{1}{d}}
              \paren{1 - \frac{2}{d}}
              \cdots
-             \paren{1 - \frac{n - 1}{d}}\\
-       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \\
-       & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\\
-       & = e^{-\paren{n(n-1)/2d}} = e^{-\paren{\binom{n}{2}/d}}.
-\end{align*}
+             \paren{1 - \frac{n - 1}{d}}\notag\\
+       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \notag\\
+       & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\notag\\
+       & = e^{-\paren{n(n-1)/2d}} = e^{-\paren{\dfrac{\binom{n}{2}}{d}}}.\label{bday-approx}
+\end{align}
 
-The exponent $\binom{n}{2}/d$ in the final expression above is close to
-$1$ when $n \approx \sqrt{2d}$.  In this case, the probability that two
-people share a birthday is close to $1/e$ which is roughly the break-even
-point, where it's equally likely whether or not a couple of people will
-share a birthday.  This leads to a rule called the \term{Birthday
-Principle}, which is useful in many contexts in Computer Science:
-\begin{quote}
+The exponent $\binom{n}{2}/d$ in\eqref{bday-approx} is close to $1$ when
+$n \approx \sqrt{2d}$.  In this case, the probability that two people
+share a birthday is close to $1/e$ which is roughly the break-even point,
+where it's equally likely whether or not a couple of people will share a
+birthday.  This leads to a rule which is useful in many contexts in
+Computer Science:
+
+\textbox{
+\begin{center}
+\large The \term{Birthday Principle}
+\end{center}
+
 If there are $d$ days in a year and $\sqrt{2d}$ people in a
 room, then the probability that two share a birthday is about 
 $1 - 1/e \approx 0.632$.
-\end{quote}
-For example, this principle says that if you have $\sqrt{2 \cdot 365}
-\approx 27$ people in a room, then the probability that two share a
-birthday is about $0.632$.  The actual probability is about $0.626$,
-so the approximation is quite good.
+}
+
+For example, the Birthday Principle says that if you have $\sqrt{2 \cdot
+  365} \approx 27$ people in a room, then the probability that two share a
+birthday is about $0.632$.  The actual probability is about $0.626$, so
+the approximation is quite good.
+
+Notice that if we assumed that same-birthday events between two students
+were mutually independent, then the probability of no matching birthdays
+would be the same as the probability that two given students do \emph{not}
+have the same birthdays raised to the number of sets of two students.
+That is, the probability of no matching birthdays would be
+$(1-1/d)^{\binom{n}{2}}$, which would lead to the same upper
+bound/approximation~\eqref{bday-approx}.
+
+Now the probability that Alice and Bob have the same birthday remains
+$1/d$ whether or not Carol and Don have the same birthday, so these two
+events really are independent.  In fact, the probability that Alice and
+Bob have matching birthdays is $1/d$ whether or not Carol and \emph{Alice}
+have matching birthdays.  So the event that Alice and Bob match is also
+independent of Alice and Carol matching.  In short, all the distinct
+events of two students matching are \index{pairwise independent}
+\emph{pairwise} independent.  But they are \emph{not} \idx{mutually
+  independent}, not even 3-way independent: if Alice and Bob match and
+also Alice and Carol match, then Bob and Carol will match.\footnote{It is
+  not a coincidence that the fairly good approximation~\eqref{bday-approx}
+  can be derived from a faulty assumption of mutual independence, but we
+  won't go into that.}
 
 The Birthday Principle is a great rule of thumb with surprisingly many
-applications.  For example, cryptographic systems and digital signature
-schemes must be hardened against ``birthday attacks''.  The principle also
-tells us how many items can be inserted into a hash table before one
-starts to experience collisions.
+applications.  For example, the Principle tells how many items can be
+inserted into a hash table before collisions start to happen.  Also, there
+are ``birthday attacks'' based on this Principle that can crack certain
+cryptographic systems ---you'll learn about these in any introductory
+cryptography course.
+
+
+\iffalse that cryptographic systems and digital signature schemes must be
+hardened against.  \fi
 
 \endinput

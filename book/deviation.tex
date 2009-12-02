@@ -784,12 +784,12 @@ is the sum of the variances; that is, $\variance{R_1 + R_2} =
 
 Applying linearity of expectation to the formula for variance yields a convenient
 alternative formula.
-\begin{theorem}\label{alt:var}
+\begin{lemma}\label{alt:var}
 \[
 \variance{R} = \expect{R^2} - \expectsq{R},
 \]
 for any random variable, $R$.
-\end{theorem}
+\end{lemma}
 Here we use the notation \idx{$\expectsq{R}$} as shorthand for
 $(\expect{R})^2$.
 
@@ -818,19 +818,72 @@ Let $\mu = \expect{R}$.  Then
 
 For example, if $B$ is a \idx{Bernoulli variable} where $p\eqdef
 \pr{B=1}$, then
-\begin{equation}\label{bv}
+\begin{lemma}\label{bernoulli-variance}
+\begin{equation}%\label{bv}
 \variance{B} = p-p^2 = p(1-p).
 \end{equation}
 \begin{proof}
-Since $B$ only takes values 0 and 1, we have $\expect{B}=p\cdot 1 + (1-p)
-\cdot 0 = p$.  Since $B = B^2$, we also have $\expect{B^2} = p$,
-so~\eqref{bv} follows immediately from Theorem~\ref{alt:var}.
+  By Lemma~\ref{expindic}, $\expect{B}= p$.  But since $B$ only takes
+  values 0 and 1, $B^2 = B^2$.  So Lemma~\ref{bernoulli-variance} follows
+  immediately from Lemma~\ref{alt:var}.
 \end{proof}
+
+\end{lemma}
+
+\iffalse
+
+\subsection{Variance of Time to Failure}
+If a process fails during any given hour with probability $p$, independent
+of what happened previously, then we saw in
+section~\ref{mean_time_to_failure_subsec} that the mean time to the first
+failure is $1/p$.  What about the variance?  That is, let $C$ be the hour
+of the first failure, so $\pr{C=i} = (1-p)^{i-1}p$.  What is
+$\variance{C}$?
+
+Now
+\begin{equation}\label{varCEC2}
+\variance{C} = \expectsq{C} - (1/p)^2
+\end{equation}
+by Lemma~\ref{alt:var}, so all we need is $\expectsq{C}$:
+\begin{align}
+\expectsq{C}
+   & \eqdef \sum_{i\geq 1} i^2(1-p)^{i-1}p \label{var_sum_time_to_fail}\\
+   & = p\sum_{i\geq 1} i^2x^{i-1} & \text{(where $x=1-p$)}\label{time_to_fail_gen_func}.
+\end{align}
+But the generating function for the nonnegative squares is
+$x(1+x)/(1-x)^3$ by~\eqref{squares_gen_func}, so the generating function
+for the sum in~\eqref{time_to_fail_gen_func} is $(1+x)/(1-x)^3$, giving
+\begin{align}
+\expectsq{C} & = p\frac{(1+x)}{(1-x)^3} & \text{(where $x=1-p$)}\\
+             & = p\frac{2+p}{p^3}
+             & = \frac{1-p}{p} + \frac{1}{p^2}\label{plus1p2},
+\end{align}
+Finally, combining~\eqref{varCEC2} and~\eqref{plus1p2},
+\begin{equation}\label{var_time_to_fail}
+\variance{C} = \frac{1-p}{p} \,.
+\end{equation}
+
+It's great to be able apply our generating function expertise to knock off
+equation~\eqref{var_time_to_fail} mechanically from the definition of
+variance, but there's a more memorable alternative.  In
+section~\ref{mean_time_to_failure_subsec} we used conditional probability
+to find the mean time to failure, and a similar approach works for the
+variance.  Namely, the expected value of $C^2$ is the probability, $p$, of
+failure in the first hour times $1^2$, plus $(1-p)$ times the expected
+value of $(C+1)^2$.  So
+\begin{align}
+\expectsq{C} & = p\cdot 1^2 + (1-p)\expectsq{C+1}\\
+             & = p + (1-p) \paren{\expectsq{C} + 2\expect{C} +1}\\
+             & = TBA
+\end{align}
+
+\fi
+
 
 \iffalse
 \begin{optional}
 
-Theorem~\ref{alt:var} gives a convenient way to compute the variance of a
+Lemma~\ref{alt:var} gives a convenient way to compute the variance of a
 random variable: find the expected value of the square and subtract the
 square of the expected value.  For example, we can compute the variance of
 the outcome of a fair die as follows:
@@ -857,7 +910,7 @@ v_n  & \eqdef & \frac{\sum_{i=1}^n (x_i - \mu_n)^2}{n}.
 Notice that if we define a random variable, $R$, which is equally likely
 to take each of the values in the sequence, that is $\pr{R = x_i} = 1/n$
 for $i = 1,\dots,n$, then $\mu_n = \expect{R}$ and $v_n = \variance{R}$.
-So Theorem~\ref{alt:var} applies to $R$ and lets us conclude that
+So Lemma~\ref{alt:var} applies to $R$ and lets us conclude that
 \begin{equation}\label{vn:alt}
 v_n = \frac{\sum_{i=1}^n x_i^2}{n} - \left(\frac{\sum_{i=1}^n x_i}{n}\right)^2.
 \end{equation}
@@ -881,7 +934,7 @@ the sample variance.
 
 \begin{optional}
 
-The alternate definition of variance given in Theorem~\ref{alt:var} has
+The alternate definition of variance given in Lemma~\ref{alt:var} has
 a cute implication:
 \begin{corollary}
 If $R$ is a random variable, then $\expect{R^2} \geq \expectsq{R}$.
@@ -964,7 +1017,7 @@ linearity of expectation, we have:
     & = a^2\expect{R^2} -2\expect{aR}\expect{aR} + \expectsq{aR}\\
     & = a^2\expect{R^2} -a^2\expectsq{R}\\
     & = a^2\paren{\expect{R^2} - \expectsq{R}}\\
-    & = a^2\variance{R} & \text{(by Theorem~\ref{alt:var})}
+    & = a^2\variance{R} & \text{(by Lemma~\ref{alt:var})}
 \end{align*}
 \end{proof}
 
@@ -1023,7 +1076,7 @@ replace $R_i$ by $R_i-\expect{R_i}$ in equation~\eqref{vR+R}.  This
 substitution preserves the independence of the variables, and by
 Theorem~\ref{var+const}, does not change the variances.
 
-Now by Theorem~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
+Now by Lemma~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
 $\variance{R_1+R_2} = \expect{(R_1+R_2)^2}$, so we need only prove
 \begin{equation}\label{E2R+R}
 \expect{(R_1+R_2)^2} = \expect{R_1^2} + \expect{R_2^2}.
@@ -1105,7 +1158,7 @@ if $R$ is constant.
   the variables, and by Theorem~\ref{var+const}, does not change the
   variances.
 
-  Now by Theorem~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
+  Now by Lemma~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
   $\variance{R_1+R_2+\cdots+R_n} = \expect{(R_1+R_2+\cdots+R_n)^2}$, so we
   need only prove
 \begin{equation}\label{E2R+R}
@@ -1156,7 +1209,7 @@ So,
 \begin{align*}
 \variance{\biggl(\sum_{i=1}^n R_i\biggr)}
    & =  \expect{\biggl(\sum_{i=1}^n R_i\biggr)^2} -
-\expectsq{\sum_{i=1}^n R_i}  & \text{(Theorem~\ref{alt:var})}\\
+\expectsq{\sum_{i=1}^n R_i}  & \text{(Lemma~\ref{alt:var})}\\
    &  = \sum_{1\le i \neq j \le n} \expect{R_i} \expect{R_j}
         + \sum_{i=1}^n \expect{R_i^2} - \\
    & \quad \paren{\sum_{1\le i \neq j \le n} \expect{R_i}\expect{R_j}
@@ -1175,7 +1228,7 @@ Now we have a simple way of computing the variance of a variable, $J$,
 that has an $(n,p)$-\idx{binomial distribution}.  We know that $J =
 \sum_{k=1}^n I_k$ where the $I_k$ are mutually independent indicator
 variables with $\pr{I_k=1}=p$.  The variance of each $I_k$ is $p(1-p)$
-by~\eqref{bv}, so by linearity of variance, we have
+by Lemma~\ref{bernoulli-variance}, so by linearity of variance, we have
 \begin{lemma*}[Variance of the Binomial Distribution]
 If $J$ has the $(n,p)$-binomial distribution, then
 \begin{equation}\label{p1p}
