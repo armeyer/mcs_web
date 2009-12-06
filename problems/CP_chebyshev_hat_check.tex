@@ -1,0 +1,136 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+
+\pcomment{CP_chebyshev_hat_check}
+\pcomment{revised S07 by ARM from F02.CP13w, F00, S00, ps10.5, prob 4 F01, ps12,
+prob 2}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  additivity
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The hat-check staff has had a long day serving at a party, and at the end
+of the party they simply return people's hats at random.  Assume that $n$
+people checked hats at the party.
+
+\begin{problemparts}
+
+\ppart What is the expected number of people who get their own hat back?
+
+\begin{solution}
+Let $X_i = 1$ be the \idx{indicator variable} for the $i$th person
+getting their own hat back.  Let $S_n = \sum_{i=1}^n X_i$ be the number of
+people who get their own hat back.  By \idx{linearity of expectation},
+\[
+\expect{S_n} = \sum_1^n \expect{X_i}.
+\]
+Since hats are returned at random, the each person has an equal chance of
+getting any of the hats, so the probability they get their own hat is
+$1/n$, that is, $1/n= \pr{X_i=1}$, and since $X_i$ is an indicator, we
+have $\expect{X_i} = 1/n$.  By linearity of expectation,
+\[
+\expect{S_n} = \sum_1^n \expect{X_i} = n\cdot\frac{1}{n} = 1.
+\]
+
+\end{solution}
+
+\eparts
+
+Let $X_i = 1$ be the indicator variable for the $i$th person getting their
+own hat back.  Let $S_n = \sum_{i=1}^n X_i$, so $S_n$ is the total number
+of people who get their own hat back.
+
+\bparts
+
+\problempart Write a simple formula for $\expect{X_i X_j}$ for $i \neq j$.
+\hint What is $\prcond{X_j=1}{X_i=1}$?
+
+\begin{solution}
+We observed above that $\pr{X_i=1} = 1/n$.  Also, given that the
+$i$th person got their own hat, each other person has an equal chance of
+getting their own hat among the remaining $n-1$ hats.  So
+\[
+\prcond{X_j=1}{X_i=1} = \frac{1}{n-1},
+\]
+for $j \neq i$.  Therefore,
+\[
+\pr{X_i=1 \QAND X_j=1}
+  = \prcond{X_j=1}{X_i=1}\cdot \pr{X_i=1} = \frac{1}{n(n-1)}.
+\]
+But $X_i=1 \QAND X_j=1$ iff $X_i X_j = 1$, so
+\[
+\expect{X_i X_j} = \pr{X_i X_j =1} = \pr{X_i=1 \QAND X_j=1},
+\]
+and hence
+\[
+\expect{X_i X_j} = \frac{1}{n(n-1)}.
+\]
+\end{solution}
+
+\problempart Explain why you cannot use the \idx{variance} of sums formula to
+calculate $\variance{S_n}$.
+
+\begin{solution}
+The principle of additivity of variances requires the variables
+be pairwise independent, but the indicator variables for people getting
+their hats back are not pairwise independent, since $\prcond{X_j=1}{X_i=1}
+= 1/(n-1) \neq 1/n = \pr{X_j=1}$ for $i \neq j$.
+\end{solution}
+
+\problempart Show that $\expect{S_n^2} = 2$. \hint $X_i^2 = X_i$.
+
+\begin{solution}
+
+\begin{align*}
+\expect{S_n^2}
+     & =  \expect{\sum_i X_i^2 + \sum_i \sum_{j \neq i} X_i X_j}
+           & \text{(expanding the sum for $S_n$)}\\
+     & =  \sum_i \expect{X_i^2} + \sum_i \sum_{j \neq i} \expect{X_i X_j} 
+           & \text{(linearity of $\expect{\cdot}$)}\\
+     & =  \sum_i \expect{X_i} + \sum_i \sum_{j \neq i} \frac{1}{n(n-1)}
+           & \text{(since $X_i^2 = X_i$)}\\
+     & =  n \cdot \frac{1}{n} + n(n-1) \cdot \frac{1}{n(n-1)} \\
+     & =  2.
+\end{align*}
+
+\end{solution}
+
+\problempart What is the variance of $S_n$?
+\begin{solution}
+
+\begin{align*}
+\variance{S_n} 
+         &= \expect{S_n^2} - \expectsq{S_n} \\ 
+         &= 2 - 1^2 \\
+         &= 1.
+\end{align*}
+
+\end{solution}
+
+\problempart Use the \idx{Chebyshev bound} to show that the probability
+that 11 or more people get their own hat back is at most 0.01.
+
+\begin{solution}
+\begin{align*}
+\pr{S_n \geq 11} &= \pr{S_n - \expect{S_n} \geq 11 - \expect{S_n}} \\
+                 &= \pr{S_n - \expect{S_n} \geq 10} \\
+                 &\leq \pr{\abs{S_n - \expect{S_n}} \geq 10} \\
+                 &\leq \frac{\variance{S_n}}{10^2} = .01
+\end{align*}
+\end{solution}
+
+\end{problemparts}
+\end{problem}
+
+\endinput
