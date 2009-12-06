@@ -2,11 +2,19 @@
 
 \begin{pcomments}
   \pcomment{CP_gallup_poll}
-  \pcomment{from: F05 cp14f}
-  \pcomment{from: S08 cp13f}
+  \pcomment{from: F05 cp14f, S08 cp13f}
+  \pcomment{revised a lot by ARM 12/5/09}
 \end{pcomments}
 
 \pkeywords{
+ pairwise_independent
+ sampling
+ variance
+ estimate
+ confidence
+ probability
+ uniform
+ independent
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,44 +23,104 @@
 
 \begin{problem}
 	
-A recent Gallup poll found that 35\% of the adult
-population of the United States believes that the theory of evolution is
-``well-supported by the evidence.''  Gallup polled $1928$ Americans
-selected uniformly and independently at random.  Of these, $675$
-asserted belief in evolution, leading to Gallup's estimate that the
-fraction of Americans who believe in evolution is $675/1928 \approx
-0.350$.  Gallup claims a margin of error of 3 percentage points, that
-is, he claims to be confident that his estimate is within 0.03 of the
-actual percentage.
+  A recent Gallup poll found that 35\% of the adult population of the
+  United States believes that the theory of evolution is ``well-supported
+  by the evidence.''  Gallup polled $1928$ Americans selected uniformly
+  and independently at random.  Of these, $675$ asserted belief in
+  evolution, leading to Gallup's estimate that the fraction of Americans
+  who believe in evolution is $675/1928 \approx 0.350$.  Gallup claims a
+  margin of error of 3 percentage points, that is, he claims to be
+  confident that his estimate is within 0.03 of the actual percentage.
 
 \bparts
 
-\ppart
-Explain how to use the Binomial Sampling Theorem (available in the
-Appendix) to determine the confidence level with which Gallup can make his
-claim.  You do not actually have to do the calculation.
+\ppart\label{varindicator} What is the largest variance an indicator
+variable can have?
 
 \begin{solution}
-We let $\epsilon = 0.03$ and $n = 1928$ in the expression on the
-righthand side of equation~\eqref{delta bound} in the Binomial Sampling
-Theorem.  Evaluating the expression in Scheme (see Appendix), we see that
-the probability that the error is 0.03 or more is less than $0.009983 <
-0.01$, which means that 99\% of the time\footnote{An exact calculation
-shows that the 99\% confidence level could have been achieved by polling
-only $n=1863$ people.  With 1928 people, the estimate actually holds at
-the $99.17\%$ level.} the fraction $p$ will lie within the specified range
-$0.35 \pm 0.03$.
+\[
+\frac{1}{4}
+\]
+
+By Lemma~\bref{bernoulli-variance}, $\variance{H} = pq$.  Here's a proof
+starting from the definition of variance:
+\begin{align*}
+\variance{H}
+     & = \expect{(H-p)^2}
+                   & \text{(def of $\variance{}$)}\\
+     & = \expect{H^2-2pH+p^2}\\
+     & = \expectsq{H} - 2p\expect{H} + p^2
+                   & \text{(linearity of $\expect{}$)}\\
+     & = p - p^2   & \text{(since $\expect{H} =p$ and $H^2 = H$)}\\
+     & = pq        & (q \eqdef 1-p).
+\end{align*}
+
+Noting that $d\, p(1-p)/dp = 2p-1$ is zero when $p=1/2$, it follows that
+the maximum value of $p(1-p)$ must be at $p = 1/2$, so the maximum value
+f $\variance{H}$ is $(1/2)(1 -(1/2)) = 1/4$.
 \end{solution}
 
-\ppart
-If we accept all of Gallup's polling data and calculations, can we
-conclude that there is a high probability that the number of adult
-Americans who believe in evolution is $35 \pm 3$ percent?
+\iffalse
+\ppart What is the variance of a binomial variable, $B_{n,p}$?
+\[
+B_{n,p} = H_1 + H_2 + \cdots + H_n
+\]
+where the $H_i$'s are mutually independent indicator variables with
+$\pr{H_i=1} = p$, and by independence and part~\eqref{varindicator},
+\[
+\variance{H_1 + H_2 + \cdots + H_n} = \variance{H_1} + \variance{H_2} + \cdots +
+\variance{H_n} = npq.
+\]
+\fi
+
+\ppart Use the Pairwise Independent Sampling Theorem to determine a
+confidence level with which Gallup can make his claim.
+
+\begin{solution}
+By the Pairwise Independent Sampling, the probability that a sample of
+size $n=1928$ is further than $x = 0.03$ of the actual fraction is at most
+\[
+\paren{\frac{\sigma}{x}}^2 \cdot \frac{1}{n}
+\leq \paren{\frac{1}{4(0.03)^2}\cdot 1928} \leq 0.144
+\]
+so we can be confident of Gallup's estimate at the 85.6\% level.
+\end{solution}
+
+\ppart Gallup actually claims greater than 99\% confidence in his
+estimate.  How might he have arrived at this conclusion?  (Just explain
+what quantity he could calculate; you do not need to carry out a
+calculation.)
+
+\begin{solution}
+Gallup's sample has a binomial distribution $B_{1928,p}$ for an
+unknown $p$ he estimates to be about $0.35$.  So he wants an upper bound on
+\[
+\pr{\abs{\frac{B_{1928,p}}{1928} - p} > 0.03}
+\]
+By part~\eqref{varindicator}, the variance of $B_{n,p}$ is largest when $p
+=1/2$, which suggests that the probability that a sample average differs
+from the actual mean will be largest when $p=1/2$.  This is in fact the
+case.  So Gallup will calculate
+\begin{align*}
+\pr{\abs{\frac{B_{1928,1/2}}{1928} - \frac{1}{2}} > 0.03}
+    & = \pr{\abs{B_{1928,1/2} - \frac{1928}{2}} > 0.03(1928)}\\
+    & = \pr{906 \leq B_{1928,1/2} \leq 1021}
+    & = \frac{\sum_{i=906}^{1021} \binom{1928}{i}}{2^{1928}}
+    & \approx 0.9912.
+\end{align*}
+\emph{Mathematica} will actually calculate this sum exactly, but there are
+many much more efficient ways to get a good estmate of this value.
+
+\end{solution}
+
+\ppart Accepting the accuracy of all of Gallup's polling data and
+calculations, can you conclude that there is a high probability that the
+number of adult Americans who believe in evolution is $35 \pm 3$ percent?
 
 \begin{solution}
 No.  As explained in Notes and lecture, the assertion that
 fraction $p$ is in the range $0.35\pm 0.03$ is an assertion of fact that
-is either true or false.  The number $p$ is an \emph{constant}.  We
+is either true or false.  The number $p$ is a \emph{constant}.  We
 don't know its value, and we don't know if the asserted fact is true or
 false, but there is nothing probabilistic about the fact's truth or
 falsehood.
