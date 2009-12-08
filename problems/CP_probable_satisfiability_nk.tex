@@ -2,7 +2,8 @@
 
 \begin{pcomments}
 \pcomment{CP_probable_satisfiability_nk}
-\pcomment{from: S07.cp13f, S06.ps10 from S04.cp14w}
+\pcomment{adapted from CP_probable_satisfiability by ARM 12/8/09}
+
 \end{pcomments}
 
 \pkeywords{
@@ -17,82 +18,68 @@
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\def\clauses{\mathcal{S}}
+
 \begin{problem}
-Here are seven propositions:
+  A \term{literal} is a propositional variable or its negation.  A
+  \emph{$k$-clause} is an $\QOR$ of $k$ literals, with no variable
+  occurring more than once in the clause.  For example,
 \[
-\begin{array}{rcrcr}
-x_1       & \QOR & x_3        & \QOR & \bar{x_7} \\
-\bar{x_5} & \QOR & x_6        & \QOR & x_7 \\
-x_2       & \QOR & \bar{x_4}  & \QOR & x_6 \\
-\bar{x_4} & \QOR & x_5        & \QOR &  \bar{x_7} \\
-x_3       & \QOR & \bar{x_5}  & \QOR & \bar{x_8} \\
-x_9       & \QOR & \bar{x_8}  & \QOR & x_2 \\
-\bar{x_3} & \QOR & x_9        & \QOR & x_4
-\end{array}
+P \QOR \bar{Q} \QOR \bar{R} \QOR V,
 \]
+is a 4-clause, but
+\[
+V \QOR \bar{Q} \QOR \bar{X} \QOR V,
+\]
+is not, since $V$ appears twice.
 
-Note that:
+Let $\clauses$ be a set of $n$ distinct $k$-clauses involving $v$
+variables.  The variables in different $k$-clauses may overlap or be
+completely different, so $k leq v \leq nk$.
 
-\begin{enumerate}
-
-\item\label{3literals} Each proposition is the disjunction ($\QOR$) of three
-terms of the form $x_i$ or the form $\bar{x_i}$.
-
-\item\label{alldiff} The variables in the three terms in each proposition are all
-different.
-
-\end{enumerate}
-
-Suppose that we assign true/false values to the variables
-$x_1, \dots, x_9$ independently and with equal probability.
-
+A random assignment of true/false values will be made independently to
+each of the $v$ variables, with true and false assignments equally likely.
+Write formulas in $n$, $k$, and $v$ in answer to the first two parts
+below.
 
 \bparts
 
-\ppart What is the expected number of true propositions?
-
-\hint Let $T_i$ be an indicator for the event that the $i$-th proposition is
-true.
+\ppart[1] What is the probability that the last $k$-clause in $\clauses$
+is true under the random assignment?
 
 \begin{solution}
-Each proposition is true unless all three of its terms are
-false.  Thus, each proposition is true with probability:
-%
+A $k$-clause is true unless all $k$ of its literals are
+false.  Thus, it is true with probability:
 \[
-1 - \paren{\frac{1}{2}}^3 = \frac{7}{8}
+1 - \paren{\frac{1}{2}}^k.
 \]
-
-Let $T_i$ be an indicator for the event that the $i$-th proposition is
-true.  Then the number of true propositions is $T_1 +
-\dots + T_7$ and the expected number is:
-%
-\begin{align*}
-\expect{T_1 + \dots + T_7}
-    & = \expect{T_1} + \dots + \expect{T_7} \\
-    & = \frac{7}{8} + \dots + \frac{7}{8} \\
-    & = \frac{49}{8}= 6 \frac{1}{8}
-\end{align*}
+Since variables are assigned truth values independently, neither, $n$, nor
+$v$, nor the fact that we're considering the last clause is relevant.
 \end{solution}
 
-\ppart Use your answer to prove that for \emph{any} set of 7 propositions
-satisfying the conditions~\ref{3literals}.\ and~\ref{alldiff}., there is
-an assignment to the variables that makes all 7 of the propositions true.
+\ppart[3]\label{partexpectclauses} What is the expected number of true
+$k$-clauses in $\clauses$?
 
 \begin{solution}
-The calculation that the expected number of true propositions is
-$6\frac{1}{8}$ only used the fact that there were 7 propositions
-satisfying the conditions~\ref{3literals}.\ and~\ref{alldiff}.  So for
-\emph{any} such set of 7 propositions, the expected number of true
-propositions is the same.
+  Let $T_i$ be an indicator for the event that the $i$-th $k$-clause is
+  true.  Then the number of true propositions is $\sum_{i=1}^n T_i$, so
+  the expected number is 
+\begin{equation}\label{expectclauses}
+n\expect{T_1} = n\paren{1 - \frac{1}{2^k}} = n - \frac{n}{2^k}.
+\end{equation}
+\end{solution}
 
-But a random variable can not always be less than its expectation, so
-there must be some assignment such that
-\[
-T_1 + \cdots T_7 \geq 6 \frac{1}{8},
-\]
-which implies that $T_1 + \cdots + T_7 = 7$ for at least one outcome.
-This outcome is an assignment to the variables such that all of the
-propositions are true.
+\ppart[4] A set of propositions is \term{satisfiable} iff there is an
+assignment to the variables that makes all of the propositions true.  Use
+your answer to part~\eqref{partexpectclauses} to prove that if $n < 2^k$,
+then $\clauses$ is \term{satisfiable}.
+
+\begin{solution}
+  For $n <2^k$, the expected number of true clauses given
+  in~\eqref{expectclauses} will be $> n-1$.  But a random variable cannot
+  always be less than its expectation, so there must be some assignment
+  making $> n-1$ of the clauses are true, that is, an assignment for which
+  all $n$ of the clauses are true.
 \end{solution}
 
 \eparts
