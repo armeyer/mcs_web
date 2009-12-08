@@ -705,7 +705,7 @@
 
 \newcommand{\@pinput}[2][]{%
         \def\mcsprob@filename{#2}%
-        \let\mcsprob@points\@empty
+        \let\mcsprob@points\z@
         \let\mcsprob@title\@empty
         \setkeys{mcsprob}{#1}%
         \IfFileExists{\mcsprob@filename}{%
