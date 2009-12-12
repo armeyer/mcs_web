@@ -16,16 +16,16 @@
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \begin{problem} % \label{network} \ptitle{Packet Racket!}
+  The \term{complete ternary-tree network} with 9 inputs and 9 outputs
+  is shown below.  When a packet at an input terminal is destined for
+  some output terminal, its route is the unique shortest path to the
+  designated output terminal.
 
-  Consider the complete ternary-tree network with 9 inputs and 9 outputs
-  shown below where packets are routed randomly.  The route each packet
-  takes is the shortest path between input and output.  Let $I_0$, $I_1$,
-  and $I_2$ be indicator random variables for the events that a packet
-  originating at $in_0$, $in_1$, and $in_2$, respectively, crosses the
-  dashed edge in the figure.  Let $T=I_0+I_1+I_2$ be a random variable for
-  the number of packets passing through the dashed edge.
+  Starting with a packet at each input terminal, output destinations
+  for the packets will be determined by randomly in two different
+  ways.  Let $T$ be the random variable equal to the number of packets
+  routed through the dashed edge in the figure.
 
 \vspace{12pt}
 \centerline{\includegraphics[width=6.5in]{ternary-network}}
@@ -41,68 +41,103 @@
 %   path that goes through the top node is a longest path (for example
 %   that from $\mathrm{in_0}$ to $\mathrm{out_8}$) with length 6.}
 
+\ppart\label{I1I12I3} Let $I_0$, $I_1$, and $I_2$ be indicator variables for the
+events that a packet originating at $in_0$, $in_1$, and $in_2$,
+respectively, gets routed through the dashed edge in the figure.
+Explain why $T=I_0+I_1+I_2$.
+
+\begin{solution}
+  The only routes through the dashed edge are ones that originate at
+  input terminals 0--2, so the total number of packets routed through
+  the dashed edge will be the same as the total number of packets
+  starting from these terminals, namely, $I_0+I_1+I_2$.
+\end{solution}
+
 \ppart \label{edgepacketprob} %10
+Suppose that the output terminal for each packet is chosen randomly
+with a uniform distribution and independently of the other packets.
+(Note that outputs may receive packets from multiple inputs including
+their corresponding input.)
+  \begin{itemize}
+    \item What is the probability that the packet at input 2 has one of output terminals
+          3--8 as its destination? \hfill\examrule
 
-Suppose that each input sends a single packet to an output selected
-uniformly at random; the packet destinations are mutually
-independent. (Note that outputs may receive packets from multiple inputs
-including their corresponding input.)
+    \item What is $\expect{T}$? \hfill\examrule
 
-What are the expectation and variance of $T$?
+    \item What is $\variance{T}$? \hfill\examrule
+
+\end{itemize}
+
+\begin{solution}
+\begin{align*}
+ \pr{\text{packet 2 is destined for output 3--8}} & = 2/3\\
+ \expect{T} & = 2\\
+ \variance{T} & = 2/3.
+\end{align*}
+
+The packet at input 2 will pass through the dashed edge iff its
+destination is one of the six outputs 3--8.  Since the nine outputs
+are are chosen as destinations uniformly,
+\[
+\pr{\text{packet 2 is destined for output 3--8}} = 6/9.
+\]
+But packet 2 gets routed through the dashed edge iff it is destined
+for one of the outputs 3--8, so $\pr{I_2=1} = 2/3$ and hence
+$\expect{I_2}=2/3$ and $\variance{I_2} = 2/3(1- 2/3) = 2/9$.  The same
+reasoning applies to $I_0$ and $I_1$.  By linearity of expectation,
+\[
+\expect{T} = \expect{I_0} + \expect{I_1} + \expect{I_2} = 3(2/3) = 2.
+\]
+Since, the destinations are chosen independently, $I_0$ ,$I_1$ and
+$I_2$ are independent, and hence linearity of variance also holds, so
+\[
+\variance{T} = \variance{I_0} + \variance{I_1} + \variance{I_2} = 3(2/9) = 2/3.
+\]
+
+\end{solution}
+
+\ppart\label{uniformpermute} Now suppose input packets are routed to
+different output terminals, with all permutations of inputs to outputs
+equally likely.  Briefly explain why the expected value of $T$ is the
+same as part~\eqref{edgepacketprob}, but the variance may not be.
 
 \examspace[1in]
 
 \begin{solution}
-  A packet will pass through the dashed edge if it originates in inputs
-  0--2 and is destined for outputs 3--8.  For $j \in \{0,1,2\}$ Let $I_j$
-  be an indicator random variable for the event that a packet leaving
-  input $j$ passes through the dashed edge.  The probability of this event
-  is $\frac{2}{3}$. It follows that:
+  In this case it is still true that $\pr{I_2 = 1} = 2/3$, and since
+  this and linearity of expectation was all that was needed to
+  calculate $\expect{T}$ in part~\eqref{edgepacketprob}, the
+  expectation in this case is the same.
 
-\begin{align*}
-T & = I_1 + I_2 + I_3 \\
-Ex[T] 
-&= Ex[I_1 + I_2 + I_3] \\
-&= Ex[I_1] + Ex[I_2] + Ex[I_3] \\
-&= 3\cdot\frac{2}{3} \\
-&= 2
-\end{align*}
-
-Similarly, by the linearity of variance for independent random variables:
-
-\begin{align*}
-T & = I_1 + I_2 + I_3 \\
-Var[T] 
-&= Var[I_1 + I_2 + I_3] \\
-&= Var[I_1] + Var[I_2] + Var[I_3] \\
-&= 3 \cdot \frac{2}{3} \cdot \left(1-\frac{2}{3}\right) \\
-&= \frac{2}{3}
-\end{align*}
-
+  However, $I_0,I_1,I_2$ are not pairwise independent.  For example if
+  $I_0=1$, then there are only five remaining destinations from 3--8,
+  so $\prcond{I_1 = 1}{I_0=1} = 5/9 \neq \pr{I_1=1}$.  So linearity of
+  variance is not guaranteed, and the reasoning of
+  part~\eqref{edgepacketprob} no longer applies.
 \end{solution}
 
-\ppart%{5}
-
-Now consider the situation where a permutation of inputs to outputs is
-chosen uniformly at random; each input sends a packet to a distinct
-output.
-
-\textbf{Old version:} What is the expected value of $T$?  Briefly justify your answer.
-
-\textbf{New version:} Briefly explain why the expected value of $T$ is the
-same as part~\eqref{edgepacketprob}, but the variance is not.  [Maybe ask
-for the variance?]
-
-\examspace[1in]
+  \ppart What is $\variance{T}$ when destinations are assigned as in
+   part~\eqref{uniformpermute}? \hfill \examrule
 
 \begin{solution}
-  Part~\eqref{edgepacketprob} expectation only used linearity and
-  $\pr{I_i}=2/3$, which still holds, it still applies.  However, the
-  indicators $I_1,I_2,I_3$ are not pairwise independent, so the variance
-  argument does not hold.
-
+\begin{align}
+\variance{T} & = \expect{T^2} - \expectsq{T}\notag\\
+             & = \expect{(I_0+I_1+I_2)^2} - 4
+                   & \text{(by parts~\eqref{I1I12I3} and~\eqref{edgepacketprob})}\notag\\
+             & = \expect{I_0^2+ I_1^2+ I_2^2+ I_0I_1 +I_0I_2 +I_1I_2}-4\notag\\
+             & = 3\expect{(I_0)^2}+ 3\expect{I_0I_1}-4
+                  & \text{(by symmetry)}.\label{3eI3eII}
+\end{align}
+But $I_0^2=I_0$ so $\expect{I_0^2} = 2$, and since $I_0I_1$ is 0-1-valued
+\[
+\expect{I_0I_1} = \pr{I_0I_1=1}=\prcond{I_1 = 1}{I_0=1}\cdot
+\pr{I_0=1} = (5/9)\cdot (2/3) = 10/27.
+\]
+From~\eqref{3eI3eII}, we conclude
+\[
+\variance{T} = 3\cdot 2 + 3 \cdot (10/27) - 4 = 3\ 1/9.
+\]
 \end{solution}
-
 \eparts
 \end{problem}
 
