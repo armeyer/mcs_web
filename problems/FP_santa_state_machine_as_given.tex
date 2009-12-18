@@ -1,0 +1,168 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_santa_state_machine}
+  \pcomment{from: F09.cp5f, spruced up xmas style by Tom Brown 12/09}
+  \pcomment{from: S09.cp5r, F03.ps4}
+  \pcomment{edited S09 by ARM}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  unreachable_states
+  increasing_decreasing_variables
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  Santa's elves have decided to primp his ride.  They add spinners,
+  hydraulics and a huge array of lights to the side of Santa's sleigh.
+  The elves start off with 98 green and 4 red lights on.  The lights can
+  switch between Off, Green and Red, and are controlled by two big
+  buttons:
+\begin{enumerate}
+\item[(i)] Switch the color of any ten lights, chosen by winking at them.
+
+\item[(ii)] Let $n$ be the number of green lights showing.  Turn on $n+1$
+  additional red lights (if there aren't enough turned off lights to do
+  this, then add some more panels of turned off lights so there will be
+  enough).
+\end{enumerate}
+
+For example, a possible first state transition would be to flip nine green
+lights and one red, which leaves 90 green and 12 red lights on.  A next
+possible transition would be to add 91 red lights, thereby leaving 90
+green and 103 red lights on.
+
+\bparts
+
+\ppart[2]
+Model this situation as a state machine, carefully defining the set of
+states, the start state and the possible state transitions.
+
+\examspace[1.5in]
+
+\begin{solution}
+This can be modeled by a state machine.  The state of the
+  machine is the number of green and red lights.  The start state is $(98,4)$,
+  and the transitions are:
+\[
+(g,r) \to
+\begin{cases}
+(g-a+(10-a),r+a-(10-a)) & \mbox{for } 10 \leq g+r\ \QAND\
+                         \max(0, 10-r) \leq a \leq \min(10, g).\\
+(g,r+g+1).
+\end{cases}
+\]
+
+%\vskip0.5in
+%{\bf Comment:} Most students forgot to specify the range of $a$ precisely
+%for the first transition.
+
+\end{solution}
+
+\iffalse
+
+\ppart Explain how to reach a state with exactly one red light showing.
+
+\examspace[1.5in]
+
+\begin{solution}
+One way is to:
+\begin{enumerate}
+
+\item Do operation 2 three times, yielding $(98, 4+3\cdot99)= (98,301)$.
+
+\item Repeat 30 times: Do operation 1 to flip 10 red lights to green. This
+will result in the state $(398,1)$, which is the desired state.
+\end{enumerate}
+
+\end{solution}
+\fi
+
+\ppart[2]\label{derivedvars_part}
+Define the following derived variables:
+\[\begin{array}{|ll|l|}\hline
+ G & \eqdef  \mbox{the number of green lights},&  \rem{G}{2},\\
+ R & \eqdef  \mbox{the number of red lights},  &  \rem{R}{2},\\
+ R+G, &                                        &  \rem{R+G}{2}.\\\hline
+\end{array}\]
+
+Which of these variables is
+\begin{enumerate}\renewcommand{\itemsep}{0pt}
+
+\item strictly increasing \hfill \examrule[1in]
+
+\begin{solution}
+NONE
+\end{solution}
+
+\item weakly increasing  \hfill \examrule[1in]
+
+\begin{solution}
+$R+G$, $\rem{G}{2}$
+
+{\bf Comment:} Notice that a constant variable like $\rem{G}{2}$ is
+also weakly decreasing and weakly increasing, by definition.
+\end{solution}
+
+\item strictly decreasing  \hfill \examrule[1in]
+
+\begin{solution}
+NONE
+\end{solution}
+
+\item weakly decreasing  \hfill \examrule[1in]
+
+\begin{solution}
+$\rem{G}{2}$
+\end{solution}
+
+\item constant  \hfill \examrule[1in]
+
+\begin{solution}
+$\rem{G}{2}$
+\end{solution}
+\end{enumerate}
+
+\examspace
+
+\ppart[3] Prove that it is not possible to reach a state in which there is
+exactly one green light showing.  (If you appeal to one of your answers to
+part~\eqref{derivedvars_part}, you must prove it.) 
+
+\examspace[3in]
+
+\begin{solution}
+
+We claimed above that $\rem{G}{2}$ is an invariant value, that is, it does not
+change under state transitions.  To prove this, let $(g,r)$ be a state
+with $g$ even.  For the next state, we have two cases to consider:
+\begin{enumerate}
+\item The first operation is executed:
+$(g,r)\rightarrow(g-2a+10,r+2a-10)$.  Since $-2a+10$ is even, $\rem{(g,r)}{2}=
+\rem{(g-2a+10, r+2a-10)}{2}$.
+
+\item The second operation is executed: $(g,r)\rightarrow(g,r+g+1)$. The
+  number of green lights does not change in this case, so $\rem{(g,r)}{2}$
+  does not change.
+\end{enumerate}
+Since the initial number of green lights, 98, is even, that is,
+$\rem{(98,4)}{2})=0$, the Invariant Method now implies that the number of
+green lights in a reachable state is always even.  But since 1 is odd, it
+is not possible to reach a state in which there is exactly 1 green light
+showing.
+
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
