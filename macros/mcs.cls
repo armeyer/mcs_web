@@ -391,6 +391,8 @@
 %\newcommand{\degr}[1]{\text{deg}(#1)}
 \newcommand{\degr}[1]{\mathop{\textup{deg}}\nolimits\left(#1\right)}
 
+\newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
+
 %% Math -- Languages
 
 \newcommand{\emptystring}{\lambda}
