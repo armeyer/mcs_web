@@ -404,6 +404,7 @@
 \newcommand{\rationals}{\mathbb{Q}}
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
+\newcommand{\posints}{\integers^+}
 
 %% Math -- Arithmetic
 
