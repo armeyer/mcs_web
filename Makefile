@@ -1,6 +1,6 @@
 SOLUTIONSPOLICY = .solutionspolicy
 
-SUBDIRS = book problems fall09
+SUBDIRS = book problems spring10
 
 .PHONY: clean veryclean
 
