@@ -1,4 +1,4 @@
-\hyperdef{while}{programs}{\section{Reasoning About \textbf{While} Programs}}
+\hyperdef{while}{programs}{\chapter{Reasoning About \textbf{While} Programs}}\label{while_chap}
 
 \def\movesto{\mathrel{\longrightarrow}}
 \newcommand{\while}{\text{\textbf{while}}}
@@ -13,7 +13,7 @@
 \newcommand{\condcomm}[3]{\condif\ #1\ \condthen\ #2\ \condelse\ #3}
 \newcommand{\seqcomm}[2]{#1\mathbf{;}#2}
 \newcommand{\Env}{\text{Env}}
-\newcommand{\halt}{\text{\textbf{Halt}}}
+\newcommand{\halt}{\text{\textbf{Done}}}
 \newcommand{\state}[2]{\ang{#1,\, #2}}
 \newcommand{\step}[4]{\state{#1}{#2} \movesto \state{#3}{#4}}
 \newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^*  \state{\halt}{#3}}
@@ -22,24 +22,24 @@
 Real programs and programming languages are often huge and complicated,
 making them hard to model and even harder to reason about.  Still, making
 programs ``reasonable'' is a crucial aspect of software engineering.  In
-these notes we'll illustrate what it means to have a clean mathematical
+this section we'll illustrate what it means to have a clean mathematical
 model of a simple programming language and reasoning principles that go
-with it.  If only real programming languages allowed for such simple,
+with it ---If only real programming languages allowed for such simple,
 accurate modeling.
 
 \subsection{\textbf{While} Programs}
 
-The programs we'll study are called ``\while\ programs.''  We can define
-them as a recursive data type:
+The programs we'll study are called ``\term{\while\ programs}.''  We
+can define them as a recursive data type:
 \begin{definition}\label{whiledef} \mbox{}
 
 \textbf{base cases:}
 \begin{itemize}
 
-\item $x \assigned e$ is a \while\ program, called an \emph{assignment
+\item $x \assigned e$ is a \while\ program, called an \term{assignment
     statement}, where $x$ is a variable and $e$ is an expression.
 
-\item $\halt$ is a \while\ program.
+\item \term{$\halt$} is a \while\ program.
 
 \end{itemize}
 
@@ -61,28 +61,29 @@ If $C$ and $D$ are \while\ programs, and $T$ is a test, then the following are a
 \end{definition}
 
 For simplicity we'll stick to \while\ programs operating on integers.  So by
-\term{expressions} we'll mean any of the familiar integer valued
+expressions we'll mean any of the familiar integer valued
 expressions involving integer constants and operations such as addition,
-multiplication, exponentiation, quotient or remainder.  As \emph{tests},
+multiplication, exponentiation, quotient or remainder.  As \term{tests},
 we'll allow propositional formulas built from basic formulas of the form
 $e \leq f$ where $e$ and $f$ are expressions.  For example, here is the
 Euclidean algorithm for $\gcd(a,b)$ expressed as a \while\ program.
 \begin{tabbing}
 XXX\=XXX\=XXX\=XXX\kill
-$x \assigned a$\textbf{;} \\
-$y \assigned b$\textbf{;} \\
-\while\ $y \neq 0$ \docomm\\
-   \> $t \assigned y$\textbf{;}\\
-   \> $y \assigned \rem{x}{y}$\textbf{;}\\
-   \> $x \assigned t$
+$\mathtt{x} \assigned a$\textbf{;} \\
+$\mathtt{y} \assigned b$\textbf{;} \\
+\while\ $\mathtt{y} \neq 0$ \docomm\\
+   \> $\mathtt{t} \assigned \mathtt{y}$\textbf{;}\\
+   \> $\mathtt{y} \assigned \rem{\mathtt{x}}{\mathtt{y}}$\textbf{;}\\
+   \> $\mathtt{x} \assigned \mathtt{t}$
 \odcomm\\
 \end{tabbing}
 
-\subsection{The  \textbf{While}  Program State Machine}
+\subsection{The \textbf{While}  Program State Machine}
 
-A \while\ program acts as a pure command: it is run solely for its side effects on
-stored data and it doesn't return a value.  The data consists of integers
-stored as the values of variables, namely environments:
+A \while\ program acts as a pure command: it is run solely for its
+side effects on stored data and it doesn't return a value.  The data
+consists of integers stored as the values of variables, namely
+environments:
 \begin{definition}
 An \term{environment} is a total function from variables to integers.
 Let $\Env$ be set of all environments.
@@ -94,31 +95,43 @@ of an expression, $e$ as defining a function $\mean{e}:\Env \to
 \integers$, and refer to this function, $\mean{e}$ as the \term{meaning}
 of $e$, and likewise for tests.
 
-It's standard in programming language theory to write $\mean{e}\rho$ as
-shorthand for $\mean{e}(\rho)$, that is, applying the \emph{meaning},
-$\mean{e}$, of $e$ to $\rho$.  (A variable is a special case of an
-expression, so $\mean{x}\rho \eqdef \rho(x)$.)
+It's standard in programming language theory to write $\mean{e}\rho$
+as shorthand for $\mean{e}(\rho)$, that is, applying
+the \emph{meaning}, $\mean{e}$, of $e$ to $\rho$.  For example, if
+$\rho(\mathtt{x}) =4$, and $\rho(\mathtt{y}) =-2$, then
+\begin{equation}\label{x2y311}
+\mean{\mathtt{x^2+y -3}}\rho = \rho(\mathtt{x})^2 + \rho(y) -3 = 11.
+\end{equation}
 
-Executing a program causes a succession of changes to the environment
-which may continue until the program halts.  Actually the only command
-which immediately alters the environment is an assignment command.
-Namely, the effect of the command
+\iffalse
+(A variable is a special case of an expression, so $\mean{x}\rho \eqdef \rho(x)$.)
+\fi
+
+Executing a program causes a succession of changes to the
+environment\footnote{More sophisticated programming models distinguish
+the environment from a \term{store} which is affected by commands, but
+this distinction is unnecessary for our purposes.}  which may continue
+until the program halts.  Actually the only command which immediately
+alters the environment is an assignment command.  Namely, the effect
+of the command
 \[
 x \assigned e
 \]
 on an environment is that the value assigned to the variable $x$ is
-changed to the value of $e$ in the original environment.  We can say this
-precisely and concisely using the following notation for functions:
+changed to the value of $e$ in the original environment.  We can say
+this precisely and concisely using the following notation:
+$\patch{f}{a}{b}$ is a function that is the same as the function, $f$,
+except that when applied to element $a$ its value is $b$.  Namely,
 \begin{definition}
-If $F:A \to B$ is a function and $a,b$ are arbitrary elements, define
+If $f:A \to B$ is a function and $a,b$ are arbitrary elements, define
   \[
-\patch{F}{a}{b}
+\patch{f}{a}{b}
 \]
-to be the function $G$ such that
+to be the function $g$ such that
 \begin{equation*}
-G(u) = \begin{cases}
+g(u) = \begin{cases}
          b & \text{ if } u = a.\\
-         F(u) & \text{otherwise.}
+         f(u) & \text{otherwise.}
        \end{cases}
 \end{equation*}
 \end{definition}
@@ -179,14 +192,14 @@ that \emph{every function on nonnegative integers that can be computed by
   any program} on any machine whatsoever can also be computed by \while\ programs
 (maybe more slowly).  We can't take the time to explain how such a
 sweeping claim can be justified, but you can find out by taking a course
-in computability theory such as 6.045, 6.844, or 6.840.
+in computability theory such as 6.045 or 6.840.
 
 \subsection{Denotational Semantics}
 
 The net effect of starting a \while\ program in some environment is reflected in the
 final environment when the program halts.  So we can think of a \while\ program, $C$,
-as defining a function, $\mean{C}:\Env \to \Env$, from initial
-environments to environments at halting.  The function $\mean{e}$ is
+aas defining a function, $\mean{C}:\Env \to \Env$, from initial
+environments to environments at halting.  The function $\mean{C}$ is
 called the \term{meaning} of $C$.
 
 $\mean{C}$ of a \while\ program, $C$ to be a partial function from $\Env$ to $\Env$
@@ -264,11 +277,18 @@ steps in an execution.  This is OK as long as the denotational semantics
 accurately captures the state machine behavior.  In particular, using the
 notation $\movesto^*$ for the transitive closure of the transition
 relation:
-\begin{theorem}
+\begin{theorem}\label{sound-semantics}
 \[
 \haltswith{C}{\rho}{\rho'} \qiff \mean{C}\rho = \rho'
 \]
 \end{theorem}
+Theorem~\ref{sound-semantics} can be proved easily by induction; it
+appear in~Problem\ref{PS_while_program_semantic_soundness_proof}.
+
+\begin{problems}
+\homeworkproblems
+\pinput{PS_while_program_semantic_soundness_proof}
+\end{problems}
 
 \subsection{Logic of Programs}
 
@@ -277,30 +297,52 @@ environments the program should handle, and then describes what should
 result from an execution.  The specification of the inputs or initial
 environment is called the \term{precondition} for program execution, and
 the prescription of what the result of execution should be is called the
-\emph{postcondition}.  So if $P$ is a formula expressing the precondition
-for a program, $C$, and likewise $Q$ expresses the postcondition, the 
+\emph{postcondition}.  So if $P$ is a logical formula expressing the precondition
+for a program, $C$, and likewise $Q$ expresses the postcondition, the
 specification requires that
 \begin{quote}
 If $P$ holds when $C$ is started, then $Q$ will hold if and when $C$ halts.
 \end{quote}
 We'll express this requirement as a formula
 \[
-\after{P}{C}{Q}.
+\after{P}{C}{Q}
 \]
+called a \term{partial correctness assertion}.
 
-For example, if $E$ is \while\ program above for the Euclidean algorithm, then the
-partial correctness of $E$ can be expressed as
+For example, if $E$ is \while\ program above for the Euclidean
+algorithm, then the partial correctness of $E$ can be expressed as
 \begin{equation}\label{eucpc}
-\after{\paren{a, b \in \naturals\ \QAND\  x \neq 0}}{C}
-                   {\paren{x = \gcd(a,b)}}.
+\after{\paren{a, b \in \naturals\ \QAND\  \mathtt{x} \neq 0}}{C}
+                   {\paren{\mathtt{x} = \gcd(a,b)}}.
 \end{equation}
-Now we can build up rules for proving these kinds of partial correctness
-formulas.  The rules below were formulated in the early 1970's
-%%check ref
-by Tony Hoare at Univ. Dublin and are known as \term{Hoare Logic}.
 
-The first rule captures the fact that strengthening the preconditions and
-weakening the postconditions makes a specification easier to satisfy:
+More precisely, notice that just as the value of an expression in an
+environment is an integer, the value of a logical formula in an
+environment is a truth value.  For example, if $\rho(\mathtt{x}) =4$,
+and $\rho(\mathtt{y}) =-2$, then by~\eqref{x2y311},
+$\mean{\mathtt{x^2+y -3}}\rho = 11$, so
+\begin{align*}
+\mean{\exists \mathtt{z}.\, \mathtt{z} > 4 \QAND \mathtt{x}^2+\mathtt{y} -3=\mathtt{z}}\rho & = \true,\\
+\mean{\exists \mathtt{z}.\, \mathtt{z} > 13 \QAND \mathtt{x}^2+\mathtt{y} -3=\mathtt{z}}\rho & = \false.
+\end{align*}
+
+\begin{definition}\label{def_afterPCQ}
+For logical formulas $P$ and $Q$, and \while\ program, $C$, the partial correctness assertion
+\[
+\after{P}{C}{Q}
+\]
+is true proving that for all environments, $rho$, if $\mean{P}\rho$ is
+true, and $\haltswith{C}{\rho}{\rho'}$ for some $\rho'$, then
+$\mean{Q}\rho'$ is true.
+\end{definition}
+
+In the 1970', %%check ref Prof.\ Tony Hoare (now Sir Anthony) at
+Univ. Dublin formulated a set of inference rules for proving partial
+correctness formulas.  These rules are known as \term{Hoare Logic}.
+
+The first rule captures the fact that strengthening the preconditions
+and weakening the postconditions makes a partial correctness
+specification easier to satisfy:
 
 \Rule{P \ \QIMPLIES\  R,
      \quad \after{R}{C}{S},
@@ -319,17 +361,13 @@ and proof rules for the constructor cases:
 \item
 \Rule{\after{P}{C}{Q} \ \QAND\  \after{Q}{D}{R}}{\after{P}{\seqcomm{C}{D}}{R}}
 
-
 \item
 \Rule{\after{P\ \QAND\ T}{C}{Q}}
         {\after{P\ \QAND\ T}{\condcomm{T}{C}{D}}{Q\ \QAND\ T}}
 
-
 \item
 \Rule{\after{P\ \QAND\ T}{C}{P}}
      {\after{P}{\wloop{T}{C}}{P\ \QAND\ \QNOT(T)}}
-
-
 \end{itemize}
 
 \begin{example}
