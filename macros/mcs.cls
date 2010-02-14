@@ -424,12 +424,11 @@
 %% Ick. [dmj]
 
 \newcommand{\corresp}{\ \longleftrightarrow\ }
-
 \newcommand{\prq}{\rightarrow}  %prerequisite
-
+\newcommand{\movesto}{\mathrel{\longrightarrow}}  %state machine transition
 %\newcommand{\prns}{\set{\, \mtt{)},\, \mtt{(}\,}^*}
 
-\def\sg{\text{Sg}}
+\def\sg{\text{Sg}}   %fictitious currency: Strong's
 
 \def\GC{\mopt{GoodCount}}
 \def\RM{\mopt{RecMatch}}
