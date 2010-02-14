@@ -1,0 +1,73 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S09.ps3 (by wing)}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  logic
+  circuits
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+  In class we learned that an $n+1$-bit Ripple-carry adder 
+  may be defined using propositional formulas as follows:
+  
+  \begin{align*}
+  c_0     & =  0\\
+  o_{i}   & = a_{i}\ \QXOR\ b_{i}\ \QXOR\ c_{i}
+                  & \text{for } 0 \leq i \leq n,\\
+  c_{i+1} & = (a_i\ \QAND\ b_i)\ \QOR\\
+         &\qquad  (a_i\ \QAND\ c_i) \QOR (b_i\ \QAND\ c_i)
+                  & \text{for } 0 \leq i \leq n,\\
+  c      & = c_{n+1}.
+  \end{align*}
+  
+  Prove that the definition is correct: e.g.
+  $ c o_{n} \dots o_{1} o_{0} $ = sum of $ a_{n} \dots a_{0} $ + $ b_{n} \dots b_{0} $.
+  
+  \begin{solution}
+    
+    The proof is by induction on $n$.  Let $P(n)$ be the proposition
+    that the definition above is correct for $n$.
+
+    \textbf{Base cases:} $P(0)$ is trivially true and may be shown by 
+    checking all combinations of $a$ and $b$ (without loss of generality):
+    
+    \begin{align*}
+      00 & = 0+0 & o_{0} = 0 \QXOR 0 \QXOR 0 = 0 \;\;\; & c = c_{1} = {0 \QOR 0 \QOR 0} = 0 \\
+      01 & = 0+1 & o_{0} = 0 \QXOR 1 \QXOR 0 = 1 \;\;\; & c = c_{1} = {0 \QOR 0 \QOR 0} = 0 \\
+      10 & = 1+1 & o_{0} = 1 \QXOR 1 \QXOR 0 = 0 \;\;\; & c = c_{1} = {1 \QOR 0 \QOR 0} = 1 .
+    \end{align*}
+    
+    \textbf{Inductive step:} For all $n \geq 0$, we assume that $P(n)$ is true
+    to prove $P(n+1)$.
+    
+    Since, for all (n+1)-bit binary numbers, 
+    \[ a = a_n \dots a_0 = a_n * 2^n + a_{n-1} \dots a_0 \]
+    We may consider the highest (n-th) bit separately,
+    \[ a + b = (a_n + b_n) * 2^n + a_{n-1} \dots a_0 + b_{n-1} \dots b_0 \]
+    
+    Assuming that $P(n)$ is true, we know that
+    \[ a_{n-1} \dots a_0 + b_{n-1} \dots b_0 = c_n o_{n-1} \dots o_0 \]
+    and we may substitute that into the equation above
+    \[ a + b = (a_n + b_n + c_n) * 2^n + o_{n-1} \dots o_0 \]
+    
+    Therefore, we see that the sum of $ a_n + b_n + c_n $ determines the $c$ and $o_n$ bit.
+    Once again, we may verify the 2 bits' correctness by explicit evaluation:
+    \begin{align*}
+      00 & = 0+0+0 & o_{n} = 0 \QXOR 0 \QXOR 0 = 0 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 0} = 0 \\
+      01 & = 0+0+1 & o_{n} = 0 \QXOR 0 \QXOR 1 = 1 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 0} = 0 \\
+      10 & = 0+1+1 & o_{n} = 0 \QXOR 1 \QXOR 1 = 0 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 1} = 1 \\
+      11 & = 1+1+1 & o_{n} = 1 \QXOR 1 \QXOR 1 = 1 \;\;\; & c = c_{n+1} = {1 \QOR 1 \QOR 1} = 1 \\
+    \end{align*}
+     
+  \end{solution}
+
+\end{problem}
