@@ -1,16 +1,16 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{PS_ripple_carry_adder_correctness}
-  \pcomment{S10 by wing & ARM, 3/15/10)}
+  \pcomment{PS_binary_adder_specification}
+  \pcomment{S10 by ARM 3/15/10)}
 \end{pcomments}
 
 \pkeywords{
   induction
-  logic
-  circuits
-  ripple_carry
+  recursive
   adder
+  binary
+  specification
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,109 +19,103 @@
 
 \begin{problem}
  
-  An $n+1$-bit adder circuit is a digital circuit that adds two
-  $n+1$-bit binary numbers.  More precisely, for any binary string,
-  $a$, let $\binnum{a}$ be the nonnegative integer whose binary
-  representation is $a$.  For example, $\binnumt{10} = 2$, and
-  $\binnumt{0101} = 5$.
+  For any binary string, $\alpha$, let $\binnum{\alpha}$ be the
+  nonnegative integer it represents in binary notation.  For example,
+  $\binnumt{10} = 2$, and $\binnumt{0101} = 5$.
 
-  An $n+1$-bit adder has $2(n+1)$ input bits, $a_n,\dots, a_1,a_0,$
-  and $b_n, \dots, b_1,b_0$, and $n+2$ output bits, $c, s_{n}, \dots,
-  s_{1}, s_{0}$.  Let $a$ and $b$, respectively, be the input strings
-  $a_n\dots a_1 a_0$ and $b_n \dots b_1 b_0$, and let $s$ be the
-  output string $s_{n} \dots s_{1}$.  Output bit $c$ is called the
-  \term{carry bit}.  The input-output specification for the adder
-  circuit is that
+  An \term{$n+1$-bit adder} adds two $n+1$-bit binary numbers.  More
+  precisely, an $n+1$-bit adder takes two length $n+1$ binary strings
+  \begin{align*}
+    \alpha_n \eqdef a_n\dots a_1 a_0,
+    \beta_n \eqdef b_n \dots b_1 b_0,
+  \end{align*}
+  and a binary digit, $c_0$, as inputs, and produces a length $n+1$ binary string
+  \[
+  \sigma_n \eqdef s_{n} \dots s_{1}s_0,
+  \]
+  and a binary digit, $c_{n+1}$, as outputs, and satisfies the specification:
   \begin{equation}\label{adder-iospec}
-    \binnum{a} + \binnum{b} = \binnum{c \cdot s}.
+    \binnum{\alpha_n} + \binnum{\beta_n} + c_0 = 2^{n+1}c_{n+1} + \binnum{\sigma_n}.
   \end{equation}
-  Here $c \cdot s$ refers to the $n+2$-bit the string $cs_{n} \dots
-  s_{1}$.
 
-  Problem~\bref{CP_binary_adder_logic} described a particular design
-  for an $n+1$-bit digital circuit called a \idx{ripple-carry adder}.
-  defined by the following formulas:
+  Problem~\bref{CP_binary_adder_logic} described
+
+  There is a straighforward way to implement an $n+1$-bit adder as a
+  digital circuit: an $n+1$-bit \idx{ripple-carry circuit} has
+  $1+2(n+1)$ binary inputs $a_n,\dots, a_1,a_0,b_n, \dots, b_1,b_0,
+  c_0$, and $n+2$ binary outputs, $c_{n+1}, s_{n}, \dots, s_{1},
+  s_{0}$.  As in Problem~\bref{CP_binary_adder_logic}, the
+  ripple-carry circuit is specified by the following formulas:
   \begin{align}
-  c_0     & \eqdef 0\label{c0adddef}\\
   s_{i}   & \eqdef a_{i}\ \QXOR\ b_{i}\ \QXOR\ c_{i}
-                  & \text{for } 0 \leq i \leq n,\label{siadddef}\\\\
+                  & \text{for } 0 \leq i \leq n,\label{siadddef}\\
   c_{i+1} & \eqdef (a_i\ \QAND\ b_i) \QOR (a_i\ \QAND\ c_i) \QOR (b_i\ \QAND\ c_i)
-                  & \text{for } 0 \leq i \leq n,\label{ciadddef}\\
-  c      & \eqdef c_{n+1}.\label{carrydef}
+                  & \text{for } 0 \leq i \leq n,\label{ciadddef}.
   \end{align}
   
-  Prove by induction on $n$ that an $n+1$-bit ripple-carry circuit
-  really is an $n+1$-bit adder, that is, its outputs
-  satisfy~\eqref{adder-iospec}.
+\bparts
 
- \hint $\binnum{a_n\dots a_1a_0} = a_n2^n + a_12^1 + a_02^0$
-  
+\ppart Verify that equations~\eqref{siadddef} and~\eqref{ciadddef}
+imply that
+ \begin{equation}\label{anbncn2c}
+   a_n + b_n + c_n = 2c_{n+1} + s_n.
+ \end{equation}
+
+\begin{solution}
+TBA
+\end{solution}
+
+\ppart Prove by induction on $n$ that an $n+1$-bit ripple-carry
+circuit really is an $n+1$-bit adder, that is, its outputs
+satisfy~\eqref{adder-iospec}.
+
+ \hint You may assume that, by definition of binary representation of integers,
+ \begin{equation}\label{alphan+1binrep}
+   \binnum{\alpha_{n_+1}} = a_{n+1}2^{n+1} + \binnum{\alpha_n}.
+ \end{equation}  
+
   \begin{solution}
-    
-    The proof is by induction on $n$.  Let $P(n)$ be the proposition
-    that an $n+1$-bit ripple carry circuit
-    satisfies~\eqref{adder-iospec}.
+    \begin{proof}
+      The proof is by induction on $n$.  The induction hypothesis is
+      that an $n+1$-bit ripple carry satisfies~\eqref{adder-iospec}.
 
-    \textbf{Base case:} $(n=0)$.  In this case, input strings $a$ and
-    $b$ are single bits, $a_0$ and $b_0$.
+      \textbf{Base case:} $(n=0)$.  Thus follows immediately
+      from~\eqref{anbncn2c}.
 
-    The correct low order bit of their sum is their sum mod 2, namely,
-    $a_0 \QXOR b_0$.  But since $c_0$ is defined by~\eqref{c0adddef}
-    to be 0, the specification~\eqref{siadddef} of the circuit low
-    order bit, $s0$, simplifies to exactly this value.  So $s_0$ is
-    correct.
+      \textbf{Inductive step:} We assume by induction that an
+      $n+1$-bit ripple-carry adder satisfies~\eqref{adder-iospec}, and
+      prove that an $n+2$-bit ripple-carry adder will
+      satisfy~\eqref{adder-iospec} with ``$n$'' replaced by ``$n+1$,'' namely,
+      \begin{equation}\label{n+1adder-iospec}
+        \binnum{\alpha_{n+1}} + \binnum{\beta_{n+1}} + c_0
+          = c_{n+2}2^{n+1} + \binnum{\sigma_{n+1}}.
+      \end{equation}
 
-    The correct carry bit is 1 only when both $a_0$ and $b_0$ equal 1,
-    that is, it equals $a_0 \QAND b_0$.  But the circuit carry bit,
-    $c$, equals $c_1$, and its specification~\eqref{ciadddef}
-    correctly simplifies to $a_0 \QAND b_0$, again using the fact that
-    $c_0 =0$.  So the carry bit is correct.
+      We prove~\eqref{n+1adder-iospec} by transforming the left hand
+      side into the right hand side.
+      \begin{align*}
+        \binnum{\alpha_{n+1}} + \binnum{\beta_{n+1}} + c_0
+          & = (a_{n+1}2^{n+1} + \binnum{\alpha_n})_ + (b_{n+1}2^{n+1} + \binnum{\beta_n}) + c_0
+                & \text{(by~\eqref{alphan+1binrep})}\\
+          & = (a_{n+1} + b_{n+1})2^{n+1} + (\binnum{\alpha_n} + \binnum{\beta_n}+c_0)\\
+          & = (a_{n+1} + b_{n+1})2^{n+1} + (2^{n+1}c_{n+1} + \binnum{\sigma_n})
+                & \text{(by induction hypothesis)}\\
+          & = (a_{n+1} + b_{n+1} + c_{n+1})2^{n+1} + \binnum{\sigma_n}\\
+          & = (2c_{n+2} + s_{n+1}) 2^{n+1} + \binnum{\sigma_n}
+                & \text{(by~\eqref{anbncn2c})}\\
+          & = c_{n+2}2^{n+1} + s_{n+1} 2^{n+1} + \binnum{\sigma_{n}}\\
+          & = c_{n+2}2^{n+1} + \binnum{\sigma_{n+1}}
+                & \text{(by~\eqref{alphan+1binrep})}.
+      \end{align*}
+      This completes the proof of the inductive step.
 
-    So this proves that the output $cs_0$ indeed satisfies the
-    specification~\eqref{adder-iospec}, that is, $P(0)$ is true.
-
-\iffalse
-is trivially true and may be shown by 
-    checking all combinations of $a$ and $b$ (without loss of generality):
-    
-    \begin{align*}
-      00 & = 0+0 & s_{0} = 0 \QXOR 0 \QXOR 0 = 0 \;\;\; & c = c_{1} = {0 \QOR 0 \QOR 0} = 0 \\
-      01 & = 0+1 & s_{0} = 0 \QXOR 1 \QXOR 0 = 1 \;\;\; & c = c_{1} = {0 \QOR 0 \QOR 0} = 0 \\
-      10 & = 1+1 & s_{0} = 1 \QXOR 1 \QXOR 0 = 0 \;\;\; & c = c_{1} = {1 \QOR 0 \QOR 0} = 1 .
-    \end{align*}
-\fi
-
-    \textbf{Inductive step:} We assume by induction that an $n+1$-bit
-    ripple carry adder satisfies~\eqref{adder-iospec}, and prove that
-    an $n+2$-bit ripple carry adder will also
-    satisfy~\eqref{adder-iospec}.
-
-    Let $a$ and $b$, respectively, continue to be the $n+1$-bit
-    strings $a_n\dots a_1 a_0$ and $b_n \dots b_1 b_0$, so the input
-    strings for an $n+2$-bit adder will be $a_{n+1}\cdot a$ and $b_{n+1}\cdot b$.
-
-%REST OF THIS NEEDS TO BE REVISED TO BE SIMILAR TO THE BASE CASE
-
-    Since, for all (n+1)-bit binary numbers,
-    \[ a = a_n \dots a_0 = a_n * 2^n + a_{n-1} \dots a_0 \]
-    We may consider the highest (n-th) bit separately,
-    \[ a + b = (a_n + b_n) * 2^n + a_{n-1} \dots a_0 + b_{n-1} \dots b_0 \]
-    
-    Assuming that $P(n)$ is true, we know that
-    \[ a_{n-1} \dots a_0 + b_{n-1} \dots b_0 = c_n s_{n-1} \dots s_0 \]
-    and we may substitute that into the equation above
-    \[ a + b = (a_n + b_n + c_n) * 2^n + s_{n-1} \dots s_0 \]
-    
-    Therefore, we see that the sum of $ a_n + b_n + c_n $ determines the $c$ and $s_n$ bit.
-    Once again, we may verify the 2 bits' correctness by explicit evaluation:
-    \begin{align*}
-      00 & = 0+0+0 & s_{n} = 0 \QXOR 0 \QXOR 0 = 0 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 0} = 0 \\
-      01 & = 0+0+1 & s_{n} = 0 \QXOR 0 \QXOR 1 = 1 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 0} = 0 \\
-      10 & = 0+1+1 & s_{n} = 0 \QXOR 1 \QXOR 1 = 0 \;\;\; & c = c_{n+1} = {0 \QOR 0 \QOR 1} = 1 \\
-      11 & = 1+1+1 & s_{n} = 1 \QXOR 1 \QXOR 1 = 1 \;\;\; & c = c_{n+1} = {1 \QOR 1 \QOR 1} = 1 \\
-    \end{align*}
-     
+      We conclude by induction that for all nonnegative integers, $n$,
+      an $n+1$-bit ripple-carry circuit satisfies~\eqref{adder-iospec}
+      and so is a correct implementation of an $n+1$-bit adder.
+    \end{proof}     
   \end{solution}
+
+\eparts
 
 \end{problem}
 
