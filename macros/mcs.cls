@@ -454,6 +454,9 @@
 \providecommand{\EF}{\ms{F18}}
 \providecommand{\T}{\ms{ST}}
 
+\newcommand{\binnum}[1]{\mathop{\textup{num}}\nolimits\left(#1\right)}
+\newcommand{\binnumt}[1]{\mathop{\textup{num}}\nolimits\left(\mathtt{#1}\right)}
+
 \def\lexle{\mathrel{\preceq_{\text{lex}}}}
 \newcommand{\lexls}{\mathrel{\prec_{\text{lex}}}}
 \newcommand{\lexgr}{\mathrel{\succ_{\text{lex}}}}

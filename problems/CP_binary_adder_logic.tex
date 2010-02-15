@@ -1,9 +1,8 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{from: S09.cp2m}
-%  \pcomment{}
-%  \pcomment{}
+  \pcomment{CP_binary_adder_logic}
+  \pcomment{from S10.cp2m, S09.cp2m}
 \end{pcomments}
 
 \pkeywords{
@@ -20,27 +19,27 @@
 \begin{problem}
   Propositional logic comes up in digital circuit design using the
   convention that \true\ corresponds to 1 and \false\ to 0.  A simple
-  example is a 2-bit half-adder circuit.  This circuit has $3$ binary
-  inputs, $a_1,a_0$ and $b$, and $3$ binary outputs, $c, o_1,o_0$.  The
-  2-bit word $a_1a_0$ gives the binary representation of an integer, $s$
-  between 0 and 3.  The 3-bit word $co_1o_0$ gives the binary
-  representation of $s+b$.
-  The output $c$ is called the \emph{final carry bit}.
+  example is a 2-bit \term{half-adder} circuit.  This circuit has $3$
+  binary inputs, $a_1,a_0$ and $b$, and $3$ binary outputs, $c,
+  o_1,o_0$.  The 2-bit word $a_1a_0$ gives the binary representation
+  of an integer, $k$, between 0 and 3.  The 3-bit word $cs_1s_0$ gives
+  the binary representation of $k+b$.  The third output bit, $c$, is
+  called the final \term{carry bit}.
 
-  So if $s$ and $b$ were both 1, then the value of $a_1a_0$ would be
-  \texttt{01} and the value of the output $co_1o_0$ would
+  So if $k$ and $b$ were both 1, then the value of $a_1a_0$ would be
+  \texttt{01} and the value of the output $cs_1s_0$ would
   $\texttt{010}$, namely, the 3-bit binary representation of $1+1$.
 
   In fact, the final carry bit equals 1 only when all three binary inputs
-  are 1, that is, when $s=3$ and $b=1$.  In that case, the value of
-  $co_1o_0$ is \texttt{100}, namely, the binary representation of $3+1$.
+  are 1, that is, when $k=3$ and $b=1$.  In that case, the value of
+  $cs_1s_0$ is \texttt{100}, namely, the binary representation of $3+1$.
 
   This 2-bit half-adder could be described by the following formulas:
 \begin{align*}
 c_0 & = b \\
-o_0 & = a_0\ \QXOR\ c_0\\
+s_0 & = a_0\ \QXOR\ c_0\\
 c_1 & = a_0\ \QAND\ c_0  & \text{the carry into  column 1}\\
-o_1 & = a_1\ \QXOR\ c_1\\
+s_1 & = a_1\ \QXOR\ c_1\\
 c_2 & = a_1\ \QAND\ c_1 & \text{the carry into column 2}\\
 c   & = c_2.
 \end{align*}
@@ -50,20 +49,20 @@ c   & = c_2.
 \ppart\label{CP_binary_adder_logic:anb} Generalize the above construction 
 of a 2-bit half-adder to an $n+1$ bit half-adder with inputs $a_n,\dots, 
 a_1, a_0$ and $b$ for arbitrary $n \geq 0$.  That is, give simple formulas 
-for $o_{i}$ and $c_{i}$ for $0 \leq i \leq n+1$, where $c_i$ is the carry 
+for $s_{i}$ and $c_{i}$ for $0 \leq i \leq n+1$, where $c_i$ is the carry 
 into column $i$ and $c=c_{n+1}$.
 
 \begin{solution}
  The $n+1$-bit word $a_n \dots a_1 a_0$ will be the binary
   representation of an integer, $s$, between 0 and $2^{n+1}-1$.  The
-  circuit will have $n+2$ outputs $c, o_n, \dots, o_1, o_0$ where the
-  $n+2$-bit word $c o_n \dots o_1 o_0$ gives the binary representation of
+  circuit will have $n+2$ outputs $c, s_n, \dots, s_1, s_0$ where the
+  $n+2$-bit word $c s_n \dots s_1 s_0$ gives the binary representation of
   $s+b$.
 
 Here are some simple formulas that define such a half-adder:
 \begin{align*}
 c_0 & = b,\\
-o_{i} & = a_{i}\ \QXOR\ c_{i}  & \text{for } 0 \leq i \leq n,\\
+s_{i} & = a_{i}\ \QXOR\ c_{i}  & \text{for } 0 \leq i \leq n,\\
 c_{i+1} &= a_i\ \QAND\ c_i & \text{for } 0 \leq i \leq n,\\
 c & = c_{n+1}.
 \end{align*}
@@ -78,7 +77,7 @@ $a_n\dots a_1a_0$ and $b_n\dots b_1b_0$.
 Define
 \begin{align*}
 c_0     & =  0\\
-o_{i}   & = a_{i}\ \QXOR\ b_{i}\ \QXOR\ c_{i}
+s_{i}   & = a_{i}\ \QXOR\ b_{i}\ \QXOR\ c_{i}
                 & \text{for } 0 \leq i \leq n,\\
 c_{i+1} & = (a_i\ \QAND\ b_i)\ \QOR\\
        &\qquad  (a_i\ \QAND\ c_i) \QOR (b_i\ \QAND\ c_i)
@@ -90,16 +89,16 @@ c      & = c_{n+1}.
 
 \eparts
 
-Visualized as digital circuits, the above adders consist of a sequence of
-single-digit half-adders or adders strung together in series.  These
-circuits mimic ordinary pencil-and-paper addition, where a carry into a
-column is calculated directly from the carry into the previous column, and
-the carries have to ripple across all the columns before the carry into
-the final column is determined.  Circuits with this design are called
-``ripple-carry'' adders.  Ripple-carry adders are easy to understand and
-remember and require a nearly minimal number of operations.  But the
-higher-order output bits and the final carry take time proportional to $n$
-to reach their final values.
+Visualized as digital circuits, the above adders consist of a sequence
+of single-digit half-adders or adders strung together in series.
+These circuits mimic ordinary pencil-and-paper addition, where a carry
+into a column is calculated directly from the carry into the previous
+column, and the carries have to ripple across all the columns before
+the carry into the final column is determined.  Circuits with this
+design are called \term{ripple-carry} adders.  Ripple-carry adders are
+easy to understand and remember and require a nearly minimal number of
+operations.  But the higher-order output bits and the final carry take
+time proportional to $n$ to reach their final values.
 
 \bparts 
 \ppart How many of each of the propositional operations does your adder
