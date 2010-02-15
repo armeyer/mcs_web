@@ -1069,6 +1069,14 @@
 \newcommand{\Stamp}{%
   revised \today, \the\time\ minutes}
 
+\let\courseurl\@empty
+
+\AtBeginDocument{%
+    \ifx\courseurl\@empty
+        \message{^^JCourse URL/link *INCORRECT*.^^J^^J}%
+    \fi
+}
+
 \newcommand{\courseinstitute}{%
   \href{http://web.mit.edu/}{University of Somewhere}%
   \message{^^JInstitute name/link *INCORRECT*.^^J^^J}}
