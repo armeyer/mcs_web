@@ -11,6 +11,9 @@
 \newif\ifshowsolutions
 \showsolutionsfalse
 
+\newif\ifshowstaffnotes
+\showstaffnotesfalse
+
 \let\@class@option@file\@empty
 
 \DeclareOption{book}{}
@@ -918,6 +921,13 @@
     \@endpefalse
 }
 
+\newenvironment{staffnotes}{%
+    \trivlist
+        \item[\hskip\labelsep \textbf{Staff note}:]\ignorespaces
+}{%
+    \endtrivlist
+}
+
 \AtBeginDocument{%
     \ifshowsolutions
         \typeout{^^JSolutions *INCLUDED*.^^J}%
@@ -930,6 +940,13 @@
         \let\instatements\@firstofone
         \let\solution\comment
         \let\endsolution\endcomment
+    \fi
+    \ifshowstaffnotes
+        \typeout{^^JStaff notes *INCLUDED*.^^J}%
+    \else
+        \typeout{^^JStaff notes *NOT INCLUDED*.^^J}%
+        \let\staffnotes\comment
+        \let\endstaffnotes\endcomment
     \fi
 }
 
@@ -950,11 +967,19 @@
 
 \newcommand{\showsolutions}{%
     \showsolutionstrue
+    \showstaffnotesfalse
+    \let\askaboutsolutions\@empty
+}
+
+\newcommand{\staffsolutions}{%
+    \showsolutionstrue
+    \showstaffnotestrue
     \let\askaboutsolutions\@empty
 }
 
 \newcommand{\hidesolutions}{%
     \showsolutionsfalse
+    \showstaffnotesfalse
     \let\askaboutsolutions\@empty
 }
 

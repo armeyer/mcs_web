@@ -19,6 +19,11 @@ showpolicy:
 showsolutions:
 	echo '\showsolutions' > $(SOLUTIONSPOLICY)
 
+.PHONY: staffsolutions
+
+staffsolutions:
+	echo '\staffsolutions' > $(SOLUTIONSPOLICY)
+
 .PHONY: hidesolutions
 
 hidesolutions:

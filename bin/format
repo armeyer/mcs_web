@@ -366,6 +366,7 @@ sub summarize_errors( $ ) {
     my $chapter = shift;
 
     my $has_solutions = 0;
+    my $has_staffnotes = 0;
 
     (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
 
@@ -392,6 +393,12 @@ sub summarize_errors( $ ) {
     while (<$log>) {
         /Solutions \*INCLUDED\*/ and do {
             $has_solutions = 1;
+
+            next;
+        };
+
+        /Staff notes \*INCLUDED\*/ and do {
+            $has_staffnotes = 1;
 
             next;
         };
@@ -462,7 +469,7 @@ sub summarize_errors( $ ) {
         print "No errors found\n";
     }
 
-    return $has_solutions;
+    return ($has_solutions, $has_staffnotes);
 }
 
 sub process_chapter($) {
@@ -562,14 +569,19 @@ sub process_chapter($) {
         }
     }
 
-    my $has_solutions = summarize_errors($chapter);
+    my ($has_solutions, $has_staffnotes) = summarize_errors($chapter);
 
     my $target_pdf = "$chapter.pdf";
     my $target_log = "$chapter.log";
 
     if ($has_solutions) {
-        $target_pdf = "${chapter}sol.pdf";
-        $target_log = "${chapter}sol.log";
+        if ($has_staffnotes) {
+            $target_pdf = "${chapter}-staff.pdf";
+            $target_log = "${chapter}-staff.log";
+        } else {
+            $target_pdf = "${chapter}-sol.pdf";
+            $target_log = "${chapter}-sol.log";
+        }
     }
 
     if ($generated_pdf ne $target_pdf) {
