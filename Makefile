@@ -9,6 +9,11 @@ clean veryclean:
 	    $(MAKE) -C $$dir $@; \
 	done
 
+.PHONY: showpolicy
+
+showpolicy:
+	@ cat $(SOLUTIONSPOLICY)
+
 .PHONY: showsolutions
 
 showsolutions:
