@@ -3,8 +3,9 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{from: S06.cp2f; revised by ARM 9/20/09}
-  \pcomment{needs handy copy of Russell paradox or Theorem~ref{powbig}}
+  \pcomment{from: S06.cp2f, F09(?)}
+  \pcomment{revised by ARM 9/20/09 and more 3/16/10}
+  \pcomment{needs handy copy of Russell paradox or Theorem~\bref{powbig}}
 \end{pcomments}
 
 \pkeywords{
@@ -29,27 +30,22 @@ recognizes, we'll call $P$ a \term{recognizer} for $\mathcal{R}$.
 
 \bparts
 
-\ppart\label{odd_numeral} Describe how a recognizer for the set of strings
-that are the arabic (decimal) numeral for an odd number would work.  (Even
-better, actually write a recognizer procedure in your favorite programming
-language).
+\ppart\label{odd_numeral} Describe how a recognizer would work for the
+set of strings containing only lower case Roman letter
+---\texttt{a,b,\dots,z} ---such that each letter occurs twice in a
+row.  For example, \texttt{aaccaabbzz}, is such a string, but
+\texttt{abb}, \texttt{00bb}, \texttt{AAbb}, and \texttt{a} are not.
+(Even better, actually write a recognizer procedure in your favorite
+programming language).
 
 \begin{solution}
-  Of course if your programming language has a commonly built-in
-  \texttt{string->number} procedure, this is trivial: when applied to an
-  input \texttt{string}, $s$, your procedure applies
-  \texttt{string->number} to $s$ and checks that the resulting number is
-  odd.  (Better watch out though, how does your built-in procedure handle
-  strings with leading zeros? ---the arabic numeral for 170 is
-  ``\texttt{170},'' not ``\texttt{00017}.'')
+  All the standard programming languages have built-in operations for
+  scanning the characters in a string.  So simply write a procedure
+  that starts by checking that the scans an input string left to right
+  checking that successive characters in the string re an arabic
+  letters followed by a duplicate.
 
-  There's also a simpler approach than writing a general
-  \texttt{string->number} procedure.  All the standard programming
-  languages have built-in operations for scanning the characters in a
-  string.  So simply write a procedure that starts by checking that the
-  first character of input $s$ is a decimal digit other than \texttt{0}.
-  Then let it scan the remaining characters, checking that each is a
-  decimal digit, and that the last digit is odd.
+\textbf{ACTUAL PROGRAM TBA}
 
 \end{solution}
 
@@ -109,54 +105,54 @@ strings, $\mathcal{N}$, that is \emph{not} recognizable.
 \ppart\label{Ps-to-s}
 Let
 \[
-\mathcal{N} \eqdef \set{s \in \mtt{string} \suchthat P_s \text{ applied to
-$s$ does not return \True}}.
+\mathcal{N} \eqdef \set{s \in \mtt{string} \suchthat s \notin f(s)}.
 \]
-So for every \texttt{string}, $s$, we have by definition
-\begin{equation}\label{Ps}
-s \in \mathcal{N} \qiff P_s\text{ applied to $s$ does not return \True}.
-\end{equation}
 
 Prove that $\mathcal{N}$ is not recognizable.
 
-\hint Russell's paradox.
+\hint Similar to Russell's paradox or the proof of Theorem~\bref{powbig}.
+
+\begin{staffnotes}
+Refer students to the Russell paradox slide or the Text for Theorem~\bref{powbig}.
+\end{staffnotes}
 
 \begin{solution}
-Assume to the contrary that $\mathcal{N}$ was recognizable by some string
-procedure.  This procedure must have a string, $w$, that describes it,
-so we have
-\begin{equation}\label{Pr}
-s \in \mathcal{N} \qiff  P_w\text{ applied to $s$ returns \True},
+By definition of $\mathcal{N}$, 
+\begin{equation}\label{Ps}
+s \in \mathcal{N} \qiff s \notin f(s).
 \end{equation}
+for every \texttt{string}, $s$.
+
+Now assume to the contrary that $\mathcal{N}$ was recognizable by some
+string procedure.  This procedure must have a string, $w$, that
+describes it, so we have
+\begin{align}
+s \in \mathcal{N} & \qiff P_w \text{ applied to $s$ returns \True},\notag\\
+                  & \qiff s \in f(w) \label{Pr} & \text{(by def.\ of $f$)}
+\end{align}
 for all \texttt{string}'s $s$.
 
 Combining~\eqref{Ps} and ~\eqref{Pr}, we have that for every string, $s$,
 \begin{equation}\label{PP}
-  P_s\text{ applied to $s$ does not return \True}
-  \qiff P_w\text{ applied to $s$ returns \True}.
+s \notin f(s) \qiff s \in f(w),
 \end{equation}
+for all \texttt{string}'s $s$.
+
 Now letting $s$ be $w$ in~\eqref{PP}, we reach the contradiction
 \[
-P_w\text{ applied to $w$ does not return \True}
-\qiff P_w\text{ applied to $w$ returns \True}.
+w \notin f(w) \qiff w \in f(w).
 \]
-
 This contradiction implies that the assumption that $\mathcal{N}$ was
 recognizable must be false.
 
-Notice that $\mathcal{N}$ could have been described as $\set{s \in
-  \texttt{string} \suchthat s \not f(s)}$ for $f$ defined
-in~\eqref{f:s-to-Ps}.  Using this description of $\mathcal{N}$, the proof
-above would be exactly the same as the proof in the Notes of
-Theorem~\ref{powbig} that the powerset of $A$ is strictly bigger than $A$.
-\end{solution} 
+\end{solution}
 
 \ppart Discuss what the conclusion of part~\eqref{Ps-to-s} implies about
 the possibility of writing ``program analyzers'' that take programs
 as inputs and analyze their behavior.
 
 \begin{solution}
-  Lets call a programming procedure ``self-unconscious'' if it does not
+  Let's call a programming procedure ``self-unconscious'' if it does not
   return \True\ when applied to its own textual definition.
 
   Rephrased informally, the conclusion of part~\eqref{Ps-to-s} says that
@@ -167,13 +163,14 @@ as inputs and analyze their behavior.
   of how an arbitrary procedure behaves when applied to some given
   arguments.
 
-  BTW, it \emph{is} feasible to write a general procedure that recognizes
-  when an arbitrary input procedure \emph{does} return a value ---the
-  general procedure just carries out the computation specified by its
-  input and returns \True\ exactly when the procedure it is simulating
-  returns a value.  In other words, this general procedure just acts like
-  a virtual machine simulator or ``interpreter'' for the programming
-  language of its input programs.
+  BTW, it \emph{is} feasible to write a general procedure that
+  recognizes when an arbitrary input procedure \emph{does} return a
+  value when appiled to the string that describes it ---that is, when
+  the procedure is \emph{self-conscious}.  The general procedure
+  appllied to input $s$ just simulates $P_s$ applied to $s$.  In other
+  words, this general procedure just acts like a virtual machine
+  simulator or ``interpreter'' for the programming language of its
+  input programs.
 
   It's also important to recognize that there's no hope of getting around
   this by switching programming languages.  For example, by
