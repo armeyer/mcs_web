@@ -468,24 +468,36 @@ sub summarize_errors( $ ) {
 sub process_chapter($) {
     my $chapter = shift;
 
-    my $SAVED_DRIVER_PDF = 0;
+    my $generated_pdf;
+    my $generated_log;
 
-    if ($OPT{include} && $chapter ne $DRIVER && -e "$DRIVER.pdf") {
-        print "Saving $DRIVER.pdf\n";
+    if ($OPT{include}) {
+        $generated_pdf = "$DRIVER.pdf";
+        $generated_log = "$DRIVER.log";
+    } else {
+        $generated_pdf = "$chapter.pdf";
+        $generated_log = "$chapter.log";
+    }
 
-        rename("$DRIVER.pdf", "$DRIVER-saved.pdf") or do {
-            die "Can't rename $DRIVER.pdf to $DRIVER-saved.pdf: $!\n";
+    my $saved_pdf;
+
+    if (-e $generated_pdf) {
+        print "Saving $generated_pdf\n";
+
+        $saved_pdf = "$generated_pdf-saved";
+
+        rename($generated_pdf, $saved_pdf) or do {
+            die "Can't rename $generated_pdf to $saved_pdf: $!\n";
         };
 
-        $SAVED_DRIVER_PDF = 1;
+        if (-e $generated_log) {
+            print "Saving $generated_log\n";
 
-        if (-e "$DRIVER.log") {
-            print "Saving $DRIVER.log\n";
+            my $saved_log = "$generated_log-saved";
 
-        rename("$DRIVER.log", "$DRIVER-saved.log") or do {
-            die "Can't rename $DRIVER.log to $DRIVER-saved.log: $!\n";
-        };
-
+            rename($generated_log, $saved_log) or do {
+                die "Can't rename $generated_log to $saved_log: $!\n";
+            };
         }
     }
 
@@ -552,17 +564,6 @@ sub process_chapter($) {
 
     my $has_solutions = summarize_errors($chapter);
 
-    my $generated_pdf;
-    my $generated_log;
-
-    if ($OPT{include}) {
-        $generated_pdf = "$DRIVER.pdf";
-        $generated_log = "$DRIVER.log";
-    } else {
-        $generated_pdf = "$chapter.pdf";
-        $generated_log = "$chapter.log";
-    }
-
     my $target_pdf = "$chapter.pdf";
     my $target_log = "$chapter.log";
 
@@ -584,19 +585,26 @@ sub process_chapter($) {
             die "Can't rename $generated_log to $target_log: $!\n";
         };
 
-        if ($SAVED_DRIVER_PDF) {
-            print "Restoring $generated_pdf\n";
+        if (nonempty($saved_pdf)) {
+            (my $restored_pdf = $saved_pdf) =~ s/-saved$//;
 
-            rename("$DRIVER-saved.pdf", $generated_pdf) or do {
-                die "Can't restore $DRIVER-saved.pdf to $generated_pdf: $!\n";
-            };
+            if ($restored_pdf ne $target_pdf) {
+                print "Restoring $restored_pdf\n";
 
-            if (-e "$DRIVER-saved.log") {
-                print "Restoring $DRIVER.log\n";
-
-                rename("$DRIVER-saved.log", "$DRIVER.log") or do {
-                    die "Can't restore $DRIVER-saved.log to $DRIVER.log: $!\n";
+                rename($saved_pdf, $restored_pdf) or do {
+                    die "Can't restore $saved_pdf to $restored_pdf: $!\n";
                 };
+
+                (my $saved_log = $saved_pdf) =~ s/\.pdf-saved$/.log-saved/;
+                (my $restored_log = $restored_pdf) =~ s/\.pdf$/.log/;
+
+                if (-e $saved_log) {
+                    print "Restoring $restored_log\n";
+
+                    rename($saved_log, $restored_log) or do {
+                        die "Can't restore $saved_log to $restored_log: $!\n";
+                    };
+                }
             }
         }
     }
