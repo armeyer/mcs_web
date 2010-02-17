@@ -923,8 +923,9 @@
 
 \newenvironment{staffnotes}{%
     \trivlist
-        \item[\hskip\labelsep \textbf{Staff note}:]\ignorespaces
+        \item[\hskip\labelsep \textbf{\textcolor{red}{STAFF NOTE}}:]\ignorespaces
 }{%
+    \textcolor{red}{\qed}
     \endtrivlist
 }
 
@@ -1537,10 +1538,14 @@
 
 \newcommand{\inclassproblems}[2][\stamp]{%
     \theoremsunderproblems
-  \ifshowsolutions
+  \ifshowstaffnotes
+  \paper[#1]{cps#2}{}{Staff Solutions to In-Class Problems Week #2}
+   \else
+   \ifshowsolutions
     \paper[#1]{cps#2}{}{Solutions to In-Class Problems Week #2}
-  \else
-    \paper[#1]{cp#2}{}{In-Class Problems Week #2}
+      \else
+      \paper[#1]{cp#2}{}{In-Class Problems Week #2}
+   \fi   
   \fi}
 
 \newcommand{\recitationproblems}[2][\stamp]{%
