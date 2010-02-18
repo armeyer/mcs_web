@@ -1497,17 +1497,21 @@
 % Example: \problemset[v1.1]{13}   % for Problem Set #13, v1.1
 
 \newcommand{\problemset}[2][\stamp]{%
-    \theoremsunderproblems
-  \ifshowsolutions
+  \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{pss#2}{}{Staff Solutions to Problem Set #2}
+    \else
+    \ifshowsolutions
     \paper[#1]{pss#2}{}{Solutions to Problem Set #2}
     \readingnote
-  \else
+    \else
     \paper[#1]{ps#2}{}{Problem Set #2}
     \centerline{\emph{Due}: \duedateofpaper{ps#2}}
     \bigskip
     \readingnote 
     \AtEndDocument{\coversheet{#2}}
-  \fi}
+    \fi
+    \fi}
 
 % Prints the reading note that appears on the first page of a problem
 % set, right after the title. The \reading command should be redefined
@@ -1537,16 +1541,16 @@
 %
 
 \newcommand{\inclassproblems}[2][\stamp]{%
-    \theoremsunderproblems
-  \ifshowstaffnotes
-  \paper[#1]{cps#2}{}{Staff Solutions to In-Class Problems Week #2}
-   \else
-   \ifshowsolutions
+  \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{cps#2}{}{Staff Solutions to In-Class Problems Week #2}
+    \else
+    \ifshowsolutions
     \paper[#1]{cps#2}{}{Solutions to In-Class Problems Week #2}
-      \else
-      \paper[#1]{cp#2}{}{In-Class Problems Week #2}
-   \fi   
-  \fi}
+    \else
+    \paper[#1]{cp#2}{}{In-Class Problems Week #2}
+    \fi   
+    \fi}
 
 \newcommand{\recitationproblems}[2][\stamp]{%
     \theoremsunderproblems
