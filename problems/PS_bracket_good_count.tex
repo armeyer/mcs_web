@@ -1,16 +1,17 @@
-%PS_parenthesis_good_count
+
 %subsumes PS_Structural_Induction_LISP
 
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
+  \pcomment{PS_bracket_good_count}
   \pcomment{from: F04.ps5, S02.ps5}
-  \pcomment{related to PS_parenthesis_count_well}
+  \pcomment{related to PS_bracket_count_well (deleted?)}
 \end{pcomments}
 
 \pkeywords{
   induction
-  matching_parentheses
+  matching
   recursive_data
   strings
   structural_induction  
@@ -44,26 +45,29 @@ string of parentheses which begins with a right parenthesis or ends with a
 left parenthesis can match up.
 \fi
 
-The set, $\RM$, of strings of matching parentheses, is defined recursively
+
+\begin{definition}\label{RM-def}
+The set, $\RM$, of strings of matching brackets, is defined recursively
 as follows:
 
 \begin{itemize}
-\item The empty string, $\emptystring$, (consisting of no parentheses) is
-  in $\RM$.
 
-\item If $s$ and $t$ are in $\RM$, then the string $\texttt{(}s\texttt{)}t$
-is in $\RM$.  That is, the new string starts with a left parenthesis which
-is followed by the parenthesis characters in the string $s$, followed by a
-right parenthesis, followed by the parenthesis characters in the string
-$t$.
+\item \textbf{Base case:} $\emptystring \in\RM$.
+
+\item \textbf{Constructor case:} If $s,t \in\RM$, then
+\[
+\mtt{[}s\mtt{]}t \in\RM.
+\]
 
 \end{itemize}
 
-There is a simple test to determine whether a string of parentheses is in
+\end{definition}
+
+There is a simple test to determine whether a string of brackets is in
 $\RM$: starting with zero, read the string from left to right adding one
-for each left parenthesis and -1 for each right parenthesis.  A string has
+for each left bracket and -1 for each right bracket.  A string has
 a \term{good count} when the count never goes negative and is back to
-zero by the end of the string.  Let $\GC$ be the parenthesis strings with
+zero by the end of the string.  Let $\GC$ be the bracket strings with
 good counts.
 
 \begin{problemparts}
@@ -83,20 +87,20 @@ P(s) \eqdef s \in \GC.
 empty string ends when it starts at zero.
 
 {\bf Inductive Step:} Assume $P(s)$ and $P(t)$ are true.  We need to show
-that $P(\texttt{(}s\texttt{)}t)$ is true.
+that $P(\mtt{[}s\mtt{]}t)$ is true.
 
-The count values for $\texttt{(}s\texttt{)}t$ start with 0.  Reading the
-initial left parenthesis yields 1 as the next count value.  This 1 serves
-as the start of a series of count values exactly equal to the count values
-of $s$, with each value incremented by one.  Since $s \in \GC$ by
-hypothesis, these incremented count values begin with 1, always stay
-positive, and end with 1.  The right parenthesis immediately after $s$
-reduces the ending count to 0.  This 0 serves as the start of the
-remaining count values which are exactly the count values of $t$.  Since
-$t \in \GC$, these remaining values never go negative and end at 0.
-Hence the entire sequence of count values for $\texttt{(}s\texttt{)}t$
-starts with 0, never goes negative, and ends with 0, which proves that
-$\texttt{(}s\texttt{)}t \in \GC$.
+The count values for $\mtt{[}s\mtt{]}t$ start with 0.  Reading the
+initial left bracket yields 1 as the next count value.  This 1 serves
+as the start of a series of count values exactly equal to the count
+values of $s$, with each value incremented by one.  Since $s \in \GC$
+by hypothesis, these incremented count values begin with 1, always
+stay positive, and end with 1.  The right bracket immediately after
+$s$ reduces the ending count to 0.  This 0 serves as the start of the
+remaining count values which are exactly the count values of $t$.
+Since $t \in \GC$, these remaining values never go negative and end at
+0.  Hence the entire sequence of count values for
+$\mtt{[}s\mtt{]}t$ starts with 0, never goes negative, and ends
+  with 0, which proves that $\mtt{[}s\mtt{]}t \in \GC$.
 
 \end{proof}
 
@@ -122,19 +126,19 @@ need to prove that $Q(n+1)$ is also true.
 So suppose $r$ is a length $n+1$ string that counts well.  We must prove
 that $r \in \RM$.
 
-Now since $r$ has a good count, it must start with a left parenthesis (or else
+Now since $r$ has a good count, it must start with a left bracket (or else
 the count would immediately go negative).  Likewise, since the count for
 $r$ returns to the value 0 by the end, $r$ must end with right
-parenthesis.  So there must be a \emph{first} right parenthesis in $r$
+bracket.  So there must be a \emph{first} right bracket in $r$
 after which the count returns to 0.  Let $s$ be the substring of $r$
-between the initial left parenthesis and this right parenthesis.  So
+between the initial left bracket and this right bracket.  So
 \[
-r = \texttt{(}s\texttt{)}t
+r = \mtt{[}s\mtt{]}t
 \]
 for some string $t$.
 
-Since counts only change by one as each parenthesis character is read, and
-the count for $r$ \emph{first} returns to 0 after the right parenthesis
+Since counts only change by one as each bracket character is read, and
+the count for $r$ \emph{first} returns to 0 after the right bracket
 following $s$, the count during $s$ must start and end with 1 and must
 stay \emph{positive} in between.  But this implies that a count for $s$
 alone, which would start with 0, would also end with 0 and stay
@@ -143,11 +147,12 @@ Since the length of $s \in \GC$ is less than the length of $r$, we
 have by strong induction that $s \in \RM$.
 
 Further, we know the count for $r$ returns to 0 after the right
-parenthesis following $s$, and since $r \in \GC$, the count ends with 0
-again and stays nonnegative in between.  But this implies that $t$ has a
-good count, and since the length of $t$ is less than the length of $r$, we
-have by strong induction that $t \in \RM$.  Now by the second case in the
-definition of $\RM$, we conclude $r = \texttt{(}s\texttt{)}t \in \RM$.
+bracket following $s$, and since $r \in \GC$, the count ends with 0
+again and stays nonnegative in between.  But this implies that $t$ has
+a good count, and since the length of $t$ is less than the length of
+$r$, we have by strong induction that $t \in \RM$.  Now by the second
+case in the definition of $\RM$, we conclude $r = \mtt{[}s\mtt{]}t \in
+\RM$.
 
 \end{proof}
 

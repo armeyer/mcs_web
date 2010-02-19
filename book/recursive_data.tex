@@ -1,6 +1,8 @@
 \hyperdef{recursive}{data}{\chapter{Recursive Data Types}}\label{recursive_data_chapter}
 %\coursecopyright
 
+\newcommand{\brkts}{\text{brkts}}
+
 \term{Recursive data types} play a central role in programming.  From a
 mathematical point of view, recursive data types are what induction is
 about.  Recursive data types are specified by \term{recursive definitions}
@@ -11,52 +13,85 @@ two parts:
 \item \textbf{Constructor case(s)} that depend on previous cases.
 \end{itemize}
 
-\hyperdef{paren}{string}{\section{Strings of Parentheses}}
+\hyperdef{paren}{string}{\section{Strings of Brackets}}
 
-Let $\prns$ be the set of all strings of parentheses.  For example,
-the following two strings are in $\prns$:
+Let $\brkts$ be the set of all strings of square brackets.  For example,
+the following two strings are in $\brkts$:
 \begin{equation}\label{2strings}
-\mtt{())((((())}\quad \text{and}\quad \mtt{((())())()}
+\mtt{[]][[[[[]]}\quad \text{and}\quad \mtt{[[[]][]][]}
 \end{equation}
 Since we're just starting to study recursive data, just for practice we'll
-formulate $\prns$ as a recursive data type,
+formulate $\brkts$ as a recursive data type,
 
 \begin{definition}\label{prns-def}
-The data type, $\prns$, of strings of parentheses is defined recursively:
+The data type, $\brkts$, of strings of brackets is defined recursively:
 
 \begin{itemize}
 
 \item \textbf{Base case:} The \term{empty string}, $\emptystring$, is in
-  $\prns$.
+  $\brkts$.
 
-\item \textbf{Constructor case:} If $s \in \prns$, then
-$s\mtt{)}$ and $s\mtt{(}$ are in $\prns$.
+\item \textbf{Constructor case:} If $s \in \brkts$, then
+$s\mtt{]}$ and $s\mtt{[}$ are in $\brkts$.
 
 \end{itemize}
 
 \end{definition}
 
-Here we're writing $s\mtt{)}$ to indicate the string that is sequence of
-parentheses (if any) in the string $s$, followed by a right parenthesis;
-similarly for $s\mtt{(}$.
+Here we're writing $s\mtt{]}$ to indicate the string that is sequence of
+brackets (if any) in the string $s$, followed by a right bracket;
+similarly for $s\mtt{[}$.
 
-A string, $s \in \prns$, is called a \term{matched string} if its
-parentheses ``match up'' in the usual way.  For example, the left hand
-string above is not matched because its second right parenthesis does not
-have a matching left parenthesis.  The string on the right is matched.
+A string, $s \in \brkts$, is called a \term{matched string} if its
+brackets ``match up'' in the usual way.  For example, the left hand
+string above is not matched because its second right bracket does not
+have a matching left bracket.  The string on the right is matched.
+
+We're going to examine several different ways to define and prove
+properties of matched strings using recursively defined sets and
+functions.  These properties are pretty straighforward, and you might
+wonder whether they have any particular relevance in computer
+scientist ---other than as a nonnumerical example of recursion.  The
+honest answer is ``not much relevance, \emph{any more}.''  The reason
+for this one of the great successes of computer science.
+
+\textbox{
+\begin{center}
+\textbf{\large Expression Parsing}
+\end{center}
+
+%Flesh this out and get references
+
+During the early development of computer science in the 1950's and
+60's, creation of effective programming language compilers was a
+central concern.  A key aspect in processing program language for
+compilation was expression parsing.  The problem was to take in an
+expression like $x + y * z^2 \div y + 7$ and \emph{put in} the
+brackets that determined how it should be evaluated ---should it be
+$[[x + y] * z^2 \div y] + 7$, or $x + [y * z^2 \div [y + 7]]$, or $[x
++ [y * z^2 ] \div [y + 7]$, or \dots?  The Turing award (the ``Nobel
+Prize'' of computer science) was ultimately bestowed on Robert Floyd,
+for, among other things, first figuring out a simple program that
+would insert the brackets properly.
+
+In the 70's and 80's, this parsing technology was packaged into
+high-level compiler-compilers that automatically generated parsers
+from expression grammars.  This automation of parsing was so
+effective, that the subject needed no further work, and it largely
+disappeared from the computer science curriculum by the 1990's.}
 
 One precise way to determine if a string is matched is to start with 0 and
 read the string from left to right, adding 1 to the count for each left
-parenthesis and subtracting 1 from the count for each right parenthesis.
+bracket and subtracting 1 from the count for each right bracket.
 For example, here are the counts for the two strings above
 \[\begin{array}{rrrrrrrrrrrrr}
-& \mtt{(} & \mtt{)} & \mtt{)} & \mtt{(} & \mtt{(} & \mtt{(} & \mtt{(} &
-\mtt{(} & \mtt{)} & \mtt{)} & \mtt{)} & \mtt{)}\\
+& \mtt{[} & \mtt{]} & \mtt{]} & \mtt{[} & \mtt{[} & \mtt{[} & \mtt{[} &
+\mtt{[} & \mtt{]} & \mtt{]} & \mtt{]} & \mtt{]}\\
 0 & 1 & 0 & -1 & 0 & 1 & 2 & 3 & 4 & 3 & 2 & 1 & 0\\
 \\
 \\
-& \mtt{(} & \mtt{(} & \mtt{(} & \mtt{)} & \mtt{)} & \mtt{(} & \mtt{)} &
-\mtt{)} & \mtt{(} & \mtt{)}\\
+& \mtt{[} & \mtt{[} & \mtt{[} & \mtt{]} & \mtt{]} & \mtt{[} & \mtt{]} &
+\mtt{]} & \mtt{[} & \mtt{]}\\
 0 & 1 & 2 & 3 & 2 & 1 & 2 & 1 & 0 & 1 & 0
 \end{array}\]
 A string has a \term{good count} if its running count never goes
@@ -65,7 +100,7 @@ the first one does not because its count went negative at the third step.
 \begin{definition}\label{gc-def}
 Let
 \[
-\GC \eqdef \set{ s \in \prns \suchthat s\ \text{has a good count}}.
+\GC \eqdef \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
 \]
 \end{definition}
 The matched strings can now be characterized precisely as this set of
@@ -81,39 +116,41 @@ Recursively define the set, $\RM$, of strings as follows:
 
 \item \textbf{Constructor case:} If $s,t \in\RM$, then
 \[
-\mtt{(}s\mtt{)}t \in\RM.
+\mtt{[}s\mtt{]}t \in\RM.
 \]
 
 \end{itemize}
 
 \end{definition}
 
-Here we're writing $\mtt{(}s\mtt{)}t$ to indicate the string that
-starts with a left parenthesis, followed by the sequence of parentheses
-(if any) in the string $s$, followed by a right parenthesis, and ending
-with the sequence of parentheses in the string $t$.
+Here we're writing $\mtt{[}s\mtt{]}t$ to indicate the string that
+starts with a left bracket, followed by the sequence of brackets
+(if any) in the string $s$, followed by a right bracket, and ending
+with the sequence of brackets in the string $t$.
 
 Using this definition, we can see that $\emptystring \in\RM$ by the Base
 case, so
 \[
-\mtt{(}\emptystring\mtt{)}\emptystring=\mtt{()}\in\RM
+\mtt{[}\emptystring\mtt{]}\emptystring=\mtt{[]}\in\RM
 \]
 by the Constructor case.  So now,
 \begin{align*}
-\mtt{(}\emptystring\mtt{)}\mtt{()} &= \mtt{()()} \in \RM
-    & \text{(letting $s = \emptystring, t = \mtt{()}$)}\\
-\mtt{(())}\emptystring & = \mtt{(())} \in \RM
-    & \text{(letting $s = \mtt{()}, t = \emptystring$)}\\
-&\ \ \mtt{(())()} \in \RM
-    & \text{(letting $s = \mtt{()}, t = \mtt{()}$)}
+\mtt{[}\emptystring\mtt{]}\mtt{[]} &= \mtt{[][]} \in \RM
+    & \text{(letting $s = \emptystring, t = \mtt{[]}$]}\\
+\mtt{[[]]}\emptystring & = \mtt{[[]]} \in \RM
+    & \text{(letting $s = \mtt{[]}, t = \emptystring$)}\\
+&\ \ \mtt{[[]][]} \in \RM
+    & \text{(letting $s = \mtt{[]}, t = \mtt{[]}$)}
 \end{align*}
 are also strings in $\RM$ by repeated applications of the Constructor
-case.
+case.  It's worth continuing this example to verify that
+$\mtt{[[[]][]][]} \in \RM$ if you haven't seen this kind of definition
+before.
 
-\textbf{Quick Question:} Verify that $\mtt{((())())()} \in \RM$.
-
-It may not be obvious, but $\RM = \GC$.  This is shown in
-Problem~\ref{PS_parenthesis_good_count}
+Given the way this section is set up, you might guess that $\RM
+= \GC$, and you'd be right.  But it's not completely obvious that that
+$\RM = \GC$l this is worked out in
+Problem~\ref{PS_bracket_good_count}.
 
 \section{Arithmetic Expressions}
 Expression evaluation is a key feature of programming languages, and
@@ -166,7 +203,7 @@ officially be written as
 \begin{equation}\label{fullparens}
 ((\mtt{3} \prodsym (x \prodsym x)) \sumsym ((\mtt{2} \prodsym x) \sumsym \mtt{1})).
 \end{equation}
-These parentheses and $\ast$'s clutter up examples, so we'll often use
+These brackets and $\ast$'s clutter up examples, so we'll often use
 simpler expressions like ``$3x^2 + 2x + 1$'' instead
 of~\eqref{fullparens}.  But it's important to recognize that $3x^2 + 2x +
 1$ is not an \aexp; it's an \emph{abbreviation} for an $\aexp$.
@@ -220,10 +257,10 @@ type.  The proof consists of two steps:
 
 A very simple application of structural induction proves that the
 recursively defined matched strings always have an equal number of left
-and right parentheses.  To do this, define a predicate, $P$, on strings $s
-\in \prns$:
+and right brackets.  To do this, define a predicate, $P$, on strings $s
+\in \brkts$:
 \[
-P(s) \eqdef\ \ s \text{ has an equal number of left and right parentheses}.
+P(s) \eqdef\ \ s \text{ has an equal number of left and right brackets}.
 \]
 \begin{proof}
 
@@ -232,17 +269,17 @@ P(s) \eqdef\ \ s \text{ has an equal number of left and right parentheses}.
   hypothesis.
 
 \textbf{Base case:} $P(\emptystring)$ holds because the empty string has zero
-left and zero right parentheses.
+left and zero right brackets.
 
-\textbf{Constructor case:} For $r = \mtt{(}s\mtt{)}t$, we must show
+\textbf{Constructor case:} For $r = \mtt{[}s\mtt{]}t$, we must show
 that $P(r)$ holds, given that $P(s)$ and $P(t)$ holds.  So let $n_s$,
-$n_t$ be, respectively, the number of left parentheses in $s$ and $t$.  So
-the number of left parentheses in $r$ is $1+n_s+n_t$.
+$n_t$ be, respectively, the number of left brackets in $s$ and $t$.  So
+the number of left brackets in $r$ is $1+n_s+n_t$.
 
 Now from the respective hypotheses $P(s)$ and $P(t)$, we know that the
-number of right parentheses in $s$ is $n_s$, and likewise, the number of
-right parentheses in $t$ is $n_t$.  So the number of right parentheses in
-$r$ is $1+n_s+n_t$, which is the same as the number of left parentheses.
+number of right brackets in $s$ is $n_s$, and likewise, the number of
+right brackets in $t$ is $n_t$.  So the number of right brackets in
+$r$ is $1+n_s+n_t$, which is the same as the number of left brackets.
 This proves $P(r)$.  We conclude by structural induction that $P(s)$ holds
 for all $s \in\RM$.
 \end{proof}
@@ -301,13 +338,13 @@ $A$, is defined recursively on $t$ by the rules:
 \fi
 
 For example, from the recursive definition of the set, $\RM$, of strings of
-matched parentheses, we define:
+matched brackets, we define:
 \begin{definition}
 The \emph{depth}, $d(s)$, of a string, $s \in\RM$, is defined
 recursively by the rules:
 \begin{itemize}
 \item $d(\emptystring) \eqdef 0.$
-\item $d(\mtt{(}s\mtt{)}t)
+\item $d(\mtt{[}s\mtt{]}t)
     \eqdef \max \set{d(s) + 1, d(t)}$
 \end{itemize}
 \end{definition}
@@ -330,13 +367,13 @@ to be unambiguous.
 \fi
 
 \begin{example}\label{M}
-  Define the set, $M \subseteq \prns$ recursively as follows:
+  Define the set, $M \subseteq \brkts$ recursively as follows:
 \begin{itemize}
 
 \item \textbf{Base case:} $\emptystring \in M$,
 
 \item \textbf{Constructor cases:} if $s,t \in M$, then
-the strings $\mtt{(}s\mtt{)}$ and $st$ are also in $M$.
+the strings $\mtt{[}s\mtt{]}$ and $st$ are also in $M$.
 \end{itemize}
 \end{example}
 
@@ -350,7 +387,7 @@ trickier definition of $\RM$ is unambiguous.  Does this ambiguity matter?
 Yes it does.  For suppose we defined
 \begin{align*}
   f(\emptystring)        & \eqdef 1,\\
-  f(\ \mtt{(}s\mtt{)}\ ) & \eqdef 1+ f(s),\\
+  f(\ \mtt{[}s\mtt{]}\ ) & \eqdef 1+ f(s),\\
   f(st)                  & \eqdef (f(s)+1) \cdot (f(t)+1)
                             & \text{for } st\neq \emptystring.
 \end{align*}
@@ -1209,7 +1246,7 @@ unambiguous Definition~\ref{E} of $E$.
 \pinput{CP_binary_trees}
 
 \homeworkproblems
-\pinput{PS_parenthesis_good_count}
+\pinput{PS_bracket_good_count}
 \pinput{PS_koch_snowflake}
 
 \end{problems}
@@ -1411,39 +1448,47 @@ a ``play.'')
 
 \subsection{Infinite Tic-Tac-Toe Games}
 
-At any point in a Tic-Tac-Toe game, there are at most nine possible next
-patterns, and no play can continue for more than nine moves.  But suppose
-we consider an \emph{$n$-game Tic-Tac-Toe tournament} where the tournament
-winner is the one who wins more of $n>0$ individual Tic-Tac-Toe games.  (If
-they each win an equal number of individual games, then the tournament is a
-tie.)
+At any point in a Tic-Tac-Toe game, there are at most nine possible
+next patterns, and no play can continue for more than nine moves.  But
+we can expand Tic-Tac-Toe into a larger game by running a 5-game
+tournament: play Tic-Tac-Toe five times and the tournament winner is
+the player who wins the most individual games.  A 5-game tournament
+can now run for as many as 45 moves.
 
-Now we can consolidate all these tournaments into a single game we can call
-\emph{Tournament-Tic-Tac-Toe}: the first player in Tournament-Tic-Tac-Toe
-chooses any integer $n > 0$, and then the players play an $n$-game
-tournament.  Now there are infinitely many possible first moves: the first
-player can choose $n=1$, or $n=2$, or $n=3$, or \dots.  But still, it's
-obvious that every possible play of Tournament-Tic-Tac-Toe is finite,
-because after the first player chooses a value for $n$, the game can't
-continue for more than $9n$ moves.  So it's not possible to keep playing
-forever even though the game tree is infinite.
+Now it's not much of generalization to have an \emph{$n$-game
+Tic-Tac-Toe tournament}.  But now there's a generalization that sounds
+simple but can be mind-bogging: consolidate all these different size
+tournaments into a single game we can call
+\emph{Tournament-Tic-Tac-Toe ($T^4$)}.  The first player in a game of $T^4$
+chooses any integer $n > 0$.  Then the players play an $n$-game
+tournament.  Now we can no longer say how long a $T^4$ play can take.
+In fact, there are $T^4$ plays that last as long as you might like: of
+you want a game that has a play with, say, nine billion moves, just
+have the first play choose $n$ equal to one billion.  This should make
+it clear the game tree for $T^4$ is infinite.
 
-This isn't very hard to understand, but there is an important difference
-between any given $n$-game tournament and Tournament-Tic-Tac-Toe: even
-though every play of Tournament-Tic-Tac-Toe must come to an end, there is
-no longer any bound on how many moves it might be before the game ends ---a
-play might end after 9 moves, or $9(2001)$ moves, or $9(10^{10}+1)$ moves;
-it just can't continue forever.
+But still, it's obvious that every possible $T^4$ play will stop.
+That's because after the first player chooses a value for $n$, the
+game can't continue for more than $9n$ moves.  So it's not possible to
+keep playing forever even though the game tree is infinite.
+
+This isn't very hard to understand, but there is an important
+difference between any given $n$-game tournament and $T^4$: even
+though every play of $T^4$ must come to an end, there is no longer any
+initial bound on how many moves it might be before the game ends ---a
+play might end after 9 moves, or $9(2001)$ moves, or $9(10^{10}+1)$
+moves.  It just can't continue forever.
 
 \iffalse While there is no bound on how long to play, at least after the
 first move to an $n \times n$ board in meta-Tic-Tac-Toe, we know the game
 will end with $n^2$ moves.\fi
 
-With Tournament-Tic-Tac-Toe recognized as a \tg, we can go on to
-Tournament$^2$-Tic-Tac-Toe where the first player chooses a number, $m>0$,
-of Tournament-Tic-Tac-Toe games to play, and the second player acts as the
-first player in each of the $m$ Tournament-Tic-Tac-Toe games to be played.
-Then, of course, there's Tournament$^3$-Tic-Tac-Toe\dots.
+Now that we recognize $T^4$ as a \tg, we can go on to
+a \emph{meta}-$T^4$ game, where the first player chooses a number,
+$m>0$, of $T^4$ games to play, and then the second player gets the
+first move in each of the individual $T^4$ games to be played.
+
+Then, of course, there's meta-meta-$T^4$\dots.
 
 \iffalse Every play of the meta-meta game must still end, but now even
 after the first move, there is no bound on how long a game might
@@ -1451,10 +1496,11 @@ continue.\fi
 
 \subsection{Two Person Terminating Games}
 
-Familiar games like Tic-Tac-Toe, Checkers, and Chess can all end in ties,
-but for simplicity we'll only consider win/lose games ---no ``everybody
-wins''-type games at MIT. \texttt{:-)}.  But everything we show about
-win/lose games will extend easily to games with ties.
+Familiar games like Tic-Tac-Toe, Checkers, and Chess can all end in
+ties, but for simplicity we'll only consider win/lose games ---no
+``everybody wins''-type games at MIT. \texttt{:-)}.  But everything we
+show about win/lose games will extend easily to games with ties, and
+more generally to games with outcomes that have different payoffs.
 
 \iffalse
 Of course Tic-Tac-Toe and the
@@ -1463,10 +1509,11 @@ a loss for the usual first player ---White in Chess, Red in Checkers, the
 X-player in Tic-Tac-Toe.
 \fi
 
-Like Tic-Tac-Toe, the idea behind the definition of $\tg$'s as a
-recursive data type is that making a move in a $\tg$ leads to the
-start of a subgame.  In other words, given any set of games, we can
-make a new game whose first move is to pick a game to play from the set.
+Like Tic-Tac-Toe, or Tournament-Tic-Tac-Toe, the idea behind the
+definition of $\tg$'s as a recursive data type is that making a move
+in a $\tg$ leads to the start of a subgame.  In other words, given any
+set of games, we can make a new game whose first move is to pick a
+game to play from the set.
 
 So what defines a game?  For Tic-Tac-Toe, we used the patterns and the
 rules of Tic-Tac-Toe to determine the next patterns.  But once we have
