@@ -1,0 +1,426 @@
+\newcommand{\prcef}[1]{\textbf{Precondition}{: #1}}
+\newcommand{\iocode}[2]{\textbf{IOCode}{#1 #2}}
+
+\chapter{Alternating Bit Protocol}
+
+\section{Lynch Notes S07.H11-sm}
+
+We finish with a description and proof sketch for the Alternating Bit
+Protocol, a well-known two-process communication protocol.
+The protocol achieves reliable FIFO communication over unreliable
+channels.  The unreliable channels may lose or duplicate messages, but
+are assumed not to reorder them.
+The protocols allows process $1$ to send a sequence of messages from a
+message alphabet $M$ to process $2$.
+
+The algorithm works as follows.
+Process $1$ keeps sending the first message tagged with $1$. 
+When process $2$ receives this message for the first time, it accepts
+and outputs it.
+It sends acknowledgement messages, repeatedly, consisting of the tag
+value $1$.
+When process $1$ receives $1$, it stops sending the first message and
+begins sending the second message, tagged with $0$. 
+Process $2$, having already accepted the first message tagged with
+$1$, ignores subsequent messages with tag $1$, and waits until it
+sees the first message with tag $0$;
+it accepts this message and outputs it, then acknowledges repeatedly
+with $0$. 
+Process $1$ now waits to receive $0$, then goes on to the next message
+with tag $1$.
+In this way, it alternates use of the tags $1$ and $0$ for successive
+messages.
+
+We claim that this causes process $2$ to output a {\em prefix\/}
+of the sequence of messages that process $1$ wishes to send.
+(The fact that Process 2 actually outputs the entire sequence is a
+{\em liveness\/} claim -- liveness properties are a generalization of
+termination properties.  We avoid this argument for now.)
+
+The states consist of:
+\begin{tabbing}
+XXX\=XXX\= \kill
+\> $\ms{buf}_1$, a finite sequence of $M$, initially arbitrary \\
+\> $\ms{work-buf}_1$, a finite sequence of $M$, initially equal to
+$\ms{buf}_1$ \\
+\> $\ms{tag}_1 \in \{ 0, 1 \}$, initially $1$ \\
+\\
+\> $\ms{buf}_2$, a finite sequence of $M$, initially empty \\
+\> $\ms{tag}_2  \in \{ 0, 1 \}$, initially $0$ \\
+\\
+\> $\ms{channel}_{1,2}$, a finite sequence of $M \times \{ 0, 1 \}$,
+initially empty, \\
+\> $\ms{channel}_{2,1}$, a finite sequence of $\{ 0, 1 \}$, initially
+empty 
+\end{tabbing}
+
+Here, $\ms{buf}_1$ always contains the complete sequence of messages
+that process $1$ is supposed to send, while $\ms{work-buf}_1$
+contains the remaining messages to be sent, excluding those that
+process $1$ has already succeeded in sending. 
+The other message buffer, $\ms{buf}_2$, contains the outputs.
+The $\ms{tag}$ variables represent the current tag values that both
+processes are sending, and $\ms{channel}$ variables represent the
+low-level messages in transit between the processes.
+The transitions are:
+
+\iocode{
+
+\prcef{$\ms{send}(m,b)_{1,2}$}
+{% Pre: 
+   $m = \ms{head}(\ms{work-buf}_1)$ \\
+   $b = \ms{tag}_1$}
+{% Eff: 
+   add $(m,b)$ to end of $\ms{channel}_{1,2}$, \\
+   \hspace{2mm} any number $\geq 0$ of times}
+
+\prcef{$\ms{send}(b)_{2,1}$}
+{% Pre: 
+   $b = \ms{tag}_2$}
+{% Eff: 
+   add $b$ to end of $\ms{channel}_{2,1}$, \\
+   \hspace{2mm} any number $\geq 0$ of times}
+
+}{
+
+\prcef{$\ms{receive}(m,b)_{1,2}$}
+{% Pre: 
+   $(m,b) = \ms{head}(\ms{channel}_{1,2})$}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{1,2}$ \\
+   if $b \neq \ms{tag}_2$ then \\
+   \hspace{2mm} add $m$ to $\ms{buf}_2$ \\
+   \hspace{2mm} $\ms{tag}_2 := \ms{tag}_2 + 1 \bmod 2$}
+
+\prcef{$\ms{receive}(b)_{2,1}$}
+{% Pre: 
+   $b = \ms{head}(\ms{channel}_{2,1})$}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{2,1}$ \\
+   if $b = \ms{tag}_1$ then \\
+   \hspace{2mm} remove head of $\ms{work-buf}_1$ (if nonempty) \\
+   \hspace{2mm} $\ms{tag}_1 := \ms{tag}_1 + 1 \bmod 2$}
+
+}
+
+Our goal is to show that the following is an invariant:
+
+{\bf Property 1:}
+$\ms{buf}_2$ is a prefix of $\ms{buf}_1$ 
+
+This requires three auxiliary invariants.
+For the first of these, we need a definition.
+
+Let $\ms{tag-sequence}$ be the sequence consisting of elements of
+$\ms{channel}_{2,1}$, in order, 
+followed by $\ms{tag}_2$, 
+followed by the tag components of the elements of
+$\ms{channel}_{1,2}$, in order, 
+followed by $\ms{tag}_1$. 
+
+{\bf Property 2:}
+$\ms{tag-sequence}$ consists of one of the following:
+\begin{enumerate}
+\item
+All $0$'s.
+\item
+All $1$'s. 
+\item
+A positive number of $0$'s followed by a positive number of $1$'s.
+\item
+A positive number of $1$'s followed by a positive number of $0$'s.
+\end{enumerate}
+What is being ruled out by these four cases is the situation where
+the sequence contains more than one switch of tag value. 
+
+The fact that Property 2 is an invariant can be proved easily by
+induction.  We also need: 
+
+{\bf Property 3:}
+If $(m,\ms{tag}_1)$ is in $\ms{channel}_{1,2}$ then $m =
+\ms{head}(\ms{work-buf}_1)$. \\
+
+
+
+\begin{proof}
+(That Property 3 is an invariant)
+
+By induction, using Property 2. 
+
+Base: Obvious, since no message is in the channel initially. 
+
+Inductive step: It is easy to see that the property is preserved by
+$\ms{send}_{m,b}$, which adds new messages to $\ms{channel}_{1,2}$.
+The only other case that could cause a problem is
+$\ms{receive}(b)_{2,1}$,
+which could cause $\ms{tag}_1$ to change when there is another message
+already in $\ms{channel}_{1,2}$ with the same tag. 
+But this can't happen, by Property 2 applied before the step -- since
+the incoming tag $g$ must be equal to $\ms{tag}_1$ in this case,
+all the tags in $\ms{tag-sequence}$ must be the same.
+\end{proof}
+
+Finally, we need that the following two-part property is an invariant: 
+
+{\bf Property 4:}
+\begin{enumerate}
+\item
+If $\ms{tag}_1 \neq \ms{tag}_2$ then
+$\ms{buf}_2 \cdot \ms{work-buf}_1 = \ms{buf}_1$. 
+\item
+If $\ms{tag}_1 = \ms{tag}_2$ then 
+$\ms{work-buf}_1$ and $\ms{buf}_2$ are nonempty, 
+$\ms{head}(\ms{work-buf}_1) = \ms{last}(\ms{buf}_2)$, and 
+$\ms{buf}_2 \cdot \ms{tail}(\ms{work-buf}_1) = \ms{buf}_1$. 
+\end{enumerate}
+Here, $\ms{tail}$ means all but the head of the sequence.
+
+Property 4, part 2, easily implies the goal Property 1.
+It also implies that $\ms{work-buf}_2$ is always nonempty when 
+$\ms{receive}(b)_{2,1}$ occurs with equal tags; therefore, the
+parenthetical check in the code always works out to be true.
+
+\begin{proof}
+(That Property 4 is an invariant)
+
+By induction. 
+Base: In an initial state, the tags are unequal, 
+$\ms{work-buf}_1 = \ms{buf}_1$ and $\ms{buf}_2$ is empty.  This
+suffices to show part 1.  part 2 is vacuous.
+
+Inductive step:
+When a $\ms{send}$ occurs, the tags and buffers are unchanged, so the
+truth of the invariants must be preserved. 
+It remains to consider $\ms{receive}$ events.
+
+$\ms{receive}(m,b)_{1,2}$: \\
+If $b = \ms{tag}_2$, nothing happens, so the invariants are preserved.
+So suppose that $b \neq \ms{tag}_2$.
+Then Property 2 implies that $b = \ms{tag}_1$,
+and then Property 3 implies that $m$ is the first message on
+$\ms{work-buf}_1$.
+The effect of the transition is to change $\ms{tag}_2$ to make it
+equal to $\ms{tag}_1$, and to replicate the first element of
+$\ms{work-buf}_1$ at the end of $\ms{buf}_2$. 
+
+The inductive hypothesis implies that, before the step,
+$\ms{buf}_2 \cdot \ms{work-buf}_1 = \ms{buf}_1$.
+The changes caused by the step imply that, after the step,
+$\ms{tag}_1 = \ms{tag}_2$,
+$\ms{work-buf}_1$ and $\ms{buf}_2$ are nonempty, 
+$\ms{head}(\ms{work-buf}_1) = \ms{last}(\ms{buf}_2)$, and 
+$\ms{buf}_2 \cdot \ms{tail}(\ms{work-buf}_1) = \ms{buf}_1$. 
+This is as needed.
+
+$\ms{receive}(b)_{2,1}$: \\
+The argument is similar to the one for $\ms{receive}(m,b)_{1,2}$.
+If $b \neq \ms{tag}_1$, nothing happens so the invariants are
+preserved.
+So suppose that $b = \ms{tag}_1$.
+Then Property 2 implies that $b = \ms{tag}_2$, and the 
+step changes $\ms{tag}_1$ to make it unequal to $\ms{tag}_2$.
+The step also removes the first element of $\ms{work-buf}_1$.
+The inductive hypothesis implies that, before the step,
+$\ms{work-buf}_1$ and $\ms{buf}_2$ are nonempty, 
+$\ms{head}(\ms{work-buf}_1) = \ms{last}(\ms{buf}_2)$, and 
+$\ms{buf}_2 \cdot \ms{tail}(\ms{work-buf}_1) = \ms{buf}_1$.
+The changes caused by the step imply that, after the step,
+$\ms{tag}_1 \neq \ms{tag}_2$ and 
+$\ms{buf}_2 \cdot \ms{work-buf}_1 = \ms{buf}_1$.
+This is as needed.
+\end{proof}
+
+\section{From lecture8, S97}
+
+A common communication protocol. \\
+Sending a sequence of messages from a set $M$, from process $1$ to
+process $2$. \\
+Using underlying FIFO communication channels, can lose or duplicate
+messages. \\
+Process $1$ keeps sending first message tagged with $1$. \\
+When process $2$ receives, accepts and outputs. \\
+Acks (repeatedly) with tag $1$. \\
+When process $1$ receives $1$, starts sending next message, tagged
+with $0$. \\
+Process $2$ ignores tag $1$, until it sees first $0$; then accepts and
+outputs, and then acks repeatedly with $0$. \\
+Process $1$ now waits to receive $0$, then goes back to tag $1$. \\
+Alternates. \\
+\\
+The claim is that this causes process $2$ to output a {\em prefix\/}
+of the sequence of process $1$. \\
+(To see that it gives all requires a liveness argument.) \\
+\\
+States: \\
+$\ms{buf}_1$, a finite sequence of $M$ elements, initially arbitrary,\\
+$\ms{work-buf}_1$, same, initially equal to $\ms{buf}_1$ \\
+(This represents the remaining messages to be sent, whereas
+$\ms{buf}_1$ represents all the messages ever submitted.) \\
+$\ms{tag}_1 \in \{ 0, 1 \}$, initially $1$. \\
+\\
+$\ms{buf}_2$, a finite sequence of $M$ elements, initially empty,\\
+$\ms{tag}_2  \in \{ 0, 1 \}$, initially $0$. \\
+\\
+$\ms{channel}_{1,2}$, a finite sequence of elements of $M \times \{ 0, 1 \}$, 
+  initially empty, \\
+$\ms{channel}_{2,1}$, a finite sequence of elements of 
+  $\{ 0, 1 \}$, initially empty \\
+\\
+
+
+\iocode{
+
+\prcef{$\ms{send}(m,b)_{1,2}$}
+{% Pre: 
+   $m = \ms{head}(\ms{work-buf}_1)$ \\
+   $b = \ms{tag}_1$}
+{% Eff: 
+   add $(m,b)$ to end of $\ms{channel}_{1,2}$, \\
+   \hspace{2mm} any number $\geq 0$ of times}
+
+\prcef{$\ms{send}(b)_{2,1}$}
+{% Pre: 
+   $b = \ms{tag}_2$}
+{% Eff: 
+   add $b$ to end of $\ms{channel}_{2,1}$, \\
+   \hspace{2mm} any number $\geq 0$ of times}
+
+\prcef{$\ms{lose}_{2,1}$}
+{% Pre: 
+   $(\ms{channel}_{2,1})$ nonempty}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{2,1}$ \\
+}
+
+\prcef{$\ms{copy}_{2,1}$}
+{% Pre: 
+   $(\ms{channel}_{2,1})$ nonempty}
+{% Eff: 
+   copy $\ms{head}$ of $\ms{channel}_{2,1}$ \\
+}
+
+}{
+
+\prcef{$\ms{receive}(m,b)_{1,2}$}
+{% Pre: 
+   $(m,b) = \ms{head}(\ms{channel}_{1,2})$}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{1,2}$ \\
+   if $b \neq \ms{tag}_2$ then \\
+   \hspace{2mm} add $m$ to $\ms{buf}_2$ \\
+   \hspace{2mm} $\ms{tag}_2 := \ms{tag}_2 + 1 \bmod 2$}
+
+\prcef{$\ms{receive}(b)_{2,1}$}
+{% Pre: 
+   $b = \ms{head}(\ms{channel}_{2,1})$}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{2,1}$ \\
+   if $b = \ms{tag}_1$ then \\
+   \hspace{2mm} remove head of $\ms{work-buf}_1$ (if nonempty) \\
+   \hspace{2mm} $\ms{tag}_1 := \ms{tag}_1 + 1 \bmod 2$}
+
+\prcef{$\ms{lose}_{1,2}$}
+{% Pre: 
+   $(\ms{channel}_{1,2})$ nonempty}
+{% Eff: 
+   remove $\ms{head}$ of $\ms{channel}_{2,1}$ \\
+}
+
+\prcef{$\ms{copy}_{1,2}$}
+{% Pre: 
+   $(\ms{channel}_{1,2})$ nonempty}
+{% Eff: 
+   copy $\ms{head}$ of $\ms{channel}_{1,2}$ \\
+}
+
+}
+
+Goal invariant, Invt1: \\
+$\ms{buf}_2$ is a prefix of $\ms{buf}_1$ \\
+\\
+Needs intermediate invariant: \\
+\\
+Let $\ms{tag-sequence}$ be the sequence consisting of elements of
+$\ms{channel}_{2,1}$, \\
+followed by $\ms{tag}_2$, \\
+followed by the tag components of the elements of $\ms{channel}_{1,2}$, \\
+followed by $\ms{tag}_1$. \\
+\\
+Use sequence concatenation notation. \\
+\\
+Invt2: \\
+$\ms{tag-sequence}$ consists of one of the following:
+\begin{enumerate}
+\item
+All $0$'s.
+\item
+All $1$'s. 
+\item
+A positive number of $0$'s followed by a positive number of $1$'s.
+\item
+A positive number of $1$'s followed by a positive number of $0$'s.
+\end{enumerate}
+What is being ruled out is more than one switch of tag value. \\
+\\
+This is proved easily by induction (no extra hypotheses needed);
+\\
+\\
+Also need: \\
+\\
+Invt3: \\
+If $(m,\ms{tag}_1)$ is in $\ms{channel}_{1,2}$ then $m =
+\ms{head}(\ms{work-buf}_1)$. \\
+\\
+This again follows by induction.  Uses Invt2 in the proof. \\
+(BASE:  Obvious, since no message is in the channel initially. \\
+INDUCTIVE: \\
+If add new message to channel, obvious.  \\
+Only interesting case is if $\ms{tag}_1$ changes and there is something
+else already in $\ms{channel}_{1,2}$ with the same tag. \\
+But this can't happen, by Invt2 applied before the step -- since
+incoming tag $= \ms{tag}_1$, all the tags in the state must be the same.) \\
+\\
+Finally, need: \\
+Invt4: \\
+1. If $\ms{tag}_1 \neq \ms{tag}_2$ then: \\
+$\ms{buf}_2 \cdot \ms{work-buf}_1 = \ms{buf}_1$. \\
+2. If $\ms{tag}_1 = \ms{tag}_2$ then \\
+$\ms{work-buf}_1$ and $\ms{buf}_2$ are nonempty, \\
+$\ms{head}(\ms{work-buf}_1) = \ms{last}(\ms{buf}_2)$, and \\
+$\ms{buf}_2 \cdot \ms{tail}(\ms{work-buf}_1) = \ms{buf}_1$. \\
+\\
+$\ms{tail} =$ all but head. \\
+\\
+Invt4, part 2, easily implies the goal Invt1. \\
+Also implies that $\ms{work-buf}_2$ is always nonempty when the
+$\ms{receive}_1$ occurs for equal tags. \\
+(So parenthetical check is always true.)
+\\
+Prove Invt4 by induction. \\
+BASE:  \\
+tags unequal, $\ms{work-buf}_1 = \ms{buf}_1$ and $\ms{buf}_2$
+empty. \\
+Suffices. \\
+INDUCTIVE STEP: \\
+When send, don't change tags or buffers. \\
+So can't change the truth of the invariants. \\
+So only consider receives.\\
+\\
+$\ms{receive}(m,b)_{1,2}$: \\
+If $b = \ms{tag}_2$, nothing happens, so preserved. \\
+If $b \neq \ms{tag}_2$, arriving message is same as first on
+$\ms{work-buf}_1$, by Invt3. \\
+Change tag to make equal, replicate $\ms{first}(\ms{work-buf}_1)$ at
+end of $\ms{buf}_2$. \\
+Since concatenation previously held (by inductive hypothesis),
+now the modified concat does. \\
+\\
+$\ms{receive}(b)_{2,1}$ \\
+Similar argument. \\
+If $b \neq \ms{tag}_1$, nothing happens, preserved. \\
+If $b = \ms{tag}_1$, change tag to make unequal, remove first element
+of work-buf. \\
+Since modified concat previously held (by inductive hypothesis), now
+ordinary concat does. 
+
+\endinput
