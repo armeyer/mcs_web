@@ -393,6 +393,8 @@
 
 %\newcommand{\degr}[1]{\text{deg}(#1)}
 \newcommand{\degr}[1]{\mathop{\textup{deg}}\nolimits\left(#1\right)}
+\newcommand{\indegr}[1]{\mathop{\textup{indegree}}\nolimits\left(#1\right)}
+\newcommand{\outdegr}[1]{\mathop{\textup{outdegree}}\nolimits\left(#1\right)}
 
 \newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
 
