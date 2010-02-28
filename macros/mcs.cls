@@ -45,6 +45,13 @@
     \let\@fix@nominalspinewidth\@empty
 }
 
+\DeclareOption{exolinks}{%
+    \AtBeginDocument{%
+        \ClassInfo{mcs}{External document links enabled}%
+        \let\Hy@setref@link\mcs@Hy@setref@link
+    }%
+}
+
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 
 \ExecuteOptions{11pt,twoside,book}
@@ -170,6 +177,29 @@
 %% Can't use \let here because of hyperref.
 
 \def\bref{\ref}
+
+\newcount\ref@chapter
+
+\def\get@ref@chapter#1{%
+    \afterassignment\remove@to@nnil
+    \ref@chapter=0#1 \@nnil
+}
+
+\def\mcs@Hy@setref@link#1#2#3#4#5#6\@nil#7{%
+  \begingroup
+    \get@ref@chapter{#1}%
+    \ifnum\c@chapter = \ref@chapter
+        \toks0={\hyper@@link{#5}{#4}}%
+        \toks1=\expandafter{#7{#1}{#2}{#3}{#4}{#5}}%
+    \else
+        \toks0={\hyper@@link{\courseurl/mcs.pdf}{#4}}%
+        \toks1=\expandafter{#7{#1}{#2}{#3}{#4}{\courseurl/mcs.pdf}}%
+    \fi
+    \edef\x{\endgroup
+      \the\toks0 {\the\toks1 }%
+    }%
+  \x
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
