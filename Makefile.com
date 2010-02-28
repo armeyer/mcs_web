@@ -1,4 +1,5 @@
-FORMAT = ../bin/format -exolinks
+FORMAT = ../bin/format
+# FORMAT = ../bin/format -exolinks
 
 export DRIVER_FILE = mcs
 
