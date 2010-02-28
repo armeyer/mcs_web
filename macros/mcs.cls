@@ -8,6 +8,8 @@
 
 \ProvidesClass{mcs}
 
+\def\currentsemester{spring10}
+
 \newif\ifshowsolutions
 \showsolutionsfalse
 
@@ -1786,7 +1788,9 @@
 % Loads the definitions of all papers for the current term. This data
 % file (00course.dat) should be kept in semester-specific directory.
 
-\IfFileExists{00course.dat}{\input{00course.dat}}{}
+\IfFileExists{\currentsemester/00course.dat}{%
+    \input{\currentsemester/00course.dat}%
+}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
