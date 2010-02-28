@@ -2,8 +2,8 @@
 
 \begin{pcomments}
   \pcomment{PS_top_sort_for_closure_of_DAG}
-  \pcomment{needs editing, see generalized covering edge part}
   \pcomment{from: S09.ps6, S08.ps6, S06.ps4 (adapted)}
+  \pcomment{revised by ARM, 2/28/10}
 \end{pcomments}
 
 \pkeywords{
@@ -19,23 +19,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  Vertices $u, v$ in a digraph are said to be \emph{connected} when there
-  is a directed path (in either direction) between $u$ and $v$.
-
 The following procedure can be applied to any digraph, $G$:
 
-Pick any two vertices $u, v$ of $G$.
 \begin{enumerate}
 
-\item\label{del} If there is an edge $(u,v)$ of $G$ and there is also a
-directed path connecting $u$ and $v$ (in either direction) which does
-\emph{not} traverse this edge, then delete the edge $(u,v)$, or
+\item\label{del-cycle} Delete an edge that is traversed by a directed cycle.
 
-\item\label{add} if $u$ and $v$ are not connected, then add the edge
-$(u,v)$.
+\item\label{del-uncover} Delete edge $\diredge{u}{v}$ if there is a
+  directed path from vertex $u$ to vertex $v$ that does not traverse
+  $\diredge{u}{v}$.
+
+\item\label{add-edge} Add edge $\diredge{u}{v}$ if there is no directed
+  path in either direction between vertex $u$ and vertex $v$.
+
 \end{enumerate}
-Repeat these operations until it is no longer possible to find two
-vertices $u \neq v$ to which an operation applies.
+  Repeat these operations until none of them are applicable.
 
 This procedure can be modeled as a state machine.  The start state is
 $G$, and the states are all possible digraphs with the same vertices as
@@ -43,178 +41,81 @@ $G$.
 
 \bparts
 
-\ppart Let $G$ be the graph with vertices $\set{1,2,3,4}$ and edges
+\ppart\label{G1234} Let $G$ be the graph with vertices $\set{1,2,3,4}$ and edges
 \[
-\set{(1,2),(3,4)}
+\set{\diredge{1}{2}, \diredge{2}{3}, \diredge{3}{4}, \diredge{3}{2}, \diredge{1}{4}}
 \]
-What are the possible states reachable in one step from start state $G$?
 What are the possible final states reachable from $G$?
 
 \begin{solution}
-It's not possible to delete any edge.  At the first step, the
-procedure can only add an edge $(i,j)$ or $(j,i)$, where $i \in \set{1,2}$
-and $j \in \set{3,4}$.
-
-The possible final states are all graphs consisting of a single directed
-path, where 1 precedes 2 and 3 precedes 4.  The possible such paths are
-1234, 1324, 1342, 3124, 3142, 3412.
+There are five::
+\begin{align*}
+\set{\diredge{1}{2}, \diredge{2}{3}, \diredge{3}{4}}\\
+\set{\diredge{1}{3}, \diredge{3}{2}, \diredge{2}{4}}\\
+\set{\diredge{3}{1}, \diredge{1}{2}, \diredge{2}{4}}\\
+\set{\diredge{1}{3}, \diredge{3}{4}, \diredge{4}{2}}\\
+\set{\diredge{3}{1}, \diredge{1}{4}, \diredge{4}{2}}
+\end{align*}
 \end{solution}
-
-\eparts
-
-To prove termination, let's say that two vertices are \term{undirected}
-iff either they are unconnected or they lie on the same directed cycle.
-Otherwise they are \term{directed}.
-
-\bparts
-
-\ppart For any state, $G'$, let $c$ be its number of directed cycles, 
-$e$ be its number of edges, and $p$ its
-number of sets of two undirected vertices.  Show that $(c,p,e)$ is a
-strictly decreasing derived variable under lexicographic order.  Conclude
-that the procedure terminates started on any finite digraph, $G$.
-
-\begin{solution}
-Since $G$ is finite, the value of the derived variable $(c,p,e)$ is
-a trio of nonnegative integers.  We will show that $(c,p,e)$ is strictly
-decreasing under lexicographic order.  Termination then follows from the
-fact that lexicographic order is well-founded.
-
-There are two cases depending on the operation that was used.
-
-\textbf{Case} \emph{Operation~\ref{del}}: Since $e$ decreases by~1, it is
-enough to show that $c$ stays the same or decreases, and $p$ stays the same 
-or decreases if $c$ stays the same.  This will follow if we show that .  
-If our edge removes a cycle, then $c$ will decrease, so we can confine our 
-remaining cases to when the edge removed does not remove a cycle.  But 
-deleting an edge creates no new cycles, so there are no new pairs that are
-undirected because they both lie on the same new cycle.  Also, since an
-edge between $u$ and $v$ gets deleted only if a directed path between them
-remains after the deletion, no new unconnected pairs are created
-since there was no cycle containing the edge removed.  So any
-pair that was undirected before the edge deletion remains undirected after
-deletion.
-
-\textbf{Case} \emph{Operation~\ref{add}}: Since $e$ increases by~1, we
-must show that $p$ decreases while $c$ stays the same or that $c$ decreases
-. In other words, $G'$ has strictly fewer undirected pairs of vertices.
-
-Now since $u$ and $v$ are unconnected in $G$, they are an undirected pair.
-Also, adding an edge $\diredge{u}{v}$ cannot create a new cycle in $G'$.
-This follows because any new cycle would have to traverse the new edge,
-and the rest of the cycle would be a directed path from $v$ to $u$ in $G$,
-contradicting the fact that $u$ and $v$ are unconnected in $G$  This shows 
-that $c$ will remain constant, so it only remains to show that $p$ decreases
-.  The added edge between $u$ and $v$ makes them a directed pair in $G'$ 
-since it does not create any cycles.  Moreover, since the new edge creates 
-no new cycle, it creates no new undirected pairs that lie on a cycle.  
-And of course adding an edge cannot create any new unconnected pairs.  Hence,
- adding the edge creates no new undirected pairs and removes at least one 
-undirected pair, and so reduces the number of undirected pairs by at least one.
-\end{solution}
-
-\ppart Let an edge be called a \emph{generalized covering edge} if removing
-that edge leaves no path in either direction between its endpoints.
-Let g be the number of generalized coverging edges in our graph.  Give
-an alternative termination proof using the derived variable $v+e-2g$.
-Briefly indicate why this proof is more informative than the previous
-one using lexicographic order. (\textbf{Correction: this answer relies
-  on $G$ being a DAG, which we did not assume.  The fix using a
-  different derived variable will be available before the end of
-  Spring Break.})
-
-\begin{solution}
-We let $G$ and $G'$ be as in the previous part and distinguish the same
-cases.
-
-\textbf{Case} \emph{Operation~\ref{del}}: We delete an edge, so $e$ decreases
-by 1 and $v$ remains the same, so it suffices to show that $g$ remains the same.
-By our definition of the deletion operation, we only delete an edge if another path
-will remain between its endpoints after it is removed, so the deleted edge cannot
-be a generalized covering edge.
-
-\textbf{Case} \emph{Operation~\ref{add}}: We add an edge, so $e$ increases by 1 and
-again $v$ remains the same, meaning we must show that $g$ also increases by 1 to show
-strict decrease of $v+e-2g$.  We only add an edge if there is no connection between our
-two endpoints, so by definition the added edge will be a generalized covering edge.
-
-Hence, $v+e-2g$ is strictly decreasing, nonnegative integer valued derived
-variable, which implies the procedure always terminates.
-
-This proof is more informative because the $v$, $e$ and $g$ for a starting
-graph give us the information that the procedure will terminate in at most
-$v+e-2g$ steps.  The argument using well-founded of lexicographic order gave
-no bound on the number of steps until termination.
-\end{solution}
-
 \eparts
 
 A \emph{line graph} is a graph whose edges can all be traversed by a
-simple path.  For example, the two-ended graph below is a line graph of
+directed simple path.  All the final graphs in part~\eqref{G1234} are
+line graphs.
+
+\iffalse
+
+For example, the two-ended graph below is a line graph of
 length 4.
 
 \mfigure{!}{0.75in}{figures/ps4-path}
+\fi
 
 \bparts
-\ppart\label{lineg}
-Prove that for any finite, $G$, the procedure terminates with a line graph
-with the same vertices as $G$.
+
+\ppart\label{lineg} Prove that if the procedure terminates with a
+digraph, $H$, then $H$ is a line graph with the same vertices as $G$.
 
 \begin{solution}
-To prove that $H$ is a line graph, it is sufficient to prove
-  that (1)~$H$ is acyclic, (2)~$H$ is connected, and (3)~every vertex in
-  $H$ has in-degree and out-degree at most ~1. (Why is this sufficient?)
-  The proof follows from the definition of the termination condition.
+  Since vertices are not changed in any transition, $H$ will have the
+  same vertices as $G$.  So we need only show that if $H$ is
+  \emph{not} a line graph, then an operation is applicable.
 
-  In order for the procedure to terminate, there are no two vertices $u
-  \neq v$ to which an operation applies. We prove each property by
-  contradiction.
-\begin{enumerate}
+  Now if $H$ has a directed cycle, then operation~\ref{del-cycle}.\
+  applies.  So $H$ must be a DAG.  Further, if there are two
+  incomparable elements, $u \neq v$ in the partial order defined by
+  this DAG, then operation~\ref{add-edge}.\ would be applicable to add
+  either $\diredge{u}{v}$ or $\diredge{u}{v}$.  So the DAG must
+  define a total order.
+  
+  All that remains is to prove that no vertex has in-degree or
+  out-degree greater than one.  The proof for in-degree and out-degree
+  is virtually the same, and we'll just prove that out-degree is at
+  most one.
 
-\item Assume $H$ has a cycle at termination. Then there exist two adjacent
-  vertices $u$, $v$, with an edge $(u,v)$ between them. By the definition
-  of cycle, there is also another path $\pi$ from $v$ to $u$ that does not
-  traverse $(u,v)$, so \emph{Operation~\ref{del}} applies. This
-  contradicts the condition for termination, so $H$ is acyclic.
-
-\item Assume $H$ is not connected at termination. Then by definition of
-  connected, there exist two vertices $u, v$ that are not connected by a
-  directed path, so \emph{Operation~\ref{add}} applies. This contradicts
-  the condition for termination, so $H$ is connected.
-
-\item Assume there exists a vertex in $H$ with in-degree or out-degree
-  greater than 1. If the vertex $u$ has in-degree of 2 or more, then $H$
-  contains at least two distinct edges $(u,v)$ and $(u',v)$, where there
-  exists a path $\pi$ between $u$ and $u'$ by Claim~(2).
-
-\begin{itemize}
-
-\item If $\pi$ goes from $u$ to $u'$ through $v$, then there is a cycle
-  $v,\ldots,u',v$, contradicting Claim~(1).
-
-\item Otherwise, $\pi$ does not visit $v$ and there is a path
-  $u,\ldots,u',v$ that does not traverse $(u,v)$, so
-  \emph{Operation~\ref{del}} applies, contradicting the condition for
-  termination.
-\end{itemize}
-
-A similar argument applies for out-degree of 2 or more. Therefore, every
-vertex in $H$ has in-degree and out-degree of at most 1.
-\end{enumerate}
-
-
+  So suppose to the contrary that in $H$, a vertex $u$ has out-degree
+  of 2 or more.  So there are vertices $v \neq w$ and edges
+  $\diredge{u}{v}$ and $\diredge{u}{w}$ in $H$.  Now since $H$ defines
+  a total order, there must be a directed simple path, $\pi$, in one
+  direction or the other between $v$ and $w$; moreover $\pi$ does not
+  go through $u$ (if it did, there would be a cycle).  Hence, the path
+  $u,\pi$ goes from $u$ to $w$ without traversing $\diredge{u}{w}$,
+  which means that $\diredge{u}{w}$ could be deleted by applying
+  operation~\ref{del-uncover}.
 \end{solution}
 
-\ppart Prove that $G$ being a DAG is a preserved invariant of the procedure.
+\ppart\label{DAG-invar} Prove that being a DAG is a preserved
+invariant of the procedure.
 
 \begin{solution}
-Deleting an edge cannot create a cycle, and neither can adding
-  an edge between unconnected vertices.  So if there was no cycle in $G$,
-  there wouldn't be any after one state transition.  
+  Deleting an edge cannot create a cycle, and neither can adding
+  an edge between unconnected vertices.  So if there was no cycle in a graph,
+  there wouldn't be any after one state transition.
 \end{solution}
 
-\ppart Prove that if $G$ is a DAG, then the path relation of the final line
-graph is a topological sort of $G$.
+\ppart\label{top-sort} Prove that if $G$ is a DAG and the procedure
+terminates, then the path relation of the final line graph is a
+topological sort of $G$.
 
 \hint Verify that the predicate
 \[
@@ -224,53 +125,71 @@ is a preserved invariant of the procedure, for any two vertices $u,v$ of a DAG.
 
 \begin{solution}
 \begin{proof}
-  To prove $P(u,v)$ is an invariant, suppose $P(u,v)$ holds in $G$ and
-  consider the two operations that the procedure might perform:
+  To prove $P(u,v)$ is an invariant, suppose $P(u,v)$ holds in some
+  DAG $H$.  Then operation~\ref{del-cycle}.\ won't be applicable since
+  there are no cycles. Also, since adding an edge preserves all
+  existing paths, operation~\ref{add-edge}.\ will preserve $P(u,v)$.
+  This leaves only operation~\ref{del-uncover},\ to consider.
 
-  \textbf{Case} \emph{Operation~\ref{del}}: Suppose the edge-deletion
-  operation~\ref{del} is applied to an edge $(x,y)$ in $G$, yielding a
-  digraph $G'$.
+  So suppose operation~\ref{del-uncover}.\ is applied to delete an edge
+  $\diredge{x}{y}$ of $H$.  By definition of the operation, this would
+  only be possible if there remains a directed path, $\pi$, from $x$
+  to $y$.  Hence for any directed path that traversed
+  $\diredge{x}{y}$, there remains a directed path between the same
+  endpoints obtained by replacing edge $\diredge{x}{y}$ by $\pi$.  So
+  $P(u,v)$ will still hold.
 
-Now by definition of the condition for applying the edge-deletion
-operation, there must be a directed path, $\pi$, between $x$ and $y$ which
-is in both $G$ and $G'$. This directed path must start at $x$ and end at
-$y$ (if it went from $y$ to $x$, together with $(x,y)$ it would have
-formed a directed cycle $(y,\ldots,x,y)$ in $G$, contrary to the fact that
-$G$ is a DAG).
+  Since $G$ is a DAG, its path relation is a partial order, $\preceq_G$.  
+  By part~\eqref{lineg}, the procedure terminates with a DAG, $H$, that
+  defines a total order, $\preceq_H$.  So to show that $\preceq_H$ is a topological sort of 
+  $\preceq_G$, we need only check that
+  \[
+  u \preceq_G v \QIMPLIES u \preceq_H v.
+  \]
+  But $u \preceq_G v$ is equivalent to $P(u,v)$ holding in $G$, and
+  since $P$ is preserved, $P(u,v)$ still holds in $H$, and this is
+  equivalent to $u \preceq_H v$.
 
-\begin{itemize}
-
-\item If the path from $u$ to $v$ does not traverse $(x,y)$, then it
-  remains in $G'$, proving that $P(u,v)$ still holds in $G'$.
-
-\item If the path from $u$ to $v$ \emph{does} traverse $(x,y)$, then
-  removing $(x,y)$ and replacing it with the other path $\pi$ yields a
-  path in $G'$ from $u$ to $v$, proving that $P(u,v)$ still holds in $G'$.
-\end{itemize}
-
-This completes the proof that $P$ is preserved by the edge-deletion
-operation~\ref{del}.
-
-\textbf{Case} \emph{Operation~\ref{add}}: Adding an $(x,y)$ to a graph
-preserves all previously existing paths, so $P(u,v)$ will hold in $G'$.
-So the edge adding operation~\ref{add} preserves $P$
-
-We conclude that $P(u,v)$ is indeed a preserved invariant of the
-procedure.
-
-From part~\eqref{lineg}, the final graph is a line graph, which implies
-that its path relation, $L^*$, is a total order.  Also, if $G$ is a DAG,
-then its path relation, $G^*$, is a partial order.  Then $L^*$ is a
-topological sort of $G^*$ means that $u\,G^*\,v$ implies $u\,L^*\,v$ for
-all vertices $u,v$.
-
-But $u\,G^*\,v$ is equivalent to $P(u,v)$ holding in $G$.  So by
-invariance, $u\,G^*\,v$ implies $P(u,v)$ holds in the final line graph,
-that is, $u\,L^*\,v$, as required.
 \end{proof}
 \end{solution}
 
+\ppart Prove that if $G$ is finite, then the procedure terminates.
+
+\hint Let $s$ be the number of simple cycles, $e$ be the number of
+edges, and $p$ be the number of pairs of vertices with a directed path
+(in either direction) between them.  Find coefficients $a, b$ such
+that $as+bp+e +2n^2$ is a strictly decreasing, $\naturals$-valued variable.
+
+\begin{solution}
+
+Since $s,e \in \naturals$ and $0 \leq p \leq n^2$, the value
+\[
+2n^2s-2p+e +2n^2
+\]
+is always nonnegative.  We claim it is strictly decreasing.  To prove
+this, we consider the effect of the three kinds of operations.
+
+Adding edge $\diredge{u}{v}$ by operation~\ref{add-edge}.\ adds one to
+$e$ and leaves $s$ unchanged.  Also, pairs of vertices connected by a
+directed path remain connected after adding an edge, and adding
+$\diredge{u}{v}$ creates the new connected pair, $(u,v)$, $p$
+increases by at least one.  Therefore $2n^2s-2p+e$ decreases by at
+least one.
+
+Deleting an edge by operation~\ref{del-cycle}.\ decreases $e$ and $s$ by
+at least one.  It could also decrease $p$, but not by more than the
+total number, $n^2$, of pairs of vertices, so $2n^2s-2p+e$ decreases by
+at least one.
+
+Finally, deleting an edge decreases $e$ by one and never increases
+$s$.  Further, deleting an edge by operation~\ref{del-uncover}.\ does
+not change the path relation, as explained in the solution to
+part~\eqref{DAG-invar}, so $p$ does not change.  so $2n^2s-2p+e$
+decreases by at least one.
+
+\end{solution}
 \eparts
+
 \end{problem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -278,3 +197,4 @@ that is, $u\,L^*\,v$, as required.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
+
