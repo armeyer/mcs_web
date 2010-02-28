@@ -1,15 +1,14 @@
-%CP_erasable_strings
-
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
+  \pcomment{CP_erasable_strings}
   \pcomment{from: S09.cp5m}
   \pcomment{related to: S09.cp5m}
 \end{pcomments}
 
 \pkeywords{
   induction
-  matching_parentheses
+  matching_brackets
   recursive_data
   strings
   structural_induction
@@ -20,28 +19,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-%
-Let $p$ be the string $\mtt{()}$.  A string of parentheses is said to be
-\term{erasable} iff it can be reduced to the empty string by repeatedly
-erasing occurrences of $p$.  For example, here's how to erase the string
-$\mtt{((())())()}$:
+  Let $p$ be the string $\lefbrk\rhtbrk$.  A string of
+  brackets is said to be \term{erasable} iff it can be reduced to
+  the empty string by repeatedly erasing occurrences of $p$.  For
+  example, here's how to erase the string
+  $\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk$:
 \[
-\mtt{((())())()}
-\rightarrow \mtt{(())}
-\rightarrow \mtt{()}
+\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
+\rightarrow \lefbrk\lefbrk\rhtbrk\rhtbrk
+\rightarrow \lefbrk\rhtbrk
 \rightarrow \emptystring.
 \]
-On the other hand the string $\mtt{())((((())}$ is not erasable because
-when we try to erase, we get stuck at $\mtt{)(((}$:
+On the other hand the string $\lefbrk\rhtbrk\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk$ is not erasable because
+when we try to erase, we get stuck: %at $\rhtbrk\lefbrk\lefbrk\lefbrk$:
 \[
-\mtt{())((((())}
-\rightarrow \mtt{)(((()}
-\rightarrow \mtt{)(((}
+\lefbrk\rhtbrk\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk
+\rightarrow \rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk
+\rightarrow \rhtbrk\lefbrk\lefbrk\lefbrk
 \not\rightarrow
 \]
 
-Let $\ES$ be the set of erasable strings of parentheses.  Let $\RM$ be the
-recursive data type of strings of \emph{matched} parentheses. 
+Let $\ES$ be the set of erasable strings of brackets.  Let $\RM$ be
+the recursive data type of strings of \emph{matched} brackets given in
+Definition~\bref{RM-def}.
 
 % (The definition of $\RM$ is repeated in the Appendix.)
 
@@ -61,18 +61,18 @@ P(x) \eqdef x \in \ES
 \]
 is true for all $x \in \RM$.
 
-\textbf{Base case}: [$x = \emptystring$] The empty string is erasable by
+\textbf{Base case}: ($x = \emptystring$) The empty string is erasable by
 definition of $\ES$ -- it can be reduced to itself by erasing the
-substring $\mtt{()}$ 0 times.
+substring $\lefbrk$ 0 times.
 
-\textbf{Constructor case}: [$x = \mtt{(}s\mtt{)}t$] for $s,t \in \RM$.  By
+\textbf{Constructor case}: ($x = \lefbrk s\, \rhtbrk t$ for $s,t \in \RM$).  By
 structural induction hypothesis, we may assume that $s,t \in \ES$.  So to
 erase $x$, erase $s$ and then erase $t$ to be left with the substring
-$\mtt{()}$, and one more erasure leads to the empty string.
+$\lefbrk\rhtbrk$, and one more erasure leads to the empty string.
 
 This completes the proof by structural induction, so we conclude that
 \[
-\forall x.\ x\in \RM.\ \QIMPLIES\ x \in \ES
+\forall x.\ x\in \RM\ \QIMPLIES\ x \in \ES
 \]
 which by definition means that $\RM \subseteq \ES$.
 
@@ -89,7 +89,7 @@ which by definition means that $\RM \subseteq \ES$.
 We prove by induction on the length, $n$, of strings, $x$, that if $x \in
 \ES$, then $x \in \RM$.  The induction predicate is
 \[
-P(n) \eqdef \forall x \in \ES.\, [\lnth{x} \leq n\ \QIMPLIES\ x \in \RM]
+P(n) \eqdef \forall x \in \ES.\, (\lnth{x} \leq n\ \QIMPLIES\ x \in \RM)
 \]
 
 \textbf{Base case}:
@@ -97,9 +97,9 @@ P(n) \eqdef \forall x \in \ES.\, [\lnth{x} \leq n\ \QIMPLIES\ x \in \RM]
 \textbf{ What is the base case?  Prove that $P$ is true in this case.}
 
 \begin{solution}
-The base case is [$n = 0$].  Now $P(0)$ is true because the
+The base case is ($n = 0$).  Now $P(0)$ is true because the
   empty string is the only string of length 0, and it is in $\RM$ by the
-  base case of the recursive definition of $\RM$.
+  base case of Definition~\bref{RM-def} of $\RM$.
 \end{solution}
 
 \textbf{Inductive step}: To prove $P(n+1)$, suppose $\lnth{x} \leq n+1$
@@ -116,7 +116,7 @@ by induction hypothesis that $y \in \RM$.
 
 Now we argue by cases:
 
-\textbf{Case} [$y$ is the empty string].
+\textbf{Case} ($y$ is the empty string).
 
 \textbf{Prove that $x \in \RM$ in this case.}
 
@@ -124,20 +124,20 @@ Now we argue by cases:
 In this case $x = p \in \RM$.
 \end{solution}
 
-\textbf{Case} [$y = \mtt{(}s\mtt{)}t$ for some strings $s, t \in \RM$.]
+\textbf{Case} ($y = \lefbrk s\, \rhtbrk t$ for some strings $s, t \in \RM$.)
 Now we argue by subcases.
 \begin{itemize}
 
-\item \textbf{Subcase} [$x$ is of the form $\mtt{(}s'\mtt{)}t$ where $s$
-  is an erase of $s'$].
+\item \textbf{Subcase} ($x$ is of the form $\lefbrk s'\, \rhtbrk t$ where $s$
+  is an erase of $s'$).
 
   Since $s \in \RM$, it is erasable by part~\eqref{RMES}, which implies
   that $s'\in \ES$.  But $\lnth{s'} < \lnth{x}$, so by induction
   hypothesis, we may assume that $s' \in \RM$.  This shows that $x$ is
   the result of the constructor step of $\RM$, and therefore $x \in \RM$.
 
-\item \textbf{Subcase} [$x$ is of the form $\mtt{(}s\mtt{)}t'$ where $t$ is an
-  erase of $t'$].
+\item \textbf{Subcase} ($x$ is of the form $\lefbrk s\, \rhtbrk t'$ where $t$ is an
+  erase of $t'$).
 
   \textbf{Prove that $x \in \RM$ in this subcase.}
 
@@ -152,13 +152,13 @@ The proof is essentially identical to the previous case, with
 
 \end{solution}
 
-\item \textbf{Subcase}[$x=p\mtt{(}s\mtt{)}t$].
+\item \textbf{Subcase}($x=p\lefbrk s\, \rhtbrk t$).
 
   \textbf{Prove that $x \in \RM$ in this subcase.}
 
 \begin{solution}
-Let $t' \eqdef \mtt{(}s\mtt{)}t$ and $s'$ be the empty string.
-  Then $x = \mtt{(}s'\mtt{)}t'$.  But we know $s',t' \in \RM$, which
+Let $t' \eqdef \lefbrk s\, \rhtbrk t$ and $s'$ be the empty string.
+  Then $x = \lefbrk s'\ \rhtbrk t'$.  But we know $s',t' \in \RM$, which
   implies that $x \in \RM$ because it is the result the $\RM$ constructor
   step applied to $s',t'$.
 \end{solution}
@@ -168,13 +168,14 @@ Let $t' \eqdef \mtt{(}s\mtt{)}t$ and $s'$ be the empty string.
 The proofs of the remaining subcases are just like this last one.
 \textbf{List these remaining subcases.}
 
-\begin{solution}
+\begin{solution}\mbox{}
+
 \begin{itemize}
 
-\item \textbf{case} [$x=\mtt{(}ps\mtt{)}t$],
-\item \textbf{case} [$x=\mtt{(}sp\mtt{)}t$],
-\item \textbf{case} [$x=\mtt{(}s\mtt{)}pt$],
-\item \textbf{case} [$x=\mtt{(}s\mtt{)}tp$].
+\item \textbf{case} ($x= \lefbrk ps\, \rhtbrk t$),
+\item \textbf{case} ($x= \lefbrk sp\, \rhtbrk t$),
+\item \textbf{case} ($x= \lefbrk s\, \rhtbrk pt$),
+\item \textbf{case} ($x= \lefbrk s\, \rhtbrk tp$).
 \end{itemize}
 
 \end{solution}

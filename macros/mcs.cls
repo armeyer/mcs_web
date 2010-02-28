@@ -467,6 +467,9 @@
 
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
 
+\newcommand{\brkts}{\text{\emph{brkts}}}
+\newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
+\newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}
 \def\GC{\mopt{GoodCount}}
 \def\RM{\mopt{RecMatch}}
 \def\ES{\mopt{Erasable}}
