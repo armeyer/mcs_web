@@ -1,0 +1,99 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{f01-ps4-4}
+\end{pcomments}
+
+\pkeywords{
+  graphs
+  graph_coloring
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+%-----------------------------------------------
+% source: Rosen 7.8.21 (rewritten to be more clear)
+% topics: coloring application (register coloring)
+% last used: first time
+
+My computer program has seven variables, {\tt t,u,v,w,x,y,z},
+and computes in 6 steps. The steps in which each variable is used are
+as follows: {\tt t:} steps 1 through 6; {\tt u:} step 2; {\tt v:}
+steps 2 through 4; {\tt w:} steps 1,3 and 5; {\tt x:} steps 1 and 6;
+{\tt y:} steps 3 through 6; {\tt z:} steps 4 and 5. Each variable will
+need to occupy the same index register at each one of the steps in
+which it is going to be used; however during the steps when the
+variable is not being used the register may be used by some other
+variable. How many such registers are needed for my program? Explain
+how you arrived at the answer.
+
+\solution{This problem shows an application of graph coloring to
+register allocation in a processor. Consider a simple graph $G$ having
+the seven variables as its nodes, and an edge between two variables
+iff there is at least one step of the program during which both
+variables are going to be used.  Figure~\ref{fig:vars} contains the
+graph we are talking about.
+
+\begin{figure}
+\begin{center}
+\unitlength=0.035pt
+\input{figures/ps4-4a.latex}
+\end{center}
+\caption{}
+\label{fig:vars}
+\end{figure}
+
+Clearly, two variables have to occupy different index registers iff
+they are going to be used simultaneously sometime during the
+progam execution, that is, iff they are connected in~$G$. 
+
+To correctly and economically assign variables to registers means to
+map each variable to one register in a way that does not cause
+collisions (two simultaneously used variables mapped to the same
+register) and uses as few registers as possible. But (if we think of
+registers as colors) this is the same as to color $G$ in a way that
+does not cause neighboring vertices of the same color and uses as few
+colors as possible. So, we have reduced the original problem to the
+problem of coloring~$G$.
+
+Figure~\ref{fig:varscol} shows such a coloring, using 5 colors. To see
+that this is the minimum one, just notice that variables $t$, $v$,
+$w$, $y$, and $z$ form a 5-vertex subgraph which is complete, and
+hence cannot be colored with less than~5 colors.
+
+\begin{figure}
+\begin{center}
+\unitlength=0.035pt
+\input{figures/ps4-4b.latex}
+\end{center}
+\caption{}
+\label{fig:varscol}
+\end{figure}
+
+SIDE NOTE: In this problem we have assumed that a variable must always
+use the same register, i.e. a variable is assigned a single
+color. However in a real compiler this is overly restrictive because a
+variable is backed up into memory every time it is evicted from the
+register set and then reloaded from memory into the register set when
+it needs to be used again. When it is reloaded there is no reason why
+the same register must be used. For example, say we had a variable $x$
+which is used in steps 1,2,3 and then later used in step 6. Then $x$
+could be stored in register $r1$ for steps 1 through 3 and some other
+register $r2$ for step 6. We can still use coloring to solve the
+problem by treating $x$ as two separate variables: $x_{123}$ and
+$x_6$. Since the number of variables in a computer program can be very
+large and the register set of a processor is typically much smaller
+(16-64 registers), register allocation is an important piece of
+compiling.
+
+}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
