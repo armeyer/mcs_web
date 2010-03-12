@@ -452,6 +452,7 @@
 \newcommand{\divides}{\mid}
 
 \newcommand{\rem}[2]{\operatorname{rem}(#1,#2)}
+\newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
 \newcommand{\remainder}{\mopt{remainder}}
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
