@@ -1538,6 +1538,7 @@
   \theoremsunderproblems
     \ifshowstaffnotes
     \paper[#1]{pss#2}{}{Staff Solutions to Problem Set #2}
+    \readingnote
     \else
     \ifshowsolutions
     \paper[#1]{pss#2}{}{Solutions to Problem Set #2}
@@ -1628,12 +1629,15 @@
 
 \newcommand{\miniquiz}[2][\stamp]{%
     \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{mqus#2}{}{Staff Solutions to Mini-Quiz #2}
+    \else
     \ifshowsolutions
         \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
     \else
         \exampaper[#1]{mqu#2}{Mini-Quiz #2}
     \fi
-}
+    \fi}
 
 % Starts a Practice Quiz, given its number. Asks whether solutions
 % should be included. If the answer is yes, the corresponding
