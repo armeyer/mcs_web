@@ -73,6 +73,8 @@
 \RequirePackage{amssymb}
 \RequirePackage{xspace}
 \RequirePackage{graphicx}
+\RequirePackage{epsfig}
+\RequirePackage{psfrag}
 \RequirePackage{keyval}
 \RequirePackage[usenames,dvipsnames]{color}
 \RequirePackage{subfigure}

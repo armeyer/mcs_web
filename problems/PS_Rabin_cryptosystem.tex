@@ -1,0 +1,176 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_Rabin_cryptosystem} 
+  \pcomment{from S07, pset7}
+\end{pcomments}
+
+\pkeywords{
+  asymptotics
+  sitrling's approximation
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}
+In class and recitation, we will study the RSA cryptosystem.
+\iffalse
+%which will be used by the Teen Titans in recitation.
+\fi
+However, we will not be able to give any evidence that it is hard to break
+the RSA cryptosystem other than proof by reference to eminent authority --
+that is, Rivest, Shamir and Adleman as well as a lot of other very smart
+people over the last few decades were not able to break it. This explains
+why cryptographers don't sleep very well.
+\iffalse
+%The Powerpuff girls need to ``one-up'' the
+%Teen Titans from Recitation 5.
+%To do this, they want to use a cryptosystem that has slightly better
+\fi
+
+Here we want to use a cryptosystem, called the Rabin cryptosystem, that
+has slightly better security justification than RSA.  That is, if someone
+has the ability to break this cryptosystem efficiently, then one also has
+the ability to factor numbers that are products of two primes.  Why should
+that convince us that it is hard to break the cryptosystem efficiently?
+Well, mathematicians have been trying to factor efficiently for centuries,
+and they still haven't figured out how to do it.  So, we are again
+appealing to a proof by eminent authority, but at least there are more
+authorities involved here.
+
+What is the cryptosystem?  Let $N$ be a product of two very large primes
+$p,q$ such that $p \equiv q \equiv3 \pmod{4}$.  To send the message $x$,
+send $\rem{x^2}{N}$.\footnote{ We will see soon, that there are other
+numbers that would be encrypted by $\rem{x^2}{N}$, so we'll have to
+disallow those other numbers as possible messages in order to make it
+possible to decode this cryptosystem, but let's ignore that for now.}
+
+We need to show that if the person we send the message to knows $p,q$,
+then they can decode the message.  On the other hand, if an eavesdropper
+who doesn't know $p,q$ listens in, then we must show that they are very
+unlikely to figure out this message.
+
+First some definitions.  We know what it means for a number to be a square
+over the integers, that is $s$ is a square if there is another integer $x$
+such that $s= x^2$.  Over the numbers mod $N$, we say that $s$ is a {\em
+square modulo $N$} if there is an $x$ such that $s \equiv x^2 \pmod{N}$.
+If $x$ is such that $0 \leq x <N$ and $s \equiv x^2 \pmod{N}$, then $x$ is
+the {\em square root of $s$}.
+
+
+\bparts
+
+\ppart What are the squares modulo 5?  For each nonzero square in
+the interval $[0,\dots,4]$, how many square roots does it have?
+
+\begin{solution}0,1,4 are the squares.  1 and 4 each have 2 square roots (1,4)
+and (2,3) respectively.  2 and 3 have 0 square roots.
+\end{solution}
+
+\ppart For each integer in $[1,\dots,14]$ that is relatively prime to 15,
+how many square roots (modulo 15) does it have?  Note that all the square
+roots are {\em also} relatively prime to 15.  We won't go through why this
+is so here, but keep in mind that this is a general phenomenon!
+
+\begin{solution}1,4 each have 4 square roots. 2,7,8,11,13,14 have no
+square roots.
+\end{solution}
+
+\ppart Suppose that $p$ is a prime such that $p \equiv 3 \pmod{4}$.  It
+turns out that squares modulo $p$ have exactly 2 square roots.  First show
+that $(p+1)/4$ is an integer.  Next figure out the two square roots of
+1 modulo $p$.  Then show that you can find a ``square root mod a prime
+$p$'' of a number by raising the number to the $(p+1)/4$th power.
+That is, given $s$, to find $x$ such that $s \equiv x^2 \pmod{p}$, you can
+compute $\rem{s^{(p+1)/4}}{p}$.
+
+\begin{solution}If $s \equiv x^2 \pmod{p}$, then
+\[
+s^{(p+1)/4} \equiv x^{(p+1)/2} \pmod{p} \equiv
+x^{(p-1)/2} \cdot x \pmod{p} .
+\]
+The square roots of $1$ modulo $p$ are just $1$ and $-1$.  Now by Fermat's
+theorem, the latter is equivalent modulo $p$ to both $+x$ and $-x$.
+\end{solution}
+
+\ppart By something called the Chinese Remainder Theorem, one can
+show that if $p,q$ are distinct primes, then $s$ is a square modulo
+$N =p \cdot q$ if and only if $s$ is a square modulo $p$ and $s$ is
+a square modulo $q$.  In particular, if $s \equiv x^2 \pmod{p} \equiv
+(x')^2 \pmod{p}$ and $s\equiv y^2 \pmod{p} \equiv (y')^2 \pmod{p}$
+then $s$ has exactly four square roots, namely,
+\[
+s \equiv (xy)^2 \equiv (x'y)^2  \equiv (xy')^2 \equiv (x'y')^2 \pmod{N}.
+\]
+So, if you know $p,q$, using the solution to the previous problem
+part, you can efficiently find the square roots of $s$! Thus, given
+the secret key, decoding is easy.
+
+\iffalse
+%Though there is no proof that the RSA cryptosystem is as
+%hard to break as factoring (a problem which we believe to
+%be hard), the following cryptosystem, which can be thought
+%of as using the value of 2 in the exponent in the RSA function,
+%does have a proof that breaking it is as hard as factoring
+%products of two primes.  We are going to prove a weaker
+%version of the statement, although it will contain all of
+%the main ideas of the full version.
+%
+\fi
+
+{\em But what if you don't know $p,q$?}  Suppose as above that $N= p \cdot
+q$, where $p,q$ are two primes equivalent to $3 \pmod{4}$.
+%You are not told the factorization of $N$, but instead
+Let's assume that the evil message interceptor claims to have a
+program that can find all four square roots of any number modulo
+$N$.  Show that he can actually use this program to efficiently find
+the factorization of $N$.
+%Thus, if he can efficiently
+%find square roots mod $N$, then he can factor $N$. and
+Thus, unless this evil message interceptor is extremely smart and
+has figured out something that the rest of the scientific community
+has been working on for years, it is very unlikely that this
+efficient square root program exists!
+%so it is very unlikely that you can find square roots mod $N$!
+\hint Pick $r$ arbitrarily from $1,\ldots,N-1$.  If $gcd(N,r)>1$, then you
+are done (why?) so you can halt.  Otherwise, use the program to find all
+four square roots of $r$, call them $r,-r,r',-r'$.  Note that $r^2 \equiv
+r'^2 \pmod{N}$.  How can you use these roots to factor $N$?
+
+\begin{solution}\[
+r^2-r'^2
+\equiv (r+r')(r-r') \pmod{N} \equiv 0 \pmod{N}.
+\]
+Therefore one of $(r+r')(r-r')$ divides $N=p \cdot q$, and since $p,q$ are
+primes, it must be the case that one of $(r+r'),(r-r')$ divided $p$,
+whereas the other divides $q$.  So compute $g = \gcd(N,r-r')$.  Output $g,
+N/g$ and halt.
+
+In the actual proof of security of the Rabin cryptosystem, you need
+to show that if you have a program that can find {\em any} square
+root of a number modulo $N$ then you can factor $N$.   But the
+outline of the proof is essentially the same.
+\end{solution}
+
+\ppart If the evil message interceptor knows that the message is the
+encoding one of two possible candidate messages (that is, either ``meet at
+dome at dusk'' or ``meet at dome at dawn'') and is just trying to figure
+out which of the two, then can he break this cryptosystem?
+
+\begin{solution}Yes, he just needs to square both candidate messages, take the
+remainder with $N$ (which he knows) and see which one was sent.  If it's
+so easy, then why is this a secure cryptosystem?  Well, it's still pretty
+good in the case when there are a lot of possible messages.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
