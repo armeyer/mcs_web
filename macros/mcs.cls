@@ -375,7 +375,7 @@
 \newcommand{\QOR}{\mbint{\textsc{or}}}
 \newcommand{\QXOR}{\mbint{\textsc{xor}}}
 \newcommand{\QAND}{\mbint{\textsc{and}}}
-\newcommand{\QIMPLIES}{\mbint{\textsc{\,implies\,}}}
+\newcommand{\QIMPLIES}{\mbint{\textsc{implies}}}
 \newcommand{\QIMP}{\QIMPLIES}
 \newcommand{\QIFF}{\mbint{\textsc{iff}}}
 \newcommand{\QNOT}{\mopt{\textsc{not}}}
