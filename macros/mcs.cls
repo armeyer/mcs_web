@@ -473,9 +473,9 @@
 \newcommand{\brkts}{\texttt{brkts}}
 \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
 \newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}
-\def\GC{text{GoodCount}}
-\def\RM{text{RecMatch}}
-\def\ES{text{Erasable}}
+\def\GC{\text{GoodCount}}
+\def\RM{\text{RecMatch}}
+\def\ES{\text{Erasable}}
 
 \newcommand{\prns}{\text{prns}}
 
@@ -488,8 +488,8 @@
 \newcommand{\minussym}{\mopt{-}}
 \newcommand{\sumsym}{\mbint{+}}
 
-\newcommand{\btg}{text{binary-2PTG}}
-\newcommand{\tg}{text{2PTG}}
+\newcommand{\btg}{\text{binary-2PTG}}
+\newcommand{\tg}{\text{2PTG}}
 \newcommand{\ms}[1]{\mathop{\mathrm{#1}}}
 
 \providecommand{\sg}{\ms{sg}}
