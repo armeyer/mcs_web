@@ -272,8 +272,8 @@
 \newcommand{\textbox}[1]{%
     \begin{center}
         \fbox{%
-            \begin{minipage}[t]{\textwidth}
-                \setlength{\parindent}{3ex}
+            \begin{minipage}[t]{\textwidth} %would be good to increase margins slightly
+%                \setlength{\parindent}{3ex}
                 \setlength{\parskip}{\medskipamount}
                 \vspace{0.5ex} #1 \vspace{0.5ex}%
             \end{minipage}%
