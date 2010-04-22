@@ -4,7 +4,7 @@
 
 \begin{pcomments}
   \pcomment{PS_linear_recur_closed_form}
-  \pcomment{from: F06.ps8}
+  \pcomment{from: F06.ps8 modified to use generating function}
 \end{pcomments}
 
 \pkeywords{
@@ -72,63 +72,87 @@
 \fi
 
 \begin{solution}
-\TBA{solution using generating functions}
-
-
-  First, we find the general solution to the homogenous recurrence.  The
-  characteristic equation is $r^2 - 3r + 2 = 0$.  The roots of this
-  equation are $r_1 = 1$ and $r_2 = 2$.  Therefore, the general solution
-  to the homogenous recurrence is
-
-  \begin{eqnarray*}
-  x_n & = & A + B 2^n.
-  \end{eqnarray*}
-
-  Now we must find a particular solution to the recurrence, ignoring the
-  boundary conditions.  Since the inhomogenous term is linear, we guess
-  there is a linear solution, that is, a solution of the form $an + b$.  If
-  the solution is of this form, we must have
+  
+  We begin by finding the generating function for the sequence as defined
+  by the recurrence:
+  
   \[
-  an+b = 3(a(n-1) + b) -2(a(n-2) + b) +n,
+  \ang{0,\ 1,\ 3 f_1 - 2 f_0 + 2,\ 3 f_2 - 2 f_1 + 3,\ 3 f_2 - 2 f_1 + 4,\ \dots}
   \]
-  which implies the absurd conclusion that
+  
+  We can do this by breaking the sequence into a sum of three sequences:
+  
   \[
-  n = -(3b +a).
+  \begin{array}{ccccccccccl}
+    & \langle & 0, & 3 f_0, & 3 f_1, & 3 f_2, & \dots & \rangle
+      & \corresp & 3 x F(x) \\
+    & \langle & 0, & 0, & -2 f_0, & -2 f_1, & \dots & \rangle
+      & \corresp & -2 x^2 F(x) \\
+  + & \langle & 0, & 1, & 2, & 3, & \dots & \rangle
+      & \corresp & \frac{x}{(1-x)^2} \\ \hline
+    & \langle & 0, & 3 f_0 + 1, & 3 f_1 - 2 f_0 + 2, & 3 f_2 - 2 f_1 + 3, & \dots & \rangle
+      & \corresp & 3 x F(x) - 2 x^2 F(x) + \frac{x}{(1-x)^2} \\
+  \end{array}
   \]
-
-  So we make another guess, this time that there is a quadratic solution of
-  the form $an^2 + bn +c$.  If the solution is of this form, we must have
+  
+  As we can see, the sum of the three sequences is equal to the sequence defined by the 
+  recurrence, so we may solve for $F(x)$ by solving the following:
   \[
-  an^2+bn+c = 3(a(n-1)^2+b(n-1)+c) - 2(a(n-2)^2+b(n-2)+c) + n,
+  F(x) = 3 x F(x) - 2 x^2 F(x) + \frac{x}{(1-x)^2}
   \]
-  which simplifies to
+  So
   \[
-  (2a+1)n + (b - 5a) = 0.
+  F(x) \cdot (1 - 3x + 2x^2) = \frac{x}{(1-x)^2}
   \]
-  This last equation is satisfied only if the coefficient of $n$ and the
-  constant term are both zero, which implies $a = -1/2$ and $b = -5/2$.
-  Apparently, any value of $c$ gives a valid particular solution.  For
-  simplicity, we choose $c = 0$ and obtain the particular solution:
+  Therefore, the generating function is (note that we may factor $(1 - 3x + 2x^2)$ into $(1 - 2x)(1 - x)$):
   \[
-  x_n = -\frac{1}{2}n^2 - \frac{5}{2} n.
+  F(x) = \frac{x}{(1-x)^3 \cdot (1-2x)}
   \]
-
-  The complete solution to the recurrence is the homogenous solution
-  plus the particular solution:
+  
+  Now, to find the closed form for the $n$th coefficient of this generating function, 
+  let's expand $F(x)$ into partial fractions:
   \[
-  x_n = A + B 2^n -\frac{1}{2}n^2 - \frac{5}{2} n
+  \frac{x}{(1-x)^3 \cdot (1-2x)} = \frac{A}{(1-x)^3} + \frac{B}{(1-x)^2} + \frac{C}{1-x} + \frac{D}{1-2x}
   \]
-  Substituting the initial conditions gives a system of linear equations:
-  \begin{eqnarray*}
-  0	& = &	A + B \\
-  1	& = &	A + 2 B - 3
-  \end{eqnarray*}
-
-  The solution to this linear system is $A = -4$ and $B = 4$.
-  Therefore, the complete solution to the recurrence is
+  
+  To find $A$, we can multiply both sides by $(1-x)^3 \cdot (1-2x)$ and substitute 1 for x, so:
   \[
-  x_n = 2^{n+2} -\frac{1}{2}n^2 - \frac{5}{2} n - 4.
+  (1) = A \cdot (1-2(1))
   \]
+  Therefore, we find that $A = -1$.
+  
+  We can solve for the other terms via a similar process:
+  \begin{gather*}
+  A = -1 \\
+  B = -1 \\
+  C = -2 \\
+  D = 4
+  \end{gather*}
+  
+  Substituting back into the equation:
+  \[
+  \frac{x}{(1-x)^3 \cdot (1-2x)} = - \frac{1}{(1-x)^3} - \frac{1}{(1-x)^2} - \frac{2}{1-x} + \frac{4}{1-2x}
+  \]
+  
+  Each term in the partial fraction expansions has a simple power series:
+  \begin{align*}
+  - \frac{1}{(1-x)^3} & = - (1 + 3x + 6x^2 + \dots + \frac{(n+1)(n+2)}{2}x^n) \\
+  - \frac{1}{(1-x)^2} & = - (1 + 2x + 3x^2 + \dots + (n+1)x^n) \\
+  - \frac{2}{1-x} & = -2 (1 + x + x^2 + \dots + x^n) \\
+  \frac{4}{1-2x} & = 4 (1 + 2x + 2x^2 + \dots + 2^n x^n)
+  \end{align*}
+  
+  (Note that $\frac{1}{(1-x)^3}$ is $\frac{1}{2}$ the derivative of $\frac{1}{(1-x)^2}$, so
+  its coefficient for $x^n$ is $\frac{1}{2}$ the coefficient of $\frac{1}{(1-x)^2}$ left shifted by 1 
+  and multiplied by $(n+1)$.)
+  
+  Summing up the coefficient of $x^n$ in each of these power series gives us:
+  \begin{align*}
+  x_{n} & = - \frac{(n+1)(n+2)}{2} - (n+1) - 2 + 4 \cdot 2^n \\
+        & = - \frac{1}{2} n^2 - \frac{3}{2} n - 1 - n - 1 - 2 + 4 \cdot 2^n \\
+        & = - \frac{1}{2} n^2 - \frac{5}{2} n - 4 + 2^{(n+2)}
+  \end{align*}
+  
 \end{solution}
 
   % \eparts
