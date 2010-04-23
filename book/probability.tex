@@ -1544,65 +1544,124 @@ conclusion we can reach assuming only pairwise independence.\fi
 %% The Birthday Principle %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Birthday Principle}\label{birthday_principle_sec}
 
-There are 100 students in a lecture hall.  What is the probability that
-some two people share a birthday?  Maybe about $1/3$?  Let's check!  More
-generally, suppose there are $n$ students and $d$ days in the year.
+There are 85 students in a class.  What is the probability that some
+birthday is shared by two people?  Comparing 85 students to the 365
+possible birthdays, you might guess the probability lies somewhere
+around $1/4$ ---but you'd be wrong: the probability that there will be
+two people in the class with matching birthdays is actually more than
+$0.9999$.
 
-We'll assume that a random choice of a student is made independently of
-the any other choices of students.  For simplicity, we'll assume that the
-probability that a randomly chosen student has a given birthday is $1/d$,
-with $d= 365$ in this case.  This randomness assumption is not really
-true, since more babies are born at certain times of year.  However, our
-analysis of this problem applies to many situations in computer science
-that are unaffected by leap days, snow days or Spring fever, so we won't
-dwell on those complications.
+To work this out, we'll assume that the probability that a randomly
+chosen student has a given birthday is $1/d$, where $d= 365$ in this
+case.  We'll also assume that a class is composed of $n$ randomly and
+independently selected students, with $n=85$ in this case.  These
+randomness assumptions are not really true, since more babies are born
+at certain times of year, and students' class selections are typically
+not independent of each other, but simplifying in this way gives us a
+start on analyzing the problem.  More importantly, these assumptions
+are justifiable in important computer science applications of birthday
+matching.  For example, the birthday matching is a good model for
+collisions between items randomly inserted into a hash table.  So we
+won't worry about things like Spring procreation preferences that make
+January birthdays more common, or about twins' preferences to take
+classes together (or not).  \iffalse , or that fact that a student
+can't be selected twice in making up a class list.  \fi
 
-A sensible sample space to model this experiment consists of all ways of
-assigning birthdays to the people of the group.  There are $d^n$ such
-assignments, since the first person can have $d$ different birthdays, the
-second person can have $d$ different birthdays, and so forth.
-Furthermore, every such assignment is equally probable by our assumption
-that birthdays are equally likely and independent of each other.
+Selecting a sequence of $n$ students for a class yields a sequence of
+$n$ birthdays.  Under the assumptions above, the $d^n$ possible
+birthday sequences are equally likely outcomes.  Let's examine the
+consequences of this probability model by focussing on the $i$th and
+$j$th elements in a birthday sequence, where $1 \leq i \neq j \leq n$.
+It makes for a better story if we refer to the $i$th birthday as
+``Alice's'' and the $j$th as ``Bob's.''
 
-It turns out to be be easier to calculate the complementary probability
-that everyone has a distinct birthday.  This event consists of $d (d - 1)
-(d - 2) \cdots (d - n + 1)$ outcomes, since we can select the birthday of
-the first person in $d$ ways, the birthday of the second person in $d - 1$
-ways, and so forth.  Therefore, the probability that everyone has a
-different birthday is:
+Now since Bob's birthday is assumed to be independent of Alice's, it
+follows that whichever of the $d$ birthdays Alice's happens to be, the
+probability that Bob has the same birthday $1/d$.  Next, If we look at
+two other birthdays ---call them ``Carol's'' and ``Don's'' ---then
+whether Alice and Bob have matching birthdays has nothing to do with
+whether Carol and Don have matching birthdays.  That is, the event
+that Alice and Bob have matching birthdays is independent of the event
+that Carol and Don have matching birthdays.  In fact, for any set of
+non-overlapping couples, the events that a couple has matching
+birthdays are mutually independent.
+
+In fact, it's pretty clear that the probability that Alice and Bob
+have matching birthdays remains $1/d$ whether or not Carol and
+\emph{Alice} have matching birthdays.  That is, the event that Alice
+and Bob match is also independent of Alice and Carol matching.  In
+short, the set of all events in which a couple has macthing birthdays
+is \index{pairwise independent} \emph{pairwise} independent, despite
+the overlapping couples.  This will be important in
+Chapter~\ref{deviation_chap} because pairwise independence will be
+enough to justify some conclusions about the expected number of
+matches.  However, it's obvious that these matching birthday events
+are \emph{not} \idx{mutually independent}, not even 3-way independent:
+if Alice and Bob match and also Alice and Carol match, then Bob and
+Carol will match.
+
+We could justify all these assertions of independence routinely using
+the four step method, but it's pretty boring, and we'll skip it.
+
+It turns out that as long as the number of students is noticeably
+smaller than the number of possible birthdays, we can get a pretty
+good estimate of the birthday matching probabilities by
+\emph{pretending} that the matching events are mutually independent.
+(An intuitive justification for this is that with only a small number
+of matching pairs, it's likely that none of the pairs overlap.)  Then
+the probability of \emph{no} matching birthdays would be the same as
+$r$th power of the probability that a couple does \emph{not} have
+matching birthdays, where $r \eqdef \binom{n}{2}$ is the number of
+couples.  That is, the probability of no matching birthdays would be
+\begin{equation}\label{11dbinn2}
+(1-1/d)^{\binom{n}{2}}.
+\end{equation}
+Using the fact that $e^x >1+x$ for all $x$,\footnote{This
+  approximation is obtained by truncating the Taylor series $e^{-x} =
+  1 - x + x^2/2!  - x^3/3! + \cdots$.  The approximation $e^{-x}
+  \approx 1 - x$ is pretty accurate when $x$ is small.} we would conclude
+that the probability of no matching birthdays is at most
+\begin{equation}\label{bday-approx}
+e^{-\dfrac{\binom{n}{2}}{d}}.
+\end{equation}
+
+The matching birthday problem fits in here so far as a nice example
+illustrating pairwise and mutual independence.  But it's actually not
+hard to justify the bound~\eqref{bday-approx} without any pretence or
+any explicit consideration of independence.  Namely, there are $d (d -
+1) (d - 2) \cdots (d - (n - 1))$ length $n$ sequences of distinct
+birthdays.  So the probability that everyone has a different birthday
+is:
 \begin{align*}
-\pr{\text{$n$ different birthdays}} & = \frac{d (d - 1) (d - 2) \cdots (d - n + 1)}{d^n}.
-\end{align*}
-For $n=100$, this probability is actually fantastically small ---less
-than one in a million!  If there are 100 people in a room, two are
-almost certain to share a birthday.
-
-Let's rewrite the right side of the preceding equation in a more
-insightful form that allows us to use the fact that $e^x >1+x$ for all
-$x$.\footnote{This approximation is obtained by truncating the Taylor
-series $e^{-x} = 1 - x + x^2/2! - x^3/3! + \cdots$.  The approximation
-$e^{-x} \approx 1 - x$ is pretty accurate when $x$ is small.}
-\begin{align}
-\pr{D=0} & = \paren{1 - \frac{0}{d}}
+\lefteqn{\frac{d (d - 1) (d - 2) \cdots (d - (n - 1))}{d^n}}\\
+   & = \frac{d}{d} \cdot \frac{d-1}{d} \cdot \frac{d-2}{d} \cdots \frac{d - (n - 1)}{d}\\
+   & = \paren{1 - \frac{0}{d}}
              \paren{1 - \frac{1}{d}}
              \paren{1 - \frac{2}{d}}
              \cdots
-             \paren{1 - \frac{n - 1}{d}}\notag\\
-       & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} \notag\\
-       & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\notag\\
-       & = e^{-\paren{n(n-1)/2d}} = e^{-\dfrac{\binom{n}{2}}{d}}.\label{bday-approx}
-\end{align}
+             \paren{1 - \frac{n - 1}{d}}\\
+   & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} 
+             & \text{(since $1+x < e^x$)} \\
+   & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\\
+   & = e^{-\paren{n(n-1)/2d}}\\
+   & = \text{the bound~\eqref{bday-approx}}.
+\end{align*}
 
-The exponent $\binom{n}{2}/d$ in\eqref{bday-approx} is close to $1$ when
-$n \approx \sqrt{2d}$.  In this case, the probability that two people
-share a birthday is close to $1/e$ which is roughly the break-even point,
-where it's equally likely whether or not a couple of people will share a
-birthday.  This leads to a rule which is useful in many contexts in
-computer science:
+For $n=85$ and $d = 365$,~\eqref{bday-approx} is less than $1/17,000$,
+which means the probability of having some pair of matching birthdays
+actually is more than $1- 1/17,000 > 0.9999$.  So it would be pretty
+astonishing if there were no pair of students in the class with
+matching birthdays.
+
+For $d \leq n^2/2$, the probability of no match turns out to be
+asymptotically equal to the upper bound~\eqref{bday-approx}.  For $d =
+n^2/2$ in particular, the probability of no match is asymptotically
+equal to $1/e$.  This leads to a rule of thumb which is useful in many
+contexts in computer science:
 
 \textbox{
 \begin{center}
-\large The \term{Birthday Principle}
+\large The \index{birthday principle} Birthday Principle
 \end{center}
 
 If there are $d$ days in a year and $\sqrt{2d}$ people in a
@@ -1610,42 +1669,21 @@ room, then the probability that two share a birthday is about
 $1 - 1/e \approx 0.632$.
 }
 
-For example, the Birthday Principle says that if you have $\sqrt{2 \cdot
-  365} \approx 27$ people in a room, then the probability that two share a
-birthday is about $0.632$.  The actual probability is about $0.626$, so
-the approximation is quite good.
+For example, the Birthday Principle says that if you have $\sqrt{2
+  \cdot 365} \approx 27$ people in a room, then the probability that
+two share a birthday is about $0.632$.  The actual probability is
+about $0.626$, so the approximation is quite good.  
 
-Notice that if we assumed that same-birthday events between two students
-were mutually independent, then the probability of no matching birthdays
-would be the same as the probability that two given students do \emph{not}
-have the same birthdays raised to the number of sets of two students.
-That is, the probability of no matching birthdays would be
-$(1-1/d)^{\binom{n}{2}}$, which would lead to the same upper
-bound/approximation~\eqref{bday-approx}.
+Among other applications, the Birthday Principle famously comes into
+play as the basis of ``birthday attacks'' that crack certain
+cryptographic systems.
 
-Now the probability that Alice and Bob have the same birthday remains
-$1/d$ whether or not Carol and Don have the same birthday, so these two
-events really are independent.  In fact, the probability that Alice and
-Bob have matching birthdays is $1/d$ whether or not Carol and \emph{Alice}
-have matching birthdays.  So the event that Alice and Bob match is also
-independent of Alice and Carol matching.  In short, all the distinct
-events of two students matching are \index{pairwise independent}
-\emph{pairwise} independent.  But they are \emph{not} \idx{mutually
-  independent}, not even 3-way independent: if Alice and Bob match and
-also Alice and Carol match, then Bob and Carol will match.\footnote{It is
-  not a coincidence that the fairly good approximation~\eqref{bday-approx}
-  can be derived from a faulty assumption of mutual independence, but we
-  won't go into that.}
-
-The Birthday Principle is a great rule of thumb with surprisingly many
-applications.  For example, the Principle tells how many items can be
-inserted into a hash table before collisions start to happen.  Also, there
-are ``birthday attacks'' based on this Principle that can crack certain
-cryptographic systems ---you'll learn about these in any introductory
-cryptography course.
-
+\iffalse
+ For example, the Principle tells how many items can be
+inserted into a hash table before collisions start to happen.  \fi
 
 \iffalse that cryptographic systems and digital signature schemes must be
 hardened against.  \fi
+
 
 \endinput
