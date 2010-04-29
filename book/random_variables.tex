@@ -1143,6 +1143,9 @@ analysis, this is also extremely small.
 \classproblems
 \pinput{CP_bigger_number_game}
 \pinput{CP_3_random_variables}
+
+\homeworkproblems
+\pinput{PS_drunken_sailor}
 \end{problems}
 
 %% Average & Expected Value %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1890,6 +1893,379 @@ But we're going to leave that assumption implicit.
 Random variables with infinite or ill-defined expectations are more the
 exception than the rule, but they do creep in occasionally.
 
+%FROM F02
+\section{Expectation of a Quotient}
+
+\subsection{A RISC Paradox}
+
+The following data is taken from a paper by some famous professors.  They
+wanted to show that programs on a RISC processor are generally shorter
+than programs on a CISC processor.  For this purpose, they applied a RISC
+compiler and then a CISC compiler to some benchmark source programs and
+made a table of compiled program lengths.
+\[
+\begin{array}{lccc}
+\text{Benchmark}        & \text{RISC}   & \text{CISC}   & \text{CISC/RISC}\\
+\hline
+\text{E-string search}  & 150           & 120           & 0.8 \\
+\text{F-bit test}       & 120           & 180           & 1.5 \\
+\text{Ackerman}         & 150           & 300           & 2.0 \\
+\text{Rec 2-sort}       & 2800          & 1400          & 0.5 \\
+\hline
+\text{Average}          &               &               & 1.2
+\end{array}
+\]
+Each row contains the data for one benchmark.  The numbers in the second
+and third columns are program lengths for each type of compiler.  The
+fourth column contains the ratio of the CISC program length to the RISC
+program length.  Averaging this ratio over all benchmarks gives the value
+1.2 in the lower right.  The authors conclude that ``CISC programs are
+20\% longer on average''.
+
+However, some critics of their paper took the same data and argued this
+way: redo the final column, taking the other ratio, RISC/CISC instead of
+CISC/RISC.
+\[
+\begin{array}{lccc}
+\text{Benchmark}        & \text{RISC}   & \text{CISC}   & \text{RISC/CISC}\\
+\hline
+\text{E-string search}  & 150           & 120           & 1.25 \\
+\text{F-bit test}       & 120           & 180           & 0.67 \\
+\text{Ackerman}         & 150           & 300           & 0.5 \\
+\text{Rec 2-sort}       & 2800          & 1400          & 2.0 \\
+\hline
+\text{Average}          &               &               & 1.1
+\end{array}
+\]
+From this table, we would conclude that RISC programs are 10\% longer
+than CISC programs on average!  We are using the same reasoning as in
+the paper, so this conclusion is equally justifiable--- yet the result
+is opposite!  What is going on?
+
+\subsection{A Probabilistic Interpretation}
+
+To resolve these contradictory conclusions, we can model the RISC vs.\ CISC
+debate with the machinery of probability theory.
+
+Let the sample space be the set of benchmark programs.  Let the random
+variable $R$ be the length of the compiled RISC program, and let the
+random variable $C$ be the length of the compiled CISC program.  We would
+like to compare the average length, $\expect{R}$, of a RISC program to the
+average length, $\expect{C}$, of a CISC program.
+
+To compare average program lengths, we must assign a probability to
+each sample point; in effect, this assigns a ``weight'' to each
+benchmark.  One might like to weigh benchmarks based on how frequently
+similar programs arise in practice.  Lacking such data, however, we
+will assign all benchmarks equal weight; that is, our sample space is
+uniform.
+
+In terms of our probability model, the paper computes $C / R$ for each
+sample point, and then averages to obtain $\expect{C / R} = 1.2$.  This
+much is correct.  The authors then conclude that ``CISC programs are 20\%
+longer on average''; that is, they conclude that $\expect{C} = 1.2\,
+\expect{R}$.
+
+Similarly, the critics calculation correctly showed that $\expect{R/C} =
+1.1$.  They then concluded that $\expect{R} = 1.1 \, \expect{C}$, that is,
+a RISC program is 10\% longer than a CISC program on average.
+
+These arguments make a natural assumption, namely, that
+\begin{falseclm}\label{false-quotient}
+If $S$ and $T$ are independent random variables with $T>0$, then
+\[
+\expect{\frac{S}{T}} = \frac{\expect{S}}{\expect{T}}.
+\]
+\end{falseclm}
+
+In other words False Claim~\ref{false-quotient} simply generalizes the
+rule for expectation of a product to a rule for the expectation of a
+quotient.  But the rule for requires independence, and we surely don't
+expect $C$ and $R$ to be independent: large source programs will lead to
+large compiled programs, so when the RISC program is large, so the CISC
+would be too.
+
+However, we can easily compensate for this kind of dependence: we should
+compare the lengths of the programs \emph{relative to the size of the
+source code}.  While the lengths of $C$ and $R$ are dependent, it's more
+plausible that their \emph{relative} lengths will be independent.  So we
+really want to divide the second and third entries in each row of the
+table by a ``normalizing factor'' equal to the length of the benchmark
+program in the first entry of the row.
+
+But note that normalizing this way will have no effect on the fourth
+column!  That's because the normalizing factors applied to the second and
+and third entries of the rows will cancel.  So the independence hypothesis
+of False Claim~\ref{false-quotient} may be justified, in which case the
+authors' conclusions would be justified.  But then, so would the
+contradictory conclusions of the critics.  Something must be wrong!  Maybe
+it's False Claim~\ref{false-quotient} (duh!), so let's try and prove it.
+
+\begin{falseproof}
+\begin{align}
+\expect{\frac{S}{T}} & = \expect{S \cdot \frac{1}{T}} \notag\\
+       & = \expect{S} \cdot \expect{\frac{1}{T}} & \text{(independence of $S$
+       and $T$)}\label{indST}\\
+      & = \expect{S} \cdot \frac{1}{\expect{T}}. \label{bugindST}\\
+      & = \frac{\expect{S}}{\expect{T}}.\notag
+\end{align}
+Note that line~\eqref{indST} uses the fact that if $S$ and $T$ are
+independent, then so are $S$ and $1/T$.  This holds because functions of
+independent random variables yield independent random variables, as shown
+in Problem~\ref{PS_independent_random_variables}.
+
+\end{falseproof}
+
+But this proof is bogus!  The bug is in line~\eqref{bugindST}, which assumes
+\begin{falsethm}\label{false-inverse}
+\[
+\expect{\frac{1}{T}} =  \frac{1}{\expect{T}}.
+\]
+\end{falsethm}
+Here is a counterexample:
+\begin{example*}
+Suppose $T=1$ with probability $1/2$ and $T= 2$ with probability $1/2$.
+Then
+\begin{eqnarray*}
+\frac{1}{\expect{T}} & = &\frac{1}{1 \cdot \frac{1}{2} + 2 \cdot \frac{1}{2}}\\
+    & = & \frac{2}{3}\\
+    & \neq & \frac{3}{4}\\
+    & = &\frac{1}{1} \cdot \frac{1}{2} + \frac{1}{2} \cdot \frac{1}{2}\\
+    & = & \expect{\frac{1}{T}}.
+\end{eqnarray*}
+The two quantities are not equal, so False Claim~\ref{false-inverse}
+really is false.
+\end{example*}
+
+Unfortunately, the fact that Claim~\ref{false-quotient}
+and~\ref{false-inverse} are false does not mean that they are never used!
+
+\subsection{The Proper Quotient}
+
+We can compute $\expect{R}$ and $\expect{C}$ as follows:
+\begin{eqnarray*}
+\expect{R}  & = &   \sum_{i \in \text{Range(R)}} i \cdot \pr{R = i} \\
+        & = &   \frac{150}{4}+\frac{120}{4}+\frac{150}{4}+\frac{2800}{4} \\
+        & = &   805 \\
+\\
+\expect{C}  & = &   \sum_{i \in \text{Range(C)}} i \cdot \pr{C = i} \\
+        & = &   \frac{120}{4}+\frac{180}{4}+\frac{300}{4}+\frac{1400}{4} \\
+        & = &   500
+\end{eqnarray*}
+
+Now since $\expect{R}/\expect{C} = 1.61$, we conclude that the average
+RISC program is 61\% longer than the average CISC program.  This is a
+third answer, completely different from the other two!  Furthermore, this
+answer makes RISC look really bad in terms of code length.  This one is
+the correct conclusion, under our assumption that the benchmarks deserve
+equal weight.  Neither of the earlier results were correct---not
+surprising since both were based on the same false Claim.
+
+\subsection{A Simpler Example [Optional]}
+
+\begin{optional}
+
+The source of the problem is clearer in the following, simpler example.
+Suppose the data were as follows.
+\[
+\begin{array}{lcccc}
+\text{Benchmark}        & \text{Processor A}    & \text{Processor B}
+                        & B / A                 & A / B  \\
+\hline
+\text{Problem 1}        & 2                     & 1             
+                        & 1/2                   & 2 \\
+\text{Problem 2}        & 1                     & 2
+                        & 2                     & 1/2 \\
+\hline
+\text{Average}          &                       &
+                        & 1.25                  & 1.25
+\end{array}
+\]
+
+Now the data for the processors A and B is exactly symmetric; the two
+processors are equivalent.  Yet, from the third column we would
+conclude that Processor B programs are 25\% longer on average, and
+from the fourth column we would conclude that Processor A programs are
+25\% longer on average.  Both conclusions are obviously wrong.
+
+The moral is that one must be very careful in summarizing data, we must
+not take an average of ratios blindly!
+
+\end{optional}
+
+\section{Infinite Linearity of Expectation}
+
+We know that expectation is linear over finite sums.  It's useful to
+extend this result to infinite summations.  This works as long as we avoid
+sums whose values may depend on the order of summation.
+
+\subsection{Convergence Conditions for Infinite Linearity}
+
+\begin{theorem}\label{linexp} [Linearity of Expectation]
+Let $R_0$, $R_1$, \dots, be random variables such that
+\[
+\sum_{i = 0}^\infty \expect{\abs{R_i}}
+\]
+converges.  Then
+\[
+   \expect{\sum_{i = 0}^\infty R_i} = \sum_{i = 0}^\infty \expect{R_i}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $T \eqdef \sum_{i = 0}^\infty R_i$.
+
+We leave it to the reader to verify that, under the given convergence
+hypothesis, all the sums in the following derivation are absolutely
+convergent, which justifies rearranging them as follows:
+\begin{align*}
+\sum_{i=0}^\infty \expect{R_i}
+    &= \sum_{i=0}^\infty \sum_{s \in \sspace} R_i(s) \cdot \prob{s} 
+            & \text{(Def.~\ref{defexp1})}\\
+    &= \sum_{s \in \sspace} \sum_{i=0}^\infty R_i(s) \cdot \prob{s} 
+           & \text{(exchanging order of summation)}\\
+    &= \sum_{s \in \sspace} \left[ \sum_{i=0}^\infty R_i(s) \right] \cdot \prob{s}
+                & \text{(factoring out $\pr{s}$)}\\
+    &= \sum_{s \in \sspace} T(s) \cdot \prob{s} & \text{(Def.\ of $T$)}\\
+    &= \expect{T} & \text{(Def.~\ref{defexp1})}\\
+    &= \expect{\sum_{i = 0}^\infty R_i}. &  \text{(Def.\ of $T$)}.
+\end{align*}
+\end{proof}
+
+Note that the finite linearity of expectation we established in
+Corollary~\ref{linexp-k-thm} follows as a special case of
+Theorem~\ref{linexp}: since $\expect{R_i}$ is finite, so is
+$\expect{\abs{R_i}}$, and therefore so is their sum for $0 \leq i \leq n$.
+Hence the convergence hypothesis of Theorem~\ref{linexp} is trivially
+satisfied if there are only finitely many $R_i$'s.
+
+\iffalse
+\textbf{Exercise:} Show that linearity of expectation fails for the sum of
+two variables, one with expectation $+\infty$ and the other with
+$-\infty$.
+\fi
+
+\subsection{A Paradox}
+One of the simplest casino bets is on ``red'' or ``black'' at the roulette
+table.  In each play at roulette, a small ball is set spinning around a
+roulette wheel until it lands in a red, black, or green colored slot.
+The payoff for a bet on red or black matches the bet; for example, if you bet
+$\$10$ on red and the ball lands in a red slot, you get back your original
+$\$10$ bet plus another matching $\$10$.
+
+In the US, a roulette wheel has 2 green slots among 18 black and 18 red
+slots, so the probability of red is $p::= 18/38 \approx 0.473$.  In
+Europe, where roulette wheels have only 1 green slot, the odds for red
+are a little better ---that is, $p = 18/37 \approx 0.486$---but still less
+than even.  To make the game fair, we might agree to ignore green, so that
+$p = 1/2$.
+
+There is a notorious gambling strategy which seems to guarantee a profit
+at roulette: bet $\$10$ on red, and keep doubling the bet until a red
+comes up.  This strategy implies that a player will leave the game as a
+net winner of $\$10$ as soon as the red first appears.  Of course the
+player may need an awfully large bankroll to avoid going bankrupt before
+red shows up---but we know that the mean time until a red occurs is $1/p$,
+so it seems possible that a moderate bankroll might actually work out.
+(In this setting, a ``win'' on red corresponds to a ``failure'' in a
+mean-time-to-failure situation.)
+
+Suppose we have the good fortune to gamble against a fair roulette wheel.
+In this case, our expected win on any spin is zero, since at the $i$th
+spin we are equally likely to win or lose $10 \cdot 2^{i-1}$ dollars.  So
+our expected win after any finite number of spins remains zero, and
+therefore our expected win using this gambling strategy is zero.  This is
+just what we should have anticipated in a fair game.
+
+But wait a minute.  As long as there is a fixed, positive probability of
+red appearing on each spin of the wheel---even if the wheel is
+unfair---it's \emph{certain} that red will eventually come up.  So with
+probability one, we leave the casino having won $\$10$, and our expected
+dollar win is obviously $\$10$, not zero!
+
+Something's wrong here.  What?
+
+\subsection{Solution to the Paradox}
+
+The expected amount won is indeed $\$10$.
+
+The argument claiming the expectation is zero is flawed by an invalid use
+of linearity of expectation for an infinite sum.  To pinpoint this flaw,
+let's first make the sample space explicit: a sample point is a sequence
+$B^nR$ representing a run of $n \geq 0$ black spins terminated by a red
+spin.  Since the wheel is fair, the probability of $B^nR$ is $2^{-(n+1)}$.
+
+Let $C_i$ be the number of dollars won on the $i$th spin.  So 
+$C_i = 10 \cdot 2^{i-1}$ 
+when red comes up for the first time on the $i$th spin, that is, at
+precisely one sample point, namely $B^{i-1}R$.  Similarly, 
+$C_i = -10  \cdot  2^{i-1}$ 
+when the first red spin comes up after the $i$th spin, namely, at the
+sample points $B^nR$ for $n \geq i$.  Finally, we will define $C_i$ by
+convention to be zero at sample points in which the session ends before the
+$i$th spin, that is, at points $B^nR$ for $n < i-1$.
+
+The dollar amount won in any gambling session is the value of the sum
+$\sum_{i = 1}^\infty C_i$.  At any sample point $B^nR$, the value of this
+sum is
+\[
+10 \cdot -(1 + 2 + 2^2 + \dots + 2^{n - 1}) + 10 \cdot 2^n  = 10,
+\]
+which trivially implies that its expectation is 10 as well.  That is, the
+amount we are \emph{certain} to leave the casino with, as well as
+expectation of the amount we win, is $\$10$.
+
+Moreover, our reasoning that $\expect{C_i} = 0$ is sound, so 
+\[
+\sum_{i = 1}^\infty \expect{C_i} = \sum_{i = 1}^\infty 0 = 0.
+\]
+
+The flaw in our argument is the claim that, since the expectation at each
+spin was zero, therefore the final expectation would also be zero.
+Formally, this corresponds to concluding that
+\[
+\expect{\mbox{amount won}}  =  \expect{\sum_{i = 1}^\infty C_i}
+  =  \sum_{i = 1}^\infty \expect{C_i} = 0.
+\]
+The flaw lies exactly in the second equality.  This is a case where
+linearity of expectation fails to hold---even though both $\sum_{i =
+1}^\infty \expect{C_i}$ and $\expect{\sum_{i = 1}^\infty C_i}$ are
+finite---because the convergence hypothesis needed for linearity is false.
+Namely, the sum
+\[
+\sum_{i = 1}^\infty \expect{\abs{C_i}}
+\]
+does not converge.  In fact, the expected value of $\abs{C_i}$ is $10$
+because $\abs{C_i} =  10 \cdot 2^{i}$  with probability $2^{-i}$ and
+otherwise is zero, so this sum rapidly approaches infinity.
+
+Probability theory truly leads to this apparently paradoxical conclusion: a
+game allowing an unbounded---even though always finite---number of ``fair''
+moves may not be fair in the end.  In fact, our reasoning leads to an even
+more startling conclusion: even against an \emph{unfair} wheel, as long as
+there is some fixed positive probability of red on each spin, we are
+certain to win $\$10$!
+
+This is clearly a case where naive intuition is unreliable: we don't
+expect to beat a fair game, and we do expect to lose when the odds are
+against us.  Nevertheless, the ``paradox'' that in fact we always win by
+bet-doubling cannot be denied.
+
+But remember that from the start we chose to assume that no one goes
+bankrupt while executing our bet-doubling strategy.  This assumption is
+crucial, because the expected loss while waiting for the strategy to
+produce its ten dollar profit is actually infinite!  So it's not
+surprising, after all, that we arrived at an apparently paradoxical
+conclusion from an unrealistic assumption.
+
+This example also serves a warning that in making use of infinite
+linearity of expectation, the convergence hypothesis which justifies it
+had better be checked.
+
+%END F02
+
+%WALD'S theorem see F02 ln11-12.
+
 \fi
 
 \subsection{The Expected Value of a Product}
@@ -1981,12 +2357,17 @@ independent, then
 
 %% Average & Expected Value Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
+\practiceproblems
+\pinput{TP_psets_and_laundry}
+\pinput{TP_grading_final_exam}
+
 \classproblems
 \pinput{CP_carnival_dice_fair}
 \pinput{CP_sixteen_desks}
 \pinput{CP_probable_satisfiability}
 \pinput{CP_consecutive_coin_flips}
 \pinput{CP_independent_product}
+\pinput{PS_logic_and_probability}
 \pinput{CP_probable_satisfiability_nk}
 
 \homeworkproblems
