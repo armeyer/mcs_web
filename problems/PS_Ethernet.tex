@@ -1,0 +1,62 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_Ethernet}
+  \pcomment{modified from S00 L23}
+\end{pcomments}
+
+\pkeywords{
+ Ethernet
+ exponential backoff
+ probability
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+%We've now learned enough probability to look at an interesting application of randomization in computer science. This is the math behind the paper you will read in 6.033. 
+
+The most common way to build a local area network nowadays is an Ethernet: basically, a single wire to which we can attach any number of computers. The communication protocol is quite simple: anyone who wants to talk to another computer broadcasts a message on the wire, hoping the other computer will hear it. The problem is that if {\em more} than one computer broadcasts at once, a {\em collision} occurs that garbles all messages we are trying to send. The transmission only works if {\em exactly one} machine broadcasts at one time. 
+
+Let's consider a simple example. There are $n$ machines connected by an Ethernet, and each wants to broadcast a message. We can imagine time divided into a sequence of {\em slots}, each of which is long enough for one message broadcast. 
+%What we would like is for each machine to take one of the slots and use it to broadcast their message. All $n$ broadcasts can finish with $n$ time slots. There's one big problem with this approach: how do they decide who goes first? Note that they can't coordinate a strategy since they can't communication in the first place! Each computer needs to make its own decision about whether to broadcast or not. Some thought suggests a big problem: whatever algorithm is used by the various machines to decide whether to broadcast, they will all make the same decision! They will all broadcast, or all stay silent. Either way, we can't get a message through. The problem is symmetry: from every machine's perspective, the environment looks the same, so they all act the same. One can prove (using invariants) that there is no (\em deterministic} way around this problem. A simple way to get around this problem by breaking symmetry is {\em randomization}. 
+Suppose each computer flips an independent coin, and decides to broadcast with probability $p$. 
+
+\bparts
+\ppart What is the probability that exactly one message gets through? {\em Hint:} Consider the event $A_i$ that machine $i$ transmits but no other does. 
+
+\begin{solution}
+Pr$(A_i) = p(1-p)^{n-1}$.  
+
+Thus, since the events $A_i$ are disjoint, we have 
+\begin{eqnarray*}
+\mbox{Pr}(\cup A_i) &=& \sum_{i=1}^n \mbox{Pr}(A_i) \\
+&=& np(1-p)^{n-1}
+\end{eqnarray*}
+\end{solution}
+
+\ppart Determine the maximum probability (over all $0\leq p\leq 1$) that exactly one message gets through. 
+
+\begin{solution}
+We want to maximize the above expression as a function of $p$. Differentiating the above expression with respect to $p$ and setting to zero gives the equation: 
+\begin{eqnarray*}
+(1-p)^{n-1} - (n-1)p(1-p)^{n-2} &=& 0 \\
+(1-p) - (n-1)p &=& 0 \\
+p &=& \frac{1}{n}
+\end{eqnarray*}
+
+Plugging in the value of $p$, we find the maximum probability that exactly one message gets through: 
+$$np(1-p)^{n-1} = (1-1/n)^{n-1} \approx 1/e$$
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
