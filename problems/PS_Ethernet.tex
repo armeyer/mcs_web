@@ -1,13 +1,13 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{PS_Ethernet}
+  \pcomment{PS_ethernet}
   \pcomment{modified from S00 L23}
 \end{pcomments}
 
 \pkeywords{
- Ethernet
- exponential backoff
+ ethernet
+ exponential_backoff
  probability
 }
 
@@ -16,61 +16,94 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-%We've now learned enough probability to look at an interesting application of randomization in computer science. This is the math behind the paper you will read in 6.033. 
+%We've now learned enough probability to look at an interesting
+%application of randomization in computer science. This is the math
+%behind the paper you will read in 6.033.
 
-The most common way to build a local area network nowadays is an Ethernet: basically, a single wire to which we can attach any number of computers. The communication protocol is quite simple: anyone who wants to talk to another computer broadcasts a message on the wire, hoping the other computer will hear it. The problem is that if {\em more} than one computer broadcasts at once, a {\em collision} occurs that garbles all messages we are trying to send. The transmission only works if {\em exactly one} machine broadcasts at one time. 
+The most common way to build a local area network nowadays is an
+Ethernet: basically, a single wire to which we can attach any number
+of computers. The communication protocol is quite simple: anyone who
+wants to talk to another computer broadcasts a message on the wire,
+hoping the other computer will hear it. The problem is that if {\em
+  more} than one computer broadcasts at once, a {\em collision} occurs
+that garbles all messages we are trying to send. The transmission only
+works if {\em exactly one} machine broadcasts at one time.
 
-Let's consider a simple example. There are $n$ machines connected by an Ethernet, and each wants to broadcast a message. We can imagine time divided into a sequence of {\em slots}, each of which is long enough for one message broadcast. 
-%What we would like is for each machine to take one of the slots and use it to broadcast their message. All $n$ broadcasts can finish with $n$ time slots. There's one big problem with this approach: how do they decide who goes first? Note that they can't coordinate a strategy since they can't communication in the first place! Each computer needs to make its own decision about whether to broadcast or not. Some thought suggests a big problem: whatever algorithm is used by the various machines to decide whether to broadcast, they will all make the same decision! They will all broadcast, or all stay silent. Either way, we can't get a message through. The problem is symmetry: from every machine's perspective, the environment looks the same, so they all act the same. One can prove (using invariants) that there is no (\em deterministic} way around this problem. A simple way to get around this problem by breaking symmetry is {\em randomization}. 
-Suppose each computer flips an independent coin, and decides to broadcast with probability $p$. 
+Let's consider a simple example. There are $n$ machines connected by
+an ethernet, and each wants to broadcast a message.  We can imagine
+time divided into a sequence of intervals, each of which is long
+enough for one message broadcast.
+
+%What we would like is for each machine to take one of the slots and
+%use it to broadcast their message. All $n$ broadcasts can finish with
+%$n$ time slots. There's one big problem with this approach: how do
+%they decide who goes first? Note that they can't coordinate a
+%strategy since they can't communication in the first place! Each
+%computer needs to make its own decision about whether to broadcast or
+%not. Some thought suggests a big problem: whatever algorithm is used
+%by the various machines to decide whether to broadcast, they will all
+%make the same decision! They will all broadcast, or all stay
+%silent. Either way, we can't get a message through. The problem is
+%symmetry: from every machine's perspective, the environment looks the
+%same, so they all act the same. One can prove (using invariants) that
+%there is no (\em deterministic} way around this problem. A simple way
+%to get around this problem by breaking symmetry is {\em
+%randomization}.
+
+Suppose each computer flips an independent coin, and decides to
+broadcast with probability $p$.
 
 \bparts
-\ppart What is the probability that exactly one message gets through? {\em Hint:} Consider the event $A_i$ that machine $i$ transmits but no other does. 
+
+\ppart What is the probability that exactly one message
+gets through in a given interval?  \hint Consider the event $A_i$ that
+machine $i$ transmits but no other does.
 
 \begin{solution}
-Pr$(A_i) = p(1-p)^{n-1}$.  
+\begin{equation}\label{pra_i}
+\pr{A_i} = p(1-p)^{n-1}.
+\end{equation}
 
 Thus, since the events $A_i$ are disjoint, we have 
-\begin{eqnarray*}
-\mbox{Pr}(\cup A_i) &=& \sum_{i=1}^n \mbox{Pr}(A_i) \\
-&=& np(1-p)^{n-1}
-\end{eqnarray*}
+\begin{equation}\label{lguna_i}
+\pr{\lgunion A_i} = \sum_{i=1}^n \pr{A_i} = np(1-p)^{n-1}.
+\end{equation}
 \end{solution}
 
-\ppart Assuming that the probability $P$ that machine $i$ gets a message through is independent of prior collisions, what is the expected time it takes for $i$ to get a message through? 
+\ppart What is the expected time it takes for machine $i$ to get a
+message through?
 
 \begin{solution}
-From part (a), $P = p(1-p)^{n-1}$. 
-
-The expected amount of time $E(T)$ is: 
-\begin{eqnarray*}
-E(P) & = & P + 2P(1-P) + 3P(1-P)^2+ 4P(1-P)^3 + \cdots \\
-& = & \Sigma_{i=1}^{\infty} i\cdot P(1-P)^{i-1} \\
-& = & \Sigma_{i=1}^{\infty} 1\cdot P(1-P)^{i-1}+(i-1)\cdot P(1-P)^{i-1} \\
-& = & \Sigma_{i=1}^{\infty} 1\cdot P(1-P)^{i-1} + \Sigma_{i=1}^{\infty} (i-1) \cdot P(1-P)^{i-1} \\
-& = & \frac{P}{1-(1-P)} + \Sigma_{i=2}^{\infty} (i-1) \cdot P(1-P)^{i-1} \\
-& = & \frac{P}{1-(1-P)} + \frac{P(1-P)}{1-(1-P)} + \Sigma_{i=3}^{\infty} (i-2) \cdot P(1-P)^{i-1} \\
-& = & \frac{P}{1-(1-P)} + \frac{P(1-P)}{1-(1-P)} + \frac{P(1-P)^2}{1-(1-P)} + \cdots \\ 
-& = & \Sigma_{j=1}^{\infty} \frac{P(1-P)^{j-1}}{1-(1-P)} \\
-& = & \frac{P}{1-(1-P)} \Sigma_{j=1}^{\infty} (1-P)^{j-1} \\
-& = & \frac{P}{P}\cdot \frac{1}{1-(1-P)} \\
-& = & \frac{1}{P}
-\end{eqnarray*}
+This is just mean time to failure, where machine $i$ getting a message
+through is the ``failure.''  So the answer is $1/P$ where $P \eqdef
+\pr{A_i}$ is given by~\eqref{pra_i}.
 \end{solution}
 
-%\ppart Determine the maximum probability (over all $0\leq p\leq 1$) that exactly one message gets through. 
+\begin{staffnotes}
+The following part should have been included:
 
-%\begin{solution}
-%We want to maximize the above expression as a function of $p$. Differentiating the above expression with respect to $p$ and setting to zero gives the equation: 
-%\begin{eqnarray*}
-%(1-p)^{n-1} - (n-1)p(1-p)^{n-2} &=& 0 \\
-%(1-p) - (n-1)p &=& 0 \\
-%p &=& \frac{1}{n}
-%\end{eqnarray*}
+\ppart What value of $p$ (as a function of $n$) minimizes the expected
+time for the network to successfully transmit some message?  Conclude
+that the network can be expected to transmit a message after at most
+three intervals.
 
-%Plugging in the value of $p$, we find the maximum probability that exactly one message gets through: 
-%$$np(1-p)^{n-1} = (1-1/n)^{n-1} \approx 1/e$$
-%\end{solution}
+\begin{solution}
+We want to maximize the expression~\eqref{lguna_i} as a function of
+$p$.  Differentiating the above expression with respect to $p$ and
+setting to zero gives the equation:
+\begin{eqnarray*}
+(1-p)^{n-1} - (n-1)p(1-p)^{n-2} &=& 0 \\
+               (1-p) - (n-1)p &=& 0 \\
+                            p &=& \frac{1}{n}
+\end{eqnarray*}
+
+Plugging in the $1/n$ for $p$ in~\eqref{lguna_i}, we find the maximum
+probability that some message gets through successfully is
+\[
+np(1-p)^{n-1} = \paren{1-\frac{1}{n}}^{n-1} \sim 1/e,
+\]
+so the minimized expected time is asymptotically equal to $e < 3$.
+\end{staffnotes}
 
 \eparts
 
