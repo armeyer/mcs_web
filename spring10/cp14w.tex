@@ -1,0 +1,446 @@
+%from S08 cp13m
+
+\documentclass[11pt,twoside]{article}    
+\usepackage{latex-macros/course}% !! use the macros 
+
+\begin{document} 
+\inclassproblems{14, Wed.}                    % !! start the paper
+
+\newcommand{\vout}[1]{\text{out}(#1)}
+\newcommand{\vin}[1]{\text{in}(#1)}
+\newcommand{\odeg}[1]{\text{out-degree}(#1)}
+\newcommand{\ideg}[1]{\text{in-degree}(#1)}
+
+\begin{problem}
+
+Consider the following random-walk graph:
+
+\mfigure{!}{1in}{figures/randomWalkFigs/bipart} 
+
+\bparts
+\ppart Find a stationary distribution.
+\solution{$d(x) = d(y) = 1/2$}
+
+\ppart If you start at node $x$ and take a (long) random walk, does the
+distribution over nodes ever get close to the stationary distribution?
+\solution{No! you just alternate between nodes $x$ and $y$.}
+
+\eparts
+
+Consider the following random-walk graph:
+
+\mfigure{!}{1in}{figures/randomWalkFigs/stable}
+
+\bparts
+\ppart Find a stationary distribution.
+\solution{$d(w) = 9/19$, $d(z) = 10/19$.  You can derive this  by
+  setting $d(w) = (9/10)d(z)$, $d(z) = d(w) + (1/10)d(z)$, and $d(w) +
+  d(z) = 1$.  There is a unique solution.}
+
+\ppart If you start at node $w$ and take a (long) random walk, does
+the distribution over nodes ever get close to the stationary
+distribution?  We don't want you to prove anything here, just do a few
+steps and see what's happening.
+\solution{
+  Yes, it does.
+}
+
+\eparts
+
+
+Consider the following random-walk graph:
+
+\mfigure{!}{1in}{figures/randomWalkFigs/sinky}
+
+\bparts
+\ppart Is there more than one stationary distribution? How many are
+there?
+\solution{Yes, there are infinitely many.  Just set $d(b)=d(c)=0$, $d(a)
+  = p$ for any $p$, and $d(d) = 1-p$.  }
+
+
+\ppart If you start at node $b$ and take a long random walk, does the
+distribution over nodes ever get close to a stationary distribution?  We
+don't want you to prove anything here, just do a few steps and see what's happening.
+\solution{
+  Yes.
+}
+
+\eparts
+\end{problem}
+
+\begin{problem}
+  For the following gambling problems, use $w_n$ as the
+  probability of reaching target \$$T$ before going broke,
+  when starting from \$$n$.  
+
+  Give recurrences for each of the following scenarios.  
+  \bparts
+  \ppart Placing \$1 bets on the ``1st dozen'' in roulette.
+  This bet wins when a number $1,2,\ldots,12$ comes in and pays \$$2$.
+  Recall that there are $38$ numbers on the roulette wheel.
+
+  \solution{ The probability of winning a bet is $12/38$.  Thus, we
+    have 
+    \[ w_{n} = (26/38)w_{n-1} + (12/38)w_{n+2} \ , \]
+    which implies
+    \[ w_{n+2} = (38/12)w_n - (26/12)w_{n-1} \ . \]
+  }
+  
+  \ppart The following is intended to be an approximation of playing
+  poker at a table with eight players.  Each bet is \$10.  You win
+  \$70 with probability $1/8$.  You lose with probability $7/8$.  
+
+  \solution{
+    \[ w_{n} = (1/8) w_{n+70} + (7/8) w_{n-10} \]
+    which implies that
+    \[ w_{n+70} = 8w_n - 7w_{n-10} \]
+  }
+  
+  \ppart Suppose you play the same poker game, but you have to pay the
+  dealer a ``rake'' of \$5 every time you win a hand.
+  \solution{
+    All that happens is that you win \$65 instead of \$70. 
+    \[ w_{n+65} = 8w_n - 7w_{n-10} \]
+  }
+    
+  \ppart What about if there's no rake, but the dealer charges \$1 for
+  every hand regardless of whether you win or lose? (At casinos, this
+  is called ``paying time.'' It's not actually every hand, but it's
+  also usually more than \$1.) 
+  \solution{
+    \[ w_{n+69} = 8w_n - 7w_{n-11} \]
+  }
+  \eparts
+\end{problem}
+
+  
+\begin{problem}
+  Suppose you place \$1 bets in a game with the following properties:
+  \begin{enumerate}
+  \item you win \$1 with positive probability $p<1$,
+  \item you lose with positive probability $q < 1-p$,
+  \item otherwise you \term{tie} with probability, $\tau$.  A ``tie'' means
+    that you get back your \$1 bet, leaving you with the same amount of
+    money (capital) that you had before the bet.
+  \end{enumerate}
+  
+  \bparts
+
+  \ppart Let $w_n$ be the probability of reaching the target, \$$T$,
+  before going broke, when starting from, \$$n$.  Without finding the
+  recurrence, how do you think $w_n$ for this problem should compare to
+  the one from lecture?  Why?
+ 
+  \ppart\label{wnrec} The preceding description of the game leads to a
+  simple linear recurrence for $w_n$ involving $p$, $q$ and $\tau$.  Give
+  this recurrence.  (Don't try to solve it yet.)
+
+  \solution{ If we win the first bet, our probability of winning becomes
+    $w_{n+1}$, if we lose, our probability of winning becomes $w_{n-1}$,
+    and if we tie, our probability of winning remains $w_n$.  So by the
+    Total Probability Law,
+  \[
+    w_n = \tau w_n + q w_{n-1} + p w_{n+1}.
+  \]
+    Rearranging terms, we get
+\begin{equation}\label{wn1}
+      w_{n+1} = \frac{1-\tau}{p}w_n - \frac{q}{p}w_{n-1}.
+\end{equation}}
+
+\iffalse
+Shifting $n$ by 1 yields
+\[
+    w_n = \frac{1-\tau}{p}w_{n-1} - \frac{q}{p}w_{n-2},
+\]
+  for $n \geq 2$.\fi
+
+  \ppart\label{rrec} Show that the recurrence from part~\ref{wnrec} can be rewritten
+  solely in terms of the ratio $r \eqdef q/p$ (without any other
+  occurrences of $p,q$, or $\tau$).  Conclude that $w_n$ is uniquely
+  determined by $r$, $n$ and $w_1$.
+
+  \solution{
+\begin{align}
+      w_{n+1} & = \frac{1-\tau}{p}w_n - \frac{q}{p}w_{n-1} &\text{(equation~\eqref{wn1})}\\
+            & = \frac{1-(1-(p+q))}{p}w_n - rw_{n-1} & \text{(since $\tau = 1-(p+q)$)}\\
+            & = (1+r)w_n-rw_{n-1},
+\end{align}
+so we have
+\begin{equation}\label{wn2}
+w_{n+1} = (1+r)w_n - rw_{n-1}.
+\end{equation}
+Since~\eqref{wn2} provides a recurrence definition of $w_n$ in which only
+$r$ appears, it should follow that for any fixed value of $r$, the
+probability, $w_n$, has the same value for all $\tau=1-(p+q)$.  However,
+the recurrence~\eqref{wn2} uniquely determines $w_n$ \emph{given} $w_0$
+and $w_1$.  We know $w_0 = 0$, so we can conclude that given, $r$, $n$,
+and $w_1$, the probability, $w_n$, is uniquely determined by~\eqref{wn2}.}
+
+\ppart Verify that the recurrence from part~\ref{rrec} is the
+\emph{same} recurrence we derived for Gambler's Ruin.  Then explain
+why $w_1$ is also the same as we derived for Gambler's Ruin, and
+depends only on $r$, $n$, and $T$.  Conclude that $w_n$ depends only
+on $r$, $n$ and $T$ (not on $\tau$), and therefore has the same value
+as for Gambler's Ruin.
+
+\solution{The recurrence~\eqref{wn2} is actually the \emph{same}
+  recurrence we derived for Gambler's Ruin.  
+
+  For Gambler's Ruin, we found
+  a general solution for $w_n$ satisfying~\eqref{wn2} solely in terms of
+  $r$, $n$, and $w_1$, namely,
+  \begin{equation}\label{withw1}
+    w_n = \frac{w_1}{r-1}\paren{r^n - 1}.
+  \end{equation}
+  So the reasoning that led to~\eqref{withw1} will also hold in the
+  general case with $1 \geq \tau \geq 0$.  But setting $n=T$
+  in~\eqref{withw1} and using the fact that $w_T=1$, we can solve for
+  $w_1$ in terms of $r$ and $T$ exactly as we did for Gambler's Ruin.
+  This implies that $w_1$ depends only on $r$ and $T$, not on $\tau$.
+  Gambler's ruin is a special case of this problem, with $\tau = 0$,
+  and therefore, $w_n$ has the same value in both problems.}
+
+  \eparts
+\end{problem}
+
+\begin{problem}
+
+  A Google-graph is a random-walk graph (see Appendix) such that every
+  edge leaving any given vertex has the same probability.  That is, the
+  probability, $p(v,w)$, of edge $\diredge{v}{w}$ is $1/\odeg{v}$ where
+  $\odeg{v}$ is the number of edges out of $v$.
+
+  A directed graph is \term{symmetric} if, whenever $\diredge{v}{w}$ is an
+  edge, so is $\diredge{w}{v}$.
+
+  Given any finite, symmetric Google-graph, let
+\[
+d(v) \eqdef \odeg{v}/e,
+\]
+where $e$ is the total number of edges in the graph.  Show that $d$ is a
+stationary distribution.
+
+\solution{
+  To show that $d$ is a stationary distribution, we must show that 
+  \begin{equation}\label{rank}
+    d(w)= \sum_{v \in \vin{w}} p(v,w) d(v).
+  \end{equation}
+  
+  We have
+  \begin{align*}
+   \lefteqn{\sum_{v \in \vin{w}} p(v,w) d(v)} \\
+    &= \sum_{v \in \vin{w}} 
+ \paren{\frac{1}{\odeg{v}}}\paren{\frac{\odeg{v}}{e}} & \text{(by def $p$ and $d$)}\\
+    \\
+    &= \sum_{v \in \vin{w}} \frac{1}{e} \\
+    &= \card{\vin{w}} \frac{1}{e}
+    \\
+    &= \ideg{w} \frac{1}{e}
+    \\
+    &= \odeg{w} \frac{1}{e} & \text{(by symmetry of the graph)}
+    \\
+    &= d(w) \ .
+  \end{align*}
+}
+
+\end{problem}
+
+
+
+\section*{Appendix}
+
+A \term{random-walk graph} is a digraph such that each edge,
+$\diredge{x}{y}$, is labelled with a number, $p(x,y) > 0$, which will
+indicate the probability of following that edge starting at vertex $x$.
+Formally, we simply require that the sum of labels leaving each vertex is
+1.  That is, if we define for each vertex, $x$,
+\[
+\vout{x} \eqdef \set{y \suchthat \diredge{x}{y} \text{ is an edge of the
+    graph}},
+\]
+then
+\[
+\sum_{y \in \vout{x}} p(x,y) = 1.
+\]
+
+A \term{distribution}, $d$, is a labelling of each vertex, $x$, with a
+number, $d(x) \geq 0$, which will indicate the probability of being at $x$.
+Formally, we simply require that the sum of all the vertex labels is 1,
+that is,
+\[
+\sum_{x \in V} d(x) = 1,
+\]
+where $V$ is the set of vertices.
+
+The distribution, $\widehat{d}$, \term{after a single step} of a random walk from
+distribution, $d$, is given by
+\[
+\widehat{d}(x) \eqdef \sum_{y \in \vin{x}} d(y) \cdot p(y,x),
+\]
+where
+\[
+\vin{x} \eqdef \set{y \suchthat \diredge{y}{x} \text{ is an edge of the
+    graph}}.
+\]
+
+A distribution $d$ is \term{stationary} if $\widehat{d} = d$, where 
+$\widehat{d}$ is the distribution after a single step of a random walk
+starting from $d$.
+In other words, $d$ stationary implies
+\[
+d(x) \eqdef \sum_{y \in \vin{x}} d(y) \cdot p(y,x).
+\]
+
+\end{document}
+
+
+
+
+\section*{Gamblers Ruin}
+
+A gambler aims to gamble until he reaches a \emph{goal} of $T$ dollars
+or until he runs out of money, in which case he is said to be
+``ruined.''  He gambles by making a sequence of 1 dollar bets.  If he
+wins an individual bet, his stake increases by one dollar.  If he
+loses, his stake decreases by one dollar.  In each bet, he wins with
+probability $p>0$ and loses with probability $q \eqdef 1-p >0$.  He is
+an overall {\em winner} if he reaches his goal and is an overall
+\emph{loser} if he gets ruined.
+
+In a \emph{fair} game, $p = q = 1/2$.  The gambler is more likely to win
+if $p>1/2$ and less likely to win if $p<1/2$.
+
+With $T$ and $p$ fixed, the gambler's probability of winning will depend
+on how much money he starts with.  Let $w_n$ be the probability that he is
+a winner when his initial stake in $n$ dollars.
+
+\begin{problem}
+\bparts
+
+\ppart  What are $w_0$ and $w_T$?
+
+\solution{$w_0 = 0$ and $w_T=1$.}
+
+\ppart Note that $w_n$ satisfies a linear recurrence
+\begin{equation}\label{recab}
+w_{n+1} = aw_{n}+bw_{n-1}
+\end{equation}
+for some constants $a,b$ and $0 < n < T$.  Write simple expressions for
+$a$ and $b$ in terms of $p$.
+
+\solution{By Total Probability
+\begin{align}
+w_n & = \prcond{\text{win game}}{\text{win the first bet}}\pr{\text{win the first
+   bet}} +\\
+    & \quad \prcond{\text{win game}}{\text{lose the first bet}}\pr{\text{lose the first bet}}\notag\\
+   & = pw_{n+1}+q\pr{w_{n-1}}, & \text{so}\notag\\
+pw_{n+1} & = w_n - qw_{n-1}\notag\\
+w_{n+1} & = \frac{w_n}{p} - \frac{qw_{n-1}}{p}.\label{wrec}
+\end{align}
+So
+\[
+a = \frac{1}{p}, \qquad b= - \frac{q}{p}.
+\]
+}
+
+\ppart For $n>T$, let $w_n$ be defined by the recurrence~\eqref{recab},
+and let $W(x) \eqdef \sum_{n=1}^\infty w_nx^n$ be the generating function
+for the sequence $w_0,w_1,\dots$.  Verify that
+\begin{equation}\label{gx}
+W(x) = \frac{w_1 x}{(1-x)(1-(q/p)x)}.
+\end{equation}
+
+\solution{
+\[\begin{array}{rclclclclc}
+W(x)          & = & w_0 & + & w_1x   & + & w_2x^2       & + & w_3x^3       & + \cdots\\
+xW(x)/p       & = &     &   & w_0x/p & + & w_1x^2/p     & + & w_2x^3/p     & + \cdots\\
+(q/p)x^2W(x) & = &     &   &        &    & (q/p)w_0x^2  & + & (q/p)w_1x^3 & + \cdots
+\end{array}\]
+so
+\begin{align}
+W(x) - \paren{\frac{xW(x)}{p} - \frac{qx^2W(x)}{p}} & = w_0 + w_1x - w_0 x/p =
+w_1x,\notag\\
+W(x)\paren{ 1 - \frac{x}{p} + \frac{qx^2}{p}} & = w_1 x.\label{gfw}
+\end{align}
+But
+\begin{equation}\label{fac}
+1 - \frac{x}{p} + \frac{qx^2}{p} = (1-x)(1-(q/p)x)
+\end{equation}
+Combining~\eqref{fac} and~\eqref{gfw} yields~\eqref{gx}.%
+}
+
+\ppart Use partial fractions to show that 
+\begin{equation}\label{wnd}
+w_n = w_1 \left( \frac{(q/p)^n - 1}{(q/p)-1}\right) \ .
+\end{equation}
+
+\solution{
+  Express $W(x)$ as the partial fraction 
+  \[ W(x) = \frac{A}{1-x} + \frac{B}{1-(q/p)x} \ . \]
+  Given~\eqref{gx}, we want $c,d$ such that
+  Substituting $W(x)$ according to~\eqref{gx}, we get
+\begin{align*}
+    \frac{w_1 x}{(1-x)(1-(q/p)x)} &= \frac{A}{1-x} + \frac{B}{1-(q/p)x}
+    \\
+    w_1 x &= A(1-(q/p)x) + B(1-x)
+\end{align*}
+  Let $x=1$, we get $A = w_1/(1-(q/p))$, and letting $x=p/q$, we get
+  $B = -w_1/(1-(q/p))$, so
+  \[
+W(x) = \frac{w_1}{1-q/p}\left(\frac{1}{1-x} -
+    \frac{1}{1-(q/p)x}\right) \ ,
+\]
+  which implies
+ \[
+w_n = \frac{w_1}{(q/p)-1}\left(\left(\frac{q}{p}\right)^n -
+    1\right) .
+\]
+}
+
+\ppart  Show that in an unfair game,
+\[
+w_n=\frac{(q/p)^n-1}{(q/p)^T-1}.
+\]
+(Hint: solve for $w_1$.)
+
+\solution{
+We can solve for $w_1$, by letting $n=T$ in~\eqref{wnd}:
+\[
+1=w_T = \frac{w_1}{q/p-1} \paren{\paren{\frac{q}{p}}^T -1}
+\]
+so
+\[
+w_1 = \frac{\paren{q/p -1}}{\paren{q/p}^T - 1}.
+\]
+Combining this with~\eqref{wnd} yields
+\[
+w_n = \frac{\paren{\paren{q/p}^n -1}}{\paren{q/p}^T -1}.
+\]
+}
+
+\ppart Verify that if $0 < a < b$, then
+\[
+\frac{a}{b} < \frac{a+1}{b+1}.
+\]
+Conclude that if $p < 1/2$, then
+\[
+w_n < \paren{\frac{p}{q}}^{T-n}.
+\]
+
+\solution{
+\[
+\frac{a}{b} = \frac{a(1+1/b)}{b(1+1/b)} = \frac{a+a/b}{b+1} < \frac{a+1}{b+1}.
+\]
+So from the previous part, we have
+\[
+w_n=\frac{(q/p)^n-1}{(q/p)^T-1} < \frac{(q/p)^n}{(q/p)^T} =
+\paren{\frac{q}{p}}^{n-T} = \paren{\frac{p}{q}}^{T-n}.
+\]
+}
+
+\eparts
+\end{problem}
+
+
+
