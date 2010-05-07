@@ -1,0 +1,132 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_random_walk_strongly_connected}
+  \pcomment{from: S08.ps12}
+\end{pcomments}
+
+\pkeywords{
+  random_walk
+  connected
+  strongly_connected
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  A digraph is \term{strongly connected} iff there is a directed path
+  between every pair of distinct vertices.  In this problem we consider a
+  finite random walk graph that is strongly connected.
+
+\bparts 
+
+\ppart\label{zgamma} Let $d_1$ and $d_2$ be distinct distributions for the
+graph, and define the \term{maximum dilation}, $\gamma$, of $d_1$ over
+$d_2$ to be
+\[
+\gamma \eqdef \max_{x \in V} \frac{d_1(x)}{d_2(x)} \ .
+\] 
+Call a vertex, $x$, \emph{dilated} if $d_1(x)/d_2(x) = \gamma$.  Show that
+there is an edge, $\diredge{y}{z}$, from an undilated vertex $y$ to a
+dilated vertex, $z$.  \hint Choose any dilated vertex, $x$, and consider
+the set, $D$, of dilated vertices connected to $x$ by a directed path
+(going to $x$) that only uses dilated vertices.  Explain why $D \neq V$,
+and then use the fact that the graph is strongly connected.
+
+\begin{solution}
+By construction, there is at least one dilated vertex.  First, let's
+argue that there's at least one \emph{undilated} vertex.  Suppose all
+vertices are dilated.  Then we have $d_1(x) = \gamma d_2(x)$, for all
+$x$.  Thus, $1 = \sum_x d_1(x) = \gamma \sum_x d_2(x) = \gamma \cdot
+1$, which implies that $\gamma = 1$, and hence the distributions are
+the same.
+
+Consider an undilated vertex and a dilated vertex.  Since the graph is
+strongly connected, there is a path from the undilated vertex to the
+dilated vertex.  Thus, there be an edge along the path that goes from
+undilated to dilated.
+
+\iffalse
+  The proof is algorithmic.  We'll show how to find $y$ and $z$.  
+
+  By construction, there exists a vertex $z$ with $d_1(z)/d_2(z) =
+  \gamma$.  Start with this vertex.  Consider all vertices with edges
+  pointing to $z$.  If one of them satisfies $d_1(y)/d_2(y) < \gamma$, we
+  are done.  Otherwise, choose each of these as a starting point for $z$
+  and recurse.
+  
+  If the procedure finds $y$ and $z$, we are done.  Assume for the
+  sake of contradiction that it does not.  
+  
+  Since the graph is strongly connected, there is a path from every
+  vertex to the starting vertex.  Thus, if the graph has $n$ vertices,
+  the recursive procedure will be called on every vertex within a
+  recursive depth of $n$.  Thus, it will terminate eventually.  
+
+  If the procedure terminates without returning an answer, then we
+  conclude that $\gamma = d_1(x)/d_2(x)$ for all $x$.  If $\gamma >
+  1$, then $\sum_x d_1(x) > \sum_x d_2(x)$, and hence either $d_1$ or $d_2$
+  is not a distribution.  Similarly for $\gamma < 1$.  If $\gamma =
+  1$, then $d_1$ and $d_2$ are the same distribution.  Any of these
+  generate a contradiction.
+\fi
+
+\end{solution}
+
+\ppart Prove that the graph has \emph{at most one} stationary
+distribution.  (There always \emph{is} a stationary distribution, but
+we're not asking you prove this.) \hint Let $d_1$ be a stationary
+distribution and $d_2$ be a different distribution.  Let $z$ be the vertex
+from part~\eqref{zgamma}.  Show that starting from $d_2$, the
+probability of $z$ changes at the next step.  That is, $\widehat{d_2}(z)
+\neq d_2(z)$.
+ 
+\begin{solution}
+
+  Assume for the sake of contradiction that there are two stationary
+  distributions $d_1$ and $d_2$.  Let $\gamma$ be the maximum dilation of
+  $d_1$ over $d_2$. 
+
+  From the previous part, there exist vertices $y$ and $z$ with
+  $d_1(y)/d_2(y) < \gamma$ and $d_1(z)/d_2(z) = \gamma$.  
+  We apply one step of the random walk to $d_1$ and $d_2$ to get
+  \begin{equation}\label{d1}
+    d_1(z) = \widehat{d_1}(z) = \sum_{y: y\rightarrow z} d_1(y) p(y,z) \ ,
+  \end{equation}
+  and
+  \begin{equation}\label{d2}
+    d_2(z) = \widehat{d_2}(z) = \sum_{y: y\rightarrow z} d_2(y) p(y,z) \ .
+  \end{equation}
+  Substituting $d_1(z) = \gamma d_2(z)$ into \eqref{d1}, and recalling
+  that $d_1(x) \leq \gamma d_2(x)$ for all $x$, we have
+  \begin{eqnarray*}
+    \gamma d_2(z) &=& \sum_{x: x\rightarrow z}d_1(x) p(x,z) \\
+    &=& \left(\sum_{x \neq y: x\rightarrow z}
+      d_1(x)p(x,z)\right) + d_1(y) p(y,z) \\
+    &\leq& \left(\sum_{x \neq y: x\rightarrow z} \gamma d_2(x)
+      p(x,z)\right) + d_1(y) p(y,z) \\
+    &=& \left(\left(\gamma \sum_{x: x\rightarrow z} d_2(x)
+      p(x,z)\right) - \gamma d_2(y)p(y,z)\right) + d_1(y) p(y,z) \\
+    &=& \gamma d_2(z) - \gamma d_2(y)p(y,z) + d_1(y) p(y,z)\\
+    &<& \gamma d_2(z) - \gamma d_2(y)p(y,z) + \gamma d_2(y) p(y,z)\\
+    &=& \gamma d_2(z) \ .
+  \end{eqnarray*}
+  The strict inequality at the next to last step of the derivation
+  follows from the assumption that $d_1(y) < \gamma d_2(y)$, and
+  $p(y,z) > 0$.  Thus, we have shown $d_2(z) < d_2(z)$, which is a
+  contradiction.
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
