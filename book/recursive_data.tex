@@ -168,9 +168,7 @@ expressions like $3x^2 + 2x + 1$ involving only one variable, ``$x$.''
 We'll refer to the data type of such expressions as $\aexp$.  Here is its
 definition:
 
-\begin{definition}\label{A}
-The set, $\aexp$, of \emph{Arithmetic expressions} in the variable, $x$,
-is defined recursively as follows:
+\begin{definition}
 
 \begin{itemize}
 \item \textbf{Base cases:}
@@ -233,20 +231,22 @@ The nonnegative integers can be defined recursively as follows:
 \fi
 
 
-\iffalse
+\begin{staffnotes}
+
 \begin{example}
-The set, $\List$, of \emph{pure lists} is defined recursively by:
+The set, List, of \emph{pure lists} is defined recursively by:
 \begin{enumerate}
-\item The 0-tuple, $\nillist$, is in $\List$.
-\item If $\ell_1$ and $\ell_2$ are in $\List$, then the pair $(\ell_1,
-\ell_2)$ is in $\List$.
+\item The 0-tuple is in List.
+\item If $\ell_1$ and $\ell_2$ are in List, then the pair $(\ell_1,
+\ell_2)$ is in List.
 \end{enumerate}
 
 In Lisp-like programming languages, the pairing operation is called
 \texttt{cons} and the 0-tuple is called \texttt{nil}.
 
 \end{example}
-\fi
+
+\end{staffnotes}
 
 
 %% Structural Induction on Recursive Data Types %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -473,7 +473,8 @@ starts out $0, 1, 1, 2, 3, 5, 8, 13, 21,\dots$.
   \item $S(n+1) \eqdef  f(n+1) + S(n)$ for $n\geq 0$.
   \end{itemize}
 
-\iffalse
+\begin{staffnotes}
+
 \item[Simultaneous recursive definitions:]
   You can define several things at the same time, in terms of each
   other.  For example, we may define two functions $f$ and $g$ from
@@ -488,11 +489,12 @@ starts out $0, 1, 1, 2, 3, 5, 8, 13, 21,\dots$.
   \item
     $g(n+1) \eqdef f(n) \times g(n)$, for $n \geq 0$.
   \end{itemize}
-\fi
+
+\end{staffnotes}
 
 \end{description}
 
-\iffalse
+\begin{staffnotes}
 
 \subsubsection{Induction on Fibonacci Numbers}
 
@@ -539,10 +541,8 @@ F_{n+1}^2 = F_{n+1} F_{n+2} - F_n F_{n+1}.
 \]
 But this is true, because it is really the Fibonacci definition in
 disguise: to see this, divide by $F_{n+1}$.
-\fi
 
-
-
+\end{staffnotes}
 
 \subsubsection{Ill-formed Function Definitions}
 
@@ -611,42 +611,55 @@ $f_4$ satisfying~\eqref{f5} equals 1 for all $n$ up to over a billion.
 \textbf{Quick exercise:} Why does the constant function 1
 satisfy~\eqref{f5}?
 
-\iffalse
+\begin{staffnotes}
 
 \section{Tagged data}
 
 Labelling a recursively defined data item with a tag that uniquely
-determines the rule used to construct it is a standard approach to avoiding
-unambiguous recursive definitions in programming.
+determines the rule used to construct it is a standard approach to
+avoiding ambiguous recursive definitions in programming.  This
+amounts to working with data items that are already \term{parsed}, that
+is, represented as \term{parse trees}.
 
-For example, arithmetic expressions like
+For example, the parse tree for the arithmetic expression
 \begin{equation}\label{ax}
 -(a(x\cdot x)+ bx) + 1
 \end{equation}
-are another important example of a recursive data type.  We could define
-them as parenthesized strings with symbols for arithmetic operators and
-names for variables and constants, but a tagged representation is more
-useful:
+is shown in Figure~\ref{fig:parse}.
 
-\begin{definition}\label{A}
-The set, $\aexp$, of \emph{Arithmetic expressions} over a set of
+\begin{figure}[htbp]
+\centering \includegraphics[height=4.5in]{figures/parsetree.pdf}
+\caption{Parse tree for $-(a(x\cdot x)+ bx) + 1$.}
+\label{fig:parse}
+\end{figure}
+
+In a computer, such a tree would be represented by pairs or triples
+that begin with a
+\emph{tag} equal to the label of the top node of the parse tree.  
+The general definition of parse trees for $\aexp$'s would be:
+
+\newcommand{\paexp}{\text{Aexp-parse-tree}}
+
+\begin{definition}\label{arithparse}
+The set, $\paexp$, of \emph{parse trees for arithmetic expressions} 
+over a set of
 \emph{variables}, $V$, is defined recursively as follows:
 \begin{itemize}
 \item \textbf{Base cases:}
 \begin{enumerate}
-\item If $n \in \integers$, then $\ang{\texttt{int}, n} \in \aexp$.
-\item If $v \in V$, then $\ang{\texttt{var}, v} \in \aexp$.
+\item If $n \in \integers$, then $\ang{\texttt{int}, n} \in \paexp$.
+\item If $v \in V$, then $\ang{\texttt{var}, v} \in \paexp$.
 \end{enumerate}
-\item \textbf{Constructor cases:} if $e,e' \in \aexp$, then
+\item \textbf{Constructor cases:} if $e,e' \in \paexp$, then
 \begin{enumerate}
-\item $\ang{\texttt{sum}, e, e'} \in \aexp$,
-\item $\ang{\texttt{prod}, e, e'} \in \aexp$, and
-\item $\ang{\texttt{minus}, e} \in \aexp$.
+\item $\ang{\texttt{sum}, e, e'} \in \paexp$,
+\item $\ang{\texttt{prod}, e, e'} \in \paexp$, and
+\item $\ang{\texttt{minus}, e} \in \paexp$.
 \end{enumerate}
 \end{itemize}
 \end{definition}
 
-So the $\aexp$ corresponding to formula~\ref{ax} would be:
+So the $\paexp$ corresponding to formula~\ref{ax} would be:
 \begin{equation}\label{axtag}
 \begin{array}{rll}
 \left< \right. \texttt{sum}, 
@@ -662,27 +675,12 @@ So the $\aexp$ corresponding to formula~\ref{ax} would be:
          & \left. \left. \ang{\texttt{int},\ 1} \right> \right>
 \end{array}
 \end{equation}
-Now the expression~\ref{ax} is certainly a lot more humanly intelligible
-than~\ref{axtag}, but is in fact the preferred representation in
-programming.
+Now the expression~\ref{ax} is certainly a lot more humanly
+intelligible than~\ref{axtag}, but~\ref{axtag} is in the
+representation best suited and commonly used in compiling and
+processing computer programs.
 
-the parse tree of Figure~\ref{fig:parse} is
-
-uses the \emph{parse trees} of the expressions,
-rather than strings.  Figure~\ref{fig:parse} shows a
-parse tree for expression~\eqref{ax}.
-
-\begin{figure}[htbp]
-\centering \includegraphics[height=4.5in]{figures/parsetree.pdf}
-\caption{Parse tree for $-(a(x\cdot x)+ bx) + 1$.}
-\label{fig:parse}
-\end{figure}
-
-
-Such a tree would be represented by pairs or triples that begin with a
-\emph{tag} equal to the label of the top node of the parse tree.  We'll
-call these tagged data items $\aexp$'s.  
-\fi
+\end{staffnotes}
 
 
 \subsection{Evaluation and Substitution with Aexp's}
@@ -952,8 +950,8 @@ structural induction.
 
 \end{proof}
 
+\begin{staffnotes}
 
-\iffalse
 \subsection{A String Theorem}
 
 Here is a more complex proof, illustrating a combination of structural
@@ -989,11 +987,12 @@ else.  Let's give it a try:
 Redefine $P(s) \eqdef$
 \begin{eqnarray*}
 \ms{num}(01,s) & \leq & \ms{num}(10,s) + 1, \text{ and}\\
-\leftenq{\text{If $s$ ends in $0$ then}}\\
+\lefteqn{\text{If $s$ ends in $0$ then}}\\
 \ms{num}(01,s) & \leq  &\ms{num}(10,s).
 \end{eqnarray*} 
  
 This means that, for each inductive step have two things to show.
+\iffalse
 
 \structuredproof{
 
@@ -1028,7 +1027,9 @@ This means that, for each inductive step have two things to show.
   \reason{Implication, UG} \\
   4. QED
   \reason{Structural induction on strings.}\\
-}
+}\fi
+
+\textcolor{blue}{Structured proof display commented out here}
 
 First let's consider $s1$. This is the case that looks dangerous,
 because it might increase the number of $01$s.  We have to prove two
@@ -1046,6 +1047,9 @@ inequality we want.
 The following proof fragment considers cases based on whether $s$ ends
 in $0$ or not.  If not, it might end in $1$, or might be empty (don't
 forget this possibility).
+
+\textcolor{blue}{Structured proof display commented out here}
+\iffalse
 
 \begin{proof}
   3. $P(s 1)$ \\
@@ -1072,6 +1076,8 @@ forget this possibility).
   3. QED
   Conjunction \\
 \end{proof}
+\fi
+
 Of course, you could also expand the step for $s$ ending in $1$ into a
 careful series of inequalities.
 
@@ -1092,6 +1098,7 @@ inequality), whereas if $s$ ends in $1$ we rely on the first statement
 (with the weaker inequality).  In this case, we have to ``turn the
 weaker inequality into the stronger inequality''.
 
+\iffalse
 \structuredproof[38ex]{
   3. $P(s 0)$ \\
   1. $\ms{num}(01,s0) \leq \ms{num}(10,s0) + 1$.
@@ -1124,16 +1131,20 @@ weaker inequality into the stronger inequality''.
   3. QED 
   \reason{Conjunction}\\
 }
+\fi
+
+\textcolor{blue}{Structured proof display commented out here}
 
 If you actually write out all these cases in the proof, you will
 notice that some facts are stated repeatedly, e.g., that when you add
 a $0$ to the end of a string you are not increasing the number of
 $01$s.  To avoid having to state these facts several times, you can
 move them earlier in the proof.
-\fi
+
+\end{staffnotes}
 
 
-\iffalse
+\begin{staffnotes}
 
 \begin{example*}
 \begin{definition}\label{E}
@@ -1238,7 +1249,8 @@ essentially the same definition of $S$ works just fine.  Namely, define
 Now $s(n)$ is unambiguously defined, and in fact is precisely the (unique)
 number of steps required to construct $n \in E$ according to the
 unambiguous Definition~\ref{E} of $E$.
-\fi
+
+\end{staffnotes}
 
 
 %% Structural Induction on Recursive Data Types
@@ -1287,24 +1299,32 @@ Tic-Tac-Toe is a game for young children.  There are two players who
 alternately write the letters ``X'' and ``O'' in the empty boxes of a $3
 \times 3$ grid.  Three copies of the same letter filling a row, column, or
 diagonal of the grid is called a \emph{tic-tac-toe}, and the first player
-who gets a tic-tac-toe of their letter wins the game.  \iffalse Children
-generally don't take long to figure out an optimal strategy for playing the
-game.\fi
+who gets a tic-tac-toe of their letter wins the game.
 
+\begin{staffnotes}
+Children generally don't take long to figure out an optimal strategy
+for playing the game.
+\end{staffnotes}
 
 We're now going give a precise mathematical definition of the Tic-Tac-Toe
 \term{game tree} as a recursive data type.  \iffalse and carefully defining
-the allowed moves Children of course have no need for such a definition,
-and it would be too complicated for them anyway.  But if we had to write a
-Tic-Tac-Toe playing \emph{computer program}, we'd need this kind of picky
-precision.\fi Here's the idea behind the definition: at any point in the
-game, the ``board position'' is the pattern of X's and O's on the $3 \times
-3$ grid.  From any such Tic-Tac-Toe pattern, there are a number of next
+the allowed moves\fi
+\begin{staffnotes}
+Children of course have no need for such a definition, and it would be
+too complicated for them anyway.  But if we had to write a Tic-Tac-Toe
+playing \emph{computer program}, we'd need this kind of picky
+precision.
+\end{staffnotes}
+
+Here's the idea behind the definition: at any point in the game, the
+``board position'' is the pattern of X's and O's on the $3 \times 3$
+grid.  From any such Tic-Tac-Toe pattern, there are a number of next
 patterns that might result from a move.  For example, from the initial
-empty grid, there are nine possible next patterns, each with a single X in
-some grid cell and the other eight cells empty.  From any of these
-patterns, there are eight possible next patterns gotten by placing an O in
-an empty cell.  These move possibilities are given by the
+empty grid, there are nine possible next patterns, each with a single
+X in some grid cell and the other eight cells empty.  From any of
+these patterns, there are eight possible next patterns gotten by
+placing an O in an empty cell.  These move possibilities are given by
+the
 \hyperdef{game}{tree}{game tree} for Tic-Tac-Toe indicated in
 Figure~\ref{fig:Tic-Tac-Toe}.
 
@@ -1331,7 +1351,8 @@ Figure~\ref{fig:Tic-Tac-Toe}.
 A Tic-Tac-Toe \emph{pattern} is a $3 \times 3$ grid each of whose 9 cells
 contains either the single letter, X, the single letter, O, or is
 empty.
-\iffalse
+\begin{staffnotes}
+
 Moreover, there must be either
 \begin{itemize}
 
@@ -1341,7 +1362,8 @@ tic-tac-toe of O's, or
 \item an equal number of X's and O's, with at most one tic-tac-toes of
 O's, and no tic-tac-toe of X's.
 \end{itemize}
-\fi
+
+\end{staffnotes}
 
 A pattern, $Q$, is a \emph{possible next pattern after} $P$, providing $P$
 has no tic-tac-toes and
@@ -1371,7 +1393,6 @@ $\ang{P, \ang{\texttt{lose}}}$, if $P$ has a tic-tac-toe of O's.
 \item $\ang{P, \ang{\texttt{tie}}}$, otherwise.
 
 \end{itemize}
-
 
 \iffalse
 If $Q$ is a possible move from $P$, then the game tree starting at $Q$ is
@@ -1415,7 +1436,8 @@ R & = \begin{array}{c|c|c}
 \end{align*}
 the game tree starting at $P_0$ is pictured in Figure~\ref{fig:endgame}.
 
-\iffalse
+\begin{staffnotes}
+
 Then,
 \begin{equation}\label{endgame}
 \ang{P, \set{\ang{Q_1, \ang{\texttt{lose}}},
@@ -1425,8 +1447,9 @@ is the tagged recursive datum that corresponds to a Tic-Tac-Toe ``end
 game'' that starts with $P$.  This game is easier to understand by looking
 at its game tree in Figure~\ref{fig:endgame}.  Notice that the game tree
 ---which so far we haven't actually defined ---is simply the parse tree of
-the tagged datum.\fi
+the tagged datum.
 
+\end{staffnotes}
 
 \begin{figure}[htbp]
 \centering
@@ -1478,9 +1501,13 @@ initial bound on how many moves it might be before the game ends ---a
 play might end after 9 moves, or $9(2001)$ moves, or $9(10^{10}+1)$
 moves.  It just can't continue forever.
 
-\iffalse While there is no bound on how long to play, at least after the
+\begin{staffnotes}
+
+While there is no bound on how long to play, at least after the
 first move to an $n \times n$ board in meta-Tic-Tac-Toe, we know the game
-will end with $n^2$ moves.\fi
+will end with $n^2$ moves.
+
+\end{staffnotes}
 
 Now that we recognize $T^4$ as a \tg, we can go on to
 a \emph{meta}-$T^4$ game, where the first player chooses a number,
@@ -1489,9 +1516,11 @@ first move in each of the individual $T^4$ games to be played.
 
 Then, of course, there's meta-meta-$T^4$\dots.
 
-\iffalse Every play of the meta-meta game must still end, but now even
+\begin{staffnotes}
+Every play of the meta-meta game must still end, but now even
 after the first move, there is no bound on how long a game might
-continue.\fi
+continue.
+\end{staffnotes}
 
 \subsection{Two Person Terminating Games}
 
@@ -1501,12 +1530,14 @@ ties, but for simplicity we'll only consider win/lose games ---no
 show about win/lose games will extend easily to games with ties, and
 more generally to games with outcomes that have different payoffs.
 
-\iffalse
+\begin{staffnotes}
+
 Of course Tic-Tac-Toe and the
 other games will fit this set up if we treat a game that ends in a tie as
 a loss for the usual first player ---White in Chess, Red in Checkers, the
 X-player in Tic-Tac-Toe.
-\fi
+
+\end{staffnotes}
 
 Like Tic-Tac-Toe, or Tournament-Tic-Tac-Toe, the idea behind the
 definition of $\tg$'s as a recursive data type is that making a move
@@ -1676,18 +1707,13 @@ its special case of ordinary induction are applicable to any kind of
 thing with nonnegative integer sizes --which is a awful lot of things,
 including all step-by-step computational processes.
 
-\iffalse
-Ordinary induction is specially helpful in the study of computation.  Why?
-Well, ordinary induction on nonnegative integers is a ``one step at a
-time'' proof method.  Computations also evolve ``one step at a time.''
-\fi
-
 Structural induction then goes beyond natural number counting by offering a
 simple, natural approach to proving things about recursive computation
 and recursive data types.  This makes it a technique every computer
 scientist should embrace.
 
-\iffalse
+\begin{staffnotes}
+
 In many cases a nonnegative integer size can be defined for a recursively
 defined datum, such as the length of a string, or the number of operations
 in an $\aexp$.  It is then possible to prove properties of data by ordinary
@@ -1700,6 +1726,7 @@ about infinite data types ---like infinite trees, for example ---so this
 greater power doesn't matter in practice.  What does matter is that for
 recursively defined data types, structural induction is a simple and
 natural approach.
-\fi
+
+\end{staffnotes}
 
 \endinput
