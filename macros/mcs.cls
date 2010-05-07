@@ -764,6 +764,109 @@
     \endgroup
 }
 
+\def\mcs@thm@psolution#1#2{%
+    \def\@tempa{#1}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\@begintheorem{#2}{}}[]}%
+    \else
+        \@ifundefined{r@\jobname}{%
+            \refstepcounter{#1}%
+            \def\@tempb{\csname the#1\endcsname}%
+            \def\mcs@thm@type{#2}%
+        }{%
+            \edef\@tempb{%
+                \@nx\protected@edef\@nx\@tempb{%
+                    \@nx\mcs@get@label\csname r@\jobname\endcsname \@nx\@nil
+                }%
+            }%
+            \@tempb
+            \protected@edef\@currentlabel{\@tempb}%
+        }%
+    \def\@tempa{%
+        \@oparg{\@begintheorem{\mcs@thm@type}{\@tempb}}[]%
+    }%
+    \fi
+    \@tempa
+}
+
+\def\fake@begin#1{%
+    \@ignorefalse
+    \begingroup
+        \@endpefalse
+        \def\@currenvir{#1}%
+        \edef\@currenvline{\on@line}%
+}
+
+\def\fake@end#1{%
+%        \@checkend{#1}%
+    \expandafter\endgroup
+    \if@endpe\@doendpe\fi
+    \if@ignore\@ignorefalse\ignorespaces\fi
+}
+
+\newcommand{\psolution}[1]{%
+    \begingroup
+        \let\mcs@thm\mcs@thm@psolution
+        \let\problem\problem@psolution
+        \let\endproblem\endproblem@psolution
+        \def\solution{\solution@psolution{#1}}%
+        \let\endsolution\endsolution@psolution
+        \let\problemparts\problemparts@psolution
+        \let\endproblemparts\endproblemparts@psolution
+        \def\ppart{\stepcounter{problempart}}%
+        \setcounter{problempart}{-1}%
+    \@pinput{#1}%
+}
+
+\def\problem@psolution{%
+    \endgroup   % closes \begin's \begingroup, effectively
+                % closing problem environment
+    \fake@begin{problem}% reopen problem environment
+        \setbox\@tempboxa\vbox\bgroup
+}
+
+\def\solution@psolution#1{%
+        \endgroup   % closes \begin's \begingroup, closing
+                    % solution
+        \egroup     % closes \vbox and discards typeset
+                    % non-solution text
+    \fake@begin{solution}% reopen solution
+        \format@solution[Solution to \ref{#1}%
+            \ifnum\c@problempart > 0 \labelproblempart\fi
+        ]%
+}
+
+\def\endsolution@psolution{%
+        \endformat@solution
+    \fake@end{solution}% close reopened solution
+    \def\@currenvir{solution}%
+        \setbox\@tempboxa\vbox\bgroup
+            \begingroup % matches \end{solution}'s \endgroup
+}
+
+\def\endproblem@psolution{%
+        \egroup % matches \vbox from last \end{solution}
+    \def\@currenvir{problem}%
+}
+
+\def\problemparts@psolution{%
+        \endgroup   % closes \begin's \begingroup, closing
+                    % solution
+        \egroup     % closes \vbox and discards typeset
+                    % non-solution text
+    \fake@begin{problemparts}% reopen problemparts
+        \setcounter{problempart}{0}%
+        \setbox\@tempboxa\vbox\bgroup
+}
+
+\def\endproblemparts@psolution{%
+        \egroup
+    \fake@end{problemparts}%
+    \def\@currenvir{problemparts}%
+        \setbox\@tempboxa\vbox\bgroup
+            \begingroup % matches \end{problemparts}'s \endgroup
+}
+
 %% The basic problem environment.
 
 \newlength{\standardproblemsep}
@@ -801,9 +904,11 @@
 \newtheorem{problem}{Problem}[chapter]
 \newtheorem*{problem*}{Problem}
 
-\def\problem{%
+\def\format@problem{%
     \mcs@thm{\let\thm@swap\@gobble\th@problem}{problem}{Problem}%
 }
+
+\let\problem\format@problem
 
 \def\mcs@get@label#1#2\@nil{#1}
 
@@ -943,7 +1048,7 @@
 
 \def\eatQED@elt#1#2\relax{\gdef\QED@stack{#2}}
 
-\newenvironment{solution}[1][Solution]{%
+\newenvironment{format@solution}[1][Solution]{%
     \par
     \global\@just@ended@proof@false
     \pushQED{\qed}%
@@ -960,6 +1065,9 @@
     \endtrivlist
     \@endpefalse
 }
+
+\let\solution\format@solution
+\let\endsolution\endformat@solution
 
 \newenvironment{staffnotes}{%
     \trivlist
