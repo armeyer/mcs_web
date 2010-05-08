@@ -819,17 +819,14 @@
 }
 
 \def\problem@psolution{%
-    \endgroup   % closes \begin's \begingroup, effectively
-                % closing problem environment
-    \fake@begin{problem}% reopen problem environment
-        \setbox\@tempboxa\vbox\bgroup
+    \setbox\@tempboxa\vbox\bgroup
 }
 
 \def\solution@psolution#1{%
         \endgroup   % closes \begin's \begingroup, closing
                     % solution
-        \egroup     % closes \vbox and discards typeset
-                    % non-solution text
+    \egroup     % closes \vbox and discards typeset
+                % non-solution text
     \fake@begin{solution}% reopen solution
         \format@solution[Solution to \ref{#1}%
             \ifnum\c@problempart > 0 \labelproblempart\fi
