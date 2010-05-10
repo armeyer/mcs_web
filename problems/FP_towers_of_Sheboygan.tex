@@ -1,0 +1,251 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_towers_of_Sheboygan}
+  \pcomment{from: S09.cp12t}
+\end{pcomments}
+
+\pkeywords{
+  generating_function
+  Sheboygan
+  linear_recurrence
+  towers_of_Hanoi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%F07 ps10... from S07 ps10... from F04 ps7
+
+\begin{problem}
+  Less well-known than the \idx{Towers of Hanoi} ---but no less
+  fascinating ---are the Towers of Sheboygan.  As in Hanoi, the puzzle in
+  Sheboygan involves 3 posts and $n$ disks of different sizes.  Initially,
+  all the disks are on post \#1:
+
+\begin{center}
+\unitlength=0.6pt
+\begin{picture}(600,190)(0,-30)
+% \put(0,-30){\dashbox(600,190){}} % bounding box
+
+\put(99,0){\dashbox(2,140){}}
+\put(99,140){\framebox(2,20){}}
+\put(30,0){\framebox(140,20){}}
+\put(40,20){\framebox(120,20){}}
+\put(50,40){\framebox(100,20){}}
+\put(60,60){\framebox(80,20){}}
+\put(70,80){\framebox(60,20){}}
+\put(80,100){\framebox(40,20){}}
+\put(90,120){\framebox(20,20){}}
+\put(299,0){\framebox(2,160){}}
+\put(499,0){\framebox(2,160){}}
+\put(0,-5){\framebox(600,5){}}
+\put(100,-20){\makebox(0,0){Post \#1}}
+\put(300,-20){\makebox(0,0){Post \#2}}
+\put(500,-20){\makebox(0,0){Post \#3}}
+\end{picture}
+\end{center}
+
+The objective is to transfer all $n$ disks to post \#2 via a sequence of
+moves.  A move consists of removing the top disk from one post and
+dropping it onto another post with the restriction that a larger disk can
+never lie above a smaller disk.  Furthermore, a local ordinance requires
+that \textit{a disk can be moved only from a post to the next post on
+its right ---or from post \#3 to post \#1.}  Thus, for example, moving a
+disk directly from post \#1 to post \#3 is not permitted.
+
+\bparts
+
+\ppart One procedure that solves the Sheboygan puzzle is defined
+recursively: to move an initial stack of $n$ disks to the next post, move
+the top stack of $n-1$ disks to the furthest post by moving it to the next
+post two times, then move the big, $n$th disk to the next post, and
+finally move the top stack another two times to land on top of the big
+disk.  Let $s_n$ be the number of moves that this procedure uses.  Write a
+simple linear recurrence for $s_n$.
+
+\begin{solution}
+\begin{align}
+s_0 & = 0,\notag\\
+s_n & = 2s_{n-1} + 1 + 2s_{n-1} = 4s_{n-1} + 1 & \text{for }n >0\label{4S}.
+\end{align}
+\end{solution}
+
+\ppart Let $S(x)$ be the \idx{generating function} for the sequence
+$\ang{s_0,s_1,s_2,\dots}$.  Show that $S(x)$ is a quotient of polynomials.
+
+\begin{solution}
+\[
+\begin{array}{rcccrcrcr}
+S(x)     & = & s_0 & + &  s_1 x & + &  s_2 x^2 & + &  s_3 x^3  + \cdots.\\
+-4xS(x)  & = &     & - & 4s_0 x & - & 4s_1 x^2 & - & 4s_2 x^3  - \cdots.\\
+-1/(1-x) & = & - 1 & - &    1 x & - &    1 x^2 & - &    1 x^3  - \cdots.\\
+\hline
+S(x)(1-4x)-\frac{1}{1-x}
+         & = & -1  & + &    0 x & + &    0 x^2 & + &    0 x^3  + \cdots.\\
+         & = & -1.  & 
+
+\end{array}
+\]
+so
+\[
+S(x)(1 - 4x) - \frac{1}{1-x}  = - 1,
+\]
+and
+\[
+S(x) = \frac{x}{(1-x)(1-4x)}\, .
+\]
+\end{solution}
+
+\ppart Give a simple formula for $s_n$.
+
+\begin{solution}
+We can express $x/(1 -x)(1-4x)$ using partial fractions as
+\begin{equation}\label{x1}
+\frac{x}{(1 -x)(1-4x)} = \frac{a}{1-x} + \frac{b}{1-4x}
+\end{equation}
+for some constants $a,b$.  Multiplying both sides of~\eqref{x1} by the
+left hand denominator yields
+\begin{equation}\label{xA}
+x = a(1-4x) + b(1-x).
+\end{equation}
+Letting $x=1$ yields $a= -1/3$ and letting $x=1/4$ yields $b=1/3$.  Now
+from~\eqref{x1}, we have
+\[
+S(x) = \frac{-1/3}{1-x} + \frac{1/3}{1-4x}
+\]
+so 
+\[
+s_{n} = -\frac{1}{3} + \frac{1}{3}4^n = \frac{4^n - 1}{3}.
+\]
+\end{solution}
+
+\iffalse
+\ppart A better (indeed optimal, but we won't prove this) procedure to
+solve the Towers of Sheboygan puzzle can be defined in terms of two
+\idx{mutually recursive} procedures, procedure $P_1(n)$ for moving a stack of
+$n$ disks 1 pole forward, and $P_2(n)$ for moving a stack of $n$ disks 2
+poles forward.  This is trivial for $n=0$.  For $n>0$, define:
+
+$P_1(n)$: Apply $P_2(n-1)$ to move the top $n-1$ disks two poles forward
+to the third pole.  Then move the remaining big disk once to land on
+the second pole.  Then apply $P_2(n-1)$ again to move the stack of $n-1$
+disks two poles forward from the third pole to land on top of the big
+disk.
+
+$P_2(n)$: Apply $P_2(n-1)$ to move the top $n-1$ disks two poles forward
+to land on the third pole.  Then move the remaining big disk to the second
+pole.  Then apply $P_1(n-1)$ to move the stack of $n-1$ disks one pole
+forward to land on the first pole.  Now move the big disk 1 pole forward
+again to land on the third pole.  Finally, apply $P_2(n-1)$ again to move
+the stack of $n-1$ disks two poles forward to land on the big disk.
+
+Let $t_n$ be the number of moves needed to solve the Sheboygan puzzle
+using procedure $P_1(n)$.  Show that
+\begin{equation}\label{TnTT}
+t_n = 2t_{n-1} +  2t_{n-2} + 3,
+\end{equation}
+for $n > 1$.
+
+\hint Let $s_n$ be the number of moves used by procedure $P_2(n)$.  Express
+each of $t_n$ and $s_n$ as linear combinations of $t_{n-1}$ and
+$s_{n-1}$ and solve for $t_n$.
+
+\begin{solution}
+From the definitions of procedures $P_1$ and $P_2$ we have
+\begin{align}
+t_0 & = 0, \notag\\
+s_0 & = 0, \notag\\
+t_n & = s_{n-1} + 1 + s_{n-1} & \text{for } n > 0,\label{ST}\\
+s_n & = s_{n-1} + 1 + t_{n-1} + 1 + s_{n-1} & \text{for } n > 0.\label{TT}
+\end{align}
+
+Using~\eqref{ST} to get $s_{n-1} = (t_n - 1)/2$ and then expressing
+$s$'s in~\eqref{TT} in terms of $t$'s, we conclude that for $n > 0$,
+\[
+\frac{t_{n+1} -1}{2} =  (t_n -1) + t_{n-1} + 2 
+\]
+so
+\[
+t_{n+1} = 2t_n + 2t_{n-1} + 3,
+\]
+which is the same as the given recurrence~\eqref{TnTT} with $n+1$
+replacing $n$.
+\end{solution}
+
+\ppart Derive values $a,b,c, \alpha, \beta$ such that
+\[
+t_n = a \alpha^n + b \beta^n + c.
+\]
+Conclude that $t_n = o(s_n)$.
+
+\begin{solution}
+\begin{equation}\label{Tnsqrt}
+t_n = \frac{(1+\sqrt{3})^{n}}{3-\sqrt{3}}  + \frac{(1-\sqrt{3})^{n}}{3+\sqrt{3}}  - 1.
+\end{equation}
+
+In particular, we conclude that $t_n = \Theta((1+ \sqrt{3})^n)$.  Since
+$s_n = \Theta(4^n)$, this implies that $t_n = o(s_n)$.  So the second
+procedure for moving a stack of $n$ disks is significantly more efficient
+than the first one.
+
+The derivation of~\eqref{Tnsqrt} is similar to the one for $s_n$:
+\[
+\begin{array}{rcccrcrcr}
+T(x)      & = & t_0 & + &  t_1 x & + &  t_2 x^2 & + &  t_3 x^3  + \cdots.\\
+-2xT(x)   & = &     & - & 2t_0 x & - & 2t_1 x^2 & - & 2t_2 x^3  - \cdots.\\
+-2x^2T(x) & = &     &   &        & - & 2t_0 x^2 & - & 2t_1 x^3  - \cdots.\\
+-3/(1-x)  & = & - 3 & - &    3 x & - &    3 x^2 & - &    3 x^3  - \cdots.\\
+\hline
+T(x)(1-2x-2x^2)-\frac{3}{1-x}
+       & = & t_0-3  & + & \paren{t_1-2t_0 -3} x
+                                 & + &    0 x^2 & + &    0 x^3  + \cdots\\
+       & = & -3   & + & (-2) x.
+\end{array}
+\]
+so
+\begin{align*}
+T(x)(1-2x-2x^2) & = \frac{3}{1-x} -3 -2x\\
+                & = \frac{2x^2 + x}{1-x},
+\end{align*}
+and
+\begin{equation}\label{Tfrac}
+T(x) = \frac{2x^2+x}{(1-x)(1-2x-2x^2)} = \frac{2x^2+x}{(1-x)(1-\alpha x)(1-\beta x)}
+\end{equation}
+where $\alpha = 1+\sqrt{3}$, $\beta = 1-\sqrt{3}$.  This implies that
+$T(x)$ can be expressed using partial fractions as
+\begin{equation}\label{Tpfrac}
+T(x) = \frac{a}{1 - \alpha x} + \frac{b}{1 - \beta x} + \frac{c}{1 - x}
+\end{equation} 
+To find $a,b,c$, multiply both sides of~\eqref{Tpfrac} by 
+$(1-\alpha x)(1-\beta x)(1-x)$ to get
+\begin{equation}\label{Tpfrac2}
+2x^2+x = a(1-\beta x)(1-x) + 
+         b(1-\alpha x)(1- x) +
+         c(1-\alpha x)(1-\beta x).
+\end{equation}
+Letting $x=1$ gives
+\[
+3 = c (1-\alpha)(1-\beta) = c (-3)
+\]
+so $c = -1$.  Similarly, letting $x=1/\alpha$ gives (after a little
+calculation) $a = 1/(3-\sqrt{3})$, and letting $x=1/\beta$ gives $b =
+1/(3+\sqrt{3})$.
+
+Finally, since
+\[
+[x^n]\paren{d/(1-\delta x)} = d \delta^n,
+\]
+we conclude that
+\begin{align*}
+t_n & = a \alpha^n + b \beta n + c 1^n\\
+    & = \frac{1}{3-\sqrt{3}}(1+\sqrt{3})^n+\frac{1}{3+\sqrt{3}}(1-\sqrt{3})^n-1
+\end{align*}
+\end{solution}
+\fi
+\eparts
+
+\end{problem}
+
+\endinput
