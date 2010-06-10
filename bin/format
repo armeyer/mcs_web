@@ -76,6 +76,7 @@ our %OPT = (index    => 1,
             mode     => 'scroll',
             include  => 1,
             verbose  => 0,
+            ftl      => undef,
             );
 
 ######################################################################
@@ -124,6 +125,10 @@ sub latex( $ ) {
     } else {
         if ($chapter ne $DRIVER) {
             $first_line .= qq{\\includeonly{$chapter}};
+
+            if ($OPT{ftl}) {
+                $first_line .= q{\PassOptionsToClass{ftl}{mcs}};
+            }
 
             if ($OPT{exolinks}) {
                 $first_line .= q{\PassOptionsToClass{exolinks}{mcs}};
@@ -579,13 +584,18 @@ sub process_chapter($) {
     my $target_pdf = "$chapter.pdf";
     my $target_log = "$chapter.log";
 
-    if ($has_solutions) {
-        if ($has_staffnotes) {
-            $target_pdf = "${chapter}-staff.pdf";
-            $target_log = "${chapter}-staff.log";
-        } else {
-            $target_pdf = "${chapter}sol.pdf";
-            $target_log = "${chapter}sol.log";
+    if ($OPT{ftl}) {
+        $target_pdf = "${chapter}-ftl.pdf";
+        $target_log = "${chapter}-ftl.log";
+    } else {
+        if ($has_solutions) {
+            if ($has_staffnotes) {
+                $target_pdf = "${chapter}-staff.pdf";
+                $target_log = "${chapter}-staff.log";
+            } else {
+                $target_pdf = "${chapter}sol.pdf";
+                $target_log = "${chapter}sol.log";
+            }
         }
     }
 
@@ -699,8 +709,13 @@ GetOptions("index!"     => \$OPT{index},
            "max_runs=i" => \$OPT{max_runs},
            "mode=s"     => \$OPT{mode},
            "include!"   => \$OPT{include},
+           "ftl!"       => \$OPT{ftl},
            "verbose!"   => \$OPT{verbose}
 ) or usage();
+
+if ($OPT{ftl}) {
+    $OPT{index} = 0;
+}
 
 usage unless @ARGV;
 

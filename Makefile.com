@@ -1,4 +1,8 @@
-FORMAT = ../bin/format
+ifndef MODE
+	MODE = noftl
+endif
+
+FORMAT = ../bin/format -$(MODE)
 # FORMAT = ../bin/format -exolinks
 
 export DRIVER_FILE = mcs

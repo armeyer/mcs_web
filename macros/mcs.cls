@@ -20,6 +20,16 @@
 
 \DeclareOption{book}{}
 
+\DeclareOption{ftl}{%
+    \AtBeginDocument{%
+        \hidesolutions
+        \renewcommand{\baselinestretch}{3}%
+        \renewcommand{\@pinput}[2][]{\endgroup}%
+        \normalbaselineskip=3\normalbaselineskip
+        \baselineskip=3\baselineskip
+    }%    
+}
+
 \DeclareOption{handout}{%
     \PassOptionsToClass{11pt}{book}
     \def\@class@option@file{handout}%
@@ -1954,6 +1964,6 @@
     \input{.solutionspolicy}%
 }{}
 
-\decideaboutsolutions
+\AtBeginDocument\decideaboutsolutions
 
 \endinput
