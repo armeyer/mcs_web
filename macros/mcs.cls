@@ -25,8 +25,8 @@
         \hidesolutions
         \renewcommand{\baselinestretch}{3}%
         \renewcommand{\@pinput}[2][]{\endgroup}%
-        \normalbaselineskip=3\normalbaselineskip
-        \baselineskip=3\baselineskip
+        \normalbaselineskip=\baselinestretch\normalbaselineskip
+        \baselineskip=\baselinestretch\baselineskip
     }%    
 }
 
