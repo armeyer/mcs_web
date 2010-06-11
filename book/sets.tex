@@ -1,283 +1,265 @@
-\hyperdef{sets}{informal}{\chapter{Sets and Relations}\label{sets_chap}
+\hyperdef{sets}{informal}{\chapter{Sets and Relations}}\label{sets_chap}
 
-\section{Sets}
-We've been assuming that the concepts of sets, sequences, and functions are
-already familiar ones, and we've mentioned them repeatedly.  Now we'll do a
-quick review of the definitions.
+\hyperdef{logic}{sets}{\section{The Logic of Sets}}
+
+\subsection{\idx{Russell's Paradox}}
+
+Reasoning naively about sets turns out to be risky.  In fact, one of the
+earliest attempts to come up with precise axioms for sets by a late
+nineteenth century logican named Gotlob \term{Frege} was shot down by a three
+line argument known as \emph{Russell's Paradox}:\footnote{Bertrand \term{Russell}
+  was a mathematician/logician at Cambridge University at the turn of the
+  Twentieth Century.  He reported that when he felt too old to do
+  mathematics, he began to study and write about philosophy, and when he
+  was no longer smart enough to do philosophy, he began writing about
+  politics.  He was jailed as a conscientious objector during World War I.
+  For his extensive philosophical and political writing, he won a Nobel
+  Prize for Literature.}  This was an astonishing blow to efforts to
+provide an axiomatic foundation for mathematics.
+
+\textbox{
+\begin{quote}
+Let $S$ be a variable ranging over all sets, and define
+\[W \eqdef \set{S \suchthat S \not\in S}.\]
+So by definition,
+\[S \in W  \mbox{  iff  } S \not\in S,\]
+for every set $S$.  In particular, we can let $S$ be $W$, and obtain
+the contradictory result that
+\[W \in W  \mbox{  iff  } W \not\in W.\]
+\end{quote}}
+
+A way out of the paradox was clear to Russell and others at the time:
+\emph{it's unjustified to assume that $W$ is a set}.  So the step in the
+proof where we let $S$ be $W$ has no justification, because $S$ ranges
+over sets, and $W$ may not be a set.  In fact, the paradox implies that
+$W$ had better not be a set!
+
+But denying that $W$ is a set means we must \emph{reject} the very natural
+axiom that every mathematically well-defined collection of elements is
+actually a set.  So the problem faced by Frege, Russell and their
+colleagues was how to specify \emph{which} well-defined collections are
+sets.  Russell and his fellow Cambridge University colleague Whitehead
+immediately went to work on this problem.  They spent a dozen years
+developing a huge new axiom system in an even huger monograph called
+\emph{Principia Mathematica}.
+
+
+\subsection{The ZFC Axioms for Sets}
+It's generally agreed that, using some simple logical deduction rules,
+essentially all of mathematics can be derived from some axioms about sets
+called the Axioms of \idx{Zermelo-Frankel Set Theory} with Choice (\idx{ZFC}).
+
+We're \emph{not} going to be working with these axioms in this course,
+but we thought you might like to see them --and while you're at it, get
+some practice reading quantified formulas:
+
+\begin{description}
+
+\item[\term{Extensionality}.] Two sets are equal if they have the same members.
+In formal logical notation, this would be stated as:
+\[
+(\forall z.\; (z \in x \QIFF z \in y)) \QIMPLIES x = y.
+\]
+
+\item[\term{Pairing}.] For any two sets $x$ and $y$, there is a set,
+     $\set{x,y}$, with $x$ and $y$ as its only elements:
+\[
+\forall x,y.\; \exists u.\; \forall z.\;
+[z \in u \QIFF (z = x \QOR z = y)]
+\]
+
+\item[\index{Union axiom}Union.] The union, $u$, of a collection, $z$, of sets is also a set:
+\[
+\forall z.\, \exists u \forall x.\; (\exists y.\; x \in y \QAND y \in z) \QIFF x \in u.
+\]
+
+\item[\index{Infinity axiom}Infinity.]  There is an infinite set.
+  Specifically, there is a nonempty set, $x$, such that for any set $y \in
+  x$, the set $\set{y}$ is also a member of $x$.
 
 \begin{editingnotes}
-Propositions of the sort we've considered so far are good for
-reasoning about individual statements, but not so good for reasoning
-about a collection of objects.  Let's first review a couple
-mathematical tools for grouping objects and then extend our logical
-language to cope with such collections.
+
+\item[Subset.] Given any set, $x$, and any proposition $P(y)$, there is a
+  set containing precisely those elements $y \in x$ for which $P(y)$ holds.
+
 \end{editingnotes}
 
-Informally, a \term{set} is a bunch of objects, which are called the
-\term{elements} of the set.  The elements of a set can be just about
-anything: numbers, points in space, or even other sets.  The conventional
-way to write down a set is to list the elements inside curly-braces.  For
-example, here are some sets:
-
+\item[\index{Power Set axiom}Power Set.]  All the subsets of a set form another set:
 \[
-\begin{array}{rcll}
-%\naturals & = & \set{0, 1, 2, 3, \ldots} & \text{the} \text{nonnegative integers} \\
-A & = & \set{\text{Alex}, \text{Tippy}, \text{Shells}, \text{Shadow}} & \text{dead pets} \\
-B & = & \set{\text{red}, \text{blue}, \text{yellow}} & \text{primary colors} \\
-C & = & \set{ \set{a, b}, \set{a, c}, \set{b, c}} & \text{a set of sets}
-\end{array}
+\forall x.\; \exists p.\; \forall u.\: u \subseteq x \QIFF u \in p.
 \]
-This works fine for small finite sets.  Other sets might be defined by
-indicating how to generate a list of them:
-\begin{align*}
-D & =  \set{1,2,4,8,16,\dots} & \text{the powers of 2}
-\end{align*}
 
-The order of elements is not significant, so $\set{x, y}$ and $\set{y, x}$
-are the same set written two different ways.  Also, any object is, or is
-not, an element of a given set ---there is no notion of an element
-appearing more than once in a set.\footnote{It's not hard to develop a
-notion of \term{multisets} in which elements can occur more than once, but
-multisets are not ordinary sets.}  So writing $\set{x,x}$ is just
-indicating the same thing twice, namely, that $x$ is in the set.  In
-particular, $\set{x,x} = \set{x}$.
+\item[\index{Replacement axiom}Replacement.]  Suppose a formula, $\phi$,
+  of set theory defines the graph of a function, that is,
+\[
+\forall x, y, z.\, [\phi(x,y) \QAND \phi(x,z)] \QIMPLIES y = z.
+\]
+Then the image of any set, $s$, under that function is also a set, $t$.  Namely,
+\[
+\forall s\, \exists t\, \forall y.\, [\exists x.\, \phi(x,y) \QIFF y \in t].
+\]
 
-The expression $e \in S$ asserts that $e$ is an element of set $S$.  For
-example, $32 \in D$ and $\text{blue} \in B$, but $\text{Tailspin}
-\not\in A$ ---yet.
 
-Sets are simple, flexible, and everywhere.  You'll find
-some set mentioned in nearly every section of this text.
+\item[\term{Foundation}.] 
+There cannot be an infinite sequence
+\[
+\cdots \in x_n \in \cdots \in x_1 \in x_0
+\]
+of sets each of which is a member of the previous one.  This is equivalent
+to saying every nonempty set has a ``member-minimal'' element.  Namely, define
+\[
+\text{member-minimal}(m, x) \eqdef [m \in x \QAND \forall y \in x.\, y \notin m].
+\]
+Then the Foundation axiom is
+\[
+\forall x.\ x \neq \emptyset\ \QIMPLIES\ \exists m.\, \text{member-minimal}(m, x).
+\]
 
-\subsection{Some Popular Sets}
+\begin{editingnotes}
+If well-founded posets are defined, then rephrase Foundation as
+\emph{The $\in$ relation on sets is well-founded.}
+\end{editingnotes}
 
-Mathematicians have devised special symbols to represent some common
-sets.
+\item[\index{Choice axiom}Choice.]  Given a set, $s$, whose members are nonempty sets no two
+  of which have any element in common, then there is a set, $c$,
+  consisting of exactly one element from each set in $s$.
 
-\begin{center}
-\begin{tabular}{lll}
-\textbf{symbol} & \textbf{set} & \textbf{elements} \\
-\term{$\emptyset$} & the empty set & \text{none}\\
-\term{$\naturals$} & nonnegative integers & $\set{0, 1, 2, 3, \ldots}$ \\
-\term{$\integers$} & integers & $\set{\ldots, -3, -2, -1, 0, 1, 2, 3, \ldots}$ \\
-\term{$\rationals$} & rational numbers & $\frac{1}{2},\ -\frac{5}{3},\ 16,\ \text{etc.}$ \\
-\term{$\reals$} & real numbers & $\pi,\ e,\ -9,\ \sqrt{2},\ \text{etc.}$ \\
-\term{$\complexes$} & complex numbers & $i,\ \frac{19}{2},\ \sqrt{2} - 2i,\ \text{etc.}$
-\end{tabular}
-\end{center}
-A superscript ``$^+$'' restricts a set to its positive elements; for
-example, \term{$\reals^+$} denotes the set of positive real numbers.  Similarly,
-\term{$\reals^-$} denotes the set of negative reals.
 
-\subsection{Comparing and Combining Sets}
+\iffalse
+\begin{tabbing}
+$\exists y \, \forall z \, \forall w \,
+ \biggl( ($\=$z \in w \,\QAND\, w \in x) \; \QIMPLIES $\\
+\> $\exists v \, \exists u \, \Bigl(\exists t \, \bigr((u \in w \, \QAND \, w \in t)$\=$\;\QAND\; (u \in t \,\QAND\, t \in y)\bigl) $\\
+\> \> $\QIFF\; u = v\Bigr) \biggr)$
+\end{tabbing}
+\fi
 
-The expression $S \subseteq T$ indicates that set $S$ is a \term{subset}
-of set $T$, which means that every element of $S$ is also an element of
-$T$ (it could be that $S=T$).  For example, $\naturals \subseteq
-\mathbb{Z}$ and $\mathbb{Q} \subseteq
-\reals$ (every rational number is a real number), but $\complexes
-\not\subseteq \mathbb{Z}$ (not every complex number is an integer).
 
-As a memory trick, notice that the \term{$\subseteq$} points to the
-smaller set, just like a $\leq$ sign points to the smaller number.
-Actually, this connection goes a little further: there is a symbol
-\term{$\subset$} analogous to $<$.  Thus, $S \subset T$ means that $S$
-is a subset of $T$, but the two are \emph{not} equal.  So $A \subseteq
-A$, but $A \not\subset A$, for every set $A$.
+\begin{editingnotes}
 
-There are several ways to combine sets.  Let's define a couple of sets for
-use in examples:
-\begin{align*}
-X & \eqdef \set{1, 2, 3} \\
-Y & \eqdef \set{2, 3, 4}
-\end{align*}
+\[\begin{array}{rlll}
+\exists y \forall z \forall w & ( (z \in w \QAND w \in x) \QIMPLIES\\
+                              &\quad \exists v \exists u (\exists t
+                                           ((u \in w \QAND & w \in t)
+                                                              & \QAND (u \in t \QAND t \in y))\\
+                                                            &&& \QIFF u = v))
+\end{array}\]
 
+\end{editingnotes}
+
+\end{description}
+
+
+\subsection{Avoiding \idx{Russell's Paradox}}
+
+These modern ZFC axioms for set theory are much simpler than the system
+Russell and Whitehead first came up with to avoid paradox.  In fact, the
+ZFC axioms are as simple and intuitive as Frege's original axioms, with
+one technical addition: the Foundation axiom.  Foundation captures the
+intuitive idea that sets must be built up from ``simpler'' sets in certain
+standard ways.  And in particular, Foundation implies that no set is ever
+a member of itself.  So the modern resolution of Russell's paradox goes as
+follows: since $S \not \in S$ for all sets $S$, it follows that $W$,
+defined above, contains every set.  This means $W$ can't be a set ---or it
+would be a member of itself.
+
+\subsection{Does All This Really Work?}\label{setsreallywork}
+
+So this is where mainstream mathematics stands today: there is a handful
+of ZFC axioms from which virtually everything else in mathematics can be
+logically derived.  This sounds like a rosy situation, but there are
+several dark clouds, suggesting that the essence of truth in mathematics
+is not completely resolved.
+
+%
 \begin{itemize}
 
-\item The \term{union} of sets $X$ and $Y$ (denoted $X$ \term{$\union$} $Y$)
-contains all elements appearing in $X$ or $Y$ or both.  Thus, $X \union
-Y = \set{1, 2, 3, 4}$.
+\item The \idx{ZFC axioms} weren't etched in stone by God.  Instead, they were
+  mostly made up by some guy named Zermelo.  Probably some days he
+  forgot his house keys.
 
-\item The \term{intersection} of $X$ and $Y$ (denoted $X$
-  \term{$\intersect$} $Y$) consists of all elements that appear in
-  \textit{both} $X$ and $Y$.  So $X \intersect Y = \set{2, 3}$.
+  So maybe \idx{Zermelo}, just like \idx{Frege}, didn't get his axioms
+  right and will be shot down by some successor to \idx{Russell} who
+  will use Zermelo's axioms to prove a proposition $P$ and its
+  negation $\QNOT P$.  Then math would be broken.  This sounds crazy,
+  but after all, it has happened before.
 
-\item The \term{set difference} of $X$ and $Y$ (denoted $X$ \index{$-$,
-    set difference}$-$ $Y$) consists of all elements that are in $X$, but not in $Y$.
-  Therefore, $X - Y = \set{1}$ and $Y - X = \set{4}$.
+  In fact, while there is broad agreement that the ZFC axioms are capable
+  of proving all of standard mathematics, the axioms have some further
+  consequences that sound paradoxical.  For example, the \idx{Banach-Tarski}
+  Theorem says that, as a consequence of the \idx{Axiom of Choice}, a solid ball
+  can be divided into six pieces and then the pieces can be rigidly
+  rearranged to give \emph{two} solid balls, each the same size as the
+  original!
 
+\item Georg \term{Cantor} was a contemporary of \idx{Frege} and
+  \idx{Russell} who first developed the theory of infinite sizes (because
+  he thought he needed it in his study of Fourier series).  Cantor raised
+  the question whether there is a set whose size is strictly between the
+  ``smallest\footnote{See Problem~\ref{CP_smallest_infinite_set}}''
+  infinite set, $\naturals$, and $\power(\naturals)$; he guessed not:
+
+  \textbf{Cantor's \term{Continuum Hypothesis}}: There is no set, $A$,
+  such that $\power(\naturals)$ is \idx{strictly bigger} than $A$ and $A$
+  is strictly bigger than $\naturals$.
+
+  The Continuum Hypothesis remains an open problem a century later.  Its
+  difficulty arises from one of the deepest results in modern Set Theory
+  ---discovered in part by \idx{G\"odel} in the 1930's and Paul
+  \idx{Cohen} in the 1960's ---namely, the ZFC axioms are not sufficient
+  to settle the Continuum Hypothesis: there are two collections of sets,
+  each obeying the laws of \idx{ZFC}, and in one collection the Continuum
+  Hypothesis is true, and in the other it is false.  So settling the
+  Continuum Hypothesis requires a new understanding of what Sets should be
+  to arrive at persuasive new axioms that extend ZFC and are strong enough
+  to determine the truth of the Continuum Hypothesis one way or the other.
+
+\item But even if we use more or different axioms about sets, there are
+  some unavoidable problems.  In the 1930's, \idx{G\"odel} proved that,
+  assuming that an axiom system like \idx{ZFC} is consistent ---meaning
+  you can't prove both $P$ and $\QNOT(P)$ for any proposition, $P$ ---then
+  the very proposition that the system is consistent (which is not too
+  hard to express as a logical formula) cannot be proved in the system.
+  In other words, no \idx{consistent} system is strong enough to verify
+  itself.
+  
 \end{itemize}
 
-\subsection{Complement of a Set}
+\subsection{Large Infinities in Computer Science}
 
-Sometimes we are focused on a particular domain, $D$.  Then for any
-subset, $A$, of $D$, we define \term{$\overline{A}$} to be the set of all
-elements of $D$ \textit{not} in $A$.  That is, $\overline{A} \eqdef D-A$.
-The set $\overline{A}$ is called the \term{complement} of $A$.
+If the romance of different size infinities and continuum hypotheses
+doesn't appeal to you, not knowing about them is not going to lower your
+professional abilities as a computer scientist.  These abstract issues
+about infinite sets rarely come up in mainstream mathematics, and they
+don't come up at all in computer science, where the focus is generally on
+``\idx{countable},'' and often just finite, sets.  In practice, only
+logicians and set theorists have to worry about collections that are too
+big to be sets.  In fact, at the end of the 19th century, the general
+mathematical community doubted the relevance of what they called
+``\idx{Cantor's paradise}'' of unfamiliar sets of arbitrary infinite size.
 
-For example, when the domain we're working with is the real numbers,
-the complement of the positive real numbers is the set of negative real
-numbers together with zero.  That is,
-\[
-\overline{\reals^+} = \reals^- \union \set{0}.
-\]
-
-It can be helpful to rephrase properties of sets using complements.  For
-example, two sets, $A$ and $B$, are said to be \term{disjoint} iff they
-have no elements in common, that is, $A \intersect B = \emptyset$.  This
-is the same as saying that $A$ is a subset of the complement of $B$, that
-is, $A \subseteq \overline{B}$.
-
-\subsection{Power Set}
-
-The set of all the subsets of a set, $A$, is called the \term{power
-  set}, \term{$\power(A)$}, of $A$.  So $B \in \power(A)$ iff $B
-\subseteq A$.  For example, the elements of $\power( \set{1, 2})$ are
-$\emptyset, \set{1}, \set{2}$ and $\set{1, 2}$.
-
-More generally, if $A$ has $n$ elements, then there are $2^n$ sets in
-$\power(A)$.  For this reason, some authors use the notation $2^A$ instead
-of $\power(A)$.
-
-\subsection{Set Builder Notation}
-
-An important use of predicates is in \term*{set builder notation}.  We'll
-often want to talk about sets that cannot be described very well by
-listing the elements explicitly or by taking unions, intersections,
-etc., of easily-described sets.  Set builder notation often comes to the
-rescue.  The idea is to define a \textit{set} using a \textit{predicate};
-in particular, the set consists of all values that make the predicate
-true.  Here are some examples of set builder notation:
-
-\begin{align*}
-A & \eqdef \set{n \in \naturals \suchthat \text{$n$ is a prime and $n =
-    4k+1$ for some integer $k$}} \\
-B & \eqdef \set{x \in \reals \suchthat x^3 - 3 x + 1 > 0} \\
-C & \eqdef \set{a + b i \in \complexes \suchthat a^2 + 2 b^2 \leq 1}
-\end{align*}
-
-The set $A$ consists of all nonnegative integers $n$ for which the
-predicate
-\begin{center}
-``$n$ is a prime and $n = 4k+1$ for some integer $k$''
-\end{center}
-is true.  Thus, the smallest elements of $A$ are:
-\[
-5, 13, 17, 29, 37, 41, 53, 57, 61, 73, \ldots.
-\]
-Trying to indicate the set $A$ by listing these first few elements
-wouldn't work very well; even after ten terms, the pattern is not
-obvious!  Similarly, the set $B$ consists of all real numbers $x$ for
-which the predicate
-\[
-x^3 - 3x + 1 > 0
-\]
-is true.  In this case, an explicit description of the set $B$ in
-terms of intervals would require solving a cubic equation.  Finally,
-set $C$ consists of all complex numbers $a + b i$ such that:
-\[
-a^2 + 2 b^2 \leq 1
-\]
-This is an oval-shaped region around the origin in the complex plane.
-
-\subsection{Proving Set Equalities}
-
-Two sets are defined to be equal if they contain the same elements.  That
-is, $X = Y$ means that $z \in X$ if and only if $z \in Y$, for all
-elements, $z$.  (This is actually the first of the ZFC axioms.)  So set
-equalities can be formulated and proved as ``iff'' theorems.  For
-example:
-
-\begin{theorem}[\term{Distributive Law} for Sets]
-Let $A$, $B$, and $C$ be sets.  Then:
-\begin{equation}\label{set-distrib}
-A \intersect (B \union C) = (A \intersect B) \union (A \intersect C)
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-The equality~\eqref{set-distrib} is equivalent to the assertion that
-\begin{equation}\label{set-distrib-z}
-  z \in A \intersect (B \union C) \qiff z \in (A \intersect B)
-  \union (A \intersect C)
-\end{equation}
-for all $z$.  Now we'll prove~\eqref{set-distrib-z} by a chain of iff's.
-
-First we need a rule for distributing a propositional $\QAND$ operation
-over an $\QOR$ operation.  It's easy to verify by truth-table that
-\begin{lemma}\label{prop-distrib}
-The propositional formula
-\[
-P \QAND (Q \QOR R)
-\]
-and
-\[
-(P \QAND Q) \QOR (P \QAND R)
-\]
-are equivalent.
-\end{lemma}
-
-Now we have
-\begin{align*}
-\lefteqn{z \in A \intersect (B \union C)}\\
-& \qiff (z \in A) \QAND (z \in B \union C) & \text{(def of $\intersect$)}\\
-& \qiff (z \in A) \QAND (z \in B \QOR z \in C)
-                & \text{(def of $\union$)}\\
-& \qiff (z \in A \QAND z \in B) \QOR (z \in A \QAND z \in C)
-                & \text{(Lemma~\ref{prop-distrib})}\\
-& \qiff (z \in A \intersect B) \QOR (z \in A \intersect C)
-                & \text{(def of $\intersect$)}\\
-& \qiff z \in (A \intersect B) \union (A \intersect C)
-                & \text{(def of $\union$)}
-\end{align*}
-
-\end{proof}
-  
-\subsection{Glossary of Symbols}
-\begin{center}
-\begin{tabular}{ll}
-symbol &  meaning\\
-\hline%
-\iffalse
-$\eqdef$ & is defined to be\\
-$\land$ & and\\
-$\lor$ & or\\
-$\implies$ & implies\\
-$\neg$    & not\\
-$\neg{P}$ & not $P$\\
-$\bar{P}$ & not $P$\\
-$\iff$    & iff\\
-$\iff$    & equivalent\\
-$\oplus$   & xor (exclusive-or)\\
-$\exists$ & exists\\
-$\forall$ & for all\\
-\fi%
-$\in$   &  is a member of\\
-$\subseteq$ & is a subset of\\
-$\subset$ & is a proper subset of\\
-$\union$  & set union\\
-$\intersect$ & set intersection\\
-$\bar{A}$ & complement of a set, $A$\\
-$\power(A)$ & powerset of a set, $A$\\
-$\emptyset$ & the empty set, $\set{}$\\
-$\naturals$ & nonnegative integers \\
-$\integers$ & integers\\
-$\integers^+$ & positive integers\\
-$\integers^-$ & negative integers\\
-$\rationals$ & rational numbers\\
-$\reals$ & real numbers\\
-$\complexes$ & complex numbers\\
-$\emptystring$ & the empty string/list
-\end{tabular}
-\end{center}
-
+But the proof that power sets are bigger gives the simplest form of what
+is known as a ``\idx{diagonal argument}.''  Diagonal arguments are used to
+prove many fundamental results about the limitations of computation, such
+as the undecidability of the \idx{Halting Problem} for programs (see
+Problem~\ref{CP_recognizable_sets}) and the inherent, unavoidable,
+\idx{inefficiency} (\idx{exponential time} or worse) of procedures for
+other computational problems.  So computer scientists do need to study
+diagonal arguments in order to understand the logical limits of
+computation.
 
 \begin{problems}
+%\practiceproblems
+%\pinput{}
+\classproblems
+\pinput{CP_power_set_tower}
+\pinput{CP_recognizable_sets}
+\pinput{CP_undescribable_language}
+
 \homeworkproblems
-\pinput{PS_set_union}
-
+\pinput{PS_uncountable_infinite_sequences}
+\pinput{PS_N_to_A_diagonal_argument}
 \end{problems}
-
 
 \section{Sequences}
 
@@ -436,7 +418,7 @@ $g(f(x))$.
   $g \compose f$, of $g$ with $f$ is defined to be the function
   $h:A \to C$ defined by the rule:
 \begin{displaymath}
-(g \compose f)(x) = h(x) \eqdef g(f(x)),
+h(x) \eqdef (g \compose f)(x) \eqdef g(f(x)),
 \end{displaymath}
 for all $x \in A$.
 \end{definition}
@@ -487,7 +469,6 @@ catalogue.  The graph of $T$ contains precisely the pairs of the form
 such that the faculty member named $\ang{\text{instructor-name}}$ is
 in charge of the subject with number $\ang{\text{subject-num}}$ in Spring '10.
 So $\graph{T}$ contains pairs like
-
 \[\begin{array}{ll}
 (\texttt{A. R. Meyer}, & \texttt{6.042}),\\
 (\texttt{A. R. Meyer}, & \texttt{18.062}),\\
@@ -495,9 +476,9 @@ So $\graph{T}$ contains pairs like
 (\texttt{T. Leighton}, & \texttt{6.042}),\\
 (\texttt{T. Leighton}, & \texttt{18.062}),\\
 (\texttt{G, Freeman}, & \texttt{6.011}),\\
-(\texttt{G, Freeman}, & \texttt{6.UAT}),\\
 (\texttt{G. Freeman}, & \texttt{6.881})\\
 (\texttt{G. Freeman}, & \texttt{6.882})\\
+(\texttt{G. Freeman}, & \texttt{6.UAT})\\
 (\texttt{T. Eng},      & \texttt{6.UAT})\\
 (\texttt{J. Guttag},  & \texttt{6.00})\\
 \qquad \vdots
@@ -520,76 +501,95 @@ the Fall term only subjects.  Similarly, there are faculty in the domain,
 $F$, who do not appear in the list because all their in-charge subjects
 are Fall term only.
 
-\subsection{Images and Inverse Images}
+\subsection{Relational Images}
+The idea of the image of a set under a function extends directly to
+relations.
 
-%drop the two-sided inverse-image, image notation.
-%revise to use function-like notation $R(D)$ for image of $D \subseteq \domain{R}$
-%explain $R(D)$: take the endpoints of all the arrows that cone from $D$.
-%Define \inv{R} and get inverse images as \inv{R}(C) for $C \subseteq \codomain{R}$
+\begin{definition}
+The \term{image} of a set, $Y$, under a relation, $R$, written $R(Y)$, is the
+set of elements of the codomain, $B$, of $R$ that are related to some element in
+$Y$, namely,
+\[
+R(Y) \eqdef \set{b \in B \suchthat yRb \text{ for some } y \in Y}.
+\]
+\end{definition}
 
-The faculty in charge of 6.UAT in Spring '10 can be found by taking the
-pairs of the form
+For example, to find the subject numbers that Meyer is in
+charge of in Spring '09, we can look for all the pairs of the form
+\[
+(\text{A. Meyer}, \ang{\text{subject-number}})
+\]
+in the graph of the teaching relation, $T$, and then just list the
+right hand sides of these pairs.  These righthand sides are exactly the image
+$T(\text{A. Meyer})$, which happens to be $\set{6.042, 18.062, 6.844}$.
+Similarly, to find the subject numbers that either Freeman or Eng are
+in charge of, we can collect all the pairs in $T$ of the form
+\[
+(\text{G. Freeman}, \ang{\text{subject-number}})
+\]
+or
+\[
+(\text{T. Eng}, \ang{\text{subject-number}});
+\]
+and list their right hand sides.  These right hand sides are exactly the image
+$T(\set{\text{G. Freeman}, \text{T. Eng}}$.  So the partial list
+of pairs in $T$ given above implies that
+\[
+\set{\texttt{6.011, 6.881, 6.882, 6.UAT}} \subseteq T(\set{\text{G. Freeman}, \text{T. Eng}}.
+\]
+Finally, since the domain, $F$, is the set of all in-charge faculty,
+$T(F)$ is exactly the set of \emph{all} Spring '09 subjects being
+taught.
+
+\subsection{Inverse Relations and Images}
+
+\begin{definition}
+The \term{inverse}, $\inv{R}$ of a relation $R: A \to B$ is the
+relation from $B$ to $A$ defined by the rule
+\[
+b \inv{R} a \QIFF a \mrel{R} B.
+\]
+The image of a set under the relation, $\inv{R}$, is called
+the \term{inverse image} of the set.  That is, the inverse image of a
+set, $X$, under the relation, $R$, is $\inv{R}{X}$.
+\end{definition}
+
+Continuing with the in-charge example above, we can find the faculty
+in charge of 6.UAT in Spring '10 can be found by taking the pairs of
+the form
 \[
 (\ang{\text{instructor-name}}, 6.UAT)
 \]
-in the graph of the teaching relation, $T$, and then just listing the left
-hand sides of these pairs; these turn out to be just Eng and Freeman.
+in the graph of the teaching relation, $T$, and then just listing the
+left hand sides of these pairs; these turn out to be just Eng and
+Freeman.  These left hand sides are exactly the inverse image of
+$\set{\text{6.UAT}}$ under $T$.
 
-The introductory course 6 subjects have numbers that start with
-\emph{6.0}\,.  So we can likewise find out all the instructors in-charge
-of introductory course 6 subjects this term, by taking all the pairs of
-the form $(\ang{\text{instructor-name}}, 6.0\dots)$ and list the left hand
-sides of these pairs.  For example, from the part of the graph of $T$
-shown above, we can see that Meyer, Leighton, Freeman, and Guttag are
-in-charge of introductory subjects this term.
-
-These are all examples of taking an \term{inverse image} of a set under a
-relation.  If $R$ is a binary relation from $A$ to $B$, and $X$ is any
-set, define the inverse image of $X$ under $R$, written simply as
-$RX$ to be the set elements of $A$ that are related to something in $X$.
-
-For example, let $D$ be the set of introductory course 6 subject numbers.
-So $TD$, the inverse image of the set $D$ under the relation, $T$, is the
-set of all faculty members in-charge of introductory course 6 subjects in
-Spring '10.  Notice that in inverse image notation, $D$ gets written to
-the right of $T$ because, to find the faculty members in $TD$, we're
-looking pairs in the graph of $T$ whose right hand sides are subject
-numbers in $D$.
-
-Here's a concise definition of the inverse image of a set $X$ under
-a relation, $R$:
+Now let $D$ be the set of introductory course 6 subject numbers.
+These are the subject numbers that start with \emph{6.0}\,.  Now we
+can likewise find out all the instructors who were in-charge of
+introductory course 6 subjects in Spring '09, by taking all the pairs
+of the form $(\ang{\text{instructor-name}}, 6.0\dots)$ and list the
+left hand sides of these pairs.  These left hand sides are exactly the
+inverse image of of $D$ under $T$.  From the part of the
+graph of $T$ shown above, we can see that
 \[
-RX \eqdef \set{a \in A \suchthat aRx \text{ for some } x \in X}.
+\set{\text{Meyer, Leighton, Freeman, Guttag}} \subseteq \inv{T}(D).
 \]
-
-Similarly, the \term{image} of a set $Y$ under $R$, written $YR$, is the
-set of elements of the codomain, $B$, that are related to some element in
-$Y$, namely,
-\[
-YR \eqdef \set{b \in B \suchthat yRb \text{ for some } y \in Y}.
-\]
-
-So, $\set{\text{A. Meyer}}T$ gives the subject numbers that Meyer is in
-charge of in Spring '09.  In fact, $\set{\text{A. Meyer}}T = \set{6.042,
-  18.062, 6.844}$.  Since the domain, $F$, is the set of all in-charge
-faculty, $FT$ is exactly the set of \emph{all} Spring '09 subjects being
-taught.  Similarly, $TN$ is the set of people in-charge of a Spring '09
-subject.
+That is, Meyer, Leighton, Freeman, and Guttag were among the
+instructors in charge of introductory subjects in Spring '10.
+Finally, the inverse image under $T$ of the set, $N$, of all subject
+numbers is the set of all instructors who were in charge of a Spring
+'09 subject.
 
 It gets interesting when we write composite expressions mixing images,
-inverse images and set operations.  For example, $(TD)T$ is the set of
-Spring '09 subjects that have people in-charge who also are in-charge of
-introductory subjects.  So $(TD)T - D$ are the advanced subjects with
-someone in-charge who is also in-charge of an introductory subject.
-Similarly, $TD \intersect T(N-D)$ is the set of faculty teaching both an
-introductory \emph{and} an advanced subject in Spring '09.
-
-\textbf{Warning:} When $R$ happens to be a function, the pointwise
-application, $R(Y)$, of $R$ to a set $Y$ described in
-Section~\ref{funcsubsec} is exactly the same as the image of $Y$ under
-$R$.  That means that when $R$ is a function, $R(Y) = YR$ ---\emph{not}
-$RY$.  Both notations are common in math texts, so you'll have to live
-with the fact that they clash.  Sorry about that.
+inverse images and set operations.  For example, $T(\inv{T}(D))$ is
+the set of Spring '09 subjects that have an instructor in charge who
+also is in in charge of an introductory subject.  So $T(\inv{T}(D)) -
+D$ are the advanced subjects with someone in-charge who is also
+in-charge of an introductory subject.  Similarly, $\inv{T}(D) \intersect
+\inv{T}(N-D)$ is the set of faculty in charge of both an introductory \emph{and}
+an advanced subject in Spring '09.
 
 \subsection{Surjective and Injective Relations}\label{surj_sec}
 
@@ -600,28 +600,27 @@ up the topic of counting because they imply certain relations between the
 
 \begin{itemize}
 
-\item \term{total} when every element of $A$ is assigned to some element of
-  $B$; more concisely, $R$ is total iff $A=RB$.
-
 \item \term{surjective} when every element of $B$ is mapped to \textit{at
-least once}\footnote{
-The names ``surjective'' and ``injective'' are unmemorable and
-nondescriptive.  Some authors use the term \term{onto} for surjective and
-\emph{one-to-one} for injective, which are shorter but arguably no more
-memorable.}; more concisely, $R$ is surjective iff $AR=B$.
+least once}; more concisely, $R$ is surjective iff $R(A)=B$.
+
+\item \term{total} when every element of $A$ is assigned to some element of
+  $B$; more concisely, $R$ is total iff $A=\inv{R}(B)$.
 
 \item \term{injective} if every element of $B$ is mapped to \textit{at
 most once}, and
 
 \item \term{bijective} if $R$ is total, surjective, and injective
-  \emph{function}.
+  \emph{function}.\footnote{These words ``surjective,''
+``injective,'' and ``bijective'' are not very memorable.
+Some authors use the possibly more memorable phrases \term{onto} for surjective,
+\emph{one-to-one} for injective, and \emph{exact correspondence} for bijective.}
 
 \end{itemize}
 
-Note that this definition of $R$ being total agrees with the definition in
-Section~\ref{funcsubsec} when $R$ is a function.
+Note that this definition of $R$ being total agrees with the
+definition in Section~\ref{funcsubsec} when $R$ is a function.
 
-If $R$ is a binary relation from $A$ to $B$, we define $AR$ to to be the
+If $R$ is a binary relation from $A$ to $B$, we define $R(A)$ to to be the
 \emph{range} of $R$.  So a relation is surjective iff its range equals its
 codomain.  Again, in the case that $R$ is a function, these definitions of
 ``range'' and ``total'' agree with the definitions in
@@ -755,12 +754,13 @@ size of $B$.  That is,
 \[
 \#\text{arrows} \geq \card{B}.
 \]
-Combining these inequalities implies that if $R$ is a surjective function,
-then $\card{A} \geq \card{B}$.  In short, if we write $A \surj B$ to mean
-that there is a surjective function from $A$ to $B$, then we've just
-proved a lemma: if $A \surj B$, then $\card{A} \geq \card{B}$.  The
-following definition and lemma lists include this statement and three
-similar rules relating domain and codomain size to relational properties.
+Combining these inequalities implies that if $R$ is a surjective
+function, then $\card{A} \geq \card{B}$.  In short, if we write
+$A \surj B$ to mean that there is a surjective function from $A$ to
+$B$, then we've just proved a lemma: if $A \surj B$, then
+$\card{A} \geq \card{B}$.  The following definition and lemma lists
+this statement and three similar rules relating domain and codomain
+size to relational properties.
 
 \begin{definition}\label{bigger}
   Let $A,B$ be (not necessarily finite) sets.  Then
@@ -823,8 +823,8 @@ f(a_4)=f(a_5) \eqdef b_3.
 f(a_i) \eqdef b_{\min(i,3)},
 \]
 for $i=0, \dots, 5$.  Since $5 \geq 3$, this $f$ is a surjection.
-
 \end{editingnotes}
+
 In fact, if $A$ and $B$ are finite sets of the same size, then we could also
 define a bijection from $A$ to $B$ by this method.
 
@@ -883,9 +883,9 @@ $A \bij B \qimplies B \bij A$.
 Lemma~\ref{translem}.\ref{bigtrans} and~\ref{translem}.\ref{sametrans}
 follow immediately from the fact that compositions of surjections are
 surjections, and likewise for bijections, and
-Lemma~~\ref{translem}.\ref{sameABA} follows from the fact that the inverse
-of a bijection is a bijection.  We'll leave a proof of these facts to
-Problem~\ref{CP_surj_relation}.
+Lemma~\ref{translem}.\ref{sameABA} follows from the fact that the
+inverse of a bijection is a bijection.  We'll leave a proof of these
+facts to Problem~\ref{CP_surj_relation}.
 
 Another familiar property of finite sets carries over to infinite sets,
 but this time it's not so obvious:
@@ -1044,7 +1044,6 @@ sequence is strictly bigger than each set in the sequence
 building still bigger infinities.
 
 So there is an endless variety of different size infinities.
-
 
 \subsection{Infinities in Computer Science}
 
