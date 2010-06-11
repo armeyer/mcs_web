@@ -26,7 +26,7 @@ shownotes:
 hidnotes:
 	echo '\showeditingnotesfalse' > $(EDITNOTEPOLICY)
 
-.PHONY: toggleeditnote
+.PHONY: togglenotes
 
 togglenotes:
 	sed -i -e "s/false/true/;t;s/true/false/" $(EDITNOTEPOLICY)
