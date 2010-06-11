@@ -37,8 +37,10 @@ veryclean: clean
 	-rm -f *.aux *.pdf
 
 .PHONY: showpolicy showsolutions staffsolutions hidesolutions \
-              togglesolutions asksolutions
+              togglesolutions asksolutions \
+              shownotes hidenotes togglenotes
 
 showpolicy showsolutions staffsolutions hidesolutions \
-              togglesolutions asksolutions:
+              togglesolutions asksolutions\
+              shownotes hidenotes togglenotes:
 	$(MAKE) -C .. $@

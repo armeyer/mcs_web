@@ -377,6 +377,7 @@ sub summarize_errors( $ ) {
 
     my $has_solutions = 0;
     my $has_staffnotes = 0;
+    my $has_editnotes  = 0;
 
     (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
 
@@ -409,6 +410,12 @@ sub summarize_errors( $ ) {
 
         /Staff notes \*INCLUDED\*/ and do {
             $has_staffnotes = 1;
+
+            next;
+        };
+
+        /Editing notes \*INCLUDED\*/ and do {
+            $has_editnotes = 1;
 
             next;
         };
@@ -479,7 +486,7 @@ sub summarize_errors( $ ) {
         print "No errors found\n";
     }
 
-    return ($has_solutions, $has_staffnotes);
+    return ($has_solutions, $has_staffnotes, $has_editnotes);
 }
 
 sub process_chapter($) {
@@ -579,25 +586,34 @@ sub process_chapter($) {
         }
     }
 
-    my ($has_solutions, $has_staffnotes) = summarize_errors($chapter);
+    my ($has_solutions, $has_staffnotes, $has_editnotes)
+        = summarize_errors($chapter);
 
     my $target_pdf = "$chapter.pdf";
     my $target_log = "$chapter.log";
 
     if ($OPT{ftl}) {
-        $target_pdf = "${chapter}-ftl.pdf";
-        $target_log = "${chapter}-ftl.log";
+        $target_pdf = "${chapter}-ftl";
+        $target_log = "${chapter}-ftl";
     } else {
         if ($has_solutions) {
             if ($has_staffnotes) {
-                $target_pdf = "${chapter}-staff.pdf";
-                $target_log = "${chapter}-staff.log";
+                $target_pdf = "${chapter}-staff";
+                $target_log = "${chapter}-staff";
             } else {
-                $target_pdf = "${chapter}sol.pdf";
-                $target_log = "${chapter}sol.log";
+                $target_pdf = "${chapter}sol";
+                $target_log = "${chapter}sol";
             }
         }
     }
+
+    if ($has_editnotes) {
+        $target_pdf .= "-edit";
+        $target_log .= "-edit";
+    }
+
+    $target_pdf .= ".pdf";
+    $target_log .= ".log";
 
     if ($generated_pdf ne $target_pdf) {
         print "\nMoving $generated_pdf to $target_pdf\n";

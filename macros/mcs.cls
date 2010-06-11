@@ -16,6 +16,9 @@
 \newif\ifshowstaffnotes
 \showstaffnotesfalse
 
+\newif\ifshoweditingnotes
+\showeditingnotesfalse
+
 \let\@class@option@file\@empty
 
 \DeclareOption{book}{}
@@ -1084,6 +1087,14 @@
     \endtrivlist
 }
 
+\newenvironment{editingnotes}{%
+    \trivlist
+        \item[\hskip\labelsep \textbf{\textcolor{red}{EDITING NOTE}}:]\ignorespaces
+}{%
+    \textcolor{red}{\qed}
+    \endtrivlist
+}
+
 \AtBeginDocument{%
     \ifshowsolutions
         \typeout{^^JSolutions *INCLUDED*.^^J}%
@@ -1103,6 +1114,13 @@
         \typeout{^^JStaff notes *NOT INCLUDED*.^^J}%
         \let\staffnotes\comment
         \let\endstaffnotes\endcomment
+    \fi
+    \ifshoweditingnotes
+        \typeout{^^JEditing notes *INCLUDED*.^^J}%
+    \else
+        \typeout{^^JEditing notes *NOT INCLUDED*.^^J}%
+        \let\editingnotes\comment
+        \let\endeditingnotes\endcomment
     \fi
 }
 
@@ -1962,6 +1980,10 @@
 
 \IfFileExists{.solutionspolicy}{%
     \input{.solutionspolicy}%
+}{}
+
+\IfFileExists{.editnotepolicy}{%
+    \input{.editnotepolicy}%
 }{}
 
 \AtBeginDocument\decideaboutsolutions
