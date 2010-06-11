@@ -23,7 +23,7 @@ shownotes:
 
 .PHONY: hidenotes
 
-hidnotes:
+hidenotes:
 	echo '\showeditingnotesfalse' > $(EDITNOTEPOLICY)
 
 .PHONY: togglenotes
