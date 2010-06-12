@@ -1094,6 +1094,17 @@
     \color{green}%
     \trivlist
         \item[\hskip\labelsep \textbf{\textcolor{red}{EDITING NOTE}}:]\ignorespaces
+    %%
+    %%  This \leavemode forces extra vertical space, but it's
+    %%  necessary to keep something like
+    %%
+    %%      \section{a}
+    %%      \begin{editingnotes}
+    %%      \section{b}
+    %%
+    %%  from causing a ``missing \item'' error.
+    %%
+    \leavevmode
 }{%
     \textcolor{red}{\qed}
     \endtrivlist
