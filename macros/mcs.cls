@@ -321,8 +321,8 @@
 
 %% Text -- Abbreviations
 
-\newcommand{\ie}{\emph{i.e.},\xspace}
-\newcommand{\eg}{\emph{e.g.},\xspace}
+\newcommand{\ie}{\emph{i.e.},\xspace}  %avoid
+\newcommand{\eg}{\emph{e.g.},\xspace}  %avoid
 \newcommand{\etc}{etc.\@\xspace}
 
 \newcommand{\IQ}{\text{IQ\@\xspace}}
@@ -334,6 +334,8 @@
 %\newenvironment{optional}[1]{\small [Optional] #1}{}
 \newenvironment{optional}[1]{\footnotesize [Optional] #1}{}
 %\newenvironment{optional}{\begin{quotation}\small [Optional]}{\end{quotation}}
+\newcommand{\smiley}{\texttt{:-)}}
+
 
 %% Math -- General
 
@@ -1091,7 +1093,7 @@
     %% Don't number sections or put them into the TOC
     \c@secnumdepth=\m@ne
     \c@tocdepth=\m@ne
-    \color{green}%
+    \color{ForestGreen}%
     \trivlist
         \item[\hskip\labelsep \textbf{\textcolor{red}{EDITING NOTE}}:]\ignorespaces
     %%
@@ -1320,24 +1322,28 @@
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
 
-\iffalse
+
 \newcommand{\coursecopyright}{%
 \symbolfootnote[0]{Copyright~\copyright~\coursecopyrightyear, 
     \coursecopyrightnames. All rights reserved.}}
-\fi
+
+\iffalse
 
 \newcommand{\coursecopyright}{%
 \symbolfootnote[0]{Creative Commons
 \resizebox{!}{0.15in}{\includegraphics{by-nc-sa}}~\coursecopyrightyear, 
     \coursecopyrightnames.}}
+\fi
 
 \newcommand{\coursecopyrightyear}{
-  2009%
+  2010%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
-\newcommand{\coursecopyrightnames}{%
-  Prof.~Albert R Meyer%
+
+\newcommand{\coursecopyrightnames}{
+Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
+\renewcommand{\coursecopyrightyear}{2010}
 
 % Formats the top matter (title+headers), given the paper supertitle,
 % paper title, and release date. 

@@ -1,8 +1,8 @@
-\chapter{Partial Orders}\label{partial-order-chapter}
+\chapter{Partial Orders and Equivalence Relations}\label{partial_order_chap}
 
-\begin{staffnotes}
+\begin{editingnotes}
 \textbf{and EQUIVALENCE RELATIONS to be added}
-\end{staffnotes}
+\end{editingnotes}
 
 Partial orders are a kind of binary relation that come up a lot.  The
 familiar $\leq$ order on numbers is a partial order, but so is the
@@ -13,7 +13,7 @@ Partial orders have particular importance in computer science because they
 capture key concepts used, for example, in solving task scheduling
 problems, analyzing concurrency control, and proving program termination.
 
-\section{Axioms for Partial Orders}
+\section{Axioms for Partial Orders}\label{prereq_sec}
 
 The prerequisite structure among MIT subjects provides a nice illustration
 of partial orders.  Here is a table indicating some of the prerequisites of
@@ -313,6 +313,7 @@ orders, but it is not total: the age 240 months, height 68 inches pair,
 %% Scheduling %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scheduling}
 
+\subsection{Scheduling with Constraints}
 Scheduling problems are a common source of partial orders: there is a set,
 $A$, of tasks and a set of constraints specifying that starting a certain
 task depends on other tasks being completed beforehand.  We can picture
@@ -389,15 +390,15 @@ until all elements have been picked.  The sequence of elements in the
 order they were picked will be a topological sort.  This is how the
 topological sort above for getting dressed was constructed.
 
-\begin{staffnotes}
+\begin{editingnotes}
 \textcolor{red}{pedantic lemma}
 
 For this method of topological sorting to work, we need to be sure
-there is always a minimal element.  This is sort of obvious, but
-noting that an infinite partially ordered set might have no minimal
-element ---consider $<$ on the $\integers$ ---we'll practice doing an
-elementary proof about partial orders by proving that minimal elements
-exist.
+there is always a minimal element.  This is sort of obvious, but it
+depends crucially on the partial order being finite ---there is no
+mimimal element among the negative integers for example.  So we'll
+practice doing an elementary proof about partial orders by proving
+that minimal elements exist.
 
 \begin{lemma}\label{finmin}
   \hyperdef{rule}{mine1}{Every} partial order on a nonempty finite set has
@@ -424,7 +425,7 @@ A similar argument works in the case that $R$ is a weak partial order.
 \end{proof}
 \end{lemma}
 
-\end{staffnotes}
+\end{editingnotes}
 
 So our construction shows:
 
@@ -441,15 +442,16 @@ partial orders, even infinite ones, have topological sorts.
 
 \subsection{Parallel Task Scheduling}
 
-For a partial order of task dependencies, topological sorting provides a
-way to execute tasks one after another while respecting the dependencies.
-But what if we have the ability to execute more than one task at the same
-time?  For example, say tasks are programs, the partial order indicates
-data dependence, and we have a parallel machine with lots of processors
-instead of a sequential machine with only one.  How should we schedule the
-tasks?  Our goal should be to minimize the total \emph{time} to complete
-all the tasks.  For simplicity, let's say all the tasks take the same
-amount of time and all the processors are identical.
+For a partial order of task dependencies, topological sorting provides
+a way to execute tasks one after another while respecting the
+dependencies.  But what if we have the ability to execute more than
+one task at the same time?  For example, say tasks are programs, the
+partial order indicates data dependence, and we have a parallel
+machine with lots of processors instead of a sequential machine with
+only one.  How should we schedule the tasks?  Our goal should be to
+minimize the total \emph{time} to complete all the tasks.  For
+simplicity, let's say all the tasks take one unit of time, and all the
+processors are identical.
 
 So, given a finite partially ordered set of tasks, how long does it take
 to do them all, in an optimal parallel schedule?  We can also use partial
@@ -481,11 +483,11 @@ that for all $a,b \in A$, $k \in \naturals$,
 \[
 [a \in A_k \QAND b \prec a] \quad\QIMPLIES\quad b \in A_j \text{ for some } j < k.
 \]
-The set $A_k$ is called the set of
-elements \term{scheduled at step $k$}, and the \emph{length} of the
-schedule is the number of sets $A_k$ in the partition.  The maximum
-number of elements scheduled at any step is called the \term{number of
-  processors} required by the schedule.
+The set $A_k$ is called the set of elements \term{scheduled at step
+  $k$}, and the \emph{length} of the schedule is the number of sets
+$A_k$ in the partition.  The maximum number of elements scheduled at
+any step is called the \term{number of processors} required by the
+schedule.
 \end{definition}
 
 So the schedule we chose above for clothes has four steps
@@ -497,12 +499,12 @@ A_3 = & \set{\text{jacket}}.
 \end{align*}
 and requires four processors (to complete the first step).
 
-Notice that the dependencies constrain the tasks underwear, pants,
-belt, and jacket to be done in sequence.  This implies
-that at least four steps are needed in \emph{every} schedule for
-getting dressed, since if we used fewer than four steps, two of these
-tasks would have to be scheduled at the same time.  A set of tasks
-that must be done in sequence like this is called a \emph{chain}.
+Because you have to put on your underwear before your pants, your
+pants before your belt, and your belt before your jacket, at least
+four steps are needed in \emph{every} schedule for getting dressed
+---if we used fewer than four steps, two of these tasks would have to
+be scheduled at the same time.  A set of tasks that must be done in
+sequence like this is called a \emph{chain}.
 
 \begin{definition}
 A \term{chain} in a partial order is a set of elements such that any
@@ -510,7 +512,7 @@ two different elements in the set are comparable.  A chain is said to
 \index{end of chain}\emph{end at} an its maximum element.
 \end{definition}
 
-In general, the earliest step at which an element $a$ can ever be
+In general, the earliest step at which a task, $a$, can ever be
 scheduled must be at least as large as any chain that ends at $a$.  A
 \emph{largest} chain ending at $a$ is called a \term{critical path} to
 $a$, and the size of the critical path is called the \term{depth} of
@@ -523,14 +525,14 @@ tasks as soon as possible.  Namely, schedule all the elements of depth
 $k$ at step $k$.  That's how we found the schedule for getting dressed
 given above.
 
-\begin{staffnotes}
+\begin{editingnotes}
 
 For getting dressed, here is a picture of the
 schedule obtained in this way:
 
 \begin{center}\includegraphics{figures/clothesparallel.mps}\end{center}
+\end{editingnotes}
 
-\end{staffnotes}
 
 \begin{theorem}\label{thm:parallel-time}
 Let $\prec$ be a strict partial order on a set, $A$.  A minimum length
@@ -563,7 +565,9 @@ An \term{antichain} in a partial order is a set of elements such that any
 two elements in the set are incomparable.
 \end{definition}
 
-Our conclusions about scheduling also tell us something about antichains.
+For example, it's easy to verify that each set $A_k$ is an antichain
+(see Problem~\ref{PS_antichains_by_depth}).  So our conclusions about
+scheduling also tell us something about antichains.
 
 \begin{corollary}\label{cor:parallel}
 If the largest chain in a partial order on a set, $A$, is of size $t$,
@@ -571,10 +575,7 @@ then $A$ can be partitioned into $t$ antichains.
 \end{corollary}
 
 \begin{proof}
-Let the antichains be the sets $A_k \eqdef \set{a \suchthat \dpth{a}
-  =k}$.
-It is an easy exercise to verify that each $A_k$ is an antichain
-(Problem~\ref{PS_antichains_by_depth})
+Let the antichains be the sets $A_2, A_2,\dots,A_t$.
 \end{proof}
 
 Corollary~\ref{cor:parallel} implies a famous
@@ -589,13 +590,13 @@ antichain of size at least $n / t$.
 \end{lemma}
 
 \begin{proof}
-Assume there is no chain of size greater than $t$, that is, the largest
-chain is of size $\le t$.  Then by Corollary~\ref{cor:parallel}, the $n$
-elements can be partitioned into at most $t$ antichains.  Let $\ell$ be
-the size of the largest antichain.  Since every element belongs to exactly
-one antichain, and there are at most $t$ antichains, there can't be more
-than $\ell t$ elements, namely, $\ell t \geq n$.  So there is an antichain
-with at least $\ell \geq n / t$ elements.
+Suppose the largest chain is of size $\le t$.  Then by
+Corollary~\ref{cor:parallel}, the $n$ elements can be partitioned into
+at most $t$ antichains.  Let $\ell$ be the size of the largest
+antichain.  Since every element belongs to exactly one antichain, and
+there are at most $t$ antichains, there can't be more than $\ell t$
+elements, namely, $\ell t \geq n$.  So there is an antichain with at
+least $\ell \geq n / t$ elements.
 \end{proof}
 
 \begin{corollary}\label{cor:Dilworth}
