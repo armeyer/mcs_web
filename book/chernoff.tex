@@ -1,0 +1,357 @@
+\chapter{The Chernoff Bound}
+
+Fussbook is a new social networking site oriented toward unpleasant
+people.
+
+Like all major web services, Fussbook has a load balancing problem.
+Specifically, Fussbook receives 24,000 forum posts every 10 minutes.
+Each post is assigned to one of $m$ computers for processing, and each
+computer works sequentially through its assigned tasks.  Processing an
+average post takes a computer $1/4$ second.  Some posts, such as
+pointless grammar critiques and snide witticisms, are easier.  But the
+most protracted harangues require 1 full second.
+
+Balancing the work load across the $m$ computers is vital; if any
+computer is assigned more than 10 minutes of work in a 10-minute
+interval, then that computer is overloaded and system performance
+suffers.  That would be bad, because Fussbook users are {\em not} a
+tolerant bunch.
+
+An early idea was to assign each computer an alphabetic range of forum
+topics.  (``That oughta work!'', one programmer said.)  But after the
+computer handling the ``{\em pr}ivacy'' and ``{\em pr}eferred text
+editor'' threads melted, the drawback of an ad hoc approach was clear:
+there are no guarantees.
+
+If the length of every task were known in advance, then finding a
+balanced distribution would be a kind of ``bin packing'' problem.
+Such problems are hard to solve exactly, though approximation
+algorithms can come close.  But in this case task lengths are not
+known in advance, which is typical for workload problems.
+
+So the load balancing problem seems sort of hopeless, because there is
+no data available to guide decisions.  Heck, we might as well assign
+tasks to computers at random!
+
+As it turns out, random assignment not only balances load reasonably
+well, but also permits provable performance guarantees in place of
+``That oughta work!''  assertions.  In general, a randomized approach
+to a problem is worth considering when a deterministic solution is
+hard to compute or requires unavailable information.
+
+Some arithmetic shows that Fussbook's traffic is sufficient to keep $m
+= 10$ computers running at 100\% capacity with perfect load balancing.
+Surely, more than 10 servers are needed to cope with random
+fluctuations in task length and imperfect load balance.  But how many
+is enough?  11?  15?  20?  We'll answer that question with a new
+mathematical tool.
+
+\section{The Chernoff Bound}
+
+The Chernoff bound is a hammer that you can use to nail a great many
+problems.  Roughly, the Chernoff bound says that certain random
+variables are very unlikely to significantly exceed their expectation.
+For example, if the expected load on a computer is just a bit below
+its capacity, then that computer is unlikely to be overloaded,
+provided the conditions of the Chernoff bound are satisfied.
+
+More precisely, the Chernoff Bound says that \emph{the sum of lots of
+  little, independent random variables is unlikely to significantly
+  exceed the mean}.  The Markov and Chebychev bounds lead to the same
+kind of conclusion but typically provide much weaker conclusions.
+\begin{editingnotes}
+In particular, the Markov and Chebychev bounds are polynomial, while
+the Chernoff bound is exponential.
+\end{editingnotes}
+Here is the theorem.  The proof is at the end of the chapter.
+
+\begin{theorem}[Chernoff Bound]
+\label{chernoff}
+Let $T_1, \dots T_n$ be mutually independent random variables such
+that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
+Then for all $c \geq 1$,
+\begin{equation}\label{chernoff-leq}
+\pr{T \geq c \expect{T}} \leq e^{-k \expect{T}} 
+\end{equation}
+where $k = c \ln c - c + 1$.
+\end{theorem}
+
+The Chernoff bound applies only to certain distributions: sums of
+independent random variables that take on values in the interval $[0,
+  1]$.  The binomial distribution certainly satisfies these
+conditions, but so do lots of other distributions, because the
+Chernoff bound allows the terms in the sum to have differing,
+arbitrary, and even unknown distributions over the range $[0, 1]$.
+Furthermore, there is no direct dependence on the number of random
+variables in the sum or their expectations.  In short, the Chernoff
+bound gives strong results for lots of problems based on little
+information ---no wonder it is widely used!
+
+\subsection{A Simple Example}
+
+The Chernoff bound is pretty easy apply, though the details can be
+daunting at first.  Let's walk through a simple example to get the
+hang of it.
+
+What are the odds that the number of heads that come up in 1000
+independent tosses of a fair coin exceeds the expectation by 20\% or
+more?  Let $T_i$ be an indicator variable for the event that the
+$i$-th coin is heads.  Then the total number of heads is $T = T_1 +
+\cdots + T_{1000}$.  The Chernoff bound requires that the random
+variables $T_i$ be mututally independent and take on values in the
+range $[0, 1]$.  Both conditions hold here.  In fact, this example is
+similar to many applications of the Chernoff bound in that every $T_i$
+is {\em either} 0 or 1, since they're indicators.
+
+The goal is to bound the probability that the number of heads exceeds
+its expectation by 20\% or more; that is, to bound $\pr{T \geq c
+  \expect{T}}$ where c = $1.2$.  To that end, we compute $k$ as
+defined in the theorem:
+\[
+k = c \ln c - c + 1 = 0.0187\dots
+\]
+Plugging this value into the Cheroff bound gives:
+\begin{align*}
+\pr{T \geq 1.2 \expect{T}} & \leq  e^{- k \expect{T}} \\
+  & = e^{- (0.0187\dots) \cdot 500} \\
+  & <  0.0000834
+\end{align*}
+So the probability of getting 20\% or more extra heads on 1000 coins is
+less than 1 in 10,000.
+
+The bound becomes much stronger as the number of coins increases,
+because the expected number of heads appears in the exponent of the
+upper bound.  For example, the probability of getting at least 20\%
+extra heads on a million coins is at most
+\[
+e^{- (0.0187\dots) \cdot 500000} < e^{-9392}
+\]
+which is pretty darn small.
+
+Alternatively, the bound also becomes stronger for larger deviations.
+For example, suppose we're interested in the odds of getting 30\% or
+more extra heads in 1000 tosses, rather than 20\%.  In that case,
+$c= 1.3$ instead of $1.2$.  Consequently, the parameter $k$ rises from
+$0.0187$ to $0.0410$ or so, which may seem insignificant.  But because
+$k$ appears in the exponent of the upper bound, the final probability
+decreases from around 1 in 10,000 to about 1 in a billion!
+
+\subsection{Pick-4}
+
+Pick-4 is a lottery game where you pick a 4-digit number between 0000
+and 9999.  If your number comes up in a random drawing, then you win.
+Your chance of winning is 1 in 10,000.  And if 10 million people play,
+then the expected number of winners is 1000.  The lottery operator's
+nightmare is that the number of winners is much greater; say, 2000 or
+more.  What are the odds of that?
+
+Let $T_i$ be an indicator for the event that the $i$-th player wins.
+Then $T = T_1 + \cdots + T_n$ is the total number of winners.  If we
+assume that the players' picks and the winning number are independent
+and uniform, then the indicators $T_i$ are independent, as required by
+the Chernoff bound.  
+\begin{editingnotes}
+Add comment about how unrealistic these assumptions are because people
+frequently play a few favorite numbers.
+
+The assumptions would be plausible for a version where people buy
+tickets with randomly assigned numbers, so they can't pick their own
+number.
+\end{editingnotes}
+
+Now, 2000 winners would be twice the expected
+number.  So we choose $c = 2$, compute $k = c \ln c - c + 1 =
+0.386\dots$, and plug these values into the Chernoff bound:
+\begin{align*}
+\pr{T \geq 2000} & = \pr{T \geq 2 \expect{T}} \\
+  & \leq e^{-k \expect{T}} \\
+  & = e^{- (0.386\dots) \cdot 1000} \\
+  & < e^{-386}
+\end{align*}
+So there is almost no chance that the lottery operator pays out
+double.  In fact, the number of winners won't even be 10\% higher than
+expected very often.  To prove that, let $c = 1.1$, compute $k = c \ln
+c - c + 1 = 0.00484\dots$, and plug in again:
+\begin{align*}
+\pr{T \geq 1.1 \expect{T}} & \leq e^{-k \expect{T}} \\
+  & = e^- 0.00484\dots * 1000 \\
+  & < 0.01
+\end{align*}
+So the Pick-4 lottery may be exciting for the players, but the lottery
+operator has little doubt about the outcome!
+
+\section{Randomized Load Balancing}
+
+Now let's return to Fussbook and its load balancing problem.
+Specifically, we need to determine how many machines suffice to ensure
+that no server is overloaded; that is, assigned to do more than 10
+minutes of work in a 10-minute interval.
+
+To begin, let's find the probability that the first server is
+overloaded.  Let $T_i$ be the number of seconds that the first server
+spends on the $i$-th task.  So $T_i$ is zero if the task is assigned
+to another machine, and otherwise $T_i$ is the length of the task.
+Then $T = \sum T_i$ is the total length of tasks assigned to the
+server.  We need to upper bound $\pr{T \geq 600}$; that is, the
+probability that the first server is assigned more than 600 seconds
+(or, equivalently, 10 minutes) of work.
+
+The Chernoff bound is applicable only if the $T_i$ are mutually
+independent and take on values in the range $[0, 1]$.  The first
+condition is satisfied if we assume that tasks lengths and assignments
+are independent.  And the second condition is satisfied because
+processing even the most interminable harangue takes at most 1 second.
+
+In all, there are 24,000 tasks each with an expected length of 1/4
+second.  Since tasks are assigned to computers at random, the expected
+load on the first server is:
+\begin{align*}
+\expect{T} & = \frac{24,000 \mbox{ tasks} \cdot 1/4 \mbox{ second per task}}
+  {m \mbox{ machines}} \\
+  & = 6000 / m \mbox{ seconds}
+\end{align*}
+For example, if there are $m = 10$ machines, then the expected load on
+the first server is 600 seconds, which is 100\% of its capacity.
+
+Now we can use the Chernoff bound to upper bound the probability that
+the first server is overloaded:
+\begin{align*}
+\pr{T \geq 600} & = \pr{T \geq c \expect{T}} \\
+  & \leq e^{-(c \ln c - c + 1) \cdot 6000 / m}
+\end{align*}
+Equality holds on the first line when $c = m / 10$, since $c \expect{T} =
+(m / 10) \cdot (6000 / m) = 600$.  The probability that {\em some}
+server is overloaded is at most $m$ times the probability that the
+first server is overloaded:
+\[
+\pr{\mbox{some server is overloaded}} \leq m e^{-(c \ln c - c + 1) \cdot 6000 / m}
+\]
+Some values of this upper bound are tabulated below:
+\[
+\begin{array}{rcll}
+m & = & 11: & 0.784\dots \\
+m & = & 12: & 0.000999\dots \\
+m & = & 13: & 0.0000000760\dots
+\end{array}
+\]
+These values suggest that a system with $m = 11$ machines might suffer
+immediate overload, $m = 12$ machines could fail in a few days, but $m
+= 13$ should be fine for a century or two!
+
+\section{Proof of the Chernoff Bound}
+
+The proof of the Chernoff bound is somewhat involved.  Heck, even {\em
+  Chernoff} didn't come up with it!  His friend, Herman Rubin, showed
+him the argument.  Thinking the bound not very significant, Chernoff
+did not credit Rubin in print.  He felt pretty bad when it became
+famous!
+\begin{editingnotes}
+ References: ``A Conversation with Herman Chernoff" Statistical
+ Science 1996, Vol 11, No 4, pp 335-350.
+
+Here is the theorem again, for reference:
+
+\begin{theorem}[Chernoff Bound]
+Let $T_1, \dots T_n$ be mutually independent random variables such
+that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
+Then for all $c \geq 1$,
+\[
+\pr{T \geq c \expect{T}} \leq e^{- k \expect{T}}
+\]
+where $k = c \ln c - c + 1$.
+\end{theorem}
+\end{editingnotes}
+
+For clarity, we'll go through the proof "top down"; that is, we'll use
+facts that are proved immediately afterward.
+
+\begin{proof} The key step is to exponentiate both sides of the
+  inequality $T > c \expect{T}$ and then apply the Markov bound.
+\begin{align*}
+\pr{T \geq c \expect{T}} & = \pr{c^T \geq c^{c \expect{T}}} \\
+  & \leq \frac{\expect{c^T}}{c^{c \expect{T}}} & \text{(by Markov)}\\
+  & \leq \frac{e^{(c-1) \expect{T}}}{c^{c \expect{T}}} \\
+  & = e^{- (c \ln c - c + 1) \expect{T}}
+\end{align*}
+In the third step, the numerator is rewritten using the inequality
+\[
+\expect{c^T} \leq e^{(c-1) \expect{T}}
+\]
+which is proved below in Lemma~\ref{chernoff-lemma1}.  The final step
+is simplification.  (Recall that $c^c$ is equal to $e ^{c \ln c}$.)
+\end{proof}
+
+Algebra aside, there is a brilliant idea in this proof: in this
+context, exponentiating somehow supercharges the Markov bound.  This
+is not true in general!  One unfortunate side-effect is that we have
+to bound some nasty expectations involving exponentials in order to
+complete the proof.  This is done in the two lemmas below, where
+variables take on values as in Theorem~\ref{chernoff}.
+
+\begin{lemma}
+\label{chernoff-lemma1}
+\[
+\expect{c^T} \leq e^{(c-1) \expect{T}}
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+    \expect{c^T} & = \expect{c^{T_1 + \cdots + T_n}} \\
+            & = \expect{c^T_1  \cdots c^T_n} \\
+            & = \expect{c^T_1}  \cdots \expect{c^T_n} \\
+            & \leq & e^{(c-1) \expect{T_1}} \cdots  e^{(c-1) \expect{T_n}} \\
+            & =e^{(c-1) (\expect{T_1} + \cdots + \expect{T_n})} \\
+            & =e^{(c-1) \expect{T_1 + \cdots + T_n}} \\
+            & =e^{(c-1) \expect{T}}
+\end{align*}
+The first step uses the definition of $T$, and the second is just
+algegra.  The third step uses the fact that the expectation of a
+product of independent random variables is the product of the
+expectations.  (This is why the Chernoff bound requires the $T_i$ to
+be independent.) Then we bound each term using the inquality
+\[
+    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
+\]
+which is proved in Lemma~\ref{chernoff-lemma2}.  The last steps are
+simplifications using algebra and linearity of expectation.
+\end{proof}
+
+\begin{lemma}
+\label{chernoff-lemma2}
+\[
+\expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
+\]
+\end{lemma}
+
+\begin{proof}
+All summations below range over values $v$ taken on by the random
+variable $T_i$, which are all required to be in the interval $[0, 1]$.
+\begin{align*}
+\expect{c^{T_i}} & = \sum c^v \pr{T_i = v} \\
+           & \leq \sum (1 + (c-1) v) \pr{T_i = v} \\
+           & = \sum \pr{T_i = v} + (c-1) v \pr{T_i = v} \\
+           & = \sum \pr{T_i = v} + \sum(c-1) v \pr{T_i = v} \\
+           & = 1 + (c - 1) \sum v \pr{T_i = v} \\
+           & = 1 + (c - 1) \expect{T_i} \\
+           & \leq e^{(c - 1) \expect{T_i}}
+\end{align*}
+The first step uses the definition of expectation.  The second step
+relies on the inequality $c^v \leq 1 + (c-1) v$, which holds for all v
+in $[0,1]$ and $c \geq 1$.  This follows from the general principle that a
+convex function ($c^v$) is less than a linear function ($1 + (c-1) v$)
+between their points of intersection ($v = 0$ and $1$).  This
+inequality is why the variables $T_i$ are restricted to the interval
+$[0, 1]$.)  We then multiply out inside the summation and split into
+two sums.  The first sum adds the probabilities of all possible
+outcomes, so it is equal to 1.  After pulling the constant $c - 1$ out
+of the second sum, we're left with the definition of $\expect{T_i}$.  The
+final step uses the standard inequality $1 + z \leq e^z$, which holds
+for all real $z$.
+\end{proof}
+
+\begin{problems}
+\classproblems
+
+\end{problems}
+\endinput
