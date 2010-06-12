@@ -1088,6 +1088,10 @@
 }
 
 \newenvironment{editingnotes}{%
+    %% Don't number sections or put them into the TOC
+    \c@secnumdepth=\m@ne
+    \c@tocdepth=\m@ne
+    \color{green}%
     \trivlist
         \item[\hskip\labelsep \textbf{\textcolor{red}{EDITING NOTE}}:]\ignorespaces
 }{%
