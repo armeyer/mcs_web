@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+## Simplistic, inelegant, brute-force approach.  Don't expect too much.
+
 use strict;
 use warnings;
 
@@ -60,47 +62,83 @@ sub html_to_tex( $ ) {
 
     $string =~ s{<em>(.+?)</em>}{\$$1\$}smxg;
 
-    $string =~ s{<b>(.+?)</b>}{\\textbf{$1}}smxg;
-
-    # $string =~ s{<strong>(.+?)</strong>}{\\textbf{$1}}smxg;
-
-    $string =~ s{</?strong>}{}smxg;
-
-    while ($string =~ s{<sub>(.+?)</sub>}{_{$1}}smxg) {};
-    while ($string =~ s{<sup>(.+?)</sup>}{^{$1}}smxg) {};
+    $string =~ s{<b>(.+?)</b>}{\\textbf{$1}}ismxg;
 
     $string =~ s{<it>(.+?)</it>}{\\emph{$1}}smxg;
     $string =~ s{<i>(.+?)</i>}{\\emph{$1}}smxg;
 
+    $string =~ s{<tt>(.+?)</tt>}{\\texttt{$1}}smxg;
+
     $string =~ s{<font\b.*?>(.+?)</font>}{$1}smxg;
+
+    # $string =~ s{<strong>(.+?)</strong>}{\\textbf{$1}}smxg;
+
+    $string =~ s{</?strong>}{}smxg;
+    $string =~ s{</?small>}{}smxg;
+
+    while ($string =~ s{<sub>(.+?)</sub>}{_{$1}}smxg) {};
+    while ($string =~ s{<sup>(.+?)</sup>}{^{$1}}smxg) {};
 
     $string =~ s{</?p>}{\n}smxg;
 
-    $string =~ s{<ul>}{\n\\begin{description}\n\n}smxg;
-    $string =~ s{</ul>}{\n\\end{description}\n\n}smxg;
+    $string =~ s{<table>}{\n\\begin{tabular}{lllllll}\n}ismxg;
+    $string =~ s{</table>}{\n\\end{tabular}\n}ismxg;
+    $string =~ s{</td>}{ & }ismxg;
+    $string =~ s{<td>}{}ismxg;
+    $string =~ s{<tr>}{}ismxg;
+    $string =~ s{</tr>}{\\\\}ismxg;
+
+    $string =~ s{<ul>}{\n\\begin{itemize}\n\n}smxg;
+    $string =~ s{</ul>}{\n\\end{itemize}\n\n}smxg;
     $string =~ s{<ol>}{\n\\begin{enumerate}\n\n}smxg;
     $string =~ s{</ol>}{\n\\end{enumerate}\n\n}smxg;
     $string =~ s{<li>}{\n\\item\n}smxg;
+    $string =~ s{</li>}{}smxg;
 
     $string =~ s{<br>}{\n\n}smxg;
 
-    $string =~ s{&nbsp;}{ }smxg;
-    $string =~ s{&equiv;}{\\equiv }smxg;
-    $string =~ s{&ge;}{\\ge }smxg;
-    $string =~ s{&gt;}{ > }smxg;
-    $string =~ s{&lt;}{ < }smxg;
-    $string =~ s{&plusmn;}{ \\pm }smxg;
-    $string =~ s{&middot;}{ \\cdot }smxg;
-    $string =~ s{&isin;}{ \\in }smxg;
-    $string =~ s{&subse;}{ \\subset }smxg;
-    $string =~ s{&forall;}{ \\forall }smxg;
-    $string =~ s{&exist;}{ \\exists }smxg;
-    $string =~ s{&cup;}{ \\union }smxg;
-    $string =~ s{&cap;}{ \\intersect }smxg;
+    $string =~ s{<hr>}{\n\n\\hline\n\n}smxg;
 
-    $string =~ s{ <center> \s* \$ (.+?) \$ </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
-    $string =~ s{ <center> \s* (.+?) </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
+    $string =~ s{ <center> \s* \$? }{\n\\begin{equation*}\n}smxg;
+    $string =~ s{ \$? </center> }{\n\\end{equation*}\n}smxg;
 
+    $string =~ s{&Oslash;}        {{\\O}}smxg;
+    $string =~ s{&Theta;}         {\\Theta }smxg;
+    $string =~ s{&\#133;}         {\\dots }smxg;
+    $string =~ s{&\#65518;}       {\\circ }smxg;
+    $string =~ s{&\\?isin;?}      { \\in }smxg;
+    $string =~ s{&and;}           {\\land }smxg;
+    $string =~ s{&cap;}           { \\intersect }smxg;
+    $string =~ s{&clubs;}         {\\clubsuit }smxg;
+    $string =~ s{&cup;}           { \\union }smxg;
+    $string =~ s{&diams;}         {\\blacklozenge }smxg;
+    $string =~ s{&equiv;}         {\\equiv }smxg;
+    $string =~ s{&exist;}         { \\exists }smxg;
+    $string =~ s{&forall;}        { \\forall }smxg;
+    $string =~ s{&ge;}            {\\ge }smxg;
+    $string =~ s{&gt;}            { > }smxg;
+    $string =~ s{&harr;}          {\\leftrightarrow }smxg;
+    $string =~ s{&hearts;}        {\\heartsuit }smxg;
+    $string =~ s{&infin;}         {\\infty }smxg;
+    $string =~ s{&int;}           {\\int }smxg;
+    $string =~ s{&le;}            {\\le }smxg;
+    $string =~ s{&lt;?}           { < }smxg;
+    $string =~ s{&middot;}        { \\cdot }smxg;
+    $string =~ s{&nbsp;}          { }smxg;
+    $string =~ s{&ne;}            {\\neq }smxg;
+    $string =~ s{&not;}           {\\lnot }smxg;
+    $string =~ s{&or;}            {\\lor }smxg;
+    $string =~ s{&plusmn;}        { \\pm }smxg;
+    $string =~ s{&rArr;}          {\\Rightarrow }smxg;
+    $string =~ s{&rarr;}          {\\implies }smxg;
+    $string =~ s{&sigma;}         {\\sigma }smxg;
+    $string =~ s{&spades;}        {\\spadesuit }smxg;
+    $string =~ s{&sube;}          { \\subset }smxg;
+    $string =~ s{&sum;}           {\\sum }smxg;
+    $string =~ s{&times;}         {\\times }smxg;
+    $string =~ s{\s*&\#65293;\s*} {---}smxg;
+
+    $string =~ s{\.\.\.}{\\dots }smxg;
     $string =~ s{ \\"}{ ``}smxg;
     $string =~ s{\\" }{'' }smxg;
     $string =~ s{\\"$}{''}smxg;
@@ -329,11 +367,14 @@ sub do_define_problem() {
 
     my $timestamp = strftime("%c", localtime());
 
+    my $user = getpwuid $<;
+
     write_tex(<< "EOF");
 \\documentclass[problem]{mcs}
 
 \\begin{pcomments}
-    \\pcomment{Converted from $SCM_FILE by scmtotex and dmj
+    \\pcomment{Converted from $SCM_FILE
+              by scmtotex and $user
               on $timestamp}
 \\end{pcomments}
 
@@ -368,9 +409,13 @@ sub do_type() {
 }
 
 sub do_title() {
-    $TITLE = get_string_literal();
+    my $title = get_string_literal();
 
-    write_tex("%% title: $TITLE\n\n");
+    write_tex("%% title: $title\n\n");
+
+    if (! defined $TITLE) {
+        $TITLE = $title;
+    }
 
     return;
 }
