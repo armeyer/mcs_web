@@ -1,0 +1,542 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use Carp;
+
+$Carp::Verbose = 0;
+
+use POSIX qw(strftime);
+
+use constant BEGIN_LIST     => '(';
+use constant END_LIST       => ')';
+use constant SINGLE_QUOTE   => q{'};
+
+my $LITERAL_STRING = qr{(?> " (?: \\" | . )*? ")}smx;
+
+my $SCM_FILE;
+my $TEX_FILE;
+my $TITLE;
+
+my $OUTPUT_FH;
+
+my $BUFFER;
+
+our $IN_QUESTIONS = 0;
+# my $APPEND = 0;
+
+my @QUESTIONS;
+
+my %HANDLER = (
+    q{!}             => \&do_bang,
+    q{!prob}         => \&do_bang_prob,
+    answer           => \&do_answer,
+    'box-width'      => \&do_box_width,
+    compare          => \&do_compare,
+    'define-problem' => \&do_define_problem,
+    extro            => \&do_extro,
+    intro            => \&do_intro,
+    load             => \&do_load,
+    math             => \&do_math,
+    options          => \&do_options,
+    questions        => \&do_questions,
+    rationale        => \&do_rationale,
+    subproblems      => \&do_subproblems,
+    title            => \&do_title,
+    type             => \&do_type,
+);
+
+sub nonempty( $ ) {
+    my $string = shift;
+
+    return defined $string && $string =~ /\S/;
+}
+
+sub html_to_tex( $ ) {
+    my $string = shift;
+
+    $string =~ s'\$'\\$'g;
+
+    $string =~ s{<em>(.+?)</em>}{\$$1\$}smxg;
+
+    $string =~ s{<b>(.+?)</b>}{\\textbf{$1}}smxg;
+
+    # $string =~ s{<strong>(.+?)</strong>}{\\textbf{$1}}smxg;
+
+    $string =~ s{</?strong>}{}smxg;
+
+    while ($string =~ s{<sub>(.+?)</sub>}{_{$1}}smxg) {};
+    while ($string =~ s{<sup>(.+?)</sup>}{^{$1}}smxg) {};
+
+    $string =~ s{<it>(.+?)</it>}{\\emph{$1}}smxg;
+    $string =~ s{<i>(.+?)</i>}{\\emph{$1}}smxg;
+
+    $string =~ s{<font\b.*?>(.+?)</font>}{$1}smxg;
+
+    $string =~ s{</?p>}{\n}smxg;
+
+    $string =~ s{<ul>}{\n\\begin{description}\n\n}smxg;
+    $string =~ s{</ul>}{\n\\end{description}\n\n}smxg;
+    $string =~ s{<ol>}{\n\\begin{enumerate}\n\n}smxg;
+    $string =~ s{</ol>}{\n\\end{enumerate}\n\n}smxg;
+    $string =~ s{<li>}{\n\\item\n}smxg;
+
+    $string =~ s{<br>}{\n\n}smxg;
+
+    $string =~ s{&nbsp;}{ }smxg;
+    $string =~ s{&equiv;}{\\equiv }smxg;
+    $string =~ s{&ge;}{\\ge }smxg;
+    $string =~ s{&gt;}{ > }smxg;
+    $string =~ s{&lt;}{ < }smxg;
+    $string =~ s{&plusmn;}{ \\pm }smxg;
+    $string =~ s{&middot;}{ \\cdot }smxg;
+    $string =~ s{&isin;}{ \\in }smxg;
+    $string =~ s{&subse;}{ \\subset }smxg;
+    $string =~ s{&forall;}{ \\forall }smxg;
+    $string =~ s{&exist;}{ \\exists }smxg;
+    $string =~ s{&cup;}{ \\union }smxg;
+    $string =~ s{&cap;}{ \\intersect }smxg;
+
+    $string =~ s{ <center> \s* \$ (.+?) \$ </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
+    $string =~ s{ <center> \s* (.+?) </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
+
+    $string =~ s{ \\"}{ ``}smxg;
+    $string =~ s{\\" }{'' }smxg;
+    $string =~ s{\\"$}{''}smxg;
+
+    return $string;
+}
+
+sub write_tex( $ ) {
+    my $string = shift;
+
+    $string =~ s{ <center> \s* \$ (.+?) \$ </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
+    $string =~ s{ <center> \s* (.+?) </center> }{\n\\begin{equation*}\n$1\n\\end{equation*}\n}smxg;
+
+    print { $OUTPUT_FH } $string;
+}
+
+sub skip_whitespace() {
+    $BUFFER =~ s/\A\s+//smx;
+
+    return;
+}
+
+sub get_token() {
+    skip_whitespace();
+
+    while ($BUFFER =~ s/\A ;.*?$//smx) {
+        skip_whitespace();
+    }
+
+    if ($BUFFER =~ s/\A($LITERAL_STRING)//smx) {
+        return $1;
+    }
+
+    if ($BUFFER =~ s/\A \(//smx) {
+        return "(";
+    }
+
+    if ($BUFFER =~ s/\A \)//smx) {
+        return ")";
+    }
+
+    if ($BUFFER =~ s/\A ([^()\"\s]+) //smx) {
+        return $1;
+    }
+
+    return;
+}
+
+sub get_string_literal( ) {
+    my $token = get_token();
+
+    if ($token =~ s/\A "(.*)" \z/$1/smx) {
+        return $1;
+    } else {
+        return $token;
+
+        # croak "Expected string literal but got $token\n";
+    }
+
+    return;
+}
+
+sub skip_token($) {
+    my $expected_token = shift;
+
+    my $token = get_token();
+
+    if (! defined $token) {
+        croak "Expected $expected_token but found EOF";
+    }
+
+    if ($token ne $expected_token) {
+        croak "Expected $expected_token but found $token";
+    }
+
+    return;
+}
+
+sub skip_to_list_end( ) {
+    my $level = 1;
+
+    while (my $token = get_token()) {
+        if ($token eq BEGIN_LIST) {
+            $level++;
+        }
+
+        if ($token eq END_LIST) {
+            $level--;
+
+            last if $level == 0;
+        }
+    }
+
+    return;
+}
+
+sub skip_list( ) {
+    skip_token(BEGIN_LIST);
+
+    my $level = 1;
+
+    while (my $token = get_token()) {
+        if ($token eq BEGIN_LIST) {
+            $level++;
+        } elsif ($token eq END_LIST) {
+            $level--;
+        }
+
+        last if $level == 0;
+    }
+
+    return;
+}
+
+sub parse( ;$ ) {
+    my $stop_at_end_list = shift;
+
+    my $level = 0;
+
+    if ($stop_at_end_list) {
+        $level = 1;
+    }
+
+    while (my $token = get_token()) {
+        if ($token eq END_LIST) {
+            $level--;
+
+            if ($stop_at_end_list && $level == 0) {
+                return;
+            }
+
+            next;
+        }
+
+        if ($token eq BEGIN_LIST) {
+            $level++;
+
+            next;
+        }
+
+        my $handler = $HANDLER{$token};
+
+        if (defined $handler) {
+            $handler->();
+        } else {
+            warn "Unknown operator '$token'\n";
+            output("\n$token\n");
+        }
+    }
+
+    return;
+}
+
+sub output( $;$ ) {
+    my $string = shift;
+    my $unconverted = shift;
+
+    if (! $unconverted) {
+        $string = html_to_tex($string);
+    }
+
+    # if ($IN_QUESTIONS) {
+    #     if ($APPEND) {
+    #         if (defined $QUESTIONS[0]) {
+    #             $QUESTIONS[-1] .= $string;
+    #         } else {
+    #             $QUESTIONS[0] = $string;
+    #         }
+    #     } else {
+    #         push @QUESTIONS, $string;
+    #     }
+    # } else {
+        write_tex($string);
+    ## }
+
+    return;
+}
+
+sub do_bang(;$) {
+    my $maybe_item = ! shift;
+
+    if ($maybe_item && $IN_QUESTIONS) {
+        output("\n\\ppart\n");
+    }
+
+    # $APPEND++;
+
+    while (my $next = get_token()) {
+        if ($next =~ s/\A "(.*)" \z/$1/smx) {
+            output($1);
+        } elsif ($next eq END_LIST) {
+            $BUFFER = END_LIST . $BUFFER;
+
+            last;
+        } elsif ($next eq BEGIN_LIST) {
+            parse(1);
+        } else {
+            output("\n$next\n");
+        }
+    }
+
+    # $APPEND--;
+
+    return;
+}
+
+sub do_math() {
+    my $math = get_string_literal();
+
+    $math =~ s{\\\\}{\\}g;
+
+    output("\$$math\$", 1);
+
+    return;
+}
+
+sub do_load() {
+    skip_list();
+
+    return;
+}
+
+sub do_define_problem() {
+    skip_token(SINGLE_QUOTE);
+    skip_token(BEGIN_LIST);
+
+    my $timestamp = strftime("%c", localtime());
+
+    write_tex(<< "EOF");
+\\documentclass[problem]{mcs}
+
+\\begin{pcomments}
+    \\pcomment{Converted from $SCM_FILE by scmtotex and dmj
+              on $timestamp}
+\\end{pcomments}
+
+\\begin{problem}
+
+EOF
+
+    parse(1);
+
+    write_tex(<< "EOF");
+
+\\end{problem}
+
+\\endinput
+EOF
+
+    return;
+}
+
+sub do_box_width() {
+    skip_to_list_end();
+
+    return;
+}
+
+sub do_type() {
+    my $token = get_token();
+
+    write_tex("%% type: $token\n");
+
+    return;
+}
+
+sub do_title() {
+    $TITLE = get_string_literal();
+
+    write_tex("%% title: $TITLE\n\n");
+
+    return;
+}
+
+sub do_extro() {
+    my $extro = html_to_tex(get_string_literal());
+
+    $extro =~ s/^/%% /smxg;
+
+    write_tex("\n$extro\n");
+
+    return;
+}
+
+sub do_intro() {
+    my $introduction = html_to_tex(get_string_literal());
+
+    write_tex("\n$introduction\n");
+
+    return;
+}
+
+## sub do_questions() {
+##     $IN_QUESTIONS = 1;
+## 
+##     @QUESTIONS = ();
+## 
+##     parse(1);
+## 
+##     $IN_QUESTIONS = 0;
+## 
+##     my @questions = grep { nonempty($_) } @QUESTIONS;
+## 
+##     @QUESTIONS = ();
+## 
+##     return unless @questions;
+## 
+##     ## This doesn't work.  Hrmph.
+## 
+##     if (@questions == 1) {
+##         write_tex($questions[0]);
+##     } else {
+##         write_tex("\n\\begin{enumerate}\n\n");
+## 
+##         for my $question (@questions) {
+##             write_tex("\\item\n");
+##             write_tex("$question\n\n");
+##         }
+## 
+##         write_tex("\n\\end{enumerate}\n\n");
+##     }
+## 
+##     return;
+## }
+
+sub do_questions() {
+    write_tex("\n\\bparts\n\n");
+
+    local $IN_QUESTIONS = 1;
+
+    parse(1);
+
+    write_tex("\n\\eparts\n\n");
+
+    return;
+}
+
+sub do_subproblems() {
+    write_tex("\n\\bparts\n\n");
+
+    parse(1);
+
+    write_tex("\n\\eparts\n\n");
+
+    return;
+}
+
+sub do_bang_prob() {
+    write_tex("\\ppart\n");
+
+    parse(1);
+
+    return;
+}
+
+sub do_answer() {
+    output("\n\n\\begin{solution}\n");
+
+    do_bang(1);
+
+    output("\n\\end{solution}\n");
+
+    return;
+}
+
+sub do_rationale() {
+    output("\n\n");
+
+    do_bang(1);
+
+    return;
+}
+
+sub do_options() {
+    skip_to_list_end();
+
+    return;
+}
+
+sub do_compare() {
+    skip_to_list_end();
+
+    return;
+}
+
+sub parse_file( $ ) {
+    $SCM_FILE = shift;
+
+    warn "Parsing $SCM_FILE\n";
+
+    open(my $fh, "<", $SCM_FILE) or die "Can't open $SCM_FILE: $!\n";
+
+    local $/ = undef;
+
+    $BUFFER = <$fh>;
+
+    close($fh);
+
+    ($TEX_FILE = $SCM_FILE) =~ s/.scm/.tex/;
+
+    $TITLE = undef;
+
+    open($OUTPUT_FH, ">", $TEX_FILE) or do {
+        die "Can't open $TEX_FILE for writing: $!\n";
+    };
+
+    parse();
+
+    close($OUTPUT_FH);
+
+    if (defined($TITLE)) {
+        $TITLE =~ s/\s+/_/g;
+
+        $TITLE =~ s/[^\w_-]//g;
+
+        my $file_name = "TP_$TITLE.tex";
+
+        print STDERR "Renaming $TEX_FILE to $file_name\n";
+
+        rename($TEX_FILE, $file_name);
+    }
+
+    return;
+}
+
+while (my $file = shift) {
+    if (! -e $file) {
+        if (-e "$file.scm") {
+            $file = "$file.scm";
+        } else {
+            warn "Can't find $file\n";
+            next;
+        }
+    }
+
+    parse_file($file);
+}
+
+__END__
