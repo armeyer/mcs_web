@@ -474,6 +474,9 @@
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
 
+\newcommand{\GCD}{\operatorname{GCD}}
+\newcommand{\Even}{\operatorname{Even}}
+
 %% Misc. - taken from ln and cp to avoid multiply def'd ref's
 
 %% Ick. [dmj]
