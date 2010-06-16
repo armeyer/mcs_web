@@ -173,6 +173,34 @@
     \@esphack
 }
 
+\let\restore@saved@counters\@empty
+
+\def\savesomecounters{%
+    \begingroup
+        \xdef\restore@saved@counters{%
+            \global\c@part\the\c@part\relax
+            \global\c@chapter\the\c@chapter\relax
+            \global\c@section\the\c@section\relax
+            \global\c@subsection\the\c@subsection\relax
+            \global\c@subsubsection\the\c@subsubsection\relax
+            \global\c@paragraph\the\c@paragraph\relax
+        }%
+    \endgroup
+}
+
+\def\restoresomecounters{%
+    \restore@saved@counters
+    \global\let\restore@saved@counters\@empty
+}
+
+\def\beginhighlighteddiffs#1{%
+    \color{#1}%
+}
+
+\def\endhighlighteddiffs{%
+    \color{black}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                    CONDITIONAL TEXT INCLUSION                    %%
