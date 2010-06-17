@@ -83,20 +83,20 @@ George---you guessed it---Boole.
 
 We can precisely define these special words using \term{truth tables}.
 For example, if $P$ denotes an arbitrary proposition, then the
-truth of the proposition ``$\QNOT P$'' is defined by the following
+truth of the proposition ``$\QNOT(P)$'' is defined by the following
 truth table:
 %
 \[
 \begin{array}{c|c}
-P & \QNOT P \\ \hline
+P & \QNOT(P) \\ \hline
 \true & \false \\
 \false & \true \\
 \end{array}
 \]
 %
 The first row of the table indicates that when proposition $P$ is true,
-the proposition ``$\QNOT P$'' is false.  The second line indicates that
-when $P$ is false, ``$\QNOT P$'' is true.  This is probably what you would
+the proposition ``$\QNOT(P)$'' is false.  The second line indicates that
+when $P$ is false, ``$\QNOT(P)$'' is true.  This is probably what you would
 expect.
 
 In general, a truth table indicates the true/false value of a proposition
@@ -257,7 +257,7 @@ $P \QIFF Q$ & $P \iff Q$ \quad (alternatively, $P \qiff Q$)
 \end{tabular}
 \end{center}
 %
-For example, using this notation, ``If $P \QAND \QNOT Q$, then $R$''
+For example, using this notation, ``If $P \QAND \QNOT(Q)$, then $R$''
 would be written:
 %
 \[
@@ -284,14 +284,14 @@ propositional logic.\footnote{This sounds scary, but don't worry,
   propositional logic is easy.  \illegible\ compound propositions.}
 Let $P$ be the proposition ``I am hungry'', and let $Q$ be ``I am
 grumpy''.  The first sentence says ``$P \QIMPLIES Q$'' and the second
-says ``($\QNOT Q$) implies ($\QNOT P$)''.  We can compare these two
+says ``$\QNOT(Q) \QIMP \QNOT(P)$''.  We can compare these two
 statements in a truth table:
 %
 \[
 \begin{array}{c|c|c|c}
 P & Q &
     P \QIMP Q &
-    \bar{Q} \QIMP \bar{P} \\ \hline
+    \QNOT(Q) \QIMP \QNOT(P) \\ \hline
 \true & \true & \true & \true \\
 \true & \false & \false & \false \\
 \false & \true & \true & \true \\
@@ -301,7 +301,7 @@ P & Q &
 %
 Sure enough, the columns of truth values under these two statements are
 the same, which precisely means they are equivalent.  In general,
-``($\QNOT Q) \QIMP (\QNOT P)$'' is called the \term{contrapositive} of
+``$\QNOT(Q) \QIMP \QNOT(P)$'' is called the \term{contrapositive} of
 the implication ``$P \QIMP Q$.''  And, as we've just shown, the two
 are just different ways of saying the same thing.
 
@@ -350,8 +350,8 @@ Once again, we can verify this with a truth table:
 \[
 \begin{array}{c|c|cc|c|c}
 P & Q
-& (P \implies Q) & (Q \implies P) 
-& (P\implies Q)\land(Q\implies P) & Q \iff P \\
+& (P \QIMP Q) & (Q \QIMP P) 
+& (P\QIMP Q) \QAND (Q \QIMP P) & Q \QIFF P \\
 \hline
 \true  &  \true  &\true  &\true  &\true & \true \\
 \true  &  \false &\false &\true  &\false& \false\\
@@ -390,14 +390,14 @@ only if the proposition following the word \texttt{if} is true.  On
 closer inspection, this big expression is built from two simpler
 propositions.  Let $A$ be the proposition that \texttt{x > 0}, and let
 $B$ be the proposition that \texttt{y > 100}.  Then we can rewrite the
-condition ``$A \QOR ((\QNOT A) \QAND B)$''.
+condition ``$A \QOR (\QNOT(A) \QAND B)$''.
 %
 A truth table reveals that this complicated expression is logically
 equivalent to ``$A \QOR B$''.
 \[
 \begin{array}{cc|c|c}
 A & B &
-    A \QOR  ((\QNOT  A) \QAND  B) &
+    A \QOR  (\QNOT(A) \QAND  B) &
     A \QOR  B \\ \hline
 \true & \true & \true & \true \\
 \true & \false & \true & \true \\
@@ -869,8 +869,8 @@ It's easy to arrange for all the variables to range over one domain.  For
 example, \idx{Goldbach's Conjecture} could be expressed with all variables
 ranging over the domain $\naturals$ as
 \[
-\forall n.\; n \in \even \QIMP (\exists p\, \exists q. \; p \in \primes \land
-q \in \primes \land n = p + q).
+\forall n.\, (n \in \even)\ \QIMP\ (\exists p\, \exists q. \; p \in \primes \QAND
+q \in \primes \QAND n = p + q).
 \]
 
 \subsection{Negating Quantifiers}
@@ -890,9 +890,9 @@ In terms of logic notation, this follows from a general property of
 predicate formulas:
 %
 \[
-\QNOT \bigl(\forall x.\; P(x)\bigr)
+\QNOT \paren{\forall x.\; P(x)}
 \quad \text{is equivalent to} \quad
-\exists x.\, \bigl(\QNOT P(x)\bigr).
+\exists x.\, \QNOT(P(x)).
 \]
 %
 Similarly, these sentences mean the same thing:
@@ -906,7 +906,7 @@ Everyone dislikes skiing over magma.
 We can express the equivalence in logic notation this way:
 %
 \begin{equation}\label{nE}
-(\QNOT \exists x.\; P(x))  \QIFF  \forall x.\; \QNOT P(x).
+\QNOT\paren{\exists x.\, P(x)}\  \QIFF\  \forall x.\, \QNOT(P(x)).
 \end{equation}
 %
 The general principle is that \emph{moving a ``not'' across a
@@ -1041,7 +1041,7 @@ predict which kind of formulas are amenable to sat-solver methods, and
 for formulas that are NOT satisfiable, sat-solvers generally take
 exponential time to verify that.
 
-So no one has a good idea how to solve SAT in polynomial time or else
+So no one has a good idea how to solve SAT in polynomial time, or how
 to prove that it can't be done---researchers are completely stuck.
 The problem of determining whether or not SAT has a polynomial time
 solution is known as the ``\textbf{P} vs.\ \textbf{NP}'' problem.  It
