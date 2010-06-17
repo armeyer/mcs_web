@@ -173,6 +173,10 @@
     \@esphack
 }
 
+\newcommand{\illegible}{%
+    \textcolor{red}{\textbf{[Illegible]}}%
+}
+
 \let\restore@saved@counters\@empty
 
 \def\savesomecounters{%
@@ -381,8 +385,8 @@
 \newcommand{\mop}[1]{\mathop{#1}}
 \newcommand{\mbin}[1]{\mathbin{#1}}
 \newcommand{\mrel}[1]{\mathrel{#1}}
-\newcommand{\mopt}[1]{\mathop{\mathrm{#1}}}
-\newcommand{\mbint}[1]{\mathbin{\mathrm{#1}}}
+\newcommand{\mopt}[1]{\ensuremath{\mathop{\mathrm{#1}}}}
+\newcommand{\mbint}[1]{\ensuremath{\mathbin{\mathrm{#1}}}}
 \newcommand{\mrelt}[1]{\mathrel{\mathrm{#1}}}
 \newcommand{\mtt}[1]{\mathtt{#1}}
 
@@ -2039,5 +2043,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 }{}
 
 \AtBeginDocument\decideaboutsolutions
+
+\raggedbottom
 
 \endinput
