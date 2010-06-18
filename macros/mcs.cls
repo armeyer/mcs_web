@@ -90,7 +90,7 @@
 \RequirePackage{psfrag}
 \RequirePackage{keyval}
 \RequirePackage[usenames,dvipsnames]{color}
-\RequirePackage{subfigure}
+\RequirePackage{subfig}
 \RequirePackage{palatino}
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
@@ -466,6 +466,8 @@
 \newcommand{\composition}{\circ} 
 \newcommand{\power}{\mathcal{P}}
 \newcommand{\restrict}{\upharpoonright}
+
+\let\by\times
 
 \newcommand{\range}[1]{\mathop{\textup{range}}\nolimits\left(#1\right)}
 \newcommand{\domain}[1]{\mathop{\textup{domain}}\nolimits\left(#1\right)}
