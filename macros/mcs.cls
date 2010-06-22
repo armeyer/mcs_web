@@ -67,7 +67,7 @@
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 
-\ExecuteOptions{11pt,twoside,book}
+\ExecuteOptions{10pt,twoside,book}
 
 \ProcessOptions\relax
 
@@ -296,6 +296,633 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
+%%                         SECTION HEADINGS                         %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This could be simplified a lot
+
+\def\@sect#1#2#3#4#5#6[#7]#8{%
+    \ifnum#2>\c@secnumdepth
+        \let\@svsec\@empty
+    \else
+        \refstepcounter{#1}%
+        \protected@edef\@svsec{\@seccntformat{#1}\relax}%
+    \fi
+    \@tempskipa #5\relax
+    \ifdim\@tempskipa>\z@
+        \begingroup
+            \ifcase#2\or % 1
+                \par
+                \removelastskip
+                \nointerlineskip
+                \vspace{23.13\p@}%
+                \noindent\hspace*{-\marginparwidth}%
+                \rule{\titlewidth}{0.5\p@}%
+                \par
+                \vspace*{3pt}%
+                \noindent\hspace*{-\marginparwidth}%
+                \parbox[t]{\titlewidth}{%
+                    #6{%
+                        {\hskip #3\relax\@svsec}%
+                        \interlinepenalty \@M
+                        {#8\vphantom{y}}%
+                        \@@par
+                       }%
+                       \removelastskip
+                       \nointerlineskip
+                       \vspace{8.65\p@}%
+                }%
+            \or % 2
+                #6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M {#8}\@@par}%
+            \or % 3
+                #6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M {#8}\@@par}%
+            \or % 4
+                #6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M {#8}\@@par}%
+            \or % 5
+                #6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M {#8}\@@par}%
+            \or % 6 -- \appsection
+                \removelastskip
+                \nointerlineskip
+                \vspace{19.13\p@}%
+                \noindent\hspace*{-\marginparwidth}\rule{\titlewidth}{0.5\p@}\par
+                \vspace*{3pt}\par
+                \noindent\hspace*{-\marginparwidth}\parbox[t]{\titlewidth}{#6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M {#8\vphantom{y}}\@@par}\removelastskip\nointerlineskip\vspace{1.4\p@}}%
+            \else
+                #6{{\hskip #3\relax\@svsec}%
+                \interlinepenalty \@M #8\@@par}%
+            \fi
+        \endgroup
+        \csname #1mark\endcsname{#7}%
+        \addcontentsline{toc}{#1}{%
+            \ifnum#2>\c@secnumdepth\else
+                \protect\numberline{\csname the#1\endcsname}%
+            \fi%
+            #8%
+        }%
+    \else
+        \def\@svsechd{%
+            #6{\hskip #3\relax\@svsec #8}%
+            \csname #1mark\endcsname{#7}%
+            \addcontentsline{toc}{#1}{%
+                \ifnum#2>\c@secnumdepth\else
+                    \protect\numberline{\csname the#1\endcsname}%
+                \fi
+                #8%
+            }%
+        }%
+    \fi
+    \@xsect{#5}%
+}
+
+\def\@ssect#1#2#3#4#5{%
+    \@tempskipa #3\relax
+    \ifdim \@tempskipa>\z@
+        \begingroup
+            #4{\@hangfrom{\hskip #1}%
+            \interlinepenalty \@M #5\@@par}%
+        \endgroup
+    \else
+        \def\@svsechd{#4{\hskip #1\relax #5}}%
+    \fi
+    \@xsect{#3}%
+}
+
+%% Based on Cormen.cls
+
+\def\section{%
+    \@startsection{section}{1}{\z@}%
+        {-25\p@}{7\p@}%
+        {\reset@font\fontsize{11}{14}\selectfont\bfseries\raggedright\mathversion{bold}}%
+}
+
+\def\subsection{%
+    \@startsection{subsection}
+        {2}{\z@}{-13\p@}{13\p@}
+    {\reset@font\fontsize{10}{13}\selectfont\bfseries\raggedright\mathversion{bold}}%
+}
+
+\def\subsubsection{%
+    \@startsection{subsubsection}
+        {3}{\z@}{-13\p@}{13\p@}%
+        {\reset@font\fontsize{10}{13}\selectfont\bfseries\itshape\raggedright\mathversion{bold}}%
+}
+
+\def\paragraph{%
+    \@startsection{paragraph}
+        {4}{\z@}{-7\p@}{0.0001\p@}%
+        {\reset@font\fontsize{10}{13}\selectfont\bfseries\itshape\raggedright\mathversion{bold}}%
+}
+
+\def\subparagraph{%
+    \@startsection{subparagraph}
+        {5}{\z@}{-7\p@}{-10\p@}
+        {\reset@font\fontsize{10}{13}\selectfont\bfseries\itshape\raggedright\mathversion{bold}}%
+}
+
+\def\chapter{%
+    \clearpage
+    \thispagestyle{plain}
+    \global\@topnum\z@
+    \secdef\@chapter\@schapter}
+
+\def\@chapter[#1]#2{%
+    \pagestyle{headings}%
+    \ifnum\c@secnumdepth>\m@ne
+        \refstepcounter{chapter}%
+        \typeout{^^J\@chapapp\space\arabic{chapter}:}%
+        \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}%
+    \else
+        \addcontentsline{toc}{chapter}{#1}%
+    \fi
+    \chaptermark{#1}%
+    \@makechapterhead{#2}%
+    \@afterindentfalse
+    \@afterheading
+}
+
+\def\@schapter#1{%
+%    \addcontentsline{toc}{prelims}{#1}%
+    \chaptermark{#1}%
+    \pagestyle{pet}%
+    \thispagestyle{plain}%
+    \@makeschapterhead{#1}%
+    \@afterindentfalse
+    \@afterheading
+}
+
+\def\@makechapterhead#1{%
+    \chaptermark{#1}%
+    \pagestyle{headings}%
+    \begingroup
+        \parindent\z@
+        \vspace*{-13.80pt}%
+        \par
+        \begin{minipage}[t][130pt]{\textwidth}
+            \hspace*{-\marginparwidth}
+            \rule{\titlewidth}{6pt}\par
+            \vspace*{2pt}%
+            \par
+            \hspace*{-\marginparwidth}%
+            \hbox to \marginparwidth{%
+                \fontsize{18}{22}\selectfont\bfseries\raggedright\thechapter
+            }%
+            \begingroup
+                \fontsize{18}{22}\selectfont\bfseries
+                \raggedright#1\par
+            \endgroup
+        \end{minipage}%
+        \vspace*{11.49pt}%
+    \endgroup
+}
+
+\def\@makeschapterhead#1{%
+    \chaptermark{#1}%
+    \pagestyle{pet}%
+    \begingroup\parindent\z@%
+        \vspace*{-8pt}\par%
+        \noindent\hspace*{-\marginparwidth}\begin{minipage}[t][130pt]{\titlewidth}
+        \noindent{\fontsize{18}{22}\selectfont\raggedright#1\par}%
+        \end{minipage}%
+        \vspace*{12.55pt}%
+    \endgroup}
+
+\def\part{\clearpage\thispagestyle{empty}\secdef\@part\@spart}
+
+\def\@part[#1]#2{%
+    \ifnum\c@secnumdepth>-2
+        \refstepcounter{part}%
+        \addcontentsline{toc}{part}{{\bfseries\itshape Part}~\protect\numberline{\thepart}\quad#1}%
+    \else
+        \addcontentsline{toc}{part}{#1}%
+    \fi
+    \partmark{#1}%
+    \begingroup
+        \vspace*{-13.8pt}\par
+        \noindent\hspace*{-\marginparwidth}%
+        \rule{\titlewidth}{6pt}\par
+        \vspace*{130.78pt}%
+        \noindent\hspace*{-\marginparwidth}%
+        \rule{\titlewidth}{0.5pt}\par
+        \vspace*{11pt}\par
+        \noindent\hspace*{-\marginparwidth}%
+        \parbox[t]{\titlewidth}{%
+                \fontsize{18}{22}\selectfont\bfseries\itshape
+                \raggedright
+                \thepart\hspace*{18pt}\ignorespaces#2\par
+        }%
+        \vspace*{12\p@}%
+    \endgroup
+    \@afterindentfalse
+    \@afterheading
+}
+
+\def\@spart#1{%
+    \addcontentsline{toc}{part}{{\thechapter}#1}
+    \partmark{#1}
+    \begingroup
+        \parindent\z@
+        \vspace*{16pt}
+        {\fontsize{21}{23}\selectfont\hspace*{7pc}#1\par}
+        \cleardoublepage
+    \endgroup
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                        TABLE OF CONTENTS                         %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\tableofcontents{%
+    \chapter*{\contentsname}%
+    \vspace*{-0.9pt}%
+    \thispagestyle{empty}%
+    \markboth{Contents}{Contents}%
+    \@starttoc{toc}%
+}
+
+\def\numberline#1{\hb@xt@\@tempdima{{#1}\hfill}}
+
+\def\@dottedtocline#1#2#3#4#5{%
+\ifnum#1>\c@tocdepth\else
+\vskip0\p@%\@plus0.2\p@
+\vskip\z@%\@plus0.2\p@
+{\leftskip 30\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent 37\p@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{\MakeUppercase{#4}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{\hfil\normalcolor #5}
+\par}\vskip3\p@\fi}
+
+\def\@authordottedtocline#1#2#3#4#5{%
+\ifnum#1>\c@tocdepth\else
+\vskip\z@%\@plus0.2\p@
+{\leftskip 24\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent 24\p@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\fontsize{10}{13}\selectfont\raggedright\itshape#4}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{\hfil\normalcolor}
+\par}\vskip3pt\fi}
+
+\newlength{\parlen}
+\setlength{\parlen}{\marginparwidth}
+\addtolength{\parlen}{2.5pt}
+
+\newlength{\parlens}
+\setlength{\parlens}{\marginparwidth}
+\addtolength{\parlens}{-20.3pt}
+
+\def\pnumberline#1{\hb@xt@\@tempdima{{\bfseries\itshape#1}\hfill}}
+\def\@partdottedtocline#1#2#3#4#5{%
+\let\numberline\pnumberline%
+\ifnum#1>\c@tocdepth\else%
+\vskip3\p@%\@plus0.2\p@%
+\noindent\hspace*{-\marginparwidth}\rule{\titlewidth}{2pt}\par\vspace*{3pt}%
+{\leftskip -\parlens\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+\parindent -\parlen\relax\@afterindenttrue%
+%{\leftskip -27.75\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+%\parindent -48\p@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\normalsize\raggedright\bfseries\itshape#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}
+\fi\vskip3pt\noindent}
+% commented below inorder not to output rule below part title:
+%\rule{\textwidth}{0.5\p@}}
+
+\def\cnumberline#1{\hb@xt@\@tempdima{\hspace*{-2.35pt}{\bfseries#1.}\hfill}}
+
+\def\@chapterdottedtocline#1#2#3#4#5{%
+\let\numberline\cnumberline%
+\ifnum#1>\c@tocdepth\else%
+\vskip0\p@%\@plus0.2\p@%
+{\leftskip2.73\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+\parindent0\p@\relax\@afterindenttrue%
+\interlinepenalty \@M%
+\leavevmode\@tempdima #3\relax%
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip%
+{\normalsize\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}\nobreak%
+%\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill%
+\nobreak%
+\hb@xt@\@pnumwidth{}%
+\par}\vskip3\p@\fi}
+
+\def\@prelimsdottedtocline#1#2#3#4#5{%
+\ifnum#1>\c@tocdepth\else
+\vskip\z@%\@plus0.2\p@
+{\leftskip \z@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent \z@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\fontsize{10}{13}\selectfont\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}\vskip7pt\fi}
+
+\def\@lprelimsdottedtocline#1#2#3#4#5{%
+\ifnum#1>\c@tocdepth\else
+\vskip\z@%\@plus0.2\p@
+{\leftskip \z@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent \z@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\fontsize{10}{13}\selectfont\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}\vskip4pt%\noindent\rule{\textwidth}{0.5pt}%
+\fi}
+
+\def\@fprelimsdottedtocline#1#2#3#4#5{%
+\vspace*{4pt}\noindent\rule{\textwidth}{0.5pt}\par%
+\ifnum#1>\c@tocdepth\else
+\vskip\z@%\@plus0.2\p@
+{\leftskip \z@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent \z@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\fontsize{10}{13}\selectfont\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}\vskip7pt\fi}
+
+\def\@pprelimsdottedtocline#1#2#3#4#5{%
+\ifnum#1>\c@tocdepth\else
+\vskip\z@%\@plus0.2\p@
+{\leftskip 24\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+\parindent 24\p@\relax\@afterindenttrue
+\interlinepenalty \@M
+\leavevmode\@tempdima #3\relax
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+{{\fontsize{10}{13}\selectfont\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}\vskip7pt\fi}
+
+\def\snumberline#1{\hb@xt@\@tempdima{{#1}\hfill}}
+\def\@sectiondottedtocline#1#2#3#4#5{%
+\let\numberline\snumberline%
+\ifnum#1>\c@tocdepth\else%
+\vskip\z@%\@plus0.2\p@%
+{\leftskip -23.4\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+\parindent -2.1\p@\relax\@afterindenttrue%
+\interlinepenalty \@M%
+\leavevmode\@tempdima #3\relax%
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip%
+{\normalsize\raggedright#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}\nobreak%
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill%
+\nobreak%
+\hb@xt@\@pnumwidth{}%
+\par}\vspace{2pt}%
+\fi}
+
+\def\@subsectiondottedtocline#1#2#3#4#5{%
+\let\numberline\snumberline%
+\ifnum#1>\c@tocdepth\else%
+\vskip\z@%\@plus0.2\p@%
+{\leftskip -31.0\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+\parindent -2.1\p@\relax\@afterindenttrue%
+\interlinepenalty \@M%
+\leavevmode\@tempdima #3\relax%
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip%
+{\normalsize\raggedright#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}\nobreak%
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill%
+\nobreak%
+\hb@xt@\@pnumwidth{}%
+%\par}\vspace*{3pt}%
+\par}\vspace{2pt}%
+\fi}
+
+\def\snumberline#1{\hb@xt@\@tempdima{{#1}\hfill}}
+\def\@subsubsectiondottedtocline#1#2#3#4#5{%
+\let\numberline\snumberline%
+\ifnum#1>\c@tocdepth\else%
+\vskip\z@%\@plus0.2\p@%
+{\leftskip -38.9\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+\parindent -2.1\p@\relax\@afterindenttrue%
+\interlinepenalty \@M%
+\leavevmode\@tempdima #3\relax%
+\advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip%
+{\normalsize\raggedright#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}\nobreak%
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill%
+\nobreak%
+\hb@xt@\@pnumwidth{}%
+%\par}\vspace*{3pt}%
+\par}\vspace{2pt}%
+\fi}
+
+\def\tnumberline#1{\hb@xt@\@tempdima{{#1.}\hfill}}
+\def\@tabledottedtocline#1#2#3#4#5{%
+\let\numberline\tnumberline%
+  \ifnum #1>\c@tocdepth \else
+\vskip\z@%
+    {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+     \parindent #2\relax\@afterindenttrue
+     \interlinepenalty\@M
+     \leavevmode
+     \@tempdima #3\relax
+     \advance\leftskip \@tempdima \null\nobreak\hskip -\leftskip
+     \noindent\fontsize{10}{13}\selectfont\raggedright#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5\nobreak
+     \leaders\hbox{$\m@th 
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill
+     \nobreak
+     \hb@xt@\@pnumwidth{}%
+     \par}\vskip3\p@%
+  \fi}
+
+\def\fnumberline#1{\hb@xt@\@tempdima{{#1.}\hfill}}
+\def\@figuredottedtocline#1#2#3#4#5{%
+\let\numberline\fnumberline%
+  \ifnum #1>\c@tocdepth \else
+\vskip\z@%
+    {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+     \parindent #2\relax\@afterindenttrue
+     \interlinepenalty\@M
+     \leavevmode
+     \@tempdima #3\relax
+     \advance\leftskip \@tempdima \null\nobreak\hskip -\leftskip
+     \noindent\fontsize{10}{13}\selectfont\raggedright#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5
+     \leaders\hbox{$\m@th 
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep
+        mu$}\hfill
+     \nobreak
+     \hb@xt@\@pnumwidth{}%
+     \par}\vskip3\p@%
+  \fi}
+
+\def\l@prelims{\@prelimsdottedtocline{1}{0\p@}{\z@}}
+\def\l@lprelims{\@lprelimsdottedtocline{1}{0\p@}{\z@}}
+\def\l@fprelims{\@fprelimsdottedtocline{1}{0\p@}{\z@}}
+\def\l@pprelims{\@pprelimsdottedtocline{1}{0\p@}{\z@}}
+\def\l@part{\@partdottedtocline{1}{0\p@}{14\p@}}
+\def\l@chapter{\@chapterdottedtocline{1}{0\p@}{21.3\p@}}
+\def\l@author{\@authordottedtocline{1}{0\p@}{21.3\p@}}
+\def\l@section{\@sectiondottedtocline{1}{0\p@}{23.6\p@}}
+\def\l@subsection{\@subsectiondottedtocline{2}{0\p@}{31.2\p@}}
+\def\l@subsubsection{\@subsubsectiondottedtocline{3}{0\p@}{39.2\p@}}
+\def\l@paragraph{\@subsectiondottedtocline{5}{25\p@}{24\p@}}
+\def\l@subparagraph{\@subsectiondottedtocline{5}{25\p@}{24\p@}}
+
+\def\l@figure{\@figuredottedtocline{1}{0pt}{25.0pt}}
+\def\l@table{\@tabledottedtocline{1}{0pt}{25.0pt}}
+
+\def\@prelimsdottedtocline#1#2#3#4#5{%
+    \ifnum#1>\c@tocdepth\else
+        \vskip\z@%\@plus0.2\p@
+        {\leftskip \z@\relax\rightskip\@tocrmarg\parfillskip-\rightskip
+        \parindent \z@\relax\@afterindenttrue
+        \interlinepenalty \@M
+        \leavevmode\@tempdima #3\relax
+        \advance\leftskip\@tempdima
+        \null
+        \nobreak
+        \hskip-\leftskip
+        {{\fontsize{10}{13}\selectfont\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+\leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+\nobreak
+\hb@xt@\@pnumwidth{}
+\par}\vskip7pt\fi}
+
+% \newlength{\parlen}
+% \setlength{\parlen}{\marginparwidth}
+% \addtolength{\parlen}{2.5pt}
+% 
+% \newlength{\parlens}
+% \setlength{\parlens}{\marginparwidth}
+% \addtolength{\parlens}{-20.3pt}
+% \def\numberline#1{\hb@xt@\@tempdima{{#1}\hfill}}
+% 
+% \def\pnumberline#1{\hb@xt@\@tempdima{{\bfseries\itshape#1}\hfill}}
+% 
+% \def\@partdottedtocline#1#2#3#4#5{%
+%     \let\numberline\pnumberline%
+%     \ifnum#1>\c@tocdepth\else
+%         \vskip3\p@%\@plus0.2\p@%
+%         \noindent\hspace*{-\marginparwidth}%
+%         \rule{\titlewidth}{2pt}\par
+%         \vspace*{3pt}%
+%         \begingroup
+%             \leftskip -\parlens
+%             \rightskip\@tocrmarg
+%             \parfillskip-\rightskip
+%             \parindent -\parlen
+%             \@afterindenttrue
+%             \interlinepenalty \@M
+%             \leavevmode\@tempdima #3\relax
+% \advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip
+% {{\normalsize\raggedright\bfseries\itshape#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}}\nobreak
+% \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+% \nobreak
+% \hb@xt@\@pnumwidth{}
+% \par
+%     \endgroup
+% \fi\vskip3pt\noindent}
+% 
+% \def\cnumberline#1{\hb@xt@\@tempdima{\hspace*{-2.35pt}{\bfseries#1.}\hfill}}
+% \def\@chapterdottedtocline#1#2#3#4#5{%
+% \let\numberline\cnumberline%
+% \ifnum#1>\c@tocdepth\else%
+% \vskip0\p@%\@plus0.2\p@%
+% {\leftskip2.73\p@\relax\rightskip\@tocrmarg\parfillskip-\rightskip%
+% \parindent0\p@\relax\@afterindenttrue%
+% \interlinepenalty \@M%
+% \leavevmode\@tempdima #3\relax%
+% \advance\leftskip\@tempdima\null\nobreak\hskip-\leftskip%
+% {\normalsize\raggedright\bfseries#4\ignorespaces\hspace*{15\p@}\ignorespaces\normalcolor\itshape #5}\nobreak%
+% \leaders\hbox{$\m@th \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill%
+% \nobreak%
+% \hb@xt@\@pnumwidth{}%
+% \par}\vskip3\p@\fi}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                          PAGE HEADINGS                           %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\headingfont}{\fontsize{9}{11}\selectfont\itshape}
+
+\def\ps@headings{%
+    \let\@oddfoot\@empty
+    \let\@evenfoot\@empty
+    \def\@oddhead{%
+        \headingfont
+        \rlap{\rightmark\vphantom{y}}%
+        \hfill
+        \thepage
+    }%
+    \def\@evenhead{%
+        \headingfont
+        \rlap{\leftmark\vphantom{y}}%
+        \rlap{\hspace*{-\marginparwidth}\thepage}%
+    }%
+    \let\@mkboth\markboth
+    \def\partmark##1{\markboth{{##1}}{{##1}}}
+    \def\chaptermark##1{%
+      \markboth{%
+        \ifnum \c@secnumdepth >\m@ne
+          \if@mainmatter
+            \@chapapp\ \thechapter\quad
+          \fi
+        \fi
+        ##1}{}}%
+}
+
+\def\ps@pet{%
+    \let\@oddfoot\@empty
+    \let\@evenfoot\@empty
+    \def\@oddhead{%
+        \headingfont
+        \rlap{\rightmark\vphantom{y}}%
+        \rlap{\hspace*{-\marginparwidth}\thepage}%
+    }%
+    \def\@evenhead{%
+        \headingfont
+        \rlap{\rightmark\vphantom{y}}%
+        \rlap{\hspace*{-\marginparwidth}\thepage}%
+    }%
+    \let\@mkboth\markboth%
+    \def\chaptermark##1{\markboth{{##1}}{{##1}}}%
+    \def\chaptermark##1{\markright{{##1}}}%
+}
+
+\def\ps@plain{%
+    \let\@oddfoot\@empty
+    \let\@evenfoot\@empty
+    \let\@oddhead\@empty
+    \let\@evenhead\@empty
+}
+
+\ps@headings
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
 %%                 TEXT/MATH ALIASES AND SHORTCUTS                  %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -315,21 +942,39 @@
 }
 
 \newcommand{\textbox}[1]{%
-    \begin{center}
+    \begin{trivlist}
+        \item
+    \typeout{textbox: textwidth=\the\textwidth}%
+        % \@tempdima\textwidth
+        \advance\textwidth-2\fboxrule
+        \advance\textwidth-2\fboxsep
+        \linewidth\textwidth
+    \typeout{textbox: textwidth=\the\textwidth}%
         \fbox{%
-            \begin{minipage}[t]{\textwidth} %would be good to increase margins slightly
+            \vbox{%
+                \hsize\textwidth
 %                \setlength{\parindent}{3ex}
-                \setlength{\parskip}{\medskipamount}
-                \vspace{0.5ex} #1 \vspace{0.5ex}%
-            \end{minipage}%
+%                \setlength{\parskip}{\medskipamount}
+                \vspace{0.5ex}%
+                \ignorespaces#1\par%
+                \vspace{0.5ex}%
+            }%
         }%
-    \end{center}%
+    \end{trivlist}
 }
 
 \newcommand{\textboxtitle}[1]{%
     \begin{center}
         \textbf{\Large #1}%
     \end{center}%
+}
+ 
+\newcommand{\textboxheader}[1]{%
+    \par
+    \noindent{\reset@font\normalsize\bfseries#1\par}%
+    \@afterindentfalse
+    \@afterheading
+    \medskip
 }
  
 %%% Ugly box of red text that we can't ignore for too long :) 
@@ -1968,33 +2613,74 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\hoffset        = -1.0 in
-\voffset        = -1.25 in
+\hoffset = -1.0 in
+\voffset = -1.0 in
 
-% An indent of 1/8" (9pt) is far too little.  For this textwidth, you
-% want a minimum of 1em (10pt) and something approaching 2em wouldn't
-% be out of the question.  The LaTeX default of 15pt is pretty good.
+%% Based on "Cormen.cls" "CorA" option (8x9 trim size)
 
-%\setlength{\parindent}{0.125in}
-\setlength{\parskip}{0in}            
-\paperheight    =  9.0 in
-\paperwidth     =  7.0 in
-\topmargin      = 0.375 in
-\headheight     = 3\baselineskip
-\headsep        = 2\baselineskip
-\footskip       = 0.3 in
+\paperwidth = 8 true in
+\paperheight = 9 true in
+\textwidth = 32pc
+\parindent = 1em
 
-\textheight     = \paperheight
-\addtolength{\textheight}{-\topmargin}
-\addtolength{\textheight}{-\headheight}
-\addtolength{\textheight}{-\headsep}
-\addtolength{\textheight}{-\footskip}
+\marginparwidth = 6pc
+\setlength{\marginparsep}{0\p@}
+\setlength{\marginparpush}{5\p@}
 
-\textwidth      = \paperwidth
-\oddsidemargin  = 1.0 in
-\evensidemargin = 1.0 in
-\addtolength{\textwidth}{-\oddsidemargin}
-\addtolength{\textwidth}{-\evensidemargin}
+\pdfpagewidth=\paperwidth
+\pdfpageheight=\paperheight
+
+\setlength{\headheight}{8.28\p@}
+\setlength{\topmargin}{45\p@}
+
+\setlength{\headsep}{30.47\p@}
+
+\setlength{\footskip}{21.9\p@}
+
+\textheight = 37\baselineskip
+
+% \textheight = \paperheight
+% \advance\textheight -1 true in
+% \addtolength{\textheight}{-\topmargin}
+% \addtolength{\textheight}{-\headheight}
+% \addtolength{\textheight}{-\headsep}
+% \addtolength{\textheight}{-\footskip}
+
+\evensidemargin\paperwidth
+\advance\evensidemargin by -\textwidth
+\divide\evensidemargin by 2
+\oddsidemargin\evensidemargin
+%\advance\oddsidemargin -1 true in
+
+\newlength\titlewidth
+\setlength{\titlewidth}{\textwidth}
+\addtolength{\titlewidth}{\marginparwidth}
+\addtolength{\titlewidth}{\marginparsep}
+
+% % An indent of 1/8" (9pt) is far too little.  For this textwidth, you
+% % want a minimum of 1em (10pt) and something approaching 2em wouldn't
+% % be out of the question.  The LaTeX default of 15pt is pretty good.
+% 
+% %\setlength{\parindent}{0.125in}
+% \setlength{\parskip}{0in}            
+% \paperheight    =  9.0 in
+% \paperwidth     =  7.0 in
+% \topmargin      = 0.375 in
+% \headheight     = 3\baselineskip
+% \headsep        = 2\baselineskip
+% \footskip       = 0.3 in
+% 
+% \textheight     = \paperheight
+% \addtolength{\textheight}{-\topmargin}
+% \addtolength{\textheight}{-\headheight}
+% \addtolength{\textheight}{-\headsep}
+% \addtolength{\textheight}{-\footskip}
+% 
+% \textwidth      = \paperwidth
+% \oddsidemargin  = 1.0 in
+% \evensidemargin = 1.0 in
+% \addtolength{\textwidth}{-\oddsidemargin}
+% \addtolength{\textwidth}{-\evensidemargin}
 
 \newcommand{\printlayout}{%
   \typeout{----------------------- LaTeX Page Layout Parameters}
