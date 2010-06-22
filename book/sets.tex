@@ -13,532 +13,68 @@ about a collection of objects.  Let's first review a couple
 mathematical tools for grouping objects and then extend our logical
 language to cope with such collections.
 
-Informally, a \term{set} is a bunch of objects, which are called the
-\term{elements} of the set.  The elements of a set can be just about
-anything: numbers, points in space, or even other sets.  The conventional
-way to write down a set is to list the elements inside curly-braces.  For
-example, here are some sets:
+%%  \subsection{Does All This Really Work?}\label{setsreallywork}
+%%  
+%%  So this is where mainstream mathematics stands today: there is a handful
+%%  of ZFC axioms from which virtually everything else in mathematics can be
+%%  logically derived.  This sounds like a rosy situation, but there are
+%%  several dark clouds, suggesting that the essence of truth in mathematics
+%%  is not completely resolved.
+%%  
+%%  %
+%%  \begin{itemize}
+%%  
+%%  \item The \idx{ZFC axioms} weren't etched in stone by God.  Instead, they were
+%%    mostly made up by some guy named Zermelo.  Probably some days he
+%%    forgot his house keys.
+%%  
+%%    So maybe \idx{Zermelo}, just like \idx{Frege}, didn't get his axioms
+%%    right and will be shot down by some successor to \idx{Russell} who
+%%    will use Zermelo's axioms to prove a proposition $P$ and its
+%%    negation $\QNOT P$.  Then math would be broken.  This sounds crazy,
+%%    but after all, it has happened before.
+%%  
+%%    In fact, while there is broad agreement that the ZFC axioms are capable
+%%    of proving all of standard mathematics, the axioms have some further
+%%    consequences that sound paradoxical.  For example, the \idx{Banach-Tarski}
+%%    Theorem says that, as a consequence of the \idx{Axiom of Choice}, a solid ball
+%%    can be divided into six pieces and then the pieces can be rigidly
+%%    rearranged to give \emph{two} solid balls, each the same size as the
+%%    original!
+%%  
+%%  \item Georg \term{Cantor} was a contemporary of \idx{Frege} and
+%%    \idx{Russell} who first developed the theory of infinite sizes (because
+%%    he thought he needed it in his study of Fourier series).  Cantor raised
+%%    the question whether there is a set whose size is strictly between the
+%%    ``smallest\footnote{See Problem~\ref{CP_smallest_infinite_set}}''
+%%    infinite set, $\naturals$, and $\power(\naturals)$; he guessed not:
+%%  
+%%    \textbf{Cantor's \term{Continuum Hypothesis}}: There is no set, $A$,
+%%    such that $\power(\naturals)$ is \idx{strictly bigger} than $A$ and $A$
+%%    is strictly bigger than $\naturals$.
+%%  
+%%    The Continuum Hypothesis remains an open problem a century later.  Its
+%%    difficulty arises from one of the deepest results in modern Set Theory
+%%    ---discovered in part by \idx{G\"odel} in the 1930's and Paul
+%%    \idx{Cohen} in the 1960's ---namely, the ZFC axioms are not sufficient
+%%    to settle the Continuum Hypothesis: there are two collections of sets,
+%%    each obeying the laws of \idx{ZFC}, and in one collection the Continuum
+%%    Hypothesis is true, and in the other it is false.  So settling the
+%%    Continuum Hypothesis requires a new understanding of what Sets should be
+%%    to arrive at persuasive new axioms that extend ZFC and are strong enough
+%%    to determine the truth of the Continuum Hypothesis one way or the other.
+%%  
+%%  \item But even if we use more or different axioms about sets, there are
+%%    some unavoidable problems.  In the 1930's, \idx{G\"odel} proved that,
+%%    assuming that an axiom system like \idx{ZFC} is consistent ---meaning
+%%    you can't prove both $P$ and $\QNOT(P)$ for any proposition, $P$ ---then
+%%    the very proposition that the system is consistent (which is not too
+%%    hard to express as a logical formula) cannot be proved in the system.
+%%    In other words, no \idx{consistent} system is strong enough to verify
+%%    itself.
+%%    
+%%  \end{itemize}
 
-\[
-\begin{array}{rcll}
-%\naturals & = & \set{0, 1, 2, 3, \ldots} & \text{the} \text{nonnegative integers} \\
-A & = & \set{\text{Alex}, \text{Tippy}, \text{Shells}, \text{Shadow}} & \text{dead pets} \\
-B & = & \set{\text{red}, \text{blue}, \text{yellow}} & \text{primary colors} \\
-C & = & \set{ \set{a, b}, \set{a, c}, \set{b, c}} & \text{a set of sets}
-\end{array}
-\]
-This works fine for small finite sets.  Other sets might be defined by
-indicating how to generate a list of them:
-\begin{align*}
-D & =  \set{1,2,4,8,16,\dots} & \text{the powers of 2}
-\end{align*}
-
-The order of elements is not significant, so $\set{x, y}$ and $\set{y, x}$
-are the same set written two different ways.  Also, any object is, or is
-not, an element of a given set ---there is no notion of an element
-appearing more than once in a set.\footnote{It's not hard to develop a
-notion of \term{multisets} in which elements can occur more than once, but
-multisets are not ordinary sets.}  So writing $\set{x,x}$ is just
-indicating the same thing twice, namely, that $x$ is in the set.  In
-particular, $\set{x,x} = \set{x}$.
-
-The expression $e \in S$ asserts that $e$ is an element of set $S$.  For
-example, $32 \in D$ and $\text{blue} \in B$, but $\text{Tailspin}
-\not\in A$ ---yet.
-
-Sets are simple, flexible, and everywhere.  You'll find
-some set mentioned in nearly every section of this text.
-
-\subsection{Some Popular Sets}
-
-Mathematicians have devised special symbols to represent some common
-sets.
-
-\begin{center}
-\begin{tabular}{lll}
-\textbf{symbol} & \textbf{set} & \textbf{elements} \\
-\term{$\emptyset$} & the empty set & \text{none}\\
-\term{$\naturals$} & nonnegative integers & $\set{0, 1, 2, 3, \ldots}$ \\
-\term{$\integers$} & integers & $\set{\ldots, -3, -2, -1, 0, 1, 2, 3, \ldots}$ \\
-\term{$\rationals$} & rational numbers & $\frac{1}{2},\ -\frac{5}{3},\ 16,\ \text{etc.}$ \\
-\term{$\reals$} & real numbers & $\pi,\ e,\ -9,\ \sqrt{2},\ \text{etc.}$ \\
-\term{$\complexes$} & complex numbers & $i,\ \frac{19}{2},\ \sqrt{2} - 2i,\ \text{etc.}$
-\end{tabular}
-\end{center}
-A superscript ``$^+$'' restricts a set to its positive elements; for
-example, \term{$\reals^+$} denotes the set of positive real numbers.  Similarly,
-\term{$\reals^-$} denotes the set of negative reals.
-
-\subsection{Comparing and Combining Sets}
-
-The expression $S \subseteq T$ indicates that set $S$ is a \term{subset}
-of set $T$, which means that every element of $S$ is also an element of
-$T$ (it could be that $S=T$).  For example, $\naturals \subseteq
-\mathbb{Z}$ and $\mathbb{Q} \subseteq
-\reals$ (every rational number is a real number), but $\complexes
-\not\subseteq \mathbb{Z}$ (not every complex number is an integer).
-
-As a memory trick, notice that the \term{$\subseteq$} points to the
-smaller set, just like a $\leq$ sign points to the smaller number.
-Actually, this connection goes a little further: there is a symbol
-\term{$\subset$} analogous to $<$.  Thus, $S \subset T$ means that $S$
-is a subset of $T$, but the two are \emph{not} equal.  So $A \subseteq
-A$, but $A \not\subset A$, for every set $A$.
-
-There are several ways to combine sets.  Let's define a couple of sets for
-use in examples:
-\begin{align*}
-X & \eqdef \set{1, 2, 3} \\
-Y & \eqdef \set{2, 3, 4}
-\end{align*}
-
-\begin{itemize}
-
-\item The \term{union} of sets $X$ and $Y$ (denoted $X$ \term{$\union$} $Y$)
-contains all elements appearing in $X$ or $Y$ or both.  Thus, $X \union
-Y = \set{1, 2, 3, 4}$.
-
-\item The \term{intersection} of $X$ and $Y$ (denoted $X$
-  \term{$\intersect$} $Y$) consists of all elements that appear in
-  \textit{both} $X$ and $Y$.  So $X \intersect Y = \set{2, 3}$.
-
-\item The \term{set difference} of $X$ and $Y$ (denoted $X$ \index{$-$,
-    set difference}$-$ $Y$) consists of all elements that are in $X$, but not in $Y$.
-  Therefore, $X - Y = \set{1}$ and $Y - X = \set{4}$.
-
-\end{itemize}
-
-\subsection{Complement of a Set}
-
-Sometimes we are focused on a particular domain, $D$.  Then for any
-subset, $A$, of $D$, we define \term{$\overline{A}$} to be the set of all
-elements of $D$ \textit{not} in $A$.  That is, $\overline{A} \eqdef D-A$.
-The set $\overline{A}$ is called the \term{complement} of $A$.
-
-For example, when the domain we're working with is the real numbers,
-the complement of the positive real numbers is the set of negative real
-numbers together with zero.  That is,
-\[
-\overline{\reals^+} = \reals^- \union \set{0}.
-\]
-
-It can be helpful to rephrase properties of sets using complements.  For
-example, two sets, $A$ and $B$, are said to be \term{disjoint} iff they
-have no elements in common, that is, $A \intersect B = \emptyset$.  This
-is the same as saying that $A$ is a subset of the complement of $B$, that
-is, $A \subseteq \overline{B}$.
-
-\subsection{Power Set}
-
-The set of all the subsets of a set, $A$, is called the \term{power
-  set}, \term{$\power(A)$}, of $A$.  So $B \in \power(A)$ iff $B
-\subseteq A$.  For example, the elements of $\power( \set{1, 2})$ are
-$\emptyset, \set{1}, \set{2}$ and $\set{1, 2}$.
-
-More generally, if $A$ has $n$ elements, then there are $2^n$ sets in
-$\power(A)$.  For this reason, some authors use the notation $2^A$ instead
-of $\power(A)$.
-
-\subsection{Set Builder Notation}
-
-An important use of predicates is in \term*{set builder notation}.  We'll
-often want to talk about sets that cannot be described very well by
-listing the elements explicitly or by taking unions, intersections,
-etc., of easily-described sets.  Set builder notation often comes to the
-rescue.  The idea is to define a \textit{set} using a \textit{predicate};
-in particular, the set consists of all values that make the predicate
-true.  Here are some examples of set builder notation:
-
-\begin{align*}
-A & \eqdef \set{n \in \naturals \suchthat \text{$n$ is a prime and $n =
-    4k+1$ for some integer $k$}} \\
-B & \eqdef \set{x \in \reals \suchthat x^3 - 3 x + 1 > 0} \\
-C & \eqdef \set{a + b i \in \complexes \suchthat a^2 + 2 b^2 \leq 1}
-\end{align*}
-
-The set $A$ consists of all nonnegative integers $n$ for which the
-predicate
-\begin{center}
-``$n$ is a prime and $n = 4k+1$ for some integer $k$''
-\end{center}
-is true.  Thus, the smallest elements of $A$ are:
-\[
-5, 13, 17, 29, 37, 41, 53, 57, 61, 73, \ldots.
-\]
-Trying to indicate the set $A$ by listing these first few elements
-wouldn't work very well; even after ten terms, the pattern is not
-obvious!  Similarly, the set $B$ consists of all real numbers $x$ for
-which the predicate
-\[
-x^3 - 3x + 1 > 0
-\]
-is true.  In this case, an explicit description of the set $B$ in
-terms of intervals would require solving a cubic equation.  Finally,
-set $C$ consists of all complex numbers $a + b i$ such that:
-\[
-a^2 + 2 b^2 \leq 1
-\]
-This is an oval-shaped region around the origin in the complex plane.
-
-\subsection{Proving Set Equalities}
-
-Two sets are defined to be equal if they contain the same elements.  That
-is, $X = Y$ means that $z \in X$ if and only if $z \in Y$, for all
-elements, $z$.  (This is actually the first of the ZFC axioms.)  So set
-equalities can be formulated and proved as ``iff'' theorems.  For
-example:
-
-\begin{theorem}[\term{Distributive Law} for Sets]
-Let $A$, $B$, and $C$ be sets.  Then:
-\begin{equation}\label{set-distrib}
-A \intersect (B \union C) = (A \intersect B) \union (A \intersect C)
-\end{equation}
-\end{theorem}
-
-\begin{proof}
-The equality~\eqref{set-distrib} is equivalent to the assertion that
-\begin{equation}\label{set-distrib-z}
-  z \in A \intersect (B \union C) \qiff z \in (A \intersect B)
-  \union (A \intersect C)
-\end{equation}
-for all $z$.  Now we'll prove~\eqref{set-distrib-z} by a chain of iff's.
-
-First we need a rule for distributing a propositional $\QAND$ operation
-over an $\QOR$ operation.  It's easy to verify by truth-table that
-\begin{lemma}\label{prop-distrib}
-The propositional formulas
-\[
-P \QAND (Q \QOR R)
-\]
-and
-\[
-(P \QAND Q) \QOR (P \QAND R)
-\]
-are equivalent.
-\end{lemma}
-
-Now we have
-\begin{align*}
-\lefteqn{z \in A \intersect (B \union C)}\\
-& \qiff (z \in A) \QAND (z \in B \union C) & \text{(def of $\intersect$)}\\
-& \qiff (z \in A) \QAND (z \in B \QOR z \in C)
-                & \text{(def of $\union$)}\\
-& \qiff (z \in A \QAND z \in B) \QOR (z \in A \QAND z \in C)
-                & \text{(Lemma~\ref{prop-distrib})}\\
-& \qiff (z \in A \intersect B) \QOR (z \in A \intersect C)
-                & \text{(def of $\intersect$)}\\
-& \qiff z \in (A \intersect B) \union (A \intersect C)
-                & \text{(def of $\union$)}
-\end{align*}
-
-\end{proof}
-  
-\subsection{Glossary of Symbols}
-\begin{center}
-\begin{tabular}{ll}
-symbol &  meaning\\
-\hline
-$\eqdef$ & is defined to be\\
-$\land$ & and\\
-$\lor$ & or\\
-$\implies$ & implies\\
-$\neg$    & not\\
-$\neg{P}$ & not $P$\\
-$\bar{P}$ & not $P$\\
-$\iff$    & iff, equivalent\\
-$\oplus$   & xor\\
-$\exists$ & exists\\
-$\forall$ & for all\\
-$\in$   &  is a member of, belongs to\\
-$\subseteq$ & is a subset of, is contained by\\
-$\subset$ & is a proper subset of, is properly contained by\\
-$\union$  & set union\\
-$\intersect$ & set intersection\\
-$\bar{A}$ & complement of the set $A$\\
-$\power(A)$ & powerset of the set $A$\\
-$\emptyset$ & the empty set, $\set{}$\\
-$\naturals$ & nonnegative integers \\
-$\integers$ & integers\\
-$\integers^+$ & positive integers\\
-$\integers^-$ & negative integers\\
-$\rationals$ & rational numbers\\
-$\reals$ & real numbers\\
-$\complexes$ & complex numbers\\
-%$\emptystring$ & the empty string/list
-\end{tabular}
-\end{center}
-
-\begin{problems}
-\homeworkproblems
-\pinput{PS_set_union}
-\end{problems}
-
-\hyperdef{logic}{sets}{\section{The Logic of Sets}}
-
-\subsection{\idx{Russell's Paradox}}
-
-Reasoning naively about sets turns out to be risky.  In fact, one of the
-earliest attempts to come up with precise axioms for sets by a late
-nineteenth century logican named Gotlob \term{Frege} was shot down by a three
-line argument known as \emph{Russell's Paradox}:\footnote{Bertrand \term{Russell}
-  was a mathematician/logician at Cambridge University at the turn of the
-  Twentieth Century.  He reported that when he felt too old to do
-  mathematics, he began to study and write about philosophy, and when he
-  was no longer smart enough to do philosophy, he began writing about
-  politics.  He was jailed as a conscientious objector during World War I.
-  For his extensive philosophical and political writing, he won a Nobel
-  Prize for Literature.}  This was an astonishing blow to efforts to
-provide an axiomatic foundation for mathematics.
-
-\textbox{
-\begin{quote}
-Let $S$ be a variable ranging over all sets, and define
-\[W \eqdef \set{S \suchthat S \not\in S}.\]
-So by definition,
-\[S \in W  \mbox{  iff  } S \not\in S,\]
-for every set $S$.  In particular, we can let $S$ be $W$, and obtain
-the contradictory result that
-\[W \in W  \mbox{  iff  } W \not\in W.\]
-\end{quote}}
-
-A way out of the paradox was clear to Russell and others at the time:
-\emph{it's unjustified to assume that $W$ is a set}.  So the step in the
-proof where we let $S$ be $W$ has no justification, because $S$ ranges
-over sets, and $W$ may not be a set.  In fact, the paradox implies that
-$W$ had better not be a set!
-
-But denying that $W$ is a set means we must \emph{reject} the very natural
-axiom that every mathematically well-defined collection of elements is
-actually a set.  So the problem faced by Frege, Russell and their
-colleagues was how to specify \emph{which} well-defined collections are
-sets.  Russell and his fellow Cambridge University colleague Whitehead
-immediately went to work on this problem.  They spent a dozen years
-developing a huge new axiom system in an even huger monograph called
-\emph{Principia Mathematica}.
-
-
-\subsection{The ZFC Axioms for Sets}
-It's generally agreed that, using some simple logical deduction rules,
-essentially all of mathematics can be derived from some axioms about sets
-called the Axioms of \idx{Zermelo-Frankel Set Theory} with Choice (\idx{ZFC}).
-
-We're \emph{not} going to be working with these axioms in this course,
-but we thought you might like to see them --and while you're at it, get
-some practice reading quantified formulas:
-
-\begin{description}
-
-\item[\term{Extensionality}.] Two sets are equal if they have the same members.
-In formal logical notation, this would be stated as:
-\[
-(\forall z.\; (z \in x \QIFF z \in y)) \QIMPLIES x = y.
-\]
-
-\item[\term{Pairing}.] For any two sets $x$ and $y$, there is a set,
-     $\set{x,y}$, with $x$ and $y$ as its only elements:
-\[
-\forall x,y.\; \exists u.\; \forall z.\;
-[z \in u \QIFF (z = x \QOR z = y)]
-\]
-
-\item[\index{Union axiom}Union.] The union, $u$, of a collection, $z$, of sets is also a set:
-\[
-\forall z.\, \exists u \forall x.\; (\exists y.\; x \in y \QAND y \in z) \QIFF x \in u.
-\]
-
-\item[\index{Infinity axiom}Infinity.]  There is an infinite set.
-  Specifically, there is a nonempty set, $x$, such that for any set $y \in
-  x$, the set $\set{y}$ is also a member of $x$.
-
-\begin{editingnotes}
-
-\item[Subset.] Given any set, $x$, and any proposition $P(y)$, there is a
-  set containing precisely those elements $y \in x$ for which $P(y)$ holds.
-
-\end{editingnotes}
-
-\item[\index{Power Set axiom}Power Set.]  All the subsets of a set form another set:
-\[
-\forall x.\; \exists p.\; \forall u.\: u \subseteq x \QIFF u \in p.
-\]
-
-\item[\index{Replacement axiom}Replacement.]  Suppose a formula, $\phi$,
-  of set theory defines the graph of a function, that is,
-\[
-\forall x, y, z.\, [\phi(x,y) \QAND \phi(x,z)] \QIMPLIES y = z.
-\]
-Then the image of any set, $s$, under that function is also a set, $t$.  Namely,
-\[
-\forall s\, \exists t\, \forall y.\, [\exists x.\, \phi(x,y) \QIFF y \in t].
-\]
-
-
-\item[\term{Foundation}.] 
-There cannot be an infinite sequence
-\[
-\cdots \in x_n \in \cdots \in x_1 \in x_0
-\]
-of sets each of which is a member of the previous one.  This is equivalent
-to saying every nonempty set has a ``member-minimal'' element.  Namely, define
-\[
-\text{member-minimal}(m, x) \eqdef [m \in x \QAND \forall y \in x.\, y \notin m].
-\]
-Then the Foundation axiom is
-\[
-\forall x.\ x \neq \emptyset\ \QIMPLIES\ \exists m.\, \text{member-minimal}(m, x).
-\]
-
-\begin{editingnotes}
-If well-founded posets are defined, then rephrase Foundation as
-\emph{The $\in$ relation on sets is well-founded.}
-\end{editingnotes}
-
-\item[\index{Choice axiom}Choice.]  Given a set, $s$, whose members are nonempty sets no two
-  of which have any element in common, then there is a set, $c$,
-  consisting of exactly one element from each set in $s$.
-
-
-\iffalse
-\begin{tabbing}
-$\exists y \, \forall z \, \forall w \,
- \biggl( ($\=$z \in w \,\QAND\, w \in x) \; \QIMPLIES $\\
-\> $\exists v \, \exists u \, \Bigl(\exists t \, \bigr((u \in w \, \QAND \, w \in t)$\=$\;\QAND\; (u \in t \,\QAND\, t \in y)\bigl) $\\
-\> \> $\QIFF\; u = v\Bigr) \biggr)$
-\end{tabbing}
-\fi
-
-
-\begin{editingnotes}
-
-\[\begin{array}{rlll}
-\exists y \forall z \forall w & ( (z \in w \QAND w \in x) \QIMPLIES\\
-                              &\quad \exists v \exists u (\exists t
-                                           ((u \in w \QAND & w \in t)
-                                                              & \QAND (u \in t \QAND t \in y))\\
-                                                            &&& \QIFF u = v))
-\end{array}\]
-
-\end{editingnotes}
-
-\end{description}
-
-
-\subsection{Avoiding \idx{Russell's Paradox}}
-
-These modern ZFC axioms for set theory are much simpler than the system
-Russell and Whitehead first came up with to avoid paradox.  In fact, the
-ZFC axioms are as simple and intuitive as Frege's original axioms, with
-one technical addition: the Foundation axiom.  Foundation captures the
-intuitive idea that sets must be built up from ``simpler'' sets in certain
-standard ways.  And in particular, Foundation implies that no set is ever
-a member of itself.  So the modern resolution of Russell's paradox goes as
-follows: since $S \not \in S$ for all sets $S$, it follows that $W$,
-defined above, contains every set.  This means $W$ can't be a set ---or it
-would be a member of itself.
-
-\subsection{Does All This Really Work?}\label{setsreallywork}
-
-So this is where mainstream mathematics stands today: there is a handful
-of ZFC axioms from which virtually everything else in mathematics can be
-logically derived.  This sounds like a rosy situation, but there are
-several dark clouds, suggesting that the essence of truth in mathematics
-is not completely resolved.
-
-%
-\begin{itemize}
-
-\item The \idx{ZFC axioms} weren't etched in stone by God.  Instead, they were
-  mostly made up by some guy named Zermelo.  Probably some days he
-  forgot his house keys.
-
-  So maybe \idx{Zermelo}, just like \idx{Frege}, didn't get his axioms
-  right and will be shot down by some successor to \idx{Russell} who
-  will use Zermelo's axioms to prove a proposition $P$ and its
-  negation $\QNOT P$.  Then math would be broken.  This sounds crazy,
-  but after all, it has happened before.
-
-  In fact, while there is broad agreement that the ZFC axioms are capable
-  of proving all of standard mathematics, the axioms have some further
-  consequences that sound paradoxical.  For example, the \idx{Banach-Tarski}
-  Theorem says that, as a consequence of the \idx{Axiom of Choice}, a solid ball
-  can be divided into six pieces and then the pieces can be rigidly
-  rearranged to give \emph{two} solid balls, each the same size as the
-  original!
-
-\item Georg \term{Cantor} was a contemporary of \idx{Frege} and
-  \idx{Russell} who first developed the theory of infinite sizes (because
-  he thought he needed it in his study of Fourier series).  Cantor raised
-  the question whether there is a set whose size is strictly between the
-  ``smallest\footnote{See Problem~\ref{CP_smallest_infinite_set}}''
-  infinite set, $\naturals$, and $\power(\naturals)$; he guessed not:
-
-  \textbf{Cantor's \term{Continuum Hypothesis}}: There is no set, $A$,
-  such that $\power(\naturals)$ is \idx{strictly bigger} than $A$ and $A$
-  is strictly bigger than $\naturals$.
-
-  The Continuum Hypothesis remains an open problem a century later.  Its
-  difficulty arises from one of the deepest results in modern Set Theory
-  ---discovered in part by \idx{G\"odel} in the 1930's and Paul
-  \idx{Cohen} in the 1960's ---namely, the ZFC axioms are not sufficient
-  to settle the Continuum Hypothesis: there are two collections of sets,
-  each obeying the laws of \idx{ZFC}, and in one collection the Continuum
-  Hypothesis is true, and in the other it is false.  So settling the
-  Continuum Hypothesis requires a new understanding of what Sets should be
-  to arrive at persuasive new axioms that extend ZFC and are strong enough
-  to determine the truth of the Continuum Hypothesis one way or the other.
-
-\item But even if we use more or different axioms about sets, there are
-  some unavoidable problems.  In the 1930's, \idx{G\"odel} proved that,
-  assuming that an axiom system like \idx{ZFC} is consistent ---meaning
-  you can't prove both $P$ and $\QNOT(P)$ for any proposition, $P$ ---then
-  the very proposition that the system is consistent (which is not too
-  hard to express as a logical formula) cannot be proved in the system.
-  In other words, no \idx{consistent} system is strong enough to verify
-  itself.
-  
-\end{itemize}
-
-\section{Sequences}
-
-Sets provide one way to group a collection of objects.  Another way is
-in a \term{sequence}, which is a list of objects called \term{terms}
-or \term{components}.  Short sequences are commonly described by
-listing the elements between parentheses; for example, $(a, b, c)$ is
-a sequence with three terms.
-
-While both sets and sequences perform a gathering role, there are
-several differences.
-\begin{itemize}
-
-\item The elements of a set are required to be distinct, but terms in a
-sequence can be the same.  Thus, $(a, b, a)$ is a valid sequence of length
-three, but $\set{a, b, a}$ is a set with two elements ---not three.
-
-\item The terms in a sequence have a specified order, but the elements
-of a set do not.  For example, $(a, b, c)$ and $(a, c, b)$ are
-different sequences, but $\set{a, b, c}$ and $\set{a, c, b}$ are the
-same set.
-
-\item Texts differ on notation for the \term{empty sequence}; we use
-  \term{$\lambda$} for the empty sequence.
-\end{itemize}
-
-The product operation is one link between sets and sequences.  A
-\term{product of sets}, $S_1 \times S_2 \times \cdots \times S_n$, is a
-new set consisting of all sequences where the first component is drawn
-from $S_1$, the second from $S_2$, and so forth.  For example, $\naturals
-\times \set{a,b}$ is the set of all pairs whose first element is a
-nonnegative integer and whose second element is an $a$ or a $b$:
-\[
-\naturals \times \set{a,b}
-    = \set{(0,a), (0,b), (1,a), (1,b), (2,a), (2, b), \dots}
-\]
-A product of $n$ copies of a set $S$ is denoted $S^n$.  For example,
-$\set{0, 1}^3$ is the set of all $3$-bit sequences:
-\[
-\set{0, 1}^3 = \set{ (0,0,0), (0,0,1), (0,1,0), (0,1,1),
-                     (1,0,0), (1,0,1), (1,1,0), (1,1,1) }
-\]
 
 \section{Functions}\label{funcsubsec}
 
