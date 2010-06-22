@@ -1193,6 +1193,9 @@
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
 
+\newcommand{\fac}{\operatorname{fac}}
+\newcommand{\fib}{\operatorname{fib}}
+
 \newcommand{\GCD}{\operatorname{GCD}}
 \newcommand{\Even}{\operatorname{Even}}
 
