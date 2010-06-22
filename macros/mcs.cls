@@ -205,6 +205,46 @@
     \color{black}%
 }
 
+\newwrite\@chapprobs
+
+\def\@include#1 {%
+    \clearpage
+    \if@filesw
+        \immediate\write\@mainaux{\string\@input{#1.aux}}%
+    \fi
+    \@tempswatrue
+    \if@partsw
+        \@tempswafalse
+        \edef\reserved@b{#1}%
+        \@for\reserved@a:=\@partlist\do
+            {\ifx\reserved@a\reserved@b\@tempswatrue\fi}%
+    \fi
+    \if@tempswa
+        \let\@auxout\@partaux
+        \if@filesw
+            \immediate\openout\@partaux #1.aux
+            \immediate\write\@partaux{\relax}%
+            \immediate\openout\@chapprobs #1.probs
+            \immediate\write\@chapprobs{\relax}%
+        \fi
+        \@input@{#1.tex}%
+        \if@filesw
+            \immediate\closeout\@chapprobs
+        \fi
+        \@input@{#1.probs}%
+        \clearpage
+        \@writeckpt{#1}%
+        \if@filesw
+            \immediate\closeout\@partaux
+            \immediate\closeout\@chapprobs
+        \fi
+    \else
+        \deadcycles\z@
+        \@nameuse{cp@#1}%
+    \fi
+    \let\@auxout\@mainaux
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                    CONDITIONAL TEXT INCLUSION                    %%
@@ -1406,8 +1446,25 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% problem environments and section headers for use in the book
+% %% This is based on the verbatimwrite environment from verbatim.dtx.
+
 \newenvironment{problems}{%
+    \@bsphack
+    \let\do\@makeother\dospecials
+    \catcode`\^^M\active
+    \def\verbatim@processline{%
+        \immediate\write\@chapprobs{\the\verbatim@line}%
+    }%
+    % \immediate\write\@chapprobs{\noexpand\begin{realproblems}}%
+    \immediate\write\@chapprobs{\noexpand\section*{Problems for
+        Section \thesection}}%
+    \verbatim@start
+}{%
+    % \immediate\write\@chapprobs{\noexpand\end{realproblems}}%
+    \@esphack
+}
+
+\newenvironment{realproblems}{%
     \subsection{Problems}%
 }{}
 \newcommand{\practiceproblems}{\subsubsection*{Practice Problems}}
