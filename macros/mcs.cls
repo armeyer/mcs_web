@@ -104,6 +104,8 @@
     linkcolor=blue, citecolor=blue,
     urlcolor=blue, backref, pagebackref]{hyperref}
 
+\RequirePackage{breakurl}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                         LOW-LEVEL MACROS                         %%
@@ -984,12 +986,9 @@
 \newcommand{\textbox}[1]{%
     \begin{trivlist}
         \item
-    \typeout{textbox: textwidth=\the\textwidth}%
-        % \@tempdima\textwidth
         \advance\textwidth-2\fboxrule
         \advance\textwidth-2\fboxsep
         \linewidth\textwidth
-    \typeout{textbox: textwidth=\the\textwidth}%
         \fbox{%
             \vbox{%
                 \hsize\textwidth
