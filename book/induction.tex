@@ -352,7 +352,7 @@ $0(0+1)/2 = 0$, which is true by definition.
 %
 The second statement is more complicated.  But remember the basic plan for
 proving the validity of any implication from
-subsection~\ref{sec:prove_implies}: \emph{assume} the statement on 
+Section~\ref{sec:prove_implies}: \emph{assume} the statement on 
 the left and then \emph{prove} the statement on the right.  In this
 case, we assume $P(n)$ in order to prove $P(n+1)$, which is the equation
 \begin{equation}\label{sum-to-n-again-Pn1}
@@ -1448,7 +1448,7 @@ Strong.  Now by adding a 3\sg\ coin, they can make change for
 $(n+1)\sg$.
 
 Since $n \ge 0$, we know that $n + 1 \ge 1$ and thus that the three cases
-cover every possibility.  Since $P(n+1)$ is true in ever case, we can
+cover every possibility.  Since $P(n+1)$ is true in every case, we can
 conclude by strong induction
 that for all $n \ge 0$, the Inductians can make change for $n+8$
 Strong.  That is, they can make change for any number of eight or more
@@ -1611,39 +1611,10 @@ similarly for $s\lefbrk$.
 
 A string $s \in \brkts$ is called a \term{matched string} if its
 brackets can be ``matched up'' in the usual way.  For example, the left hand
-string above is not matched because its second right bracket does not
+string in~\ref{2strings} is not matched because its second right
+bracket does not 
 have a matching left bracket.  The string on the right is matched.
 The set of matched strings can be defined recursively as follows.
-
-
-\begin{editingnotes}
-
-Turn this into a problem
-
-One precise way to determine if a string is matched is to start with 0 and
-read the string from left to right, adding 1 to the count for each left
-bracket and subtracting 1 from the count for each right bracket.
-For example, here are the counts for the two strings above
-\[\begin{array}{rrrrrrrrrrrrr}
-& \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \lefbrk & \lefbrk & \lefbrk &
-\lefbrk & \rhtbrk & \rhtbrk & \rhtbrk & \rhtbrk\\
-0 & 1 & 0 & -1 & 0 & 1 & 2 & 3 & 4 & 3 & 2 & 1 & 0\\
-\\
-\\
-& \lefbrk & \lefbrk & \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \rhtbrk &
-\rhtbrk & \lefbrk & \rhtbrk\\
-0 & 1 & 2 & 3 & 2 & 1 & 2 & 1 & 0 & 1 & 0
-\end{array}\]
-A string has a \term{good count} if its running count never goes
-negative and ends with 0.  So the second string above has a good count, but
-the first one does not because its count went negative at the third step.
-\begin{definition}\label{gc-def}
-Let
-\[
-\GC \eqdef \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
-\]
-\end{definition}
-\end{editingnotes}
 
 \begin{definition}\label{RM-def}
 Recursively define the set, $\RM$, of strings as follows:
@@ -1682,6 +1653,14 @@ by the Constructor case.  So now,
 are also strings in $\RM$ by repeated applications of the Constructor
 case.
 
+In general, $\RM$ will contain precisely the strings with matching
+brackets. This is because the constructor case is, in effect,
+identifying the bracket that matches the leftmost bracket in any
+string.  Since that matching bracket is unique, this method of
+constructing $\RM$ gives a unique way of constructing any string with
+matched brackets.  This will turn out to be important later when we
+talk about ambiguity.
+
 Strings with matched brackets arise in the area of expression
 parsing.  A brief history of the advances in this field is provided in
 the box on the next page.
@@ -1718,14 +1697,6 @@ compiler-compilers that automatically generated parsers from expression
 grammars.  This automation of parsing was so effective that the subject
 needed no longer demanded attention.  It largely disappeared from the
 computer science curriculum by the 1990's.}
-
-In general, $\RM$ will contain precisely the strings with matching
-brackets. This is because the constructor case is, in effect,
-identifying the bracket that matches the leftmost bracket in any
-string.  Since that matching bracket is unique, this method of
-constructing $\RM$ gives a unique way of constructing any string with
-matched brackets.  This will turn out to be important later when we
-talk about ambiguity.
 
 \subsubsection{Example 2: Arithmetic Expressions}
 
@@ -1932,7 +1903,7 @@ data items.
 
 For example, consider the function
 \begin{equation*}
-    \meval: \aexp \cross \integers \cross \integers,
+    \meval: \aexp \cross \integers \to \integers,
 \end{equation*}
 which evaluates any expression in~$\aexp$ using the value~$n$
 for~$x$.  It is useful to express this function with a recursive
@@ -2015,19 +1986,21 @@ recursively by the rules:
 \end{itemize}
 \end{definition}
 
-\textbox{\textbf{Warning:} When a recursive definition of a data type
+\subsubsection{Ambiguity}
+
+When a recursive definition of a data type
 allows the same element to be constructed in more than one way, the
 definition is said to be \emph{ambiguous}.  A function defined recursively
 from an ambiguous definition of a data type will not be well-defined
 unless the values specified for the different ways of constructing the
-element agree.}
+element agree.
 
 We were careful to choose an \emph{un}ambiguous definition of $\RM$ to
 ensure that functions defined recursively on the definition would always
 be well-defined.  As an example of the trouble an ambiguous definition can
-cause, let's consider yet another definition of the matched strings.
+cause, let's consider another definition of the matched strings.
 
-\begin{example}\label{M}
+\begin{definition}\label{M}
   Define the set, $M \subseteq \brkts$ recursively as follows:
 \begin{itemize}
 
@@ -2036,23 +2009,16 @@ cause, let's consider yet another definition of the matched strings.
 \item \textbf{Constructor cases:} if $s,t \in M$, then
   the strings $\lefbrk s\, \rhtbrk$ and $st$ are also in $M$.
 \end{itemize}
-\end{example}
+\end{definition}
 
-\begin{notesproblem}
-Give an easy proof by structural induction that $M =\RM$.
-\end{notesproblem}
-
-Since $M = \RM$, and the definition of $M$ seems more straightforward, why
-didn't we use it?  Because 
-
-\bigskip
-\textcolor{red}{page 444 was missing from my copy of FTL's edits}
-\bigskip
-
+By using structural induction, it is possible to prove that $M =
+\RM$.  Indeed, the definition of~$M$ might even seem like a more
+natural way to define the set of matched strings than the definition
+of~$\RM$.  But
 the definition of $M$ is ambiguous, while the
 (perhaps less natural) definition of $\RM$ is unambiguous.  Does this
 ambiguity matter?
-Yes, it does.  For example, suppose we defined
+Yes, it can.  For example, suppose we defined
 \begin{align*}
   f(\emptystring)        & \eqdef 1,\\
   f(\ \lefbrk s\,\rhtbrk\ ) & \eqdef 1+ f(s),\\
@@ -2079,7 +2045,7 @@ Alternatively, we can build $ba$ from the second constructor with $s=b$
 and $t=a$, and then get to $c$ using the second constructor with $s=ba$
 and $t=a$.
 
-Now by these rules, applied to the first way of constructing~$c$,
+By applying these rules to the first way of constructing~$c$,
 $f(a) = 2$, \ $f(b) = (2+1)(2+1)=9$, and $f(c) = f(bb)=
 (9+1)(9+1)=100$.  Using the second way of constructing~$c$, we find
 that $f(ba) = (9+1)(2+1) = 27$ and $f(c) = f(ba\,a) = (27 +1)
@@ -2100,10 +2066,10 @@ The set, $\naturals$, is a data type defined recursivly as:
 \begin{itemize}
 
 \item
-\textbf[Base Case:] $0 \in \naturals$.
+\textbf{Base Case:} $0 \in \naturals$.
 
 \item
-\textbf[Constructor Case:] If $n \in \naturals$, then the
+\textbf{Constructor Case:} If $n \in \naturals$, then the
 \emph{successor}, $n+1$, of $n$ is in $\naturals$.
 
 \end{itemize}
@@ -2146,7 +2112,7 @@ by:
 \begin{itemize}
 
 \item\textbf{Base Cases:}
-$\fib(0) ::= 0$ and $\fib(1) :== 1$
+$\fib(0) ::= 0$ and $\fib(1) ::= 1$
 
 \item\textbf{Constructor Case:}
 $\fib(n) \eqdef \fib(n-1) + \fib(n-2)$ for $n \geq 2$.
@@ -2417,5 +2383,34 @@ processing computer programs.
 
 \end{editingnotes}
 
+
+\begin{editingnotes}
+
+Turn this into a problem
+
+One precise way to determine if a string is matched is to start with 0 and
+read the string from left to right, adding 1 to the count for each left
+bracket and subtracting 1 from the count for each right bracket.
+For example, here are the counts for the two strings above
+\[\begin{array}{rrrrrrrrrrrrr}
+& \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \lefbrk & \lefbrk & \lefbrk &
+\lefbrk & \rhtbrk & \rhtbrk & \rhtbrk & \rhtbrk\\
+0 & 1 & 0 & -1 & 0 & 1 & 2 & 3 & 4 & 3 & 2 & 1 & 0\\
+\\
+\\
+& \lefbrk & \lefbrk & \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \rhtbrk &
+\rhtbrk & \lefbrk & \rhtbrk\\
+0 & 1 & 2 & 3 & 2 & 1 & 2 & 1 & 0 & 1 & 0
+\end{array}\]
+A string has a \term{good count} if its running count never goes
+negative and ends with 0.  So the second string above has a good count, but
+the first one does not because its count went negative at the third step.
+\begin{definition}\label{gc-def}
+Let
+\[
+\GC \eqdef \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
+\]
+\end{definition}
+\end{editingnotes}
 
 \endinput
