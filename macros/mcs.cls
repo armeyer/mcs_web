@@ -336,6 +336,21 @@
     \fi
 }
 
+\newcommand{\glossaryname}{Glossary}%
+
+\newenvironment{theglossary}{%
+    \cleardoublepage
+    \thispagestyle{plain}%
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\glossaryname}%
+    \@makeschapterhead{\glossaryname}%
+    \@mkboth{\MakeUppercase\glossaryname}%
+            {\MakeUppercase\glossaryname}%
+    \parindent\z@
+}{%
+    \clearpage
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                         SECTION HEADINGS                         %%
@@ -1071,7 +1086,7 @@
 \newcommand{\mrel}[1]{\mathrel{#1}}
 \newcommand{\mopt}[1]{\ensuremath{\mathop{\mathrm{#1}}}}
 \newcommand{\mbint}[1]{\ensuremath{\mathbin{\mathrm{#1}}}}
-\newcommand{\mrelt}[1]{\mathrel{\mathrm{#1}}}
+\newcommand{\mrelt}[1]{\ensuremath{\mathrel{\mathrm{#1}}}}
 \newcommand{\mtt}[1]{\mathtt{#1}}
 
 %% Math -- Logic
@@ -1106,7 +1121,7 @@
 \newcommand{\QOR}{\mbint{\textsc{or}}}
 \newcommand{\QXOR}{\mbint{\textsc{xor}}}
 \newcommand{\QAND}{\mbint{\textsc{and}}}
-\newcommand{\QIMPLIES}{\mbint{\textsc{implies}}}
+\newcommand{\QIMPLIES}{\mrelt{\textsc{implies}}}
 \newcommand{\QIMP}{\QIMPLIES}
 \newcommand{\QIFF}{\mbint{\textsc{iff}}}
 \newcommand{\QNOT}{\mopt{\textsc{not}}}
@@ -1458,8 +1473,8 @@
         \immediate\write\@chapprobs{\the\verbatim@line}%
     }%
     % \immediate\write\@chapprobs{\noexpand\begin{realproblems}}%
-    \immediate\write\@chapprobs{\noexpand\section*{Problems for
-        Section \thesection}}%
+    % \immediate\write\@chapprobs{\noexpand\section*{Problems for
+    %     Section \thesection}}%
     \verbatim@start
 }{%
     % \immediate\write\@chapprobs{\noexpand\end{realproblems}}%
