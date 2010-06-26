@@ -984,11 +984,28 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\mfigure}[3]{%
-    \bigskip
-    \centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}%
-    \bigskip
+%% Center contents of figures by default.
+
+\renewenvironment{figure}[1][tbp]{%
+    \@float{figure}[#1]%
+    \centering
+}{%
+    \end@float
 }
+
+%% This def gives better spacing.
+
+\newcommand{\mfigure}[3]{%
+    \begin{figure}[h]
+        \resizebox{#1}{#2}{\includegraphics{#3}}
+    \end{figure}
+}
+
+% \newcommand{\mfigure}[3]{%
+%     \bigskip
+%     \centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}%
+%     \bigskip
+% }
 
 %  text highlighting
 
@@ -1173,10 +1190,15 @@
 \newcommand{\codomain}[1]{\mathop{\textup{codomain}}\nolimits\left(#1\right)}
 \newcommand{\graph}[1]{\mathop{\textup{graph}}\nolimits\left(#1\right)}
 
-%\newcommand{\degr}[1]{\text{deg}(#1)}
-\newcommand{\degr}[1]{\mathop{\textup{deg}}\nolimits\left(#1\right)}
-\newcommand{\indegr}[1]{\mathop{\textup{indegree}}\nolimits\left(#1\right)}
-\newcommand{\outdegr}[1]{\mathop{\textup{outdegree}}\nolimits\left(#1\right)}
+%% Graph notation
+
+%% Removed the \left and \right around the parens because they
+%% introduce extra space, and no current uses need the larger
+%% delimiters anyway.
+
+\newcommand{\degr}[1]{\operatorname{deg}\nolimits(#1)}
+\newcommand{\indegr}[1]{\mathop{\textup{indegree}}\nolimits(#1)}
+\newcommand{\outdegr}[1]{\mathop{\textup{outdegree}}\nolimits(#1)}
 
 \newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
 
