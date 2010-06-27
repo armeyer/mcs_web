@@ -110,7 +110,7 @@
     linkcolor=blue, citecolor=blue,
     urlcolor=blue, backref, pagebackref]{hyperref}
 
-\RequirePackage{breakurl}
+% \RequirePackage{breakurl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
