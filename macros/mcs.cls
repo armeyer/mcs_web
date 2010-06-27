@@ -1487,7 +1487,7 @@
     \endproof
 }
 
-\def\inductioncase{\noindent\textbf}
+\def\inductioncase{\par\medskip\noindent\textbf}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
