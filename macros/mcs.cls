@@ -179,6 +179,10 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
+\newcommand{\missinggraphic}[1][Missing graphic]{%
+    \textcolor{red}{\textbf{Redraft graphic: #1}}%
+}
+
 \let\restore@saved@counters\@empty
 
 \def\savesomecounters{%
@@ -1064,7 +1068,7 @@
 \newcommand{\STR}[1]{\texttt{#1}}
 \newcommand{\CMD}[1]{\textsc{\bf#1}}
 
-\newcommand{\edge}[2]{#1\text{---}#2}
+\newcommand{\edge}[2]{#1\text{--}#2}
 \newcommand{\diredge}[2]{#1 \to #2}
 
 %% Text -- Abbreviations
@@ -1182,6 +1186,8 @@
 \newcommand{\composition}{\circ} 
 \newcommand{\power}{\mathcal{P}}
 \newcommand{\restrict}{\upharpoonright}
+
+\newcommand{\embed}[1]{\mathcal{#1}}
 
 \let\by\times
 
@@ -1410,6 +1416,8 @@
 \newtheorem{mathrule}{Rule}
 \newtheorem*{mathrule*}{Rule}
 
+\newtheorem{algorithm}{Algorithm}
+
 %% DEFINITION-LIKE
 
 \theoremstyle{definition}
@@ -1478,6 +1486,8 @@
 }{%
     \endproof
 }
+
+\def\inductioncase{\noindent\textbf}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
