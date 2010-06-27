@@ -26,11 +26,17 @@
 \DeclareOption{ftl}{%
     \AtBeginDocument{%
         \hidesolutions
-        \renewcommand{\baselinestretch}{3}%
         \renewcommand{\@pinput}[2][]{\endgroup}%
-        \normalbaselineskip=\baselinestretch\normalbaselineskip
+        \renewcommand{\baselinestretch}{3}%
+%        \normalbaselineskip=\baselinestretch\normalbaselineskip
         \baselineskip=\baselinestretch\baselineskip
     }%    
+}
+
+\renewcommand{\normalbaselines}{%
+    \renewcommand{\baselinestretch}{1}%
+%    \normalbaselineskip=\baselinestretch\normalbaselineskip
+    \baselineskip=\normalbaselineskip
 }
 
 \DeclareOption{handout}{%
