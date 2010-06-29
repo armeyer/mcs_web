@@ -39,6 +39,17 @@
     \baselineskip=\normalbaselineskip
 }
 
+\newif\if@usecolor@
+\@usecolor@true
+
+\DeclareOption{usecolor}{%
+    \@usecolor@true
+}
+
+\DeclareOption{nocolor}{%
+    \@usecolor@false
+}
+
 \DeclareOption{handout}{%
     \PassOptionsToClass{11pt}{book}
     \def\@class@option@file{handout}%
@@ -1122,8 +1133,14 @@
 
 %% Math -- Logic
 
-\newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
-\newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
+\if@usecolor@
+    \newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
+    \newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
+\else
+    \newcommand{\true}{\ensuremath{\mathbf{T}}}
+    \newcommand{\false}{\ensuremath{\mathbf{F}}}
+\fi
+
 \newcommand{\True}{\ensuremath{\mathbf{True}}}
 \newcommand{\False}{\ensuremath{\mathbf{False}}}
 
@@ -1263,8 +1280,15 @@
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
 
 \newcommand{\brkts}{\texttt{brkts}}
-\newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
-\newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}
+
+\if@usecolor@
+    \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
+    \newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}
+\else
+    \newcommand{\lefbrk}{\text{\textbf{\large [\,}}}
+    \newcommand{\rhtbrk}{\text{\textbf{\large ]\,}}}
+\fi
+
 \def\GC{\text{GoodCount}}
 \def\RM{\text{RecMatch}}
 \def\ES{\text{Erasable}}
