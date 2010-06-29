@@ -185,6 +185,10 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
+\newcommand{\QUESTION}[1]{%
+    \textcolor{red}{[#1]}%
+}
+
 \newcommand{\missinggraphic}[1][Missing graphic]{%
     \textcolor{red}{\textbf{Redraft graphic: #1}}%
 }
@@ -1209,8 +1213,8 @@
 %% delimiters anyway.
 
 \newcommand{\degr}[1]{\operatorname{deg}\nolimits(#1)}
-\newcommand{\indegr}[1]{\mathop{\textup{indegree}}\nolimits(#1)}
-\newcommand{\outdegr}[1]{\mathop{\textup{outdegree}}\nolimits(#1)}
+\newcommand{\indegr}[1]{\operatorname{indegree}\nolimits(#1)}
+\newcommand{\outdegr}[1]{\operatorname{outdegree}\nolimits(#1)}
 
 \newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
 
