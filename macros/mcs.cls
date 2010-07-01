@@ -108,10 +108,18 @@
 \RequirePackage{keyval}
 \RequirePackage[usenames,dvipsnames]{color}
 \RequirePackage{subfig}
-\RequirePackage{palatino}
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
 \RequirePackage{index}
+
+\RequirePackage{times}
+
+\IfFileExists{mtpro2.sty}{%
+    \let\Bbbk\relax
+    \RequirePackage{mtpro2}%
+}{%
+    \ClassWarning{mcs}{Can't find MathTime fonts -- using CMR for math}%
+}
 
 \RequirePackage{xr-hyper}
 
