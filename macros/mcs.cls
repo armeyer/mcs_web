@@ -1104,8 +1104,10 @@
 % \newcommand{\ie}{\emph{i.e.},\xspace}  %avoid
 % \newcommand{\eg}{\emph{e.g.},\xspace}  %avoid
 
-\newcommand{\ie}{that is,\xspace}
-\newcommand{\eg}{for example,\xspace}
+% Temporarily highlight these for editing purposes.
+
+\newcommand{\ie}{\textcolor{red}{that is,}\xspace}
+\newcommand{\eg}{\textcolor{red}{for example,}\xspace}
 
 \newcommand{\etc}{etc.\@\xspace}
 
