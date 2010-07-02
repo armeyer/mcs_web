@@ -72,7 +72,6 @@
     \tracingoutput=1
     \showboxbreadth=2147483647
     \showboxdepth=\showboxbreadth
-    \let\@fix@nominalspinewidth\@empty
 }
 
 \DeclareOption{exolinks}{%
@@ -1102,8 +1101,12 @@
 
 %% Text -- Abbreviations
 
-\newcommand{\ie}{\emph{i.e.},\xspace}  %avoid
-\newcommand{\eg}{\emph{e.g.},\xspace}  %avoid
+% \newcommand{\ie}{\emph{i.e.},\xspace}  %avoid
+% \newcommand{\eg}{\emph{e.g.},\xspace}  %avoid
+
+\newcommand{\ie}{that is,\xspace}
+\newcommand{\eg}{for example,\xspace}
+
 \newcommand{\etc}{etc.\@\xspace}
 
 \newcommand{\IQ}{\text{IQ\@\xspace}}
