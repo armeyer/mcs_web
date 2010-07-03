@@ -76,6 +76,22 @@
     \showboxdepth=\showboxbreadth
 }
 
+\DeclareOption{figuredraft}{%
+    \AtBeginDocument{%
+        \let\real@includegraphics\includegraphics
+
+        \renewcommand{\includegraphics}[2][]{%
+            \real@includegraphics[#1]{#2}%
+            \begingroup
+                \par
+                \centering
+                \edef\@tempa{#2}%
+                \fbox{\texttt{filename: \expandafter\strip@prefix\meaning\@tempa}}%
+            \endgroup
+        }%
+    }%
+}
+
 \DeclareOption{exolinks}{%
     \AtBeginDocument{%
         \ClassInfo{mcs}{External document links enabled}%
