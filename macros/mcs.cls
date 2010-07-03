@@ -228,6 +228,10 @@
     \textcolor{red}{\textbf{Redraft graphic: #1}}%
 }
 
+\newcommand{\redrawn}[1][New graphic]{%
+    \centerline{\textcolor{red}{\textbf{#1}}}%
+}
+
 \let\restore@saved@counters\@empty
 
 \def\savesomecounters{%
