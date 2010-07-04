@@ -236,10 +236,6 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
-\newcommand{\QUESTION}[1]{%
-    \textcolor{red}{[#1]}%
-}
-
 \newcommand{\missinggraphic}[1][Missing graphic]{%
     \textcolor{red}{\textbf{#1}}%
 }
@@ -248,7 +244,7 @@
     \centerline{\textcolor{green}{\textbf{#1}}}%
 }
 
-\newcommand{\ednote}[1]{\textcolor{red}{#1}}
+\newcommand{\dmj}[1]{\textcolor{red}{\textup{[#1---dmj]}}}
 
 \let\restore@saved@counters\@empty
 
