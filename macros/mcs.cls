@@ -529,7 +529,7 @@
     \ifnum\c@secnumdepth>\m@ne
         \refstepcounter{chapter}%
         \typeout{^^J\@chapapp\space\arabic{chapter}:}%
-        \addcontentsline{toc}{chapter}{\protect\cnumberline{\thechapter}#1}%
+        \addcontentsline{toc}{chapter}{\protect\chapternumberline{\thechapter}#1}%
     \else
         \addcontentsline{toc}{chapter}{#1}%
     \fi
@@ -580,7 +580,7 @@
 \def\@part[#1]#2{%
     \ifnum\c@secnumdepth>-2
         \refstepcounter{part}%
-        \addcontentsline{toc}{part}{\protect\pnumberline{\thepart}#1}%
+        \addcontentsline{toc}{part}{\protect\partnumberline{\thepart}#1}%
     \else
         \addcontentsline{toc}{part}{#1}%
     \fi
@@ -663,7 +663,7 @@
 \def\l@chapter{\@chapterdottedtocline{\m@ne}{0\p@}{2em}}
 \def\l@section{\@dottedtocline{1}{2em}{2.5em}}
 
-\def\pnumberline#1{\hb@xt@\@tempdima{\bfseries\itshape#1\hfil}}
+\def\partnumberline#1{\hb@xt@\@tempdima{\bfseries\itshape#1\hfil}}
 
 % #1 = level
 % #2 = indent
@@ -697,7 +697,7 @@
     \fi
 }
 
-\def\cnumberline#1{\hb@xt@\@tempdima{\bfseries#1\hfil}}
+\def\chapternumberline#1{\hb@xt@\@tempdima{\bfseries#1\hfil}}
 
 \def\@chapterdottedtocline#1#2#3#4#5{%
     \ifnum #1>\c@tocdepth \else
