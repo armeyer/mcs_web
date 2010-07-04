@@ -857,14 +857,16 @@
 }
 
 \newcommand{\idx@term}[1]{%
-    \emph{\idx{#1}}%
+    \emph{\index{#1|textbf}#1}%
 }
 
 \newcommand{\SET}[1]{\textsc{#1}}
 \newcommand{\STR}[1]{\texttt{#1}}
 \newcommand{\CMD}[1]{\textsc{\bf#1}}
 
-\newcommand{\edge}[2]{#1\text{--}#2}
+% Reverted from en-dash to em-dash under duress.
+
+\newcommand{\edge}[2]{#1\text{---}#2}
 \newcommand{\diredge}[2]{#1 \to #2}
 
 %% Text -- Abbreviations
@@ -980,9 +982,9 @@
 
 %% Math -- Set theory
 
-\newcommand{\set}[1]{\left\{#1\right\}}
-\newcommand{\card}[1]{\left|#1\right|}
-\newcommand{\lnth}[1]{\left|#1\right|}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\card}[1]{|#1|}
+\newcommand{\lnth}[1]{|#1|}
 \newcommand{\ident}[1]{\text{Id}_{#1}}
 
 \newcommand{\union}{\cup}
