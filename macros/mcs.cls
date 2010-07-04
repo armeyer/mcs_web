@@ -241,11 +241,11 @@
 }
 
 \newcommand{\missinggraphic}[1][Missing graphic]{%
-    \textcolor{red}{\textbf{Redraft graphic: #1}}%
+    \textcolor{red}{\textbf{#1}}%
 }
 
-\newcommand{\redrawn}[1][New graphic]{%
-    \centerline{\textcolor{red}{\textbf{#1}}}%
+\newcommand{\redrawn}[1][Redrawn]{%
+    \centerline{\textcolor{green}{\textbf{#1}}}%
 }
 
 \let\restore@saved@counters\@empty
