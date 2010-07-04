@@ -248,6 +248,8 @@
     \centerline{\textcolor{green}{\textbf{#1}}}%
 }
 
+\newcommand{\ednote}[1]{\textcolor{red}{#1}}
+
 \let\restore@saved@counters\@empty
 
 \def\savesomecounters{%
@@ -866,7 +868,10 @@
 
 % Reverted from en-dash to em-dash under duress.
 
-\newcommand{\edge}[2]{#1\text{---}#2}
+% \newcommand{\edge}[2]{#1\text{---}#2}
+
+\newcommand{\edge}[2]{\{#1, #2\}}
+
 \newcommand{\diredge}[2]{#1 \to #2}
 
 %% Text -- Abbreviations
@@ -1015,6 +1020,8 @@
 \newcommand{\degr}[1]{\operatorname{deg}\nolimits(#1)}
 \newcommand{\indegr}[1]{\operatorname{indegree}\nolimits(#1)}
 \newcommand{\outdegr}[1]{\operatorname{outdegree}\nolimits(#1)}
+
+\newcommand{\dist}{\operatorname{dist}}
 
 \newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
 
@@ -1167,6 +1174,25 @@
 \newcommand{\pdf}{\textsc{PDF}}
 \newcommand{\cdf}{\textsc{CDF}}
 
+%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  %%                                                                  %%
+%%  %%                              LISTS                               %%
+%%  %%                                                                  %%
+%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  
+%%  %% Change hierarchy of enumerate labels: use lowercase roman numerals
+%%  %% for top-level.  We should not use more than two levels.
+%%  
+%%  \renewcommand\theenumi{\@roman\c@enumi}
+%%  \renewcommand\theenumii{\@alph\c@enumii}
+%%  
+%%  \renewcommand\labelenumi{\theenumi\textup)}
+%%  \renewcommand\labelenumii{\textup(\theenumii\textup)}
+%%  
+%%  
+%%  % \renewcommand\theenumiii{\@Alph\c@enumiii}
+%%  % \renewcommand\theenumiv{\@arabic\c@enumiv}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                          THEOREMS, ETC.                          %%
@@ -1276,6 +1302,13 @@
 \def\qedsymbol{\ensuremath{\blacksquare}}
 
 \newif\if@just@ended@proof@
+
+\newcommand{\noqed}{%
+    \begingroup
+        \let\qed\relax
+        \qedhere
+    \endgroup
+}
 
 \renewenvironment{proof}[1][\proofname]{%
     \par
