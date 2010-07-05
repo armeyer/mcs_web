@@ -76,20 +76,18 @@
     \showboxdepth=\showboxbreadth
 }
 
-\DeclareOption{figuredraft}{%
-    \AtBeginDocument{%
-        \let\real@includegraphics\includegraphics
+\newif\if@figuredraft@
+\@figuredraft@false
 
-        \renewcommand{\includegraphics}[2][]{%
-            \real@includegraphics[#1]{#2}%
-            \begingroup
-                \par
-                \centering
-                \edef\@tempa{#2}%
-                \fbox{\texttt{filename: \expandafter\strip@prefix\meaning\@tempa}}%
-            \endgroup
-        }%
-    }%
+\DeclareOption{figuredraft}{%
+    \@figuredraft@true
+}
+
+\newif\if@show@figure@fname@
+\@show@figure@fname@false
+
+\DeclareOption{figurefnames}{%
+    \@show@figure@fname@true
 }
 
 \DeclareOption{exolinks}{%
@@ -236,14 +234,6 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
-\newcommand{\missinggraphic}[1][Missing graphic]{%
-    \textcolor{red}{\textbf{#1}}%
-}
-
-\newcommand{\redrawn}[1][Redrawn]{%
-    \centerline{\textcolor{green}{\textbf{#1}}}%
-}
-
 \newcommand{\dmj}[1]{\textcolor{red}{\textup{[#1---dmj]}}}
 
 \let\restore@saved@counters\@empty
@@ -275,6 +265,8 @@
 }
 
 \newwrite\@chapprobs
+
+%% Add a .probs file for each included file.
 
 \def\@include#1 {%
     \clearpage
@@ -787,15 +779,6 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Center contents of figures by default.
-
-\renewenvironment{figure}[1][tbp]{%
-    \@float{figure}[#1]%
-    \centering
-}{%
-    \end@float
-}
-
 %% This def gives better spacing.  We're going to get rid of it
 %% anyway.
 
@@ -1188,6 +1171,137 @@
 %%  
 %%  % \renewcommand\theenumiii{\@Alph\c@enumiii}
 %%  % \renewcommand\theenumiv{\@arabic\c@enumiv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                             FIGURES                              %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\let\@figure@instruction\@empty
+
+\newcommand{\missinggraphic}[1][Missing graphic]{%
+    \def\@figure@instruction{#1}%
+}
+
+\let\@redrawn@message\@empty
+
+\newcommand{\redrawn}[1][Redrawn]{%
+    \def\@redrawn@message{#1}%
+}
+
+%% Center contents of figures by default.
+
+\renewenvironment{figure}[1][tbp]{%
+    \@float{figure}[#1]%
+    \let\@redrawn@message\@empty
+    \let\@figure@instruction\@empty
+    \centering
+}{%
+    \end@float
+}
+
+% \let\real@includegraphics\includegraphics
+% 
+% \renewcommand{\includegraphics}[2][]{%
+%     \real@includegraphics[#1]{#2}%
+%     \begingroup
+%         \par
+%         \centering
+%         \edef\@tempa{#2}%
+%         \fbox{\texttt{filename: \expandafter\strip@prefix\meaning\@tempa}}%
+%     \endgroup
+% }
+
+\newbox\@figuresextra
+
+\def\Gin@setfile#1#2#3{%
+    \ifx\\#2\\\Gread@false\fi
+    \ifGin@bbox\else
+        \ifGread@
+            \csname Gread@%
+                \expandafter\ifx\csname Gread@#1\endcsname\relax
+                    eps%
+                \else
+                    #1%
+                \fi
+            \endcsname{\Gin@base#2}%
+        \else
+            \Gin@nosize{#3}%
+        \fi
+    \fi
+    \Gin@viewport@code
+    \Gin@nat@height\Gin@ury bp%
+    \advance\Gin@nat@height-\Gin@lly bp%
+    \Gin@nat@width\Gin@urx bp%
+    \advance\Gin@nat@width-\Gin@llx bp%
+    \Gin@req@sizes
+    \expandafter\ifx\csname Ginclude@#1\endcsname\relax
+        \Gin@drafttrue
+        \expandafter\ifx\csname Gread@#1\endcsname\relax
+            \@latex@error{Can not include graphics of type: #1}\@ehc
+            \global\expandafter\let\csname Gread@#1\endcsname\@empty
+        \fi
+    \fi
+    \leavevmode
+    \ifGin@draft
+        \hb@xt@\Gin@req@width{%
+            \vrule\hss
+            \vbox to \Gin@req@height{%
+                \hrule \@width \Gin@req@width
+                \vss
+                \edef\@tempa{#3}%
+                \rlap{ \ttfamily\expandafter\strip@prefix\meaning\@tempa}%
+                \vss
+                \hrule
+            }%
+            \hss
+            \vrule
+        }%
+    \else
+        \@addtofilelist{#3}%
+        \ProvidesFile{#3}[Graphic file (type #1)]%
+        \setbox\z@\hbox{\csname Ginclude@#1\endcsname{#3}}%
+        \dp\z@\z@
+        \ht\z@\Gin@req@height
+        \wd\z@\Gin@req@width
+        \if@figuredraft@
+            \@tempdima\textwidth
+            \advance\@tempdima-\wd\z@
+            \divide\@tempdima by 2
+            \setbox\@figuresextra\hbox{%
+                \vbox to \ht\z@{%
+                    \hsize=2in
+                    \raggedleft
+                    \parskip10pt
+                    \parindent\z@
+                    \if@show@figure@fname@
+                        \edef\@tempa{#3}%
+                        {\ttfamily\expandafter\strip@prefix\meaning\@tempa}\par
+                    \fi
+                    \ifx\@redrawn@message\@empty\else
+                        \begingroup
+                            \color{green}\@redrawn@message\par
+                            \global\let\@redrawn@message\@empty
+                        \endgroup
+                    \fi
+                    \ifx\@figure@instruction\@empty\else
+                        \begingroup
+                            \color{red}\@figure@instruction\par
+                            \global\let\@figure@instruction\@empty
+                        \endgroup
+                    \fi
+                    \vss
+                }%
+                \hskip\@tempdima
+            }%
+            \ifvoid\@figuresextra\else
+                \setbox\z@\hbox{\llap{\box\@figuresextra}\box\z@}%
+            \fi
+        \fi
+        \box\z@
+    \fi
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
