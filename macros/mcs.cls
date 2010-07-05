@@ -909,6 +909,13 @@
 \newcommand{\subst}[3]{#1[#2 := #3]}
 \newcommand{\patch}[3]{#1[#2 \leftarrow #3]}
 
+% A special-case of the use of angle brackets surrounding English
+% text.  Cf. relations.tex.
+
+\newcommand{\meta}[1]{%
+    \ensuremath{\langle\text{#1}\rangle}%
+}
+
 \newcommand{\suchthat}{\mid}
 \newcommand{\eqdef}{\mathbin{::=}}
 \renewcommand{\bar}[1]{\overline{#1}}
@@ -1203,7 +1210,7 @@
 
 \let\@figure@instruction\@empty
 
-\newcommand{\missinggraphic}[1][Missing graphic]{%
+\newcommand{\gnote}[1]{%
     \def\@figure@instruction{#1}%
 }
 
