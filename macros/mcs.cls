@@ -230,11 +230,32 @@
     \@esphack
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       EDITING ANNOTATIONS                        %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newcommand{\illegible}{%
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
-\newcommand{\dmj}[1]{\textcolor{red}{\textup{[#1---dmj]}}}
+\newcommand{\dmj}[1]{\marginpar{\textcolor{red}{\textup{[#1---dmj]}}}}
+
+\newcommand{\arm}[1]{\marginpar{\textcolor{red}{\textup{[#1---arm]}}}}
+
+\reversemarginpar
+
+\def\@marginparreset{%
+    \reset@font
+    \normalsize
+    \raggedright
+    \@setminipage
+}
+
+\marginparsep15pt
+\marginparwidth 2in
+\advance\marginparwidth by -2\marginparsep
 
 \let\restore@saved@counters\@empty
 
