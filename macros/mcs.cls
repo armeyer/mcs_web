@@ -838,6 +838,7 @@
 
 \newcommand{\textboxtitle}[1]{%
     \begin{center}
+        \mathversion{bold}%
         \textbf{\Large #1}%
     \end{center}%
 }
@@ -1054,6 +1055,7 @@
 \newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
 %\newcommand{\divides}{\mathbin{|}}
 \newcommand{\divides}{\mid}
+\newcommand{\ndivides}{\nmid}
 
 \newcommand{\rem}[2]{\operatorname{rem}(#1,#2)}
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
