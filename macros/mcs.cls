@@ -801,6 +801,17 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newenvironment{series}{%
+    \vcenter\bgroup\centering
+        \tabskip0pt
+        \halign\bgroup
+            \hfil $##$&${}##{}$&&\hfil $##$\hfil &${}##{}$\cr
+}{%
+        \crcr
+        \egroup
+    \egroup
+}
+
 %% This def gives better spacing.  We're going to get rid of it
 %% anyway.
 
