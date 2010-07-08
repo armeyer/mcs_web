@@ -210,6 +210,7 @@
     \catcode`\_=\active
     \catcode`\#=\active
     \catcode`\%=\active
+    \gdef_{\_}
     \gdef%{\%}
     \gdef#{\#}
 \endgroup
