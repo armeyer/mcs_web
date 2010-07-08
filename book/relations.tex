@@ -35,9 +35,9 @@ relation on the set of MIT courses where $c_1 R c_2$ if the exams for
 $c_1$ and~$c_2$ cannot be given at the same time.  In
 Section~\ref{sec:comm_nets}, we talked about a relation on the set of
 switches in a network where $s_1 R s_2$ if $s_1$ and~$s_2$ are
-directly connected by a wire.  We did not use the formal definition of
-a relation in any of these cases, but they are all examples of
-relations.
+directly connected by a wire that can send a packet from $s_1$
+to~$s_2$.  We did not use the formal definition of a relation in any
+of these cases, but they are all examples of relations.
 
 As another example, we can define an ``in-charge-of'' relation~$T$
 from the set of MIT faculty~$F$ to the set of subjects in the 2010 MIT
@@ -81,7 +81,7 @@ pairs like those shown in Figure~\ref{fig:7FA}.
 This is a surprisingly complicated relation: Meyer is in charge of
 subjects with three numbers.  Leighton is also in charge of subjects
 with two of these three numbers---because the same subject,
-Mathematics for Computer Science, has two numbers: 6.042 and 18.062,
+Mathematics for Computer Science, has two numbers (6.042 and 18.062)
 and Meyer and Leighton are jointly in-charge-of the subject.  Freeman
 is in-charge-of even more subjects numbers (around 20), since as
 Department Education Officer, he is in charge of whole blocks of
@@ -104,8 +104,8 @@ and a ``right'' node for each element of~$B$.  We then create an edge
 between a left node~$u$ and a right node~$v$ whenever $a R b$.
 Similarly, every bipartite graph (and every partition of the nodes
 into a ``left'' and ``right'' set for which no edge connects a pair of
-left or right nodes) determines a relation between the nodes on the
-left and the nodes on the right.
+left nodes or a pair of right nodes) determines a relation between the
+nodes on the left and the nodes on the right.
 
 For example, we have shown part of the bipartite graph for the
 in-charge-of relation from Figure~\ref{fig:7FA} in
@@ -126,12 +126,8 @@ $\meta{instructor-name}$ is in charge of $\meta{subject-number}$.
 
 \end{figure}
 
-\dmj{Do you need to be explicit about assuming $A$ and $B$ are
-  finite(?) and that you're imposing an arbitrary order on them?
-  Especially since you use a relation on the reals later.}
-
-A relation $R: A \to B$ can also be represented as a matrix $A =
-\set{a_{ij}}$ where
+A relation $R: A \to B$ between finite sets can also be represented as
+a matrix $A = \set{a_{ij}}$ where
 \begin{equation*}
     a_{ij} = \begin{cases}
                 1 & \text{if the $i$th element of~$A$ is related to
@@ -217,33 +213,45 @@ sides of these pairs; these turn out to be just Eng and Freeman.
 These left-hand sides are exactly the inverse image
 of~$\set{\text{6.UAT}}$ under~$T$.
 
-Now let $D$ be the set of introductory subjects.  These are the
-subjects that have an~0 immediately following the decimal point.  Now
-we can likewise find all the instructors who were in-charge-of
-introductory subjects by taking all pairs of the form
-$(\meta{instructor-name}, \set{1.0\dots, 2.0\dots, 3.0\dots, \dots})$
-and list the left-hand sides of these pairs.  These left-hand sides
-are exactly the inverse image of~$D$ under~$T$.  From the part of~$T$
-show above, we can see that
+\subsection{Combining Relations}
+
+There are at least two natural ways to combine relations to form new
+relations.  For example, given relations $R : B \to C$ and $S : A \to
+B$, the \term{composition} of $R$ with~$S$ is the relation $(R \comp
+S) : A \to C$ defined by the rule
+\dmj{Should $::=$ be ``iff''}
 \begin{equation*}
-    \set{ \text{Meyer}, \text{Leighton}, \text{Freeman}, \text{Guttag} }
-    \subseteq \inv{T}(D).
+    a (R \comp S) c ::= \exists b \in B. \; (b R c) \QAND (a S b)
 \end{equation*}
-That is, Meyer, Leighton, Freeman, and Guttag are among the
-instructors in charge of introductory subjects.  Finally, the inverse
-image under~$T$ of the set~$N$ of all subject numbers is the set of
-all instructors who are in charge of a subject.
+where $a \in A$ and $c \in C$.
 
-It gets interesting when we write composite expressions mixing images,
-inverse images, and set operations.  For example, $T(\inv{T}(D))$ is
-the set of subjects that have an instructor in charge who is also in
-charge of an introductory subject.  So $T(\inv{T}(D)) - D$ is the set
-of advanced subjects with someone in-charge who is also in-charge-of
-an introductory subject.  Similarly, $\inv{T}(D) \intersect
-\inv{T}(N - D)$ is the set of faculty in charge of both an
-introductory \emph{and} an advanced subject.
+As a special case, the composition of two functions $f: B \to C$ and
+$g: A \to B$ is the function $f \comp g : A \to C$ defined by
+\begin{equation*}
+    (f \comp g)(a) = f(g(a))
+\end{equation*}
+for all $a \in A$.  For example, if $A = B = C = \reals$, $g(x) = x +
+1$ and $f(x) = x^2$, then
+\begin{align*}
+    (f \comp g)(x) &= (x + 1)^2 \\
+                   &= x^2 + 2x + 1.
+\end{align*}
 
-\subsection{Surjective and Injective Relations}
+One can also define the \term{product} of two relations $R_1 : A_1 \to
+B_1$ and $R_2 : A_2 \to B_2$ to be the relation $S = R_1 \cross R_2$
+where
+\begin{equation*}
+    S : A_1 \cross A_2 \to B_1 \cross B_2
+\end{equation*}
+and
+\begin{equation*}
+    (a_1, a_2) S (b_1, b_2) \qiff a_1 R_1 b_1 \text{ and } a_2 R_2 b_2.
+\end{equation*}
+
+\section{Relations and Cardinality}
+
+\subsection{Surjective and Injective
+  Relations}\label{sec:surj-inj-rels}
 
 There are some properties of relations that will be useful when we
 take up the topic of counting in Part~\ref{part:counting} because they
@@ -253,13 +261,15 @@ is
 \begin{itemize}
 
 \item
-\term{surjective} if every element of~$B$ is mapped \emph{at least
-  once}; more concisely, $R$ is surjective iff $R(A) = B$ (\ie if the
-    range of~$R$ is the codomain of~$R$),
+\term{surjective} if every element of~$B$ is mapped to \emph{at least
+  once}.\dmj{This still sounds clumsy.  How about ``every element of
+  $B$ is assigned to at least one element of $A$'' for parallelism
+  with the definition of total?}  More concisely, $R$ is surjective
+iff $R(A) = B$ (\ie if the range of~$R$ is the codomain of~$R$),
 
 \item
 \term{total} when every element of~$A$ is assigned to some element
-of~$B$; more concisely, $R$ is total iff $A = \inv{R}(B)$,
+of~$B$.  More concisely, $R$ is total iff $A = \inv{R}(B)$,
 
 \item 
 \term{injective} if every element of~$B$ is mapped \emph{at most
@@ -300,19 +310,19 @@ right side of~$G$ correspond to elements of~$B$.  For example:
 
 \item
 ``$R$ is bijective'' means that every node on both sides is incident
-  to \emph{precisely} one edge (\ie that there is a perfect matching
+  to \emph{precisely} one edge (\ie there is a perfect matching
   between $A$ and~$B$).
 
 \end{itemize}
 
 For example, consider the relations $R_1$ and~$R_2$ shown in
 Figure~\ref{fig:7FD}. $R_1$ is a total surjective function (every node
-int he left column is incident to exactly one edge, and every node in
+in the left column is incident to exactly one edge, and every node in
 the right column is incident to at least one edge), but not injective
 (node~3 is incident to 2 edges).  $R_2$ is a total injective function
-(every node in the left is incident to exactly one edge, and every
-node in the right column is incident to at most one edge), but not
-surjective (node~4 is not incident to any edges).
+(every node in the left column is incident to exactly one edge, and
+every node in the right column is incident to at most one edge), but
+not surjective (node~4 is not incident to any edges).
 
 Notice that we need to know what the domain is to determine whether a
 relation is total, and we need to know the codomain to determine
@@ -335,51 +345,74 @@ nor surjective it is domain and codomain are both~$\reals$.
 
 \end{figure}
 
-\subsection{Combining Relations}
+\subsection{Cardinality}
 
-There are at least two natural ways to combine relations to form new
-relations.  For example, given relations $R : B \to C$ and $S : A \to
-B$, the \term{composition} of $R$ with~$S$ is the relation $(R \comp
-S) : A \to C$ defined by the rule
-\dmj{Should $::=$ be ``iff''}
-\begin{equation*}
-    a (R \comp S) c ::= \exists b \in B. \; (b R c) \QAND (a S b)
-\end{equation*}
-where $a \in A$ and $c \in C$.
+The relational properties in Section~\ref{sec:surj-inj-rels} are
+useful in figuring out the relative sizes of domains and codomains.
 
-As a special case, the composition of two functions $f: B \to C$ and
-$g: A \to B$ is the function $f \comp g : A \to C$ defined by
-\begin{equation*}
-    (f \comp g)(a) = f(g(a))
-\end{equation*}
-for all $a \in A$.  For example, if $A = B = C = \reals$, $g(x) = x +
-1$ and $f(x) = x^2$, then
-\begin{align*}
-    (f \comp g)(x) &= (x + 1)^2 \\
-                   &= x^2 + 2x + 1.
-\end{align*}
+If $A$ is a finite set, we use~$\card{A}$ to denote the number of
+elements in~$A$.  This is called the \term{cardinality} of~$A$.  In
+general, a finite set may have no elements (the empty set), or one
+element, or two elements, \dots, or any non-negative integer number of
+elements, so for any finite set, $\card{A} \in \naturals$.
 
-One can also define the \term{product} of two relations $R_1 : A_1 \to
-B_1$ and $R_2 : A_2 \to B_2$ to be the relation $S = R_1 \cross R_2$
-where
+Now suppose $R: A \to B$ is a function.  Then every edge in the
+bipartite graph~$G$ for~$R$ is incident to exactly on element of~$A$,
+so the number of edges is at most the number of elements of~$A$.  That
+is, if $R$ is a function, then
 \begin{equation*}
-    S : A_1 \cross A_2 \to B_1 \cross B_2
+    \card{E(G)} \le \card{A}.
 \end{equation*}
-and
+Similarly, if $R$ is surjective, then every element of~$B$ is incident
+to an edge, so there must be at least as many edges in the graph as
+the size of~$B$.  That is
 \begin{equation*}
-    (a_1, a_2) S (b_1, b_2) \qiff a_1 R_1 b_1 \text{ and } a_2 R_2 b_2.
+    \card{E(G)} \ge \card{B}.
 \end{equation*}
+Combining these inequalities implies that $R : A \to B$ is a
+surjective function, then $\card{A} \ge \card{B}$.  This fact and two
+similar rules relating domain and codomain size to relational
+properties are captured in the following theorem.
+
+\begin{theorem}[Mapping Rules]\label{thm:relational_rules}
+Let $A$ and~$B$ be finite sets.
+\begin{enumerate}
+
+\item\label{mr:1}
+If there is a surjection from~$A$ to~$B$, then $\card{A} \ge
+\card{B}$.
+
+\item\label{mr:2}
+If there is an injection from $A$ to~$B$, then $\card{A} \le
+\card{B}.$
+
+\item\label{mr:3}
+If there is a bijection between $A$ and~$B$, then $\card{A} =
+\card{B}$.
+
+\end{enumerate}
+\end{theorem}
+
+Mapping rule~\ref{mr:2} can be explained by the same kind of reasoning
+we used for rule~\ref{mr:1}.  Rule~\ref{mr:3} is an immediate
+consequence of the first two mapping rules.
+
+We will see many examples where Theorem~\ref{thm:relational_rules} is
+used to determine the cardinality of a finite set.  Later, in
+Chapter~\ref{cardinality_chap}, we will consider the case when the
+sets are infinite and we'll use surjective and injective relations to
+prove that some infinite sets are ``bigger'' than other infinite sets.
 
 \section{Relations on One Set}
 
 For the rest of this chapter, we are going to focus on relationships
 between elements of a single set; that is, relations from a set $A$ to
-a set~$B$ where $A = B$.  Thus, a relation on a set$A$ is a subset $R
+a set~$B$ where $A = B$.  Thus, a relation on a set~$A$ is a subset $R
 \subseteq A \cross A$.  Here are some examples:
 \begin{itemize}
 
 \item
-Let $A$ be a set of people and the relation$R$ describe who likes
+Let $A$ be a set of people and the relation~$R$ describe who likes
 whom: that is, $(x, y) \in R$ if and only if $x$ likes~$y$.
 
 \item
@@ -447,7 +480,7 @@ divisibility relationship on the set $\set{1, 2, \dots, 12}$ in
 Figure~\ref{fig:7FF}.  In this graph, every node has a loop (since
 every positive number divides itself) and the composite numbers are
 the nodes with indegree more than~1 (not counting the
-loop).\dmj{Easier to just say ``greater than~2''?}
+loop).
 
 \begin{figure}
 
@@ -494,7 +527,10 @@ means for the ``likes'' relation.
 
 \item[Reflexivity]
 
-$R$ is \term{reflexive} if $\forall x \in A. \; x R X$.
+$R$ is \term{reflexive} if
+\begin{equation*}
+\forall x \in A. \; x R X.
+\end{equation*}
 
 ``Everyone likes themselves.''
 
@@ -502,7 +538,10 @@ Every node in~$G$ has a loop.
 
 \item[Irreflexivity]
 
-$R$ is \term{irreflexive} if $\neg \exists x \in A. \; x R x$.
+$R$ is \term{irreflexive} if
+\begin{equation*}
+    \neg \exists x \in A. \; x R x.
+\end{equation*}
 
 ``No one likes themselves.''
 
@@ -510,7 +549,10 @@ There are no loops in~$G$.
 
 \item[Symmetry]
 
-$R$ is \term{symmetric} if $\forall x, y \in A. \; x R y \QIMP y R x$.
+$R$ is \term{symmetric} if
+\begin{equation*}
+    \forall x, y \in A. \; x R y \QIMP y R x.
+\end{equation*}
 
 ``If $x$ likes~$y$, then $y$ likes~$x$.''
 
@@ -519,8 +561,10 @@ $y$ to~$x$ in~$G$ as well.
 
 \item[Antisymmetry]
 
-$R$ is \term{antisymmetric} if $\forall x, y \in A\; (x R y \QAND y R
-  x) \QIMPLIES x = y$.
+$R$ is \term{antisymmetric} if
+\begin{equation*}
+    \forall x, y \in A\; (x R y \QAND y R x) \QIMPLIES x = y.
+\end{equation*}
 
 ``No pair of distinct people like each other.''
 
@@ -528,8 +572,10 @@ There is at most one directed edge between any pair of distinct nodes.
 
 \item[Asymmetry]
 
-$R$ is \emph{asymmetric} if $\neg \exists x, y \in A. \; x R y \QAND
-  y R x$.
+$R$ is \emph{asymmetric} if
+\begin{equation*}
+    \neg \exists x, y \in A. \; x R y \QAND y R x.
+\end{equation*}
 
 ``No one likes themselves and no pair of people like each other.''
 
@@ -538,8 +584,10 @@ pair of nodes.
 
 \item[Transitivity]
 
-$R$ is \term{transitive} if $\forall x, y, z \in A. \; (x R y \QAND y
-  R z) \QIMPLIES x R z$.
+$R$ is \term{transitive} if
+\begin{equation*}
+    \forall x, y, z \in A. \; (x R y \QAND y R z) \QIMPLIES x R z.
+\end{equation*}
 
 ``If $x$ likes~$y$ and $y$ likes~$z$, then $x$ likes~$z$ too.''
 
@@ -623,13 +671,13 @@ is, $[7] = [12] = [17] = \cdots$.
 
 \begin{definition}\label{def:partition}
 
-A \term{partition} of a set~$A$ is a collection of disjoint, nonempty
-subsets $A_1$, $A_2$, \dots, $A_n$\dmj{``$A_n$'' implies the partition
-  is finite?} whose union is all of~$A$.  The subsets are usually
-called the \term{blocks} of the partition.\footnote{We think they
-  should be called the \emph{parts} of the partition. Don't you think
-  that makes a lot more sense?}  For example, one possible partition
-of $A = \set{a, b, c, d, e}$ is
+A \term{partition} of a finite set~$A$ is a collection of disjoint,
+nonempty subsets $A_1$, $A_2$, \dots, $A_n$\dmj{``$A_n$'' implies the
+  partition is finite?} whose union is all of~$A$.  The subsets are
+usually called the \term{blocks} of the partition.\footnote{We think
+  they should be called the \emph{parts} of the partition. Don't you
+  think that makes a lot more sense?}  For example, one possible
+partition of $A = \set{a, b, c, d, e}$ is
 \begin{equation*}
     A_1 = \set{a, c}
     \qquad
@@ -694,7 +742,7 @@ antisymmetric.
 
 Examples of weak partial orders include ``$\le$'' on~$\reals$,
 \ ``$\subseteq$'' on the set of subsets of (say)~$\integers$, and the
-``divides'' relation on~$\integers$.  Examples of strict partial
+``divides'' relation on~$\posints$.  Examples of strict partial
 orders include~``$<$'' on~$\reals$, and ``$\subset$'' on the set of
 subsets of~$\integers$.\footnote{If you are not feeling comfortable
   with all the definitions that we've been throwing at you, it's
@@ -719,8 +767,7 @@ no relation between them.  For example, in the ``divides'' partial
 order on~$\set{1, 2, \dots, 12}$, there is no relation between 3 and~5
 (since neither divides the other).
 
-In general, we say that two elements o $a$ and $b$ in a \dmj{You don't
-  define ``poset'' until the next section.}poset are
+In general, we say that two elements $a$ and $b$ are
 \term{incomparable} if neither $a \preceq b$ nor $b \preceq a$.
 Otherwise, if $a \preceq b$ or $b \preceq a$, then we say that $a$
 and~$b$ are \term{comparable}.
@@ -832,11 +879,11 @@ in the graph.
 Given a digraph $G = (V, E)$, the \term{transitive closure} of~$G$ is
 the digraph $G^+ = (V, E^+)$ where
 \begin{equation*}
-    E^+ = \set{\, \diredge{u}{v} | \text{there is a directed path of
+    E^+ = \set{\, \diredge{u}{v} \mid \text{there is a directed path of
         positive length from $u$ to $v$ in $G$} \,}.
 \end{equation*}
 Similarly, if $R$ is the relation corresponding to~$G$, the
-\term{transitive closure} of~$R$ (denoted~$R^+$ is the relation
+\term{transitive closure} of~$R$ (denoted~$R^+$) is the relation
 corresponding to~$G^+$.
 \end{definition}
 
@@ -850,7 +897,7 @@ Figure~\ref{fig:7FJ} is shown in Figure~\ref{fig:7FK}.
 
 \includegraphics{missing}
 
-\caption{The transitivity closure for the digraph in
+\caption{The transitive closure for the digraph in
   Figure~\ref{fig:7FJ}.  The edges that were added to form the
   transitive closure are shown in bold.}
 
@@ -864,7 +911,7 @@ problem section.
 
 \subsection{The Hasse Diagram}
 
-On problem with viewing a poset as a digraph is that there tend to be
+One problem with viewing a poset as a digraph is that there tend to be
 lots of edges due to the transitivity property.  Fortunately, we do
 not necessarily have to draw all the edges if we know that the digraph
 corresponds to a poset.  For example, we could choose not to draw any
@@ -877,7 +924,7 @@ For example, the Hasse diagrams of the posets shown in Figures
 
 \begin{figure}
 
-\gnote{Figure FM, p 7-38, ftl-chap7-jul2.  Render as two figures.}
+\gnote{Figure FM, p 7-38, ftl-ch7-jul2.  Render as two figures.}
 
 \includegraphics{missing}
 
@@ -891,11 +938,14 @@ For example, the Hasse diagrams of the posets shown in Figures
 \section{Topological Sort}
 
 A total order that is consistent with a partial order is called a
-topological sort  More precisely, a \term{topological sort} of a
-poset~$(A, \preceq)$ is a total order~$(A, \preceq_T)$ such that
+topological sort.  More precisely,
+\begin{definition}\label{def:topological_sort}
+A \term{topological sort} of a poset~$(A, \preceq)$ is a total
+order~$(A, \preceq_T)$ such that
 \begin{equation*}
     x \preceq y \QIMPLIES x \preceq_T y.
 \end{equation*}
+\end{definition}
 
 For example, consider the poset that describes how a guy might get
 dressed for a formal occasion.  The Hasse diagram for such a poset is
@@ -917,11 +967,11 @@ precede others when getting dressed.
 \end{figure}
 
 There are several total orders that are consistent with the partial
-order shown in Figure~\ref{fig:7FP}.  We have shown to of them in list
-form in Figure~\ref{fig:7FQ}.  Each such list is a topological sort
-for the partial order in Figure~\ref{fig:7FP}.  In what follows, we
-will prove that every \emph{finite} poset has a topological sort.  You
-can think of this as a mathematical proof that you \emph{can} get
+order shown in Figure~\ref{fig:7FP}.  We have shown two of them in
+list form in Figure~\ref{fig:7FQ}.  Each such list is a topological
+sort for the partial order in Figure~\ref{fig:7FP}.  In what follows,
+we will prove that every \emph{finite} poset has a topological sort.
+You can think of this as a mathematical proof that you \emph{can} get
 dressed in the morning (and then show up for math lecture).
 
 \begin{figure}
@@ -970,7 +1020,7 @@ Similarly, an element $x \in A$ is \term{maximal} if there is no other
 element $y \in A$ such that $x \preceq y$.
 
 Proving that every poset \emph{has} a minimal element is extremely
-difficult, because this is actually false.  For example, the
+difficult, because it is not true.  For example, the
 poset~$(\integers, \le)$ has no minimal element.  However, there is at
 least one minimal element in every \emph{finite} poset.
 
@@ -1070,13 +1120,18 @@ example in Figure~\ref{fig:7FP}, how long would it take to handle all
 the garments?
 
 In the first unit of time, we should do all minimal items, so we would
-put on our left sock, our right sock, our underwear, and our shirt.
-In the second unit of time, we should put on our pants and our tie.
-Note that we cannot put on our left or right shoe yet, since we have
-not yet put on our pants.  In the third unit of time, we should put on
-our left shoe, our right shoe, and our belt.  Finally, in the last
-unit of time, we can put on our jacket.  This schedule is illustrated
-in Figure~\ref{fig:7FS}.
+put on our left sock, our right sock, our underwear, and our
+shirt.\footnote{Yes, we know that you can't actually put on both socks
+  at once, but imagine you are being dressed by a bunch of robot
+  processors and you are in a big hurry.  Still not working for you?
+  Ok, forget about the clothes and imagine they are programs with the
+  precedence constraints shown in Figure~\ref{fig:7FP}.}  In the
+second unit of time, we should put on our pants and our tie.  Note
+that we cannot put on our left or right shoe yet, since we have not
+yet put on our pants.  In the third unit of time, we should put on our
+left shoe, our right shoe, and our belt.  Finally, in the last unit of
+time, we can put on our jacket.  This schedule is illustrated in
+Figure~\ref{fig:7FS}.
 
 \begin{figure}
 
@@ -1095,9 +1150,9 @@ example) is shown with bold edges.}
 
 The total time to do these tasks is 4~units.  We cannot do better than
 4~units of time because there is a sequence of 4~tasks, each needing
-to be done before the next, of length~4.  Here, for example, we must
-put on our shirt before our pants, our pants before our  belt, and our
-belt before our jacket.  Such a sequence of items is known as a
+to be done before the next, of length~4.  For example, we must put on
+our shirt before our pants, our pants before our belt, and our belt
+before our jacket.  Such a sequence of items is known as a
 \term{chain}
 
 \begin{definition}\label{def:chain}
@@ -1110,12 +1165,11 @@ elements in the chain.
 
 Thus, the time it takes to schedule tasks, even with an unlimited
 number of processors, is at least the length of the longest chain.
-Indeed, if we used less time, then two items from the chain would have
-to be done at the same time, which contradicts the precedence
-constraints.  For this reason, \dmj{\emph{a} longest chain?}the
-longest chain is also known as a \term{critical path}.  For example,
-Figure~\ref{fig:7FS} shows the critical path for the getting-dressed
-poset.
+Indeed, if we used less time, then two items from a longest chain
+would have to be done at the same time, which contradicts the
+precedence constraints.  For this reason, a longest chain is also
+known as a \term{critical path}.  For example, Figure~\ref{fig:7FS}
+shows the critical path for the getting-dressed poset.
 
 In this example, we were in fact able to schedule all the tasks in $t$
 steps, where $t$ is the length of the longest chain.  The really nice
@@ -1146,7 +1200,7 @@ same as the length of the longest chain.
 \end{corollary}
 
 \begin{proof}[Proof of Theorem~\ref{thm:poset-partition}]
-For all $a \in A_i$, put $a in A_i$, where $i$~is the length of the
+For all $a \in A_i$, put $a$ in~$A_i$, where $i$~is the length of the
 longest chain ending at~$a$.  For example, the $A_i$ for the
 getting-dressed poset are shown in Figure~\ref{fig:7FS}.  In what
 follows, we show that for all~$i$, for all $a \in A_i$ and for all $b
@@ -1165,20 +1219,21 @@ in~$A_i$.  This is a contradiction.
 If we have an unlimited number of processors, then the time to
 complete all tasks is equal to the length of the longest chain of
 dependent tasks.  The case where there are only a limited number of
-processors is covered in the Problems section.
+processors is very useful in practice and it is covered in the
+Problems section.
 
 
 \section{Dilworth's Lemma}\label{sec:dilworth}
 
 \begin{definition}\label{def:antichain}
-An \term{antichain} in a partial order is a set of elements such that
+An \term{antichain} in a poset is a set of elements such that
 any two elements in the set are incomparable.
 \end{definition}
 
 For example, each $A_i$ in the proof of
 Theorem~\ref{thm:poset-partition} and in Figure~\ref{fig:7FS} is an
-antichain since they have no dependencies between them (which is why
-they could be executed at the same time).
+antichain since its elements have no dependencies between them (which
+is why they could be executed at the same time).
 
 Our conclusions about scheduling also tell us something about
 antichains.
@@ -1189,7 +1244,8 @@ then $A$ can be partitioned into $t$~antichains.
 \end{corollary}
 
 \begin{proof}
-Le the antichains be the sets $A_1$, $A_2$, \dots, $A_t$.
+Let the antichains be the sets $A_1$, $A_2$, \dots, $A_t$ defined in
+Theorem~\ref{thm:poset-partition}.
 \end{proof}
 
 Corollary~\ref{cor:antichains} implies a famous result\footnote{Lemma
@@ -1197,7 +1253,7 @@ Corollary~\ref{cor:antichains} implies a famous result\footnote{Lemma
   Dilworth's Theorem that we will not discuss.} about partially
 ordered sets:
 
-\begin{lemma}\label{lem:dilworth}
+\begin{lemma}[Dilworth]\label{lem:dilworth}
 For all $t > 0$, every partially ordered set with $n$ elements must
 have either a chain of size greater than~$t$ or an antichain of size
 at least~$n/t$.
@@ -1205,8 +1261,7 @@ at least~$n/t$.
 
 \begin{proof}
 By contradiction.  Assume that the longest chain has length at
-most~$t$ and the longest antichain has size less than~$n/t$.  Suppose
-that the largest chain is of size~${}\le t$.  Then
+most~$t$ and the longest antichain has size less than~$n/t$.  Then by
 Corollary~\ref{cor:antichains}, the $n$ elements can be partitioned
 into at most $t$ antichains.  Hence, there are fewer than $t \cdot n/t
 = n$ elements in the poset, which is a contradiction.  Hence there
