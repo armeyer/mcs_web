@@ -1,42 +1,54 @@
-\hyperdef{sums}{asymptotics}{\chapter{Sums \& Asymptotics}}\label{asymptotics_chap}
+\chapter{Sums and Asymptotics}\label{asymptotics_chap}
 
-\begin{editingnotes}
-
-\section{Closed Forms and Approximations}
-
-Sums and products arise regularly in the analysis of algorithms and in
-other technical areas such as finance and probabilistic systems.  For
-example, we used Well Ordering to prove in
-Theorem~\ref{sum-to-n-again-theorem} that
-
-\begin{equation}\label{sum1in}
-\sum_{i=1}^n i = \frac{n(n+1)}{2}.
+Sums and products arise regularly in the analysis of algorithms,
+financial applications, physical problems, and probabilistic systems.
+For example, we have already encountered the sum $1 + 2 + 4 + \dots +
+N$ when counting the number of nodes in a complete binary tree with
+$N$ inputs.  Although such a sum can be represented compactly using
+the sigma notation
+\begin{equation}
+    \sum_{i = 0}^{\log N} 2^i,
 \end{equation}
-The simple \emph{closed form} expression $n(n+1)/2$ makes the sum a
-lot easier to understand and evaluate.  But the proof of
-equation~\eqref{sum1in} by Well Ordering does not explain where it
-came from in the first place.  In Section~\ref{findsum_sec}, we'll
-discuss ways to find such closed forms.  Even when there are no closed
-forms exactly equal to a sum, we may still be able to find a closed
-form that \emph{approximates} a sum with useful accuracy.
+it is a lot easier and more helpful to express the sum by
+its \term{closed form} value
+\begin{equation*}
+    2 N - 1.
+\end{equation*}
+
+By \term{closed form}, we mean an expression that does not make use of
+summation or product symbols or otherwise need those handy (but
+sometimes troublesome) dots\dots.  Expressions n closed form are
+usually easier to evaluate (it doesn't get much simpler than $2 N -
+1$, for example) and it is usually easier to get a feel for their
+magnitude than expressions involving large sums and products.
+
+But how do you find a closed form for a sum or product?  Well, it's
+part math and part art.  And it is the subject of this chapter.
+
+We will start the chapter with a motivating example involving
+annunities.  Figuring out the value of the annuity will involve a
+large and nasty-looking sum.  We will then describe several methods
+for finding closed forms for all sorts of sums, including the annuity
+sums.  In some cases, a closed form for a sum may not exist and so we
+will provide a general method for finding good upper and lower bounds
+on the sum (which are closed form, of course).
+
+The methods we develop for sums will also work for products since you
+can convert any product into a sum by taking a logarithm of the
+product.  As an example, we will use this approach to find a good
+closed-form approximation to
+\begin{equation*}
+    n! ::= 1 \cdot 2 \cdot 3 \cdots n.
+\end{equation*}
+
+We conclude the chapter with a discussion of asymptotic notation.
+Asymptotic notation is often used to bound the error terms when there
+is no exact closed form expression for a sum or product.  It also
+provides a convenient way to express the growth rate or order of
+magntitude of a sum or product.
 
 
-The product we focus on in this chapter is the familiar factorial:
-\[
-n!\ \eqdef\ \ 1 \cdot 2 \cdots  (n-1) \cdot n  = \prod_{i=1}^n i.
-\]
-We'll describe a closed form approximation for it called \emph{Stirling's
-Formula}.
-
-Finally, when there isn't a good closed form approximation for some
-expression, there may still be a closed form that characterizes its growth
-rate.  We'll introduce \emph{asymptotic notation}, such as ``big Oh'', to
-describe growth rates.
-\end{editingnotes}
-
-
-\hyperdef{value}{annuity}{\section{The Value of an
-    Annuity}}\label{annuity_sec}
+\section{The Value of an Annuity}\label{annuity_sec}
 
 Would you prefer a million dollars today or \$50,000 a year for the
 rest of your life?  On the one hand, instant gratification is nice.
@@ -52,13 +64,15 @@ always.  Examples include lottery payouts, student loans, and home
 mortgages.  There are even Wall Street people who specialize in trading
 annuities.
 
-A key question is what an annuity is worth.  For example, lotteries often
-pay out jackpots over many years.  Intuitively, $\$50,000$ a year for 20
-years ought to be worth less than a million dollars right now.  If you had
-all the cash right away, you could invest it and begin collecting
-interest.  But what if the choice were between $\$50,000$ a year for 20
-years and a \emph{half} million dollars today?  Now it is not clear which
-option is better.
+A key question is, ``What is an annunity worth?''  For example,
+lotteries often pay out jackpots over many years.  Intuitively,
+$\$50,000$ a year for 20 years ought to be worth less than a million
+dollars right now.  If you had all the cash right away, you could
+invest it and begin collecting interest.  But what if the choice were
+between $\$50,000$ a year for 20 years and a \emph{half} million
+dollars today?  Now it is not clear which option is better.
+
+\subsection{The Future Value of Money}
 
 In order to answer such questions, we need to know what a dollar paid out
 in the future is worth today.  To model this, let's assume that money can
@@ -67,9 +81,7 @@ rate\footnote{U.S. interest rates have dropped steadily for several years,
   and ordinary bank deposits now earn around 1.5\%.  But just a few years
   ago the rate was 8\%; this rate makes some of our examples a little more
   dramatic.  The rate has been as high as 17\% in the past thirty
-  years.
-
-  In Japan, the standard interest rate is near zero\%, and on a few
+  years. In Japan, the standard interest rate is near zero\%, and on a few
   occasions in the past few years has even been slightly negative.  It's a
   mystery why the Japanese populace keeps any money in their banks.}  for
 the rest of the discussion.
@@ -77,13 +89,11 @@ the rest of the discussion.
 Here is why the interest rate $p$ matters.  Ten dollars invested today
 at interest rate $p$ will become $(1+p)\cdot 10 = 10.80$ dollars in a
 year, $(1+p)^2\cdot 10 \approx 11.66$ dollars in two years, and so
-forth.  Looked at another way, ten dollars paid out a year from now
-are only really worth $1/(1+p) \cdot 10 \approx 9.26$ dollars today.
-The reason is that if we had the $\$9.26$ today, we could invest it
-and would have $\$10.00$ in a year anyway.  Therefore, $p$ determines
-the value of money paid out in the future. 
-
-\subsection{The Future Value of Money}
+forth.  Looked at another way, ten dollars paid out a year from now is
+only really worth $1/(1+p) \cdot 10 \approx 9.26$ dollars today.  The
+reason is that if we had the $\$9.26$ today, we could invest it and
+would have $\$10.00$ in a year anyway.  Therefore, $p$ determines the
+value of money paid out in the future.
 
 So for an $n$-year, $m$-payment annuity, the first payment of $m$ dollars
 is truly worth $m$ dollars.  But the second payment a year later is worth
@@ -93,50 +103,78 @@ total value, $V$, of the annuity is equal to the sum of the payment
 values.  This gives:
 \begin{align}
   V & = \sum_{i=1}^n \frac{m}{(1+p)^{i-1}}\notag\\
-  & = m \cdot \sum_{j=0}^{n-1} \paren{\frac{1}{1+p}}^j 
-          & \text{(substitute $j \eqdef i-1$)}\notag\\
+  & = m \cdot \sum_{j=0}^{n-1} \paren{\frac{1}{1+p}}^j
+          && \text{(substitute $j \eqdef i-1$)}\notag\\
   & = m \cdot \sum_{j=0}^{n-1} x^j
-          & (\mbox{substitute } x = \frac{1}{1+p}).\label{jn-1xsum}
+          && \text{(substitute $x = 1/(1+p)$)}.\label{jn-1xsum}
 \end{align}
-The summation in~\eqref{jn-1xsum} is a \idx{geometric sum} that has a
-\term{closed form}, making the evaluation a lot easier, namely\footnote{To
-  make this equality hold for $x=0$, we adopt the convention that $0^0
-  \eqdef 1$.},
+
+The goal of the preceding substitutions was to get the summation into
+a simple special form so that we can solve it with a general formula.
+In particular, the terms of the sum
+\begin{equation*}
+    \sum_{j = 0}^{n - 1} x^j = 1 + x + x^2 + x^3 + \cdots + x^{n - 1}
+\end{equation*}
+for a \term{geometric series}, which means that the ratio of
+consecutive terms is always the same.  (In this case, the ratio is
+always~$x$.)  It turns out that there is a nice closed-form expression
+for any geometric series, namely\footnote{To make this equality hold
+  for $x = 0$, we adopt the convention that $0^0 ::= 1$.}  \dmj{Do you
+  want to point out that the closed-form solution is undefined for $x
+  = 1$ even though the original sum is perfectly well-behaved?}
 \begin{equation}\label{geometric-sum-n-1}
-\sum_{i=0}^{n-1} x^i = \frac{1- x^n}{1 - x}.
+    \sum_{i = 0}^{n - 1} x^i = \frac{1 - x^n}{1 - x}.
 \end{equation}
-(The phrase ``closed form'' refers to a mathematical expression without
-any summation or product notation.)
 
-Equation~\eqref{geometric-sum-n-1} was proved by induction in
-Problem~\ref{CP_geometric_series_induction}, but, as is often the case,
-the proof by induction gave no hint about how the formula was found in the
-first place.  So we'll take this opportunity to explain where it comes
-from.  The trick is to let $S$ be the value of the sum and then observe
-what $-xS$ is:
-\[\begin{array}{rclllllcl}
-  S & = & 1 & +  x & + x^2 & + x^3 & + &\cdots & + x^{n-1} \\
--xS & = &   & -  x & - x^2 & - x^3 & - &\cdots & - x^{n-1} - x^{n}.
-\end{array}\]
-Adding these two equations gives:
-\begin{align*}
-S-xS  & =  1 - x^n, \\
-\intertext{  so}
-S     & = \frac{1 - x^n}{1 - x}.
-\end{align*}
-We'll look further into this method of proof in a few weeks when we
-introduce \emph{generating functions} in 
-Chapter 16.%~\ref{generating_function_chap}.
+Equation~\eqref{geometric-sum-n-1} can be verified by induction, but,
+as is often the case, the proof by induction gives no hint about how
+the formula was found in the first place.  So we'll take this
+opportunity to explain how you could figure it out for yourself called
+the \term{Perturbation Method}.
 
+\subsection{The Perturbation Method}\label{sec:perturbation}
 
-\subsection{Closed Form for the Annuity Value}
-So now we have a simple formula for $V$, the \idx{value of an
-  annuity} that pays $m$ dollars at the start of each year for $n$ years.
+Given a sum that has a nice structure, it is often useful to
+``perturb'' the sum so that we can somehow combine the sum with the
+perturbation to get something much similar.  For example, suppose
+\begin{equation*}
+    S = 1 + x + x^2 + \dots + x^{n - 1}.
+\end{equation*}
+An example of a perturbation would be
+\begin{equation*}
+    xS = x + x^2 + \dots + x^n.
+\end{equation*}
+
+The difference between $S$ and~$xS$ is not so great.  There would be
+massive cancellation:
+\begin{equation*}
+\begin{series}
+      S & = & 1 & + & x & + & x^2 & + & x^3 & + &\cdots & + & x^{n-1} \cr
+    -xS & = &   & - & x & - & x^2 & - & x^3 & - &\cdots & - & x^{n-1} & - x^{n}.\cr
+\end{series}
+\end{equation*}
+The result of the subtraction is
+\begin{equation*}
+    S-xS = 1 - x^n.
+\end{equation*}
+Solving for~$S$ gives the desired closed-form expression in
+Equation~\ref{geometric-sum-n-1}:
+\begin{equation*}
+    S = \frac{1 - x^n}{1 - x}.
+\end{equation*}
+We'll see more examples of this method when we introduce
+\emph{generating functions} in Chapter~\ref{generating_function_chap}.
+
+\subsection{A Closed Form for the Annuity Value}
+
+Using Equation~\ref{geometric-sum-n-1}, we can derive a simple formula
+for~$V$, the \idx{value of an annuity} that pays $m$ dollars at the
+start of each year for $n$ years.
 \begin{align}
-  V & = m \frac{1 - x^n}{1-x}
-      & \text{(by~\eqref{jn-1xsum} and~\eqref{geometric-sum-n-1})}\label{Vmfrac1x}\\
-  & = m \frac{1 + p - \paren{1/(1+p)}^{n-1}}{p}
-      & (x = 1/(1+p)).\label{annval1p}
+  V & = m \left( \frac{1 - x^n}{1-x} \right)
+      && \text{(by~\eqref{jn-1xsum} and~\eqref{geometric-sum-n-1})}\label{Vmfrac1x}\\
+  & = m \left( \frac{1 + p - \paren{1/(1+p)}^{n-1}}{p} \right)
+      && \text{(substituting $x = 1/(1+p)$)}.\label{annval1p}
 \end{align}
 The formula~\eqref{annval1p} is much easier to use than a summation with
 dozens of terms.  For example, what is the real value of a winning lottery
@@ -166,8 +204,9 @@ If $\abs{x} < 1$, then
 \begin{align*}
 \sum_{i=0}^\infty x^i
    & \eqdef  \lim_{n \rightarrow \infty} \sum_{i=0}^{n-1} x^i \\
-   & = \lim_{n \rightarrow \infty} \frac{1 - x^n}{1-x} & \text{(by~\eqref{geometric-sum-n-1})}\\
-   & = \frac{1}{1-x}.  
+   & = \lim_{n \rightarrow \infty} \frac{1 - x^n}{1-x}
+        & & \text{(by~\eqref{geometric-sum-n-1})}\\
+   & = \frac{1}{1-x}.
 \end{align*}
 The final line follows from that fact that $\lim_{n \rightarrow \infty}
 x^n =0$ when $\abs{x} < 1$.
@@ -187,56 +226,71 @@ dollars today in the bank earning 8\% interest, we could take out and
 spend $\$80,000$ a year forever.  So on second thought, this answer really
 isn't so amazing.
 
-\begin{editingnotes}
-
 \subsection*{Examples}
 
-We now have closed form formulas for geometric sums and series.  Some
-examples are given below.  In each case, the solution follows immediately
-from either equation~\eqref{geometric-sum-n-1} (for finite sums) or
-Theorem~\ref{th:series} (for infinite series).
+Equation~\ref{geometric-sum-n-1} and Theorem~\ref{th:series} are
+incredibly useful in computer science.  In fact, we already used
+Equation~\ref{geometric-sum-n-1} implicitly when we claimed in
+Chapter~\ref{chap:digraphs} than an $N$-input complete binary tree
+has
+\begin{equation*}
+    1 + 2 + 4 + \dots + N = 2 N - 1
+\end{equation*}
+nodes.  Here are some other common sums that can be put into closed
+form using Equation~\ref{geometric-sum-n-1} and
+Theorem~\ref{th:series}:
 \begin{alignat}{3}
-1 + 1/2 + 1/4 + 1/8 + \cdots &=\sum_{i=0}^\infty (1/2)^i
-                             &\;\;&=\cfrac{1}{1-(1/2)}
-                               =2 \label{is2}
+1 + 1/2 + 1/4 + \cdots
+    & = \sum_{i=0}^\infty (1/2)^i
+    &%\;\;
+    & = \cfrac{1}{1-(1/2)} = 2 \label{is2}
 \\
-0.999999999\dots             &=0.9 \sum_{i=0}^{\infty} (1/10)^i
-                             &&=0.9\cfrac{1}{1-1/10}
-                               =0.9\cfrac{10}{9} 
-                               =1 \label{is1}
+0.99999\dots
+    & = 0.9 \sum_{i=0}^{\infty} (1/10)^i
+    &
+    & = 0.9 \paren{\cfrac{1}{1-1/10}}
+      = 0.9 \paren{\cfrac{10}{9}}
+      = 1 \label{is1}
 \\
-1 - 1/2 + 1/4 - 1/8 + \cdots &=\sum_{i=0}^\infty (-1/2)^i
-                             &&=\cfrac{1}{1-(-1/2)}
-                               =2/3 \label{is23}
+1 - 1/2 + 1/4 - \cdots
+    & = \sum_{i=0}^\infty (-1/2)^i
+    &
+    & = \cfrac{1}{1-(-1/2)}
+      = 2/3 \label{is23}
 \\
-1 + 2 + 4 + 8 + \cdots + 2^{n-1} &=\sum_{i=0}^{n-1} 2^i
-                                 &&=\cfrac{1 - 2^n}{1 - 2}
-                                   =2^n - 1 \label{is2n1}
+1 + 2 + 4 + \cdots + 2^{n-1}
+    & = \sum_{i=0}^{n-1} 2^i
+    &
+    & = \cfrac{1 - 2^n}{1 - 2}
+      = 2^n - 1 \label{is2n1}
 \\
-1 + 3 + 9 + 27 + \cdots + 3^{n-1} &=\sum_{i=0}^{n-1} 3^i
-                                  &&=\cfrac{1 - 3^n}{1 - 3}
-                                    =\cfrac{3^n - 1}{2} \label{is3n1}
+1 + 3 + 9 + \cdots + 3^{n-1}
+    & = \sum_{i=0}^{n-1} 3^i
+    &
+    & = \cfrac{1 - 3^n}{1 - 3}
+      = \cfrac{3^n - 1}{2} \label{is3n1}
 \end{alignat}
-If the terms in a geometric sum or series grow smaller, as in
-equation~\eqref{is2}, then the sum is said to be {\em geometrically
-decreasing}.  If the terms in a geometric sum grow progressively larger,
-as in~\eqref{is2n1} and ~\eqref{is3n1}, then the sum is said to be {\em
-geometrically increasing}.
 
-Here is a good rule of thumb: {\em a geometric sum or series is
-approximately equal to the term with greatest absolute value}.  In
-equations~(\ref{is2}) and~(\ref{is23}), the largest term is equal to 1 and
-the sums are 2 and 2/3, both relatively close to 1.  In
-equation~(\ref{is2n1}), the sum is about twice the largest term.  In the
-final equation~(\ref{is3n1}), the largest term is $3^{n-1}$ and the sum is
-$(3^n-1)/2$, which is only about a factor of $1.5$ greater.
+If the terms in a geometric sum grow smaller, as in
+equation~\eqref{is2}, then the sum is said to be \emph{geometrically
+  decreasing}.  If the terms in a geometric sum grow progressively
+larger, as in~\eqref{is2n1} and ~\eqref{is3n1}, then the sum is said
+to be \emph{geometrically increasing}.  In either case, the sum is
+usually approximately equal to the term in the sum with the greatest
+absolute value.  For example, in equations~(\ref{is2})
+and~(\ref{is23}), the largest term is equal to 1 and the sums are 2
+and 2/3, both relatively close to 1.  In equation~(\ref{is2n1}), the
+sum is about twice the largest term.  In the final
+equation~(\ref{is3n1}), the largest term is $3^{n-1}$ and the sum is
+$(3^n-1)/2$, which is only about a factor of $1.5$ greater.  You can
+see why this rule of thumb works by looking carefully at
+Equation~\ref{geometric-sum-n-1} and Theorem~\ref{th:series}.
 
+\subsection{Variations of Geometry Sums}
 
-\subsection{Related Sums}
-
-We now know all about geometric sums.  But in practice one often
-encounters sums that cannot be transformed by simple variable
-substitutions to the form $\sum x^i$.
+We now know all about geometric sums---if you have one, life is easy.
+But in practice one often encounters sums that cannot be transformed
+by simple variable substitutions to the form $\sum x^i$.
 
 A non-obvious, but useful way to obtain new summation formulas from
 old is by differentiating or integrating with respect to $x$.  As an
@@ -244,45 +298,51 @@ example, consider the following sum:
 \[
 \sum_{i=1}^n i x^i = x + 2 x^2 + 3 x^3 + \cdots + n x^n
 \]
-This is not a geometric sum, since the ratio between successive
-terms is not constant.  Our formula for the sum of a geometric sum
-cannot be directly applied.  But suppose that we differentiate that
-formula:
-\begin{eqnarray*}
-\frac{d}{dx} \ \sum_{i=0}^{n} x^i
-  & = & \frac{d}{dx} \ \frac{1 - x^{n+1}}{1 - x} \\
+This is not a geometric sum, since the ratio between successive terms
+is not fixed, and so our formula for the sum of a geometric sum cannot
+be directly applied.  But suppose that we differentiate that
+formula:\dmj{This seems a bit terse.  I knew what you where you were
+  going and I still had to stare at the equations to figure out how
+  the pieces fit together.}
+\begin{align*}
+\frac{d}{dx} \sum_{i=0}^{n} x^i
+  & = \frac{d}{dx} \ \frac{1 - x^{n+1}}{1 - x} \\
 \sum_{i=1}^{n} i x^{i-1}
- & = & \frac{-(n+1)x^n (1-x) - (-1)(1-x^{n+1})}{(1 - x)^2} \\
- & = & \frac{-(n+1)x^n + (n+1)x^{n+1} + 1 - x^{n+1}}{(1 - x)^2} \\
- & = & \frac{1 - (n+1)x^n + n x^{n+1}}{(1 - x)^2}.
-\end{eqnarray*}
-Often differentiating or integrating messes up the exponent of $x$ in
-every term.  In this case, we now have a formula for a sum of the
-form $\sum i x^{i-1}$, but we want a formula for the series $\sum i
-x^i$.  The solution is simple: multiply by $x$.  This gives:
-\[
-\sum_{i=1}^{n} i x^i = \frac{x - (n+1)x^{n+1} + n x^{n+2}}{(1 - x)^2}
-\]
-Since we could easily have made a mistake, it is a good idea to go
-back and validate a formula obtained this way with a proof by
-induction.
+ & = \frac{-(n+1)x^n (1-x) - (-1)(1-x^{n+1})}{(1 - x)^2} \\
+ & = \frac{-(n+1)x^n + (n+1)x^{n+1} + 1 - x^{n+1}}{(1 - x)^2} \\
+ & = \frac{1 - (n+1)x^n + n x^{n+1}}{(1 - x)^2}.
+\end{align*}
 
-Notice that if $\abs{x} < 1$, then this series converges to a finite value
-even if there are infinitely many terms.  Taking the limit as $n$ tends
-infinity gives the following theorem:
+Often, differentiating or integrating messes up the exponent of $x$ in
+every term.  In this case, we now have a formula for a sum of the form
+$\sum i x^{i-1}$, but we want a formula for the series $\sum i x^i$.
+The solution is simple: multiply by $x$.  This gives:
+\begin{equation}\label{eqn:G1}
+    \sum_{i=1}^{n} i x^i = \frac{x - (n+1)x^{n+1} + n x^{n+2}}{(1 - x)^2}
+\end{equation}
+and we have the desired closed-form expression for our
+sum\footnote{Since we could easily have made a mistake in the
+  calculation, it is always a good idea to go back and validate a
+  formula obtained this way with a proof by induction.}.  It's a
+little complicated looking, but it's easier to work with than the sum.
+
+Notice that if $\abs{x} < 1$, then this series converges to a finite
+value even if there are infinitely many terms.  Taking the limit of
+Equation~\ref{eqn:G1} as $n$ tends infinity gives the following
+theorem:
 \begin{theorem}\label{th:inf_ixi}
 If $\abs{x} < 1$, then
 \[
-\sum_{i=1}^\infty i x^i = \frac{x}{(1-x)^2}.
+    \sum_{i=1}^\infty i x^i = \frac{x}{(1-x)^2}.
 \]
 \end{theorem}
 
-As a consequence, suppose there is an annuity that pays $im$ dollars
-at the {\em end} of each year $i$ forever.  For example, if $m =
-\$50,000$, then the payouts are $\$50,000$ and then $\$100,000$ and
-then $\$150,000$ and so on.  It is hard to believe that the value of
-this annuity is finite!  But we can use the preceding theorem to
-compute the value:
+As a consequence, suppose that there is an annuity that pays
+$im$~dollars at the \emph{end} of each year~$i$ forever.  For example,
+if $m = \$50,000$, then the payouts are $\$50,000$ and then
+$\$100,000$ and then $\$150,000$ and so on.  It is hard to believe
+that the value of this annuity is finite!  But we can use
+Theorem~\ref{th:inf_ixi} to compute the value:
 \begin{eqnarray*}
 V & = & \sum_{i=1}^\infty \frac{im}{(1+p)^i} \\
   & = & m \cdot \frac{\frac{1}{1+p}}{(1 - \frac{1}{1+p})^2} \\
@@ -305,7 +365,42 @@ The important thing to remember is the trick of taking the derivative
 requires one to compute nasty derivatives correctly, but this is at
 least theoretically possible!
 
-\end{editingnotes}
+\section{Power Sums}
+
+In Chapter~\ref{induction_chap}, we verified the formula
+\begin{equation}\label{eqn:G26}
+    \sum_{i = 1}^n i = \frac{n (n + 1)}{2}.
+\end{equation}
+But the source of this formula is still a mystery.  Sure, we can prove
+it is true using well ordering or induction, but where did the
+expression on the right come from in the first place?  Even more
+inexplicable is the closed form expression for the sum of consecutive
+squares:
+\begin{equation}\label{eqn:G27}
+    \sum_{i = 1}^n i^2 = \frac{(2n+1) (n+1) n}{6}.
+\end{equation}
+
+It turns out that there is a way to derive these expressions, but
+before we explain it, we thought it would be fun\footnote{Remember
+  that we are mathematicians, so our definition of ``fun'' may be
+  different than yours.} to show you how Gauss proved
+Equation~\ref{eqn:G26} when he was a young boy.\footnote{We suspect
+  that Gauss was probably not an ordinary boy.}
+
+Gauss's idea is related to the perturbation method we used in
+Subsection~\ref{sec:perturbation}.  Let
+\begin{equation*}
+    S = \sum_{i = 1}^n i.
+\end{equation*}
+Then we can write the sum in two orders:
+\begin{equation*}
+    \begin{series}
+        S & = & 1 & + & 2       & + & \dots & + & (n - 1) & + & n,\cr
+        S & = & n & + & (n - 1) & + & \dots & + & 2       & + & 1.
+    \end{series}
+\end{equation*}
+
+
 
 \begin{problems}
 
@@ -318,7 +413,7 @@ least theoretically possible!
 
 \end{problems}
 
-\hyperdef{book}{stacking}{\section{\idx{Book Stacking}}}\label{book_stacking_sec}
+\section{\idx{Book Stacking}}\label{book_stacking_sec}
 
 Suppose you have a pile of books and you want to stack them on a table in
 some off-center way so the top book sticks out past books below it.  How
@@ -390,7 +485,7 @@ horizontal coordinate of center of mass of the whole stack of $n+1$ books is
 \frac{0 \cdot n + (1/2) \cdot 1}{n+1} = \frac{1}{2(n +1)}.
 \]
 
-In other words, 
+In other words,
 \begin{equation}\label{eqBn}
     B_{n+1} = B_n + \frac{1}{2(n+1)},
 \end{equation}
@@ -433,8 +528,7 @@ the situation shown in Figure~\ref{fig:optstack}.
 \label{fig:optstack}
 \end{figure}
 
-\hyperdef{integral}{method}{\subsection{Evaluating the Sum---The
-    \idx{Integral Method}}}
+\subsection{Evaluating the Sum---The \idx{Integral Method}}
 
 It would be nice to answer questions like, ``How many books are needed
 to build a stack extending 100 book lengths beyond the table?''  One
@@ -470,7 +564,7 @@ H_n & \geq & \int_0^n \frac{1}{x+1} \ dx = \int_1^{n+1} \frac{1}{x} \ dx = \ln(n
 \end{eqnarray}
 These bounds imply that the harmonic number $H_n$ is around $\ln n$.
 
-But $\ln n$ grows ---slowly ---but without bound.  That means we can get
+But $\ln n$ grows---slowly---but without bound.  That means we can get
 books to overhang \emph{any distance} past the edge of the table by piling
 them high enough!  For example, to build a stack extending three book
 lengths beyond the table, we need a number of books $n$ so that $H_n \ge
@@ -588,8 +682,8 @@ was correct, then the summation is equal to $n^3/3 + n^2/2 + n/6$, which
 matches equation~\eqref{sumsqcubic}.
 
 The point is that if the desired formula turns out to be a polynomial,
-then once you get an estimate of the \emph{degree} of the polynomial ---by
-the Integral Method or any other way ---all the coefficients of the
+then once you get an estimate of the \emph{degree} of the polynomial---by
+the Integral Method or any other way---all the coefficients of the
 polynomial can be found automatically.
 
 \textbf{Be careful!}  This method let's you discover formulas, but it
@@ -668,7 +762,7 @@ product
 This is by far the most common product in discrete mathematics.  In this
 section we describe a good closed-form estimate of $n!$ called
 \term{Stirling's Approximation}.  Unfortunately, all we can do is
-estimate: there is no closed form for $n!$ ---though proving so would take
+estimate: there is no closed form for $n!$---though proving so would take
 us beyond the scope of this text.
 
 \subsection{Products to Sums}
@@ -676,7 +770,7 @@ us beyond the scope of this text.
 A good way to handle a product is often to convert it into a sum by taking
 the logarithm.  In the case of factorial, this gives
 \begin{align*}
-\ln (n!) 
+\ln (n!)
        & =  \ln(1 \cdot 2 \cdot 3 \cdots (n-1) \cdot n) \\
        & =  \ln 1 + \ln 2 + \ln 3 + \cdots + \ln(n-1) + \ln n \\
        & =  \sum_{i=1}^n \ln i.
@@ -763,8 +857,7 @@ We can derive a similar lower bound.
 
 \end{editingnotes}
 
-\hyperdef{asymptotic}{notation}{\section{Asymptotic
-    Notation}}\label{asymptotic_sec}
+\section{Asymptotic Notation}\label{asymptotic_sec}
 
 Asymptotic notation is a shorthand used to give a quick measure of the
 behavior of a function $f(n)$ as $n$ grows large.
@@ -819,7 +912,7 @@ From~(\ref{zdd}),
 \[   %\begin{equation}\label{dd}
 \log z  <  z^{\delta}/\delta
 \]   %\end{equation}
-for all $z>1$, $\delta >0$.  
+for all $z>1$, $\delta >0$.
 Hence
 \begin{align*}
 (e^b)^{\log z} & <  (e^b)^{z^{\delta}/\delta}\\ %\notag\\
@@ -911,7 +1004,7 @@ so $g \neq O(f)$.
 \iffalse
 We will prove the equivalent contrapositive, i.e., that
 if $g=O(f)$ then it is not true that $f=o(g)$.  If
-$g=O(f)$ then there 
+$g=O(f)$ then there
 exists a constant $c \geq 0$ and an $x_0$ such that for all $x \geq
 x_0$, $\abs{g(x)} \leq c f(x)$.
 Then for all $x \geq x_0$, we have that $f(x)/|g(x)| = f(x)/g(x) >c>0$
@@ -960,7 +1053,7 @@ operations.  This procedure will therefore be much more efficient on large
 enough matrices.  Unfortunately, the $O(n^{2.55})$-operation
 multiplication procedure is almost never used because it happens to be
 less efficient than the usual $O(n^3)$ procedure on matrices of practical
-size. 
+size.
 \begin{editingnotes}
 It is even conceivable that there is an $O(n^2)$ matrix
 multiplication procedure, but none is known.
