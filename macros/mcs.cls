@@ -525,8 +525,8 @@
 
 \def\subparagraph{%
     \@startsection{subparagraph}
-        {5}{\z@}{-7\p@}{-10\p@}
-        {\reset@font\fontsize{10}{13}\selectfont\bfseries\itshape\raggedright\mathversion{bold}}%
+        {5}{\z@}{7\p@}{-0.5em}
+        {\reset@font\normalsize\selectfont\bfseries\mathversion{bold}}%
 }
 
 \def\chapter{%
@@ -1221,6 +1221,15 @@
 %%                             FIGURES                              %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\graphic}[2][]{%
+    \IfFileExists{figures/final/#2.pdf}{%
+        \redrawn
+    }{%
+        \redrawn[\textcolor{red}{Undredrawn}]%
+    }%
+    \includegraphics[#1]{#2}%
+}
 
 \let\@figure@instruction\@empty
 
