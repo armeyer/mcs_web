@@ -1222,9 +1222,16 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newif\ifredrawn
+\redrawnfalse
+
+\newif\if@hascaption
+\@hascaptionfalse
+
 \newcommand{\graphic}[2][]{%
     \IfFileExists{figures/final/#2.pdf}{%
         \redrawn
+        \global\redrawntrue
     }{%
         \redrawn[\textcolor{red}{Undredrawn}]%
     }%
@@ -1247,12 +1254,70 @@
 
 \renewenvironment{figure}[1][tbp]{%
     \@float{figure}[#1]%
+    \global\@hascaptionfalse
+    \global\redrawnfalse
     \let\@redrawn@message\@empty
     \let\@figure@instruction\@empty
     \centering
 }{%
+    \if@hascaption\else
+        \fakecaption\@captype
+    \fi
     \end@float
 }
+
+\long\def\fakecaption#1{%
+    \par
+    \addcontentsline{\csname ext@#1\endcsname}{#1}{%
+        \protect\numberline{%
+            \ifredrawn\else
+                \protect\textcolor{red}%
+            \fi
+            {???}%
+        }{Uncaptioned figure}%
+    }%
+}
+
+
+\long\def\@caption#1[#2]#3{%
+    \par
+    \global\@hascaptiontrue
+    \addcontentsline{\csname ext@#1\endcsname}{#1}%
+        {%
+            \protect\numberline{%
+                \ifredrawn\else
+                    \protect\textcolor{red}%
+                \fi
+                {\csname the#1\endcsname}%
+            }{\ignorespaces #2}%
+        }%
+    \begingroup
+        \@parboxrestore
+        \if@minipage
+            \@setminipage
+        \fi
+        \normalsize
+        \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
+    \endgroup
+}
+
+\renewcommand\listoffigures{%
+    \if@twocolumn
+      \@restonecoltrue\onecolumn
+    \else
+      \@restonecolfalse
+    \fi
+    \chapter*{\listfigurename}%
+      \@mkboth{\MakeUppercase\listfigurename}%
+              {\MakeUppercase\listfigurename}%
+
+    \begin{quote}\color{red}
+        Graphics with red numbers have \emph{not} been redrawn yet.
+    \end{quote}
+    \@starttoc{lof}%
+    \if@restonecol\twocolumn\fi
+    }
+
 
 % \let\real@includegraphics\includegraphics
 % 
