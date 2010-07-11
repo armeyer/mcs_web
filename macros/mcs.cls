@@ -1197,6 +1197,54 @@
 \newcommand{\pdf}{\textsc{PDF}}
 \newcommand{\cdf}{\textsc{CDF}}
 
+%% Miscellaneous
+
+% counting.tex
+\newcommand{\spa}{\spadesuit}
+\newcommand{\hea}{\heartsuit}
+\newcommand{\dia}{\diamondsuit}
+\newcommand{\clu}{\clubsuit}
+
+% induction.tex
+\newcommand{\paexp}{\text{Aexp-parse-tree}}
+
+% propositions.tex
+\newcommand{\solves}{\text{Solves}}
+\newcommand{\probs}{\text{Probs}}
+\newcommand{\even}{\text{Evens}}
+\newcommand{\primes}{\text{Primes}}
+
+%% State machines
+
+\def\movesto{\mathrel{\longrightarrow}}
+\newcommand{\while}{\text{\textbf{while}}}
+\newcommand{\docomm}{\text{\textbf{do}}}
+\newcommand{\odcomm}{\text{\textbf{od}}}
+\newcommand{\wloop}[2]{\while\ #1\ \docomm\ #2\ \odcomm}
+%\newcommand{\wpr}{\while\text{ program}}
+\newcommand{\assigned}{\mathbin{\mathtt{:=}}}
+\newcommand{\condif}{\text{\textbf{if}}}
+\newcommand{\condthen}{\text{\textbf{then}}}
+\newcommand{\condelse}{\text{\textbf{else}}}
+\newcommand{\condcomm}[3]{\condif\ #1\ \condthen\ #2\ \condelse\ #3}
+\newcommand{\seqcomm}[2]{#1\mathbf{;}#2}
+\newcommand{\Env}{\text{Env}}
+\newcommand{\halt}{\text{\textbf{Done}}}
+\newcommand{\state}[2]{\ang{#1,\, #2}}
+\newcommand{\step}[4]{\state{#1}{#2} \movesto \state{#3}{#4}}
+\newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^*  \state{\halt}{#3}}
+\newcommand{\after}[3]{#1 \: \set{#2}\: #3}
+
+\newcommand{\prcef}[3]%
+{\textbf{action}: #1\\
+\textbf{precondition}: #2\\
+\textbf{effect}: #3}
+
+% \newcommand{\iocode}[2]%
+% {\textbf{IOCode}\\
+% \textbf{group 1}: #1\\
+% \textbf{group 2}: #2}
+
 %%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  %%                                                                  %%
 %%  %%                              LISTS                               %%
