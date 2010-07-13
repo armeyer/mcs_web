@@ -1276,15 +1276,18 @@
 \newif\if@hascaption
 \@hascaptionfalse
 
+\let\@figure@filename\@empty
+
 \newcommand{\graphic}[2][]{%
     \begingroup
+        \gdef\@figure@filename{#2.pdf}%
         \@tempswafalse
-        \IfFileExists{figures/final/#2.pdf}{%
+        \IfFileExists{figures/final/\@figure@filename}{%
             \redrawn
             \global\redrawntrue
             \@tempswatrue
         }{%
-            \IfFileExists{#2.pdf}{%
+            \IfFileExists{\@figure@filename}{%
                 \redrawn[\textcolor{red}{Undredrawn}]%
                 \@tempswatrue
             }{}%
@@ -1317,6 +1320,7 @@
     \global\redrawnfalse
     \let\@redrawn@message\@empty
     \let\@figure@instruction\@empty
+    \let\@figure@filename\@empty
     \centering
 }{%
     \if@hascaption\else
@@ -1427,7 +1431,11 @@
             \vbox to \Gin@req@height{%
                 \hrule \@width \Gin@req@width
                 \vss
-                \edef\@tempa{#3}%
+                \ifx\@figure@filename\@empty
+                    \edef\@tempa{#3}%
+                \else
+                    \edef\@tempa{\@figure@filename}%
+                \fi
                 \rlap{ \ttfamily\expandafter\strip@prefix\meaning\@tempa}%
                 \vss
                 \hrule
@@ -1453,7 +1461,11 @@
                     \parskip10pt
                     \parindent\z@
                     \if@show@figure@fname@
-                        \edef\@tempa{#3}%
+                        \ifx\@figure@filename\@empty
+                            \edef\@tempa{#3}%
+                        \else
+                            \edef\@tempa{\@figure@filename}%
+                        \fi
                         {\ttfamily\expandafter\strip@prefix\meaning\@tempa}\par
                     \fi
                     \ifx\@redrawn@message\@empty\else
