@@ -86,6 +86,7 @@ add_to_environment(TEXFONTMAPS => "$ROOT/macros/mtp2fonts/texmf/fonts/map//");
 ######################################################################
 
 our %OPT = (index    => 1,
+            glossary => 1,
             bibtex   => 0,
             xrefs    => 1,
             max_runs => 4,
@@ -115,6 +116,7 @@ Usage: $program_name [options] chapter
 Options:
     -nobib   : omit per-chapter bibliography
     -noindex : omit per-chapter index
+    -noglossary : omit per-chapter glossary
 EOF
 
     exit 0;
@@ -157,6 +159,10 @@ sub latex( $ ) {
 
             if ($OPT{index}) {
                 $first_line .= qq{\\AtEndDocument{\\printchapindex{$chapter}}};
+            }
+
+            if ($OPT{glossary}) {
+                $first_line .= qq{\\AtEndDocument{\\printchapglossary{$chapter}}};
             }
         }
 
@@ -217,9 +223,11 @@ sub bibtex( $ ) {
     }
 }
 
-sub copy_idx_entries($$) {
+sub copy_idx_entries($$;$) {
     my $aux_file = shift;
     my $idx_file = shift;
+
+    my $type     = shift || 'default';
 
     return unless -e $aux_file;
 
@@ -233,7 +241,7 @@ sub copy_idx_entries($$) {
     while (<$aux>) {
         chomp;
 
-        /\A \\\@v?writefile \{default\} \{ (.*?) \} $/smx and do {
+        /\A \\\@v?writefile \{$type\} \{ (.*?) \} $/smx and do {
             fwrite $idx_file, $1, "\n";
             $num_entries++;
         };
@@ -361,6 +369,40 @@ sub makeindex( $ ) {
     # -l : "letter-by-letter" alphabetization
 
     system "makeindex -l -r $chapter.idx"; 
+}
+
+sub makeglossary( $ ) {
+    my $chapter = shift;
+
+    return unless $OPT{glossary};
+
+    my $aux_file = "$chapter.aux";
+
+    return unless -e $aux_file;
+
+    if ($chapter ne $DRIVER) {
+        my $gdx_file = "$chapter.gdx";
+
+        open(my $gdx, ">", $gdx_file) or die "Can't write $gdx_file: $!\n";
+
+        my $num_entries = copy_idx_entries($aux_file, $gdx, "glo");
+        $num_entries += copy_idx_entries("$DRIVER.aux", $gdx, "glo");
+
+        close($gdx) or die "Error writing $gdx_file: $!\n";
+
+        if ($num_entries == 0) {
+            unlink $gdx_file;
+            return;
+        }
+    }
+
+    munge_idx_file("$chapter.gdx");
+
+    # -r : Don't automatically convert consecutive page numbers into
+    #      -page ranges
+    # -l : "letter-by-letter" alphabetization
+
+    system "makeindex -l -r -o $chapter.gnd $chapter.gdx"; 
 }
 
 sub unresolved_xrefs( $ ) {
@@ -574,6 +616,7 @@ sub process_chapter($) {
         print "Running makeindex for the first time\n";
 
         makeindex($chapter);
+        makeglossary($chapter);
 
         print "Running latex to incorporate index\n";
 
@@ -584,6 +627,7 @@ sub process_chapter($) {
         print "Running makeindex and latex again to incorporate xrefs\n";
 
         makeindex($chapter);
+        makeglossary($chapter);
 
         latex($chapter);
 

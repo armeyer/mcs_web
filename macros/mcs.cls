@@ -380,9 +380,19 @@
 \newcommand{\idx}[1]{\index{#1}#1}
 
 \newcommand{\printchapindex}[1]{%
-    \def\@indextype{default}%
-    \let\index@prologue\@empty
-    \@input@{#1.ind}%
+    \begingroup
+        \def\@indextype{default}%
+        \let\index@prologue\@empty
+        \@input@{#1.ind}%
+    \endgroup
+}
+
+\newcommand{\printchapglossary}[1]{%
+    \begingroup
+        \def\@indextype{glo}%
+        \let\index@prologue\@empty
+        \@input@{#1.gnd}%
+    \endgroup
 }
 
 \renewenvironment{theindex}{%
@@ -418,6 +428,10 @@
 }
 
 \newcommand{\glossaryname}{Glossary}%
+
+\newindex{glo}{gdx}{gnd}{\glossaryname}
+
+\renewcommand{\glossary}{\index[glo]}
 
 \newenvironment{theglossary}{%
     \cleardoublepage
