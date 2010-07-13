@@ -1277,13 +1277,24 @@
 \@hascaptionfalse
 
 \newcommand{\graphic}[2][]{%
-    \IfFileExists{figures/final/#2.pdf}{%
-        \redrawn
-        \global\redrawntrue
-    }{%
-        \redrawn[\textcolor{red}{Undredrawn}]%
-    }%
-    \includegraphics[#1]{#2}%
+    \begingroup
+        \@tempswafalse
+        \IfFileExists{figures/final/#2.pdf}{%
+            \redrawn
+            \global\redrawntrue
+            \@tempswatrue
+        }{%
+            \IfFileExists{#2.pdf}{%
+                \redrawn[\textcolor{red}{Undredrawn}]%
+                \@tempswatrue
+            }{}%
+        }%
+    \if@tempswa
+        \includegraphics[#1]{#2}%
+    \else
+        \includegraphics{missing}%
+    \fi
+    \endgroup
 }
 
 \let\@figure@instruction\@empty
