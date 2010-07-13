@@ -1026,6 +1026,8 @@
 
 \newcommand{\embed}[1]{\mathcal{#1}}
 
+\newcommand{\bin}{\operatorname{bin}}
+
 \let\by\times
 
 \newcommand{\range}[1]{\mathop{\textup{range}}\nolimits\left(#1\right)}
@@ -1559,6 +1561,8 @@
 \newtheorem*{mathrule*}{Rule}
 
 \newtheorem{algorithm}{Algorithm}
+
+\newtheorem*{cont_hypo*}{Cantor's Continuum Hypothesis}
 
 %% DEFINITION-LIKE
 
