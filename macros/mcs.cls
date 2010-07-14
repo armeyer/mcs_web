@@ -1185,7 +1185,10 @@
 
 \newcommand{\sspace}{\mathcal{S}}
 
-\newcommand{\pr}[1]{\mathop{\textup{Pr}}\nolimits\left\{#1\right\}}
+\newcommand{\pr}[1]{\Pr[#1]}
+
+\newcommand{\prBig}[1]{\Pr\left[#1\right]}
+
 \newcommand{\prob}[1]{\pr{#1}}
 \newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#2}}\nolimits\left\{#1\right\}}
 
@@ -1199,6 +1202,9 @@
         #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
     \right\}%
 }
+
+\newcommand{\tails}{\mathrm{T}}
+\newcommand{\heads}{\mathrm{H}}
 
 \newcommand{\Ex}{\mathop{\textup{E}}\nolimits}
 \newcommand{\Var}{\mathop{\textup{Var}}\nolimits}
