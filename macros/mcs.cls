@@ -1185,9 +1185,9 @@
 
 \newcommand{\sspace}{\mathcal{S}}
 
-\newcommand{\pr}[1]{\Pr[#1]}
+\newcommand{\pr}[1]{\Pr\{#1\}}
 
-\newcommand{\prBig}[1]{\Pr\left[#1\right]}
+\newcommand{\prBig}[1]{\Pr\left\{#1\right\}}
 
 \newcommand{\prob}[1]{\pr{#1}}
 \newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#2}}\nolimits\left\{#1\right\}}
