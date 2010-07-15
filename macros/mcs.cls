@@ -945,6 +945,12 @@
 
 \newcommand{\suchthat}{\mid}
 \newcommand{\eqdef}{\mathbin{::=}}
+
+\newcommand{\setcomp}{}
+\let\setcomp\bar
+
+%% ARGH!!!
+
 \renewcommand{\bar}[1]{\overline{#1}}
 
 \newcommand{\mop}[1]{\mathop{#1}}
