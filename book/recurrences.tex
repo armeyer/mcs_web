@@ -1,3 +1,1445 @@
 \chapter{Recurrences}\label{chap:recurrences}
 
+% This is used to make the largest disk gray in the Tower of Hanoi
+% figures.  So if the figures are generated some other way, then this
+% line can be removed.
+\definecolor{gray}{gray}{0.9}
+
+A recurrence describes a sequence of numbers.  Early terms are
+specified explicitly and later terms are expressed as a function of
+their precedessors.  As a trivial example, this recurrence describes
+the sequence 1, 2, 3, etc.
+\begin{align*}
+T_1 & = 1 \\
+T_n & = T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+Here, the first term is defined to be 1 and each subsequent term is
+one more than its predecessor.
+
+Recurrences turn out to be a powerful tool.  In this chapter, we'll
+emphasize using recurrences to analyze the performance of recursive
+algorithms.  However, recurrences have other applications in computer
+science as well, such as enumeration of structures and analysis of
+random processes.
+
+A recurrence in isolation is not a very useful description of a
+sequence.  One can not easily answer simple questions such as, ``What
+is the hundredth term?'' or ``What is the asymptotic growth rate?''
+So one typically wants to {\em solve} a recurrence; that is, to find a
+closed-form expression for the $n$-th term.
+
+We'll first introduce two general solving techniques: guess-and-verify
+and plug-and-chug.  These methods are applicable to every recurrence,
+but their success requires a flash of insight--- sometimes an
+unrealistically brilliant flash.  So we'll also introduce two big
+classes of recurrences, linear and divide-and-conquer, that often come
+up in computer science.  Essentially all recurrences in these two
+classes are solvable using cookbook techniques; you follow the recipe
+and get the answer.  A drawback is that calculation replaces insight.
+The ``Aha!''  moment that is essential in the guess-and-verify and
+plug-and-chug methods is replaced by a ``Huh'' at the end of a
+cookbook procedure.
+
+At the end of the chapter, we'll develop rules of thumb to help you
+assess many recurrences without any calculation.  These rules can help
+you distinguish promising approaches from bad ideas early in the
+process of designing an algorithm.
+
+Recurrences are one aspect of a broad theme in computer science:
+reducing a big problem to progressively smaller problems until easy
+base cases are reached.  This same idea underlies both induction
+proofs and recursive algorithms.  As we'll see, all three ideas snap
+together nicely.  For example, one might describe the running time of
+a recursive algorithm with a recurrence and use induction to
+verify the solution.
+
+\section{The Towers of Hanoi}
+
+According to legend, there is a temple in Hanoi with three posts and
+64 gold disks of different sizes.  Each disk has a hole through the
+center so that it fits on a post.  In the misty past, all the disks
+were on the first post, with the largest on the bottom and the
+smallest on top:
+\begin{center}
+\begin{picture}(228.0,82.0)(0,-2)
+\put(0,-2){\framebox(228.0,2){}}
+\put(4.0,0.5){\framebox(68.0,7.5){}}
+\put(8.0,8.5){\framebox(60.0,7.5){}}
+\put(12.0,16.5){\framebox(52.0,7.5){}}
+\put(16.0,24.5){\framebox(44.0,7.5){}}
+\put(20.0,32.5){\framebox(36.0,7.5){}}
+\put(24.0,40.5){\framebox(28.0,7.5){}}
+\put(28.0,48.5){\framebox(20.0,7.5){}}
+\put(32.0,56.5){\framebox(12.0,7.5){}}
+\put(37.0,64.5){\framebox(2.0,15.5){}}
+\put(113.0,0.5){\framebox(2.0,79.5){}}
+\put(189.0,0.5){\framebox(2.0,79.5){}}
+\end{picture}
+\end{center}
+Monks in the temple have labored through the years since to move all
+the disks to one of the other two posts according to the following
+rules:
+\begin{itemize}
+\item The only permitted action is removing the top disk from one post
+and dropping it onto another post.
+\item A larger disk can never lie above a smaller disk on any post.
+\end{itemize}
+So, for example, picking up the whole stack of disks at once
+and dropping them on another post is illegal.  That's good, because
+the legend says that when the monks complete the puzzle, the world
+will end!
+
+To clarify the problem, suppose there were only 3 gold disks instead
+of 64.  Then the puzzle could be solved in 7 steps as follows:
+
+\begin{center}
+\begin{tabular}{cccc}
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(1.0,0.5){\framebox(24.0,7.5){}}
+\put(4.0,8.5){\framebox(18.0,7.5){}}
+\put(7.0,16.5){\framebox(12.0,7.5){}}
+\put(12.5,24.5){\framebox(1.0,15.5){}}
+\put(38.5,0.5){\framebox(1.0,39.5){}}
+\put(64.5,0.5){\framebox(1.0,39.5){}}
+\end{picture}
+& $\xrightarrow{\quad 1 \quad}$ &
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(1.0,0.5){\framebox(24.0,7.5){}}
+\put(4.0,8.5){\framebox(18.0,7.5){}}
+\put(12.5,16.5){\framebox(1.0,23.5){}}
+\put(38.5,0.5){\framebox(1.0,39.5){}}
+\put(59.0,0.5){\framebox(12.0,7.5){}}
+\put(64.5,8.5){\framebox(1.0,31.5){}}
+\end{picture}
+& $\xrightarrow{\quad 2 \quad}$ \\
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(1.0,0.5){\framebox(24.0,7.5){}}
+\put(12.5,8.5){\framebox(1.0,31.5){}}
+\put(30.0,0.5){\framebox(18.0,7.5){}}
+\put(38.5,8.5){\framebox(1.0,31.5){}}
+\put(59.0,0.5){\framebox(12.0,7.5){}}
+\put(64.5,8.5){\framebox(1.0,31.5){}}
+\end{picture}
+& $\xrightarrow{\quad 3 \quad}$ &
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(1.0,0.5){\framebox(24.0,7.5){}}
+\put(12.5,8.5){\framebox(1.0,31.5){}}
+\put(30.0,0.5){\framebox(18.0,7.5){}}
+\put(33.0,8.5){\framebox(12.0,7.5){}}
+\put(38.5,16.5){\framebox(1.0,23.5){}}
+\put(64.5,0.5){\framebox(1.0,39.5){}}
+\end{picture}
+& $\xrightarrow{\quad 4 \quad}$ \\
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(12.5,0.5){\framebox(1.0,39.5){}}
+\put(30.0,0.5){\framebox(18.0,7.5){}}
+\put(33.0,8.5){\framebox(12.0,7.5){}}
+\put(38.5,16.5){\framebox(1.0,23.5){}}
+\put(53.0,0.5){\framebox(24.0,7.5){}}
+\put(64.5,8.5){\framebox(1.0,31.5){}}
+\end{picture}
+& $\xrightarrow{\quad 5 \quad}$ &
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(7.0,0.5){\framebox(12.0,7.5){}}
+\put(12.5,8.5){\framebox(1.0,31.5){}}
+\put(30.0,0.5){\framebox(18.0,7.5){}}
+\put(38.5,8.5){\framebox(1.0,31.5){}}
+\put(53.0,0.5){\framebox(24.0,7.5){}}
+\put(64.5,8.5){\framebox(1.0,31.5){}}
+\end{picture}
+& $\xrightarrow{\quad 6 \quad}$ \\
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(7.0,0.5){\framebox(12.0,7.5){}}
+\put(12.5,8.5){\framebox(1.0,31.5){}}
+\put(38.5,0.5){\framebox(1.0,39.5){}}
+\put(53.0,0.5){\framebox(24.0,7.5){}}
+\put(56.0,8.5){\framebox(18.0,7.5){}}
+\put(64.5,16.5){\framebox(1.0,23.5){}}
+\end{picture}
+& $\xrightarrow{\quad 7 \quad}$ &
+\begin{picture}(78.0,42.0)(0,-2)
+\put(0,-2){\framebox(78.0,2){}}
+\put(12.5,0.5){\framebox(1.0,39.5){}}
+\put(38.5,0.5){\framebox(1.0,39.5){}}
+\put(53.0,0.5){\framebox(24.0,7.5){}}
+\put(56.0,8.5){\framebox(18.0,7.5){}}
+\put(59.0,16.5){\framebox(12.0,7.5){}}
+\put(64.5,24.5){\framebox(1.0,15.5){}}
+\end{picture}
+\end{tabular}
+\end{center}
+
+The questions we must answer are, ``Given sufficient time, can the
+monks succeed?''  If so, ``How long until the world ends?''  And, most
+importantly, ``Will this happen before the final exam?''
+
+\subsection{A Recursive Solution}
+
+The Towers of Hanoi problem can be solved recursively.  As we describe
+the procedure, we'll also analyze the running time.  To that end, let
+$T_n$ be the minimum number of steps required to solve the $n$-disk
+problem.  For example, some experimentation shows that $T_1 = 1$ and
+$T_2$ = 3.  The procedure illustrated above shows that $T_3$ is at
+most 7, though there might be a solution with fewer steps.
+
+The recursive solution has three stages, which are described below.
+For clarity, the largest disk is shaded in the figures.
+\begin{description}
+\item{{\bf Stage 1.}}  Move the top $n-1$ disks from the first post to
+  the second using the solution for $n - 1$ disks.  This can be done
+  in $T_{n-1}$ steps.
+\begin{center}
+\begin{tabular}{ccc}
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(1.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(4.0,8.5){\framebox(36.0,7.5){}}
+\put(7.0,16.5){\framebox(30.0,7.5){}}
+\put(10.0,24.5){\framebox(24.0,7.5){}}
+\put(13.0,32.5){\framebox(18.0,7.5){}}
+\put(16.0,40.5){\framebox(12.0,7.5){}}
+\put(21.5,48.5){\framebox(1.0,15.5){}}
+\put(65.5,0.5){\framebox(1.0,63.5){}}
+\put(109.5,0.5){\framebox(1.0,63.5){}}
+\end{picture}
+& $\xrightarrow{\quad}$ &
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(1.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(21.5,8.5){\framebox(1.0,55.5){}}
+\put(48.0,0.5){\framebox(36.0,7.5){}}
+\put(51.0,8.5){\framebox(30.0,7.5){}}
+\put(54.0,16.5){\framebox(24.0,7.5){}}
+\put(57.0,24.5){\framebox(18.0,7.5){}}
+\put(60.0,32.5){\framebox(12.0,7.5){}}
+\put(65.5,40.5){\framebox(1.0,23.5){}}
+\put(109.5,0.5){\framebox(1.0,63.5){}}
+\end{picture}
+\end{tabular}
+\end{center}
+\item{{\bf Stage 2.}}  Move the largest disk from the first post to the
+  third post.  This takes just 1 step.
+\begin{center}
+\begin{tabular}{ccc}
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(1.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(21.5,8.5){\framebox(1.0,55.5){}}
+\put(48.0,0.5){\framebox(36.0,7.5){}}
+\put(51.0,8.5){\framebox(30.0,7.5){}}
+\put(54.0,16.5){\framebox(24.0,7.5){}}
+\put(57.0,24.5){\framebox(18.0,7.5){}}
+\put(60.0,32.5){\framebox(12.0,7.5){}}
+\put(65.5,40.5){\framebox(1.0,23.5){}}
+\put(109.5,0.5){\framebox(1.0,63.5){}}
+\end{picture}
+& $\xrightarrow{\quad}$ &
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(21.5,0.5){\framebox(1.0,63.5){}}
+\put(48.0,0.5){\framebox(36.0,7.5){}}
+\put(51.0,8.5){\framebox(30.0,7.5){}}
+\put(54.0,16.5){\framebox(24.0,7.5){}}
+\put(57.0,24.5){\framebox(18.0,7.5){}}
+\put(60.0,32.5){\framebox(12.0,7.5){}}
+\put(65.5,40.5){\framebox(1.0,23.5){}}
+\put(89.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(109.5,8.5){\framebox(1.0,55.5){}}
+\end{picture}
+\end{tabular}
+\end{center}
+\item{{\bf Stage 3.}}  Move the $n-1$ disks from the second post to
+  the third post, again using the solution for $n - 1$ disks.  This
+  can also be done in $T_{n-1}$ steps.
+\begin{center}
+\begin{tabular}{ccc}
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(21.5,0.5){\framebox(1.0,63.5){}}
+\put(48.0,0.5){\framebox(36.0,7.5){}}
+\put(51.0,8.5){\framebox(30.0,7.5){}}
+\put(54.0,16.5){\framebox(24.0,7.5){}}
+\put(57.0,24.5){\framebox(18.0,7.5){}}
+\put(60.0,32.5){\framebox(12.0,7.5){}}
+\put(65.5,40.5){\framebox(1.0,23.5){}}
+\put(89.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(109.5,8.5){\framebox(1.0,55.5){}}
+\end{picture}
+& $\xrightarrow{\quad}$ &
+\begin{picture}(132.0,66.0)(0,-2)
+\put(0,-2){\framebox(132.0,2){}}
+\put(21.5,0.5){\framebox(1.0,63.5){}}
+\put(65.5,0.5){\framebox(1.0,63.5){}}
+\put(89.0,0.5){\frame{\colorbox{gray}{\rule[7.5pt - 2\fboxsep]{42.0pt - 2\fboxsep}{0in}}}}\put(92.0,8.5){\framebox(36.0,7.5){}}
+\put(95.0,16.5){\framebox(30.0,7.5){}}
+\put(98.0,24.5){\framebox(24.0,7.5){}}
+\put(101.0,32.5){\framebox(18.0,7.5){}}
+\put(104.0,40.5){\framebox(12.0,7.5){}}
+\put(109.5,48.5){\framebox(1.0,15.5){}}
+\end{picture}
+\end{tabular}
+\end{center}
+\end{description}
+
+This algorithm shows that $T_n$, the minimum number of steps required
+to move $n$ disks to a different post, is at most $T_{n-1} + 1 +
+T_{n-1} = 2 T_{n-1} + 1$.  We can use this fact to upper bound the
+number of operations required to move towers of various heights:
+\begin{align*}
+T_3 & \leq 2 \cdot T_2 + 1 = 7 \\
+T_4 & \leq 2 \cdot T_3 + 1 \leq 15
+\end{align*}
+Continuing in this way, we could eventually compute an upper bound on
+$T_{64}$, the number of steps required to move 64 disks.  So this
+algorithm answers our first question: given sufficient time, the monks
+can finish their task and end the world.  (Which is a shame.  After
+all that effort, they'd probably want to smack a few high-fives and go
+out for burgers and ice cream, but nope--- world's over.)
+
+\subsection{Finding a Recurrence}
+
+We can not yet compute the exact number of steps that the monks need
+to move the 64 disks, only an upper bound. Perhaps, having pondered
+the problem since the beginning of time, the monks have devised a
+better algorithm.
+
+In fact, there is no better algorithm, and here is why. At some step,
+the monks must move the largest disk from the first post to a
+different post. For this to happen, the $n - 1$ smaller disks must all
+be stacked out of the way on the only remaining post. Arranging the $n
+- 1$ smaller disks this way requires at least $T_{n-1}$ moves. After
+the largest disk is moved, at least another $T_{n-1}$ moves are
+required to pile the $n - 1$ smaller disks on top.
+
+This argument shows that the number of steps required is at least
+$2T_{n-1} + 1$.  Since we gave an algorithm using exactly that number
+of steps, we can now write an expression for $T_n$, the number of
+moves required to complete the Towers of Hanoi problem with $n$ disks:
+\begin{align*}
+T_1 & = 1 \\
+T_n & = 2T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+
+This is a typical recurrence.  These two lines define a sequence of
+values, $T_1, T_2, T_3, \ldots$.  The first line says that the first
+number in the sequence, $T_1$, is equal to 1.  The second line defines
+every other number in the sequence in terms of its predecessor.  So we
+can use this recurrence to compute any number of terms in the sequence:
+\begin{align*}
+T_1 & = 1 \\
+T_2 & = 2 \cdot T_1 + 1 = 3 \\
+T_3 & = 2 \cdot T_2 + 1 = 7 \\
+T_4 & = 2 \cdot T_3 + 1 = 15 \\
+T_5 & = 2 \cdot T_4 + 1 = 31 \\
+T_6 & = 2 \cdot T_5 + 1 = 63
+\end{align*}
+
+\subsection{Solving the Recurrence}
+
+We could determine the number of steps to move a 64-disk tower by
+computing $T_7$, $T_8$, and so on up to $T_{64}$.  But that would take
+a lot of work.  It would be nice to have a closed-form expression for
+$T_n$, so that we could quickly find the number of steps required for
+any given number of disks. (For example, we might want to know how
+much sooner the world would end if the monks melted down one disk to
+purchase burgers and ice cream {\em before} the end of the world.)
+
+There are several methods for solving recurrence equations.  The
+simplest is to {\em guess} the solution and then {\em verify} that the
+guess is correct with an induction proof.  As a basis for a good
+guess, let's look for a pattern in the values of $T_n$ computed above:
+1, 3, 7, 15, 31, 63.  A natural guess is $T_n = 2^n - 1$.  But
+whenever you guess a solution to a recurrence, you should always
+verify it with a proof, typically by induction.  After all, your guess
+might be wrong. (But why bother to verify in this case?  After all, if
+we're wrong, its not the end of the... no, let's check.)
+
+\begin{claim}
+$T_n = 2^n - 1$ satisfies the recurrence:
+\begin{align*}
+T_1 & = 1 \\
+T_n & = 2T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+\end{claim}
+\begin{proof}
+  The proof is by induction on $n$.  The induction hypothesis is that
+  $T_n = 2^n - 1$.  This is true for $n = 1$ because $T_1 = 1 = 2^1 -
+  1$.  Now assume that $T_{n-1} = 2^{n-1} - 1$ in order to prove
+  that $T_n = 2^n - 1$, where $n \geq 2$:
+\begin{align*}
+T_{n} & = 2 T_{n-1} + 1 \\
+  & = 2 (2^{n-1} - 1) + 1 \\
+  & = 2^n - 1
+\end{align*}
+The first equality is the recurrence equation, the second follows from
+the induction assumption, and the last step is simplification.
+\end{proof}
+
+Such verification proofs are especially tidy because recurrence
+equations and induction proofs have analogous structures.  In
+particular, the base case relies on the first line of the recurrence,
+which defines $T_1$.  And the inductive step uses the second line of
+the recurrence, which defines $T_n$ as a function of preceding terms.
+
+Our guess is verified.  So we can now resolve our remaining questions
+about the 64-disk puzzle.  Since $T_{64} = 2^{64} - 1$, the monks must
+complete more than 18 billion billion steps before the world ends.
+Better study for the final.
+
+\subsection{The Upper Bound Trap}
+
+When the solution to a recurrence is complicated, one might try to
+prove that some simpler expression is an upper bound on the solution.
+For example, the exact solution to the Towers of Hanoi recurrence is
+$T_n = 2^n - 1$.  Let's try to prove the ``nicer'' upper bound $T_n
+\leq 2^n$, proceeding exactly as before.
+
+\begin{proof} (Failed attempt.)
+  The proof is by induction on $n$.  The induction hypothesis is that
+  $T_n \leq 2^n$.  This is true for $n = 1$ because $T_1 = 1 \leq 2^1$.
+  Now assume that $T_{n-1} \leq 2^{n-1}$ in order to prove that $T_n
+  \leq 2^n$, where $n \geq 2$:
+\begin{align*}
+T_n & = 2 T_{n-1} + 1 \\
+  & \leq 2 (2^{n-1}) + 1 \\
+  & \not\leq 2^n \qquad \leftarrow \text{Uh-oh!}
+\end{align*}
+The first equality is the recurrence relation, the second follows from
+the induction hypothesis, and the third step is a flaming train wreck.
+\end{proof}
+
+The proof doesn't work!  As is so often the case with induction
+proofs, the argument only goes through with a {\em stronger}
+hypothesis.  This isn't to say that upper bounding the solution to a
+recurrence is hopeless, but this is a situation where induction and
+recurrences do not mix well.
+
+\subsection{Plug and Chug}
+
+Guess-and-verify is a simple and general way to solve recurrence
+equations.  But there is one big drawback: you have to {\em guess
+  right}.  That was not hard for the Towers of Hanoi example.  But
+sometimes the solution to a recurrence has a strange form that is
+quite difficult to guess.  Practice helps, of course, but so can some
+other methods.
+
+Plug-and-chug is another way to solve recurrences.  This is also
+sometimes called ``expansion'' or ``iteration''.  As in
+guess-and-verify, the key step is identifying a pattern.  But instead
+of looking at a sequence of {\em numbers}, you have to spot a pattern
+in a sequence of {\em expressions}, which is sometimes easier.  The
+method consists of three steps, which are described below and
+illustrated with the Towers of Hanoi example.
+
+\subsubsection*{Step 1: Plug and Chug Until a Pattern Appears}
+
+The first step is to expand the recurrence equation by alternately
+“plugging” (applying the recurrence) and “chugging” (simplifying the
+result) until a pattern appears.  Be careful: too much simplification
+can make a pattern harder to spot.  The rule to remember--- indeed, a
+rule applicable to the whole of college life--- is {\em chug in
+  moderation}.
+\begin{align*}
+T_n & = 2T_{n-1} + 1 \\
+  & = 2 (2 T_{n-2} + 1)  + 1 & \text{plug} \\
+  & = 4 T_{n-2} + 2 + 1 & \text{chug} \\
+  & = 4 (2 T_{n-3} + 1) + 2 + 1 & \text{plug} \\
+  & = 8 T_{n-3} + 4 + 2 + 1 & \text{chug} \\
+  & = 8 (2 T_{n-4} + 1) + 4 + 2 + 1 & \text{plug} \\
+  & = 16 T_{n-4} + 8 + 4 + 2 + 1 & \text{chug}
+\end{align*}
+Above, we started with the recurrence equation.  Then we replaced
+$T_{n-1}$ with $2 T_{n-2} + 1$, since the recurrence says the two are
+equivalent.  In the third step, we simplified a little--- but not too
+much!  After several similar rounds of plugging and chugging, a
+pattern is apparent.  The following formula seems to hold:
+\begin{align*}
+T_n & = 2^k T_{n - k} + 2^{k-1} + 2^{k-2} + \ldots + 2^2 + 2^1 + 2^0 \\
+   & = 2^k T_{n-k} + 2^k - 1
+\end{align*}
+Once the pattern is clear, simplifying is safe and convenient.  In
+particular, we've collapsed the geometric sum to a closed form on the
+second line.
+
+\subsubsection*{Step 2:  Verify the Pattern}
+
+The next step is to verify the general formula with one more round of plug-and-chug.
+\begin{align*}
+T_n & = 2^k T_{n-k} + 2^k - 1 \\
+  & = 2^k (2 T_{n-(k+1)} + 1) + 2^k - 1 & \text{plug} \\
+  & = 2^{k+1} T_{n-(k+1)} + 2^{k+1} - 1 & \text{chug} \\
+\end{align*}
+The final expression on the right is the same as the expression on the
+first line, except that $k$ is replaced by $k+1$.  Surprisingly, this
+effectively {\em proves} that the formula is correct for all $k$.
+Here is why: we know the formula holds for $k = 1$, because that's the
+original recurrence equation.  And we've just shown that if the
+formula holds for some $k \geq 1$, then it also holds for $k + 1$.  So
+the formula holds for all $k \geq 1$ by induction.
+
+\subsubsection*{Step 3: Write $T_n$ Using Early Terms with Known Values}
+
+The last step is to express $T_n$ as a function of early terms whose
+values are known.  Here, choosing $k = n - 1$ expresses $T_n$ in terms
+of $T_1$, which is equal to 1.  Simplifying gives a closed-form
+expression for $T_n$:
+\begin{align*}
+T_n & = 2^{n - 1} T_1 + 2^{n-1} - 1 \\
+  & = 2^{n-1} \cdot 1 + 2^{n-1} - 1 \\
+  & = 2^n -1
+\end{align*}
+We're done!  This is the same answer we got from guess-and-verify.
+
+%%%
+\vspace{1ex}
+%%%
+
+Let's compare guess-and-verify with plug-and-chug.  In the
+guess-and-verify method, we computed several terms at the beginning of
+the sequence, $T_1$, $T_2$, $T_3$, etc., until a pattern appeared.  We
+generalized to a formula for the $n$-th term, $T_n$.  In contrast,
+plug-and-chug works backward from the $n$-th term.  Specifically, we
+started with an expression for $T_n$ involving the preceding term,
+$T_{n-1}$, and rewrote this using progressively earlier terms,
+$T_{n-2}$, $T_{n-3}$, etc.  Eventually, we noticed a pattern, which
+allowed us to express $T_n$ using the very first term, $T_1$, whose
+value we knew.  Substituting this value gave a closed-form expression
+for $T_n$.  So guess-and-verify and plug-and-chug tackle the problem
+from opposite directions.
+
+\section{Merge Sort}
+
+Algorithms textbooks traditionally claim that sorting is an important,
+fundamental problem in computer science.  Then they smack you with
+sorting algorithms until life as a disk-stacking monk in Hanoi sounds
+delightful.  Here, we'll cover just {\em one} well-known sorting
+algorithm, Merge Sort.  The analysis introduces another kind of
+recurrence.
+
+Here is how Merge Sort works.  The input is a list of $n$ numbers, and
+the output is those same numbers in nondecreasing order.  There are
+two cases:
+\begin{itemize}
+\item If the input is a single number, then the algorithm does nothing,
+  because the list is already sorted.
+\item Otherwise, the list contains two or more numbers.  The first
+  half and the second half of the list are each sorted recursively.
+  Then the two halves are merged to form a sorted list with all $n$
+  numbers.
+\end{itemize}
+
+Let's work through an example.  Suppose we want to sort this list:
+\begin{center}
+10, 7, 23, 5, 2, 8, 6, 9
+\end{center}
+Since there is more than one number, the first half (10, 7, 23, 5) and
+the second half (2, 8, 6, 9) are sorted recursively.  The results are
+5, 7, 10, 23 and 2, 6, 8, 9.  All that remains is to merge these two
+lists.  This is done by repeatedly emitting the smaller of the two
+leading terms.  When one list is empty, the whole other list is
+emitted.  The example is worked out below.   In this table, underlined
+numbers are about to be emitted.
+\begin{center}
+\begin{tabular}{lll}
+First Half & Second Half & Output \\
+5, 7, 10, 23 & \underline{2}, 6, 8, 9 & \\
+\underline{5}, 7, 10, 23 & 6, 8, 9 & 2\\
+7, 10, 23 & \underline{6}, 8, 9 & 2, 5 \\
+\underline{7}, 10, 23 & 8, 9 & 2, 5, 6 \\
+10, 23 & \underline{8}, 9 & 2, 5, 6, 7 \\
+10, 23 & \underline{9} & 2, 5, 6, 7, 8 \\
+\underline{10}, \underline{23} & & 2, 5, 6, 7, 8, 9 \\
+& & 2, 5, 6, 7, 8, 9, 10, 23
+\end{tabular}
+\end{center}
+The leading terms are initially 5 and 2.  So we output 2.  Then the
+leading terms are 5 and 6, so we output 5.  Eventually, the second
+list becomes empty.  At that point, we output the whole first list,
+which consists of 10 and 23.  The complete output consists of all the
+numbers in sorted order.
+
+\subsection{Finding a Recurrence}
+A traditional question about sorting algorithms is, ``What is the
+maximum number of comparisons used in sorting $n$ items?''  This taken
+as an estimate of the running time.  In the case of Merge Sort, we can
+express this quantity with a recurrence.  Let $T_n$ be the maximum
+number of comparisons used while Merge Sorting a list of $n$ numbers.
+For now, assume that $n$ is a power of 2.  This ensures that the input
+can be divided in half at every stage of the recursion.
+\begin{itemize}
+\item If there is only one number in the list, then no comparisons are
+  required, so $T_1 = 0$.
+\item Otherwise, $T_n$ includes comparisons used in sorting the first
+  half (at most $T_{n/2}$), in sorting the second half (also at most
+  $T_{n/2}$), and in merging the two halves.  The number of
+  comparisons in the merging step is at most $n - 1$.  This is because
+  at least one number is emitted after each comparison and one more
+  number is emitted at the end when one list becomes empty.  Since $n$
+  items are emitted in all, there can be at most $n - 1$ comparisons.
+\end{itemize}
+Therefore, the maximum number of comparisons needed to Merge Sort $n$
+items is given by this recurrence:
+\begin{align*}
+T_1 & = 0 \\
+T_{n} & = 2 T_{n/2} + n - 1 \text{\qquad (for $n \geq 2$ and a power of 2)}
+\end{align*}
+This fully describes the number of comparisons, but not in a very
+useful way; a closed-form expression would be much more helpful.  To
+get that, we have to solve the recurrence.
+
+\subsection{Solving the Recurrence}
+
+Let's first try to solve the Merge Sort recurrence with the
+guess-and-verify technique.  Here are the first few values:
+\begin{align*}
+T_1 & = 0 \\
+T_2 & = 2 T_1 + 2 - 1 = 1 \\
+T_4 & = 2 T_2 + 4 - 1 = 5 \\
+T_8 & = 2 T_4 + 8 - 1 = 17 \\
+T_{16} & = 2 T_8 + 16 - 1 = 49
+\end{align*}
+We're in trouble!  Guessing the solution to this recurrence is hard
+because there is no obvious pattern.  So let's try the plug-and-chug
+method instead.
+
+\subsubsection*{Step 1: Plug and Chug Until a Pattern Appears}
+
+First, we expand the recurrence equation by alternately plugging and
+chugging until a pattern appears.
+\begin{align*}
+T_n & = 2T_{n/2} + n - 1 \\
+  & = 2 (2 T_{n/4} + n/2 - 1)  + (n - 1) & \text{plug} \\
+  & = 4 T_{n/4} + (n - 2) + (n - 1) & \text{chug} \\
+  & = 4 (2 T_{n/8} + n / 4 - 1) + (n - 2) + (n - 1) & \text{plug} \\
+  & = 8 T_{n/8} + (n - 4) + (n - 2) + (n - 1) & \text{chug} \\
+  & = 8 (2 T_{n/16} + n / 8 - 1) +  (n - 4) + (n - 2) + (n - 1) &
+  \text{plug} \\
+  & = 16 T_{n/16} + (n - 8) + (n - 4) + (n - 2) + (n - 1) & \text{chug}
+\end{align*}
+A pattern is emerging.  In particular, this formula seems holds:
+\begin{align*}
+T_n & = 2^k T_{n/2^k} + (n - 2^{k-1}) + (n - 2^{k -2}) + \ldots + (n -
+2^0) \\
+  & = 2^k T_{n/2^k} + k n - 2^{k-1}  - 2^{k-2} \ldots - 2^0 \\
+  & = 2^k T_{n/2^k} + k n - 2^k + 1
+\end{align*}
+On the second line, we grouped the $n$ terms and powers of $2$.  On
+the third, we collapsed the geometric sum.
+
+\subsubsection*{Step 2:  Verify the Pattern}
+
+Next, we verify the pattern with one additional round of
+plug-and-chug.  If we guessed the wrong pattern, then this is where
+we'll discover the mistake.
+\begin{align*}
+T_n & = 2^k T_{n/2^k} + k n - 2^k + 1 \\
+ & = 2^k (2 T_{n/2^{k+1}} - n/2^k - 1) + kn - 2^k + 1 & \text{plug} \\
+ & = 2^{k+1} T_{n/2^{k+1}}  + (k+ 1) n - 2^{k+1} + 1 & \text{chug}
+\end{align*}
+The formula is unchanged except that $k$ is replaced by $k+1$.  This
+amounts to the induction step in a proof that the formula holds for
+all $k \geq 1$.
+
+\subsubsection*{Step 3:  Write $T_n$ Using Early Terms with Known Values}
+
+Finally, we express $T_n$ using early terms whose values are known.
+Specifically, if we let $k = \log n$, then $T_{n/2^k} = T_1$, which we
+know is 0:
+\begin{align*}
+T_n & = 2^k T_{n/2^k} + kn - 2^k + 1 \\
+  & = 2^{\log n} T_{n/2^{\log n}} + n \log n - 2^{\log n} + 1 \\
+  & = n T_1 + n \log n - n + 1 \\
+  & = n \log n - n + 1
+\end{align*}
+We're done!  We have a closed-form expression for the maximum number
+of comparisons used in Merge Sorting a list of $n$ numbers.  In
+retrospect, it is easy to see why guess-and-verify failed:  this
+formula is fairly complicated.
+
+As a check, we can confirm that this formula gives the same values
+that we computed earlier:
+\[
+\begin{array}{c|c|c}
+n & T_n & n \log n - n + 1 \\ \hline
+1 & 0 & 1 \log 1 - 1 + 1 = 0 \\
+2 & 1 & 2 \log 2 - 2 + 1 = 1 \\
+4 & 5 & 4 \log 4 - 4 + 1 = 5 \\
+8 & 17 & 8 \log 8 - 8 + 1 = 17 \\
+16 & 49 & 16 \log 16 - 16 + 1 = 49
+\end{array}
+\]
+As a double-check, we could write out an explicit induction proof.
+This would be straightforward, because we already worked out the guts
+of the proof in step 2 of the plug-and-chug procedure.
+
+\section{Linear Recurrences}
+
+So far we've solved recurrences with two techniques: guess-and-verify
+and plug-and-chug.  These methods require spotting a pattern in a
+sequence of numbers or expressions.  In this section and the next,
+we'll give cookbook solutions for two large classes of recurrences.
+These methods require no flash of insight; you just follow the recipe
+and get the answer.
+
+\subsection{Cimbing Stairs}
+
+How many different ways are there to climb $n$ stairs, if you can
+either step up one stair or hop up two?  For example, there are five
+different ways to climb four stairs:
+
+\vspace{1ex}
+
+\begin{tabular}{rl}
+1. & step, step, step, step \\
+2. & hop, hop \\
+3. & hop, step, step \\
+4. & step, hop step \\
+5. & step, step, hop
+\end{tabular}
+
+\vspace{1ex}
+
+\noindent Working through this problem will demonstrate the major
+features of our first cookbook method for solving recurrences.  We'll
+fill in the details of the general solution afterward.
+
+\subsubsection{Finding a Recurrence}
+
+As special cases, there is 1 way to climb 0 stairs (do nothing) and 1
+way to climb 1 stair (step up).  In general, an ascent of $n$ stairs
+consists of either a step followed by an ascent of the remaining $n -
+1$ stairs or a hop followed by an ascent of $n - 2$ stairs.  So the
+total number of ways to climb $n$ stairs is equal to the number of
+ways to climb $n-1$ plus the number of ways to climb $n-2$.  These
+observations define a recurrence:
+\begin{align*}
+f(0) & = 1 \\
+f(1) & = 1 \\
+f(n) & = f(n-1) + f(n-2) & \text{for $n \geq 2$}
+\end{align*}
+Here, $f(n)$ denotes the number of ways to climb $n$ stairs.  Also,
+we've switched from subscript notation to functional notation, from
+$T_n$ to $f_n$.  Here the change is cosmetic, but the expressiveness
+of functions will be useful later.
+
+This is the Fibonacci recurrence, the most famous of all recurrence
+equations.  Fibonacci numbers arise in all sorts of applications and
+in nature. Fibonacci introduced the numbers in 1202 to study rabbit
+reproduction. Fibonacci numbers also appear, oddly enough, in the
+spiral patterns on the faces of sunflowers. And the input numbers that
+make Euclid's GCD algorithm require the greatest number of steps are
+consecutive Fibonacci numbers.
+
+\subsubsection{Solving the Recurrence}
+
+The Fibonacci recurrence belongs to the class of linear recurrences,
+which are essentially all solvable with a technique that you can learn
+in an hour.  This is somewhat amazing, since the Fibonacci recurrence
+remained unsolved for almost six centuries!
+
+In general, a \term{homogeneous linear recurrence} has the form:
+\begin{align*}
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d)
+\end{align*}
+where $a_1, a_2, \ldots, a_d$ and $d$ are constants. The \term{order}
+of the recurrence is $d$.  Commonly, the value of the function $f$ is
+also specified at a few points; these are called \term{boundary
+  conditions}.  For example, the Fibonacci recurrence has order $d =
+2$ with coefficients $a_1 = a_2 = 1$ and $g(n) = 0$.  The boundary
+conditions are $f(0) = 1$ and $f(1) = 1$.  The word ``homogeneous''
+sounds scary, but effectively means ``the simpler kind''.  We'll
+consider linear recurrences with a more complicated form later.
+
+Let's try to solve the Fibonacci recurrence with the benefit centuries
+of hindsight.  In general, linear recurrences tend to have exponential
+solutions.  So let's guess that
+\begin{align*}
+  f(n) = x^n
+\end{align*}
+where $x$ is a parameter introduced to improve our odds of making a
+correct guess.  We'll figure out the best value for $x$ later. To
+further improve our odds, let's neglect the boundary conditions, $f(0)
+= 0$ and $f(1) = 1$, for now.  Plugging this guess into the recurrence
+$f(n) = f(n - 1) + f(n - 2)$ gives:
+\begin{align*}
+x^n & = x^{n-1} + x^{n-2}
+\end{align*}
+Dividing both sides by $x^{n-2}$ leaves a quadratic equation:
+\begin{align*}
+x^2 = x + 1
+\end{align*}
+Solving this equation gives {\em two} plausible values for the
+parameter $x$:
+\begin{align*}
+x = \frac{1 \pm \sqrt{5}}{2}
+\end{align*}
+This suggests that there are at least two different solutions to the
+recurrence, neglecting the boundary conditions.
+\begin{equation*}
+  f(n) = \left(\frac{1 + \sqrt{5}}{2}\right)^n\quad\text{or}\quad f(n) = \left(\frac{1 - \sqrt{5}}{2}\right)^n
+\end{equation*}
+
+A charming features of homogeneous linear recurrences is that any
+linear combination of solutions is another solution.
+
+\begin{theorem}
+\label{th:recur-linearity}
+  If $f(n)$ and $g(n)$ are both solutions to a homogenous linear
+  recurrence, then $h(n) = s f(n) + t g(n)$ is also a solution for all $s, t \in
+  \mathbb{R}$.
+\end{theorem}
+\begin{proof}
+\begin{align*}
+h(n) & = sf(n) + tg(n) \\
+  & = s \left(a_1 f(n-1) + \ldots + a_d f(n - d)\right) + t \left(a_1 g(n-1) + \ldots + a_d g(n -
+    d)\right) \\
+ & = a_1 (s f(n-1) + t g(n-1)) + \ldots + a_d (s f(n-d) + t g(n-d)) \\
+  & =  a_1 h(n-1) + \ldots + a_d h(n-d)
+\end{align*}
+The first step uses the definition of the function $h$, and the second
+uses the fact that $f$ and $g$ are solutions to the recurrence.  In
+the last two steps, we rearrange terms and use the definition of $h$
+again.  Since the first expression is equal to the last, $h$ is also a
+solution to the recurrence.
+\end{proof}
+
+The phenomenon described in this theorem--- a linear combination of
+solutions is another solution--- also holds for many differential
+equations and physical systems.  In fact, linear recurrences are so
+similar to linear differential equations that you can safely snooze
+through that topic in some future math class.
+
+Returning to the Fibonacci recurrence, this theorem implies that
+\begin{align*}
+  f(n) = s \left(\frac{1 + \sqrt{5}}{2}\right)^n + t \left(\frac{1 - \sqrt{5}}{2}\right)^n
+\end{align*}
+is a solution for all real numbers $s$ and $t$.  The theorem expanded
+two solutions to a whole spectrum of possibilities!  Now, given all
+these options to choose from, we can find one solution that satisfies
+the boundary conditions, $f(0) = 1$ and $f(1) = 1$.  Each boundary
+condition puts some constraints on the parameters $s$ and $t$.  In
+particular, the first boundary condition implies that:
+\begin{equation*}
+f(0) = s \left(\frac{1 + \sqrt{5}}{2}\right)^0 + t \left(\frac{1 -
+    \sqrt{5}}{2}\right)^0 = s + t = 1
+\end{equation*}
+Similarly, the second boundary condition implies that:
+\begin{equation*}
+f(1) = s \left(\frac{1 + \sqrt{5}}{2}\right)^1 + t \left(\frac{1 -
+    \sqrt{5}}{2}\right)^1 = 1
+\end{equation*}
+Now we have two linear equations in two unknowns.  The system is not
+degenerate, so there is a unique solution:
+\begin{equation*}
+s = \frac{1}{\sqrt{5}} \cdot \frac{1 + \sqrt{5}}{2}\qquad
+t = - \frac{1}{\sqrt{5}} \cdot \frac{1 - \sqrt{5}}{2}
+\end{equation*}
+These values of $s$ and $t$ identify a solution to the Fibonacci
+recurrence that also satisfies the boundary conditions:
+\begin{align*}
+  f(n) & = \frac{1}{\sqrt{5}} \cdot \frac{1 + \sqrt{5}}{2} \left(\frac{1 + \sqrt{5}}{2}\right)^n-
+  \frac{1}{\sqrt{5}} \cdot \frac{1 - \sqrt{5}}{2} \left(\frac{1 - \sqrt{5}}{2}\right)^n \\
+  & = \frac{1}{\sqrt{5}} \left(\frac{1 + \sqrt{5}}{2}\right)^{n+1} -
+  \frac{1}{\sqrt{5}} \left(\frac{1 - \sqrt{5}}{2}\right)^{n+1}
+\end{align*}
+It is easy to see why no one stumbled across this solution for almost
+six centuries! All Fibonacci numbers are integers, but this expression
+is full of square roots of five! Amazingly, the square roots always
+cancel out. This expression really does give the Fibonacci numbers if
+we plug in $n = 0, 1, 2$, etc.
+
+This closed-form for Fibonacci numbers has some interesting
+corollaries.  The first term tends to infinity because the base of the
+exponential, $(1+\sqrt{5})/2 = 1.618\ldots$ is greater than one.
+This value is often denoted $\phi$ and called the ``golden ratio''.
+The second term tends to zero, because $(1-\sqrt{5})/2 =
+-0.618033988\ldots$ has absolute value less than 1.  This implies that
+the $n$-th Fibonacci number is:
+\begin{align*}
+f(n) & = \frac{\phi^{n+1}}{\sqrt{5}} + o(1)
+\end{align*}
+Remarkably, this expression involving irrational numbers is actually
+very close to an integer for all large $n$--- namely, a Fibonacci
+number!  For example:
+\begin{equation*}
+\frac{\phi^{20}}{\sqrt{5}} = 6765.000029\ldots \approx f(19)
+\end{equation*}
+This also implies that the ratio of consecutive
+Fibonacci numbers rapidly approaches the golden ratio.  For example:
+\begin{equation*}
+\frac{f(20)}{f(19)} = \frac{10946}{6765} = 1.618033998\ldots
+\end{equation*}
+
+\subsection{Solving Homogeneous Linear Recurrences}
+
+The method we used to solve the Fibonacci recurrence can be extended
+to solve any homogeneous linear recurrence; that is, a recurrence of
+the form
+\begin{align*}
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d)
+\end{align*}
+where $a_1, a_2, \ldots, a_d$ and $d$ are constants.  Substituting the
+guess $f(n) = x^n$, as with the Fibonacci recurrence, gives:
+\begin{align*}
+x^n & =a_1x^{n-1} +a_2x^{n-2} + \ldots +a_dx^{n-d}
+\end{align*}
+Dividing by $x^{n-d}$ gives:
+\begin{align*}
+x^d & = a_1x^{d-1} + a_2x^{d-2} + \ldots+a_{d-1}x+a_d
+\end{align*}
+This is called the \term{characteristic equation} of the
+recurrence. The characteristic equation can be read off quickly
+since the coefficients of the equation are the same as the
+coefficients of the recurrence.
+
+The solutions to a linear recurrence are defined by the roots of the
+characteristic equation. Neglecting boundary conditions for the
+moment:
+\begin{itemize}
+\item If $r$ is a nonrepeated root of the characteristic equation,
+  then $r^n$ is a solution to the recurrence.
+\item If $r$ is a repeated root with multiplicity $k$ then $r^n,
+  nr^n, n^2r^n, \ldots, n^{k-1}r^n$ are all solutions to the
+  recurrence.
+\end{itemize}
+Theorem~\ref{th:recur-linearity} implies that every linear
+  combination of these solutions is also a solution.
+
+For example, suppose that the characteristic equation of a
+recurrence has roots $s$, $t$, and $u$ twice. These four roots
+imply four distinct solutions:
+\[
+f(n) = s^n \qquad f(n) = t^n \qquad f(n) = u^n \qquad f(n)
+  = nu^n
+\]
+Furthermore, every linear combination
+\begin{equation}
+f(n) = a \cdot s^n + b \cdot t^n + c \cdot u^n +d \cdot nu^n
+\end{equation}
+is also a solution.
+
+All that remains is to select a solution consistent with the boundary
+conditions by choosing the constants appropriately. Each boundary
+condition implies a linear equation involving these constants. So we
+can determine the constants by solving a system of linear
+equations. For example, suppoose our boundary conditions were $f(0) =
+0$, $f(1) = 1$, $f(2) = 4$, and $f(3) = 9$.  Then we would obtain four
+equations in four unknowns:
+\[
+\begin{array}{r@{\quad\Rightarrow\quad}l}
+f(0) = 0 & a \cdot s^0 + b \cdot t^0 + c \cdot u^0 +d \cdot
+0u^0 = 0 \\
+f(1) = 1 & a \cdot s^1 + b \cdot t^1 + c \cdot u^1 +d \cdot
+1u^1 = 1 \\
+f(2) = 4 & a \cdot s^2 + b \cdot t^2 + c \cdot u^2 +d \cdot
+2u^2 = 4 \\
+f(3) = 9 & a \cdot s^3 + b \cdot t^3 + c \cdot u^3 +d \cdot
+3u^3 = 9
+\end{array}
+\]
+This looks nasty, but remember that $s$, $t$, and $u$ are just
+constants. Solving this system gives values for $a$, $b$, $c$, and $d$
+that define a solution to the recurrence consistent with the boundary
+conditions.
+
+\subsection{Solving General Linear Recurrences}
+
+We can now solve all linear homogeneous recurrences, which have the
+form:
+\begin{align*}
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d)
+\end{align*}
+Many recurrences that arise in practice do not quite fit this mold.
+For example, the Towers of Hanoi problem led to this recurrence:
+\begin{align*}
+f(1) & = 1 \\
+f(n) & = 2 f(n - 1) + 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+The problem is the extra $+1$; that is not allowed in a homogeneous
+linear recurrence.  In general, adding an extra function $g(n)$ to the
+right side of a linear recurrence gives an \term{inhomogenous linear
+  recurrence}:
+\begin{align*}
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d) + g(n)
+\end{align*}
+
+Solving inhomogenous linear recurrences is neither very different nor
+very difficult. We can divide the whole job into five steps:
+
+\begin{enumerate}
+
+\item Replace $g(n)$ by 0, leaving a homogeneous recurrence.  As
+  before, find roots of the characteristic equation.
+
+\item Write down the solution to the homogeneous recurrence, but do
+  not yet use the boundary conditions to determine coefficients.  This
+  is called the \term{homogeneous solution}.
+
+\item Now restore $g(n)$ and find a single solution to the recurrence,
+  ignoring boundary conditions.  This is called a \term{particular
+    solution}.  We'll explain how to find a particular solution
+  shortly.
+
+\item Add the homogenous and particular solutions together to obtain
+  the {\em general solution}.
+
+\item Now use the boundary conditions to determine constants by the
+  usual method of generating and solving a system of linear equations.
+
+\end{enumerate}
+
+As an example, let's consider a variation of the Towers of Hanoi
+problem.  Suppose that moving a disk takes time proportional to its
+size.  Specifically, moving the smallest disk takes 1 second, the
+next-smallest takes 2 seconds, and moving the $n$-th disk then
+requires $n$ seconds instead of 1.  So, in this variation, the time to
+complete the job is given by a recurrence with a $+n$ term instead of
+a $+1$.
+\begin{align*}
+f(1) & = 1 \\
+f(n) & = 2 f(n - 1) + n \text{\qquad for $n \geq 2$}
+\end{align*}
+Clearly, this will take longer, but how much longer?  Let's solve the
+recurrence with the method described above.
+
+In Steps 1 and 2, dropping the $+n$ leaves the homogeneous recurrence
+$f(n) = 2 f(n -1)$.  The characteristic equation is $x = 2$.  So the
+homogenous solution is $f(n) = c2^n$.
+
+In Step 3, we must find a solution to the full recurrence $f(n) = 2
+f(n - 1) + n$, without regard to the boundary condition.  Let's guess
+that there is a solution of the form $f(n) = a n + b$ for some
+constants $a$ and $b$.  Substituting this guess into the recurrence
+gives:
+\begin{align*}
+a n + b & = 2 (a (n - 1) + b) + n \\
+0 & = (a + 1) n + (b - 2 a)
+\end{align*}
+The second equation is a simplification of the first.  The second
+equation holds for all $n$ if both $a + 1 = 0$ (which implies $a =
+-1$) and $b - 2a = 0$ (which implies that $b = -2$).  So $f(n) = an +
+b = -n - 2$ is a particular solution.
+
+In the Step 4, we add the homogeneous and particular solutions to
+obtain the general solution:
+\begin{align*}
+f(n) & = c 2^n - n - 2
+\end{align*}
+
+Finally, in step 5, we use the boundary condition, $f(1) = 1$,
+determine the value of the constant $c$:
+\begin{align*}
+f(1) = 1 \qquad & \Rightarrow \qquad c 2^1 - 1 - 2 = 1 \\
+  & \Rightarrow \qquad c = 2
+\end{align*}
+Therefore, the function $f(n) = 2 \cdot 2^n - n - 2$ solves this
+variant of the Towers of Hanoi recurrence.  For comparison, the
+solution to the original Towers of Hanoi problem was $2^n - 1$.  So if
+moving disks takes time proportional to their size, then the monks
+will need about twice as much time to solve the whole puzzle.
+
+\subsection{How to Guess a Particular Solution}
+
+Finding a particular solution can be the hardest part of solving
+inhomogeneous recurrences. This involves guessing, and you might guess
+wrong. However, some rules of thumb make this job fairly easy most of
+the time.
+
+\begin{itemize}
+\item Generally, look for a particular solution with the same form as
+  the inhomogeneous term $g(n)$.
+\item If $g(n)$ is a constant, then guess a particular solution $f(n)
+  = c$. If this doesn't work, try polynomials of progressively higher
+  degree:  $f(n)=bn+c$, then $f(n)=an^2 +bn+c$, etc.
+\item More generally, if $g(n)$ is a polynomial, try a polynomial of
+  the same degree, then a polynomial of degree one higher, then two
+  higher, etc. For example, if $g(n) = 6n + 5$, then try $f(n)=bn+c$
+  and then $f(n)=an^2 +bn+c$.
+\item If $g(n)$ is an exponential, such as $3^n$, then first guess
+  that $f(n) = c3^n$. Failing that, try $f(n) = bn3^n + c3^n$ and then
+  $an^23^n + bn3^n + c3^n$, etc.
+\end{itemize}
+
+\begin{center}
+START OF QUICK REFERENCE GUIDE
+% This should probably be visually
+% distinguished so students can find it quickly.
+\end{center}
+
+\begin{center}
+\subsection*{Short Guide to Solving Linear Recurreces}
+\end{center}
+
+A linear recurrence is an equation
+\begin{equation*}
+f(n) = \underbrace{a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n -
+  d)}_{\text{homogeneous part}}
+\underbrace{+\ g(n)}_{\text{inhomogeneous part}}
+\end{equation*}
+together with boundary conditions such as $f(0) = b_0$, $f(1) = b_1$,
+etc.  Linear recurrences are solved as follows:
+
+\begin{enumerate}
+\item Find the roots of the characteristic equation:
+\begin{equation*}
+x^n = a_1 x^{n-1} + a_2 x^{n-2} + \ldots + a_{k-1} x + a_k
+\end{equation*}
+\item Write down the homogeneous solution.  Each root generates one
+  term and the homogeneous solution is their sum.  A nonrepeated root
+  $r$ generates the term $c r^n$, where $c$ is a constant to be
+  determined later.  A root $r$ with multiplicity $k$ generates the
+  terms:
+\[
+d_{1} r^n \qquad d_2 n r^n \qquad d_3 n^2 r^n \qquad \ldots \qquad d_k n^{k-1} r^n
+\]
+where $d_1, \ldots d_k$ are constants to be determined later.
+\item Find a particular solution.  This is a solution to the full
+  recurrence that need not be consistent with the boundary
+  conditions.  Use guess-and-verify.  If $g(n)$ is a polynomial, try a
+  polynomial of the same degree, then of one higher degree, then two
+  higher.  For example, if $g(n) = n$, then try $f(n) = bn + c$ and
+  then $an^2 + bn + c$.  If $g(n)$ is an exponential, such as $3^n$,
+  then first guess $f(n) = c3^n$.  Failing that, try $f(n) = bn3^n$
+  and then $an^23^n + bn3^n + c3^n$, etc.
+\item Form the general solution, which is the sum of the homogeneous
+  solution and the particular solution.  Here is a typical general
+  solution:
+\begin{equation*}
+f(n) = \underbrace{c2^n + d(-1)^n}_{\text{homogeneous solution}} +
+\underbrace{3n + 1}_{\text{inhomogeneous solution}}
+\end{equation*}
+\item Substitute the boundary conditions into the general soultion.
+  Each boundary condition gives a linear equation in the unknown
+  constants.  For example, substituting $f(1) = 2$ into the general
+  solution above gives:
+\begin{align*}
+2 & = c\cdot2^1 + d \cdot(-1)^1 + 3 \cdot 1 + 1 \\
+\Rightarrow \qquad -2 & = 2c - d
+\end{align*}
+Determine the values of these constants by solving the resulting
+system of linear equations.
+\end{enumerate}
+
+\begin{center}
+END OF QUICK REFERENCE GUIDE
+\end{center}
+
+\section{Divide-and-Conquer Recurrences}
+
+We now have a recipe for solving general linear recurrences.  But the
+Merge Sort recurrence, which we encountered earlier, is not linear:
+\begin{align*}
+T(1) & = 0 \\
+T(n) & = 2 T(n/2) + n - 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+In particular, $T(n)$ is not a linear combination of a fixed number of
+immediately preceding terms; rather, $T(n)$ is a function of $T(n/2)$,
+a term halfway back in the sequence.
+
+Merge Sort is an example of a divide-and-conquer algorithm: it divides
+the input, ``conquers'' the pieces, and combines the results.
+Analysis of such algorithms commonly leads to \term{divide-and-conquer}
+recurrences, which have this form:
+\begin{equation*}
+T(n) =
+ \sum_{i=1}^k a_i T(b_i n) + g(n)
+\end{equation*}
+Here $a_1, \ldots a_k$ are positive constants, $b_1, \ldots, b_k$ are
+constants between 0 and 1, and $g(n)$ is a nonnegative function.  For
+example, setting $a_1 = 2$, $b_1 = 1/2$, and $g(n) = n - 1$ gives the
+Merge Sort recurrence.
+
+\subsection{The Akra-Bazzi Formula}
+
+The solution to virtually all divide and conquer solutions is given by
+the amazing \term{Akra-Bazzi formula}.  Quite simply, the asymptotic
+solution to the general divide-and-conquer recurrence
+\begin{equation*}
+T(n) =
+ \sum_{i=1}^k a_i T(b_i n) + g(n)
+\end{equation*}
+is
+\begin{equation*}
+T(n) = \Theta\left(
+n^p \left(1 + \int_1^n \frac{g(u)}{u^{p+1}}\ du\right)
+\right)
+\end{equation*}
+where $p$ satisfies
+\begin{equation*}
+\sum_{i=1}^k {a_i b_i^p} = 1.
+\end{equation*}
+
+A rarely-troublesome requirement is that the function $g(n)$ must not
+grow or oscillate too quickly.  Specifically, $|g'(n)|$ must be
+bounded by some polynomial.  So, for example, the Akra-Bazzi formula
+is valid when $g(n) = x^2 \log n$, but not when $g(n) = 2^n$.
+
+Let's solve the Merge Sort recurrence again, using the Akra-Bazzi
+formula instead of plug-and-chug.  First, we find the value $p$
+that satisfies:
+\[
+2 \cdot (1/2)^p = 1
+\]
+Looks like $p = 1$ does the job.  Then we compute the integral:
+\begin{align*}
+T(n) & = \Theta\left(
+n \left(1 + \int_1^n \frac{u - 1}{u^2} du\right)
+\right) \\
+  & = \Theta\left(
+n \left(1 + \left(\log u + \frac{1}{u}\right)_1^n\right)
+\right) \\
+  & = \Theta\left(
+n \left(\log n + \frac{1}{n}\right)
+\right) \\
+  & = \Theta\left(n \log n\right)
+\end{align*}
+The first step is integration and the second is simplification.  We
+can drop the $1/n$ term in the last step, because the $\log n$ term
+dominates.  We're done!
+
+Let's try a scary-looking recurrence:
+\begin{align*}
+T(n) & = 2T(n/2) + 8/9T(3n/4) + n^2
+\end{align*}
+Here, $a_1 = 2$, $b_1 = 1/2$, $a_2 = 8/9$, and $b_2 = 3/4$.  So we
+find the value $p$ that satisfies:
+\[
+2 \cdot (1/2)^p + (8/9) (3/4)^p = 1
+\]
+Equations of this form don't always have closed-form solutions, so you
+may need to approximate $p$ numerically sometimes.  But in this case
+the solution is simple: $p = 2$.  Then we integrate:
+\begin{align*}
+T(n) & = \Theta\left(
+n^2 \left(1 + \int_1^n \frac{u^2}{u^3} du \right) \right) \\
+  & = \Theta\left(
+n^2 (1 + \log n) \right) \\
+  & = \Theta\left(n^2 \log n\right)
+\end{align*}
+That was easy!
+
+\subsection{Two Technical Issues}
+
+Until now, we've swept a couple issues related to divide-and-conquer
+recurrences under the rug.  Let's address those issues now.
+
+First, the Akra-Bazzi formula makes no use of boundary conditions.  To
+see why, let's go back to Merge Sort.  During the plug-and-chug
+analysis, we found that:
+\begin{equation*}
+T_n = n T_1 + n \log n - n + 1
+\end{equation*}
+This expresses the $n$-th term as a function of the first term, whose
+value is specified in a boundary condition.  But notice that $T_n =
+\Theta(n \log n)$ for {\em every} value of $T_1$.  The boundary
+condition doesn't matter!
+
+This is the typical situation: {\em the asymptotic solution to a
+  divide-and-conquer recurrence is independent of the boundary
+  conditions}.  Intuitively, if the bottom-level operation in a
+recursive algorithm takes, say, twice as long, then the overall
+running time will at most double.  This matters in practice, but the
+factor of 2 is concealed by asymptotic notation.  There are
+corner-case exceptions.  For example, the solution to $T(n) = 2
+T(n/2)$ is either $\Theta(n)$ or zero, depending on whether $T(1)$ is
+zero.  These cases are of little practical interest, so we won't
+consider them further.
+
+There is a second nagging issue with divide-and-conquer recurrences
+that does not arise with linear recurrences.  Specifically, dividing
+a problem of size $n$ may create subproblems of non-integer size.  For
+example, the Merge Sort recurrence contains the term $T(n/2)$.  So
+what if $n$ is 15?  How long does it take to sort seven-and-a-half
+items?  Previously, we dodged this issue by analyzing Merge Sort only
+when the size of the input was a power of 2.  But then we don't know
+what happens for an input of size, say, 100.
+
+Of course, a practical implementation of Merge Sort would split the
+input {\em approximately} in half, sort the halves recursively, and
+merge the results.  For example, a list of 15 numbers would be split
+into lists of 7 and 8.  More generally, a list of $n$ numbers would be
+split into approximate halves of size $\lceil n / 2 \rceil$ and
+$\lfloor n / 2 \rfloor$.  So the maximum number of comparisons is
+actually given by this recurrence:
+\begin{align*}
+T(1) & = 0 \\
+T(n) & = T\left(\lceil n/2\rceil\right) + T\left(\lfloor
+  n/2\rfloor\right)+ n - 1 \text{\qquad (for $n \geq 2$)}
+\end{align*}
+This may be rigorously correct, but the ceiling and floor operations
+make the recurrence hard to solve exactly.
+
+Fortunately, {\em the asymptotic solution to a divide and conquer
+  recurrence is unaffected by floors and ceilings}.  More precisely,
+the solution is not changed by replacing a term $T(b_i n)$ with either
+$T(\lceil b_i n \rceil)$ or $T(\lfloor b_i n \rfloor)$.  So leaving
+floors and ceilings out of divide-and-conquer recurrences makes sense
+in many contexts; those are complications that make no difference.
+
+\subsection{The Akra-Bazzi Theorem}
+
+The Akra-Bazzi formula together with our assertions about boundary
+conditions and integrality all follow from the \term{Akra-Bazzi
+  Theorem}, which is stated below.
+
+\begin{theorem}[Akra-Bazzi]
+\label{th:akra-bazzi}
+Suppose that the function $T: \mathbb{R} \to\mathbb{R}$ is satisfies
+the recurrence
+\begin{equation*}
+T(x) =
+\begin{cases}
+\text{is nonnegative and bounded} & \text{for $0 \leq x \leq x_0$} \\
+\sum_{i=1}^k T(b_1x + h_i(x)) + g(x) & \text{for x > 0}
+\end{cases}
+\end{equation*}
+where:
+\begin{enumerate}
+\item $a_1, \ldots, a_k$ are positive constants
+\item $b_1, \ldots, b_k$ are constants between 0 and 1
+\item $x_0$ is large enough so that $T$ is well-defined
+\item $g(x)$ is a nonnegative function such that $|g'(x)|$ is bounded
+by a polynomial
+\item $|h_i(x)| = O(x / \log^2 x)$
+\end{enumerate}
+Then
+\begin{equation*}
+T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} \
+    du\right) \right)
+\end{equation*}
+where $p$ satisfies
+\begin{equation*}
+\sum_{i=1}^k {a_i b_i^p} = 1.
+\end{equation*}
+\end{theorem}
+
+The Akra-Bazzi theorem can be proved inductively, though we won't do
+that here.  But let's at least go over the statement of the theorem.
+
+All recurrences we've considered were defined over the integers, and
+that is the common case.  But the Akra-Bazzi theorem applies more
+generally to functions defined over the real numbers.
+
+The Akra-Bazzi formula is lifted directed from the theorem statement,
+except that the recurrence in the theorem includes extra functions,
+$h_i$.  These functions extend the theorem to address floors,
+ceilings, and other small adjustments to the sizes of subproblems.
+The trick is illustrated by this combination of parameters
+\begin{align*}
+a_1 &= 1 & b_1 & = 1/2 & h_1(x) & = \left\lceil\frac{x}{2}\right\rceil -
+\frac{x}{2}\\
+a_2 &= 1 & b_2 & = 1/2 & h_2(x) & = \left\lfloor\frac{x}{2}\right\rfloor -
+\frac{x}{2} \\
+& & g(x) & = x - 1
+\end{align*}
+which corresponds the recurrence
+\begin{align*}
+T(x) & = 1 \cdot T\left(\frac{x}{2} + \left(\left\lceil\frac{x}{2}\right\rceil -\frac{x}{2}\right)\right) + 
+ \cdot T\left(\frac{x}{2} +
+\left(\left\lfloor\frac{x}{2}\right\rfloor -
+  \frac{x}{2}\right)\right) + x - 1 \\
+ & = T\left(\left\lceil\frac{x}{2}\right\rceil\right) +
+ T\left(\left\lfloor\frac{x}{2}\right\rfloor\right) + x - 1.
+\end{align*}
+
+This is the rigorously correct Merge Sort recurrence valid for all
+input sizes, complete with floor and ceiling operators.  In this case,
+the functions $h_1(x)$ and $h_2(x)$ are both at most 1, which is
+easily $O(x
+/ \log^2 x)$ as required by the theorem statement.  These functions
+$h_i$ do not affect--- or even appear in--- the asymptotic solution to
+the recurrence.  This justifies our earlier claim that applying floor
+and ceiling operators to the size of a subproblem does not alter the
+asymptotic solution to a divide-and-conquer recurrence.
+
+\section{A Feel for Recurrences}
+
+We've guessed and verified, plugged and chugged, found roots, computed
+integrals, and solved linear systems and exponential equations.  Now
+let's step back and look for some rules of htumb.  What kinds of
+recurrences have what sorts of solutions?
+
+Here are some recurrences we solved earlier:
+\[
+\begin{array}{cll}
+& \text{Recurrence} & \text{Solution} \\
+\text{Towers of Hanoi} & T_n = 2 T_{n-1} + 1 & T_n \sim 2^n \\
+\text{Merge Sort} & T_n = 2 T_{n/2} + n - 1 & T_n \sim n \log n \\
+\text{Hanoi variation} & T_n = 2 T_{n-1} + n & T_n \sim 2 \cdot 2^n \\
+\text{Fibonacci} & T_n = T_{n-1} + T_{n-2} & T_n \sim
+(1.618\ldots)^{n+1} / \sqrt{5}
+\end{array}
+\]
+Notice that the recurrence equations for Towers of Hanoi and Merge
+Sort are somewhat similar, but the solutions are radically different.
+Merge Sorting $n = 64$ items takes a few hundred comparisons, while
+moving $n = 64$ disks takes more than $10^{19}$ steps!
+
+Each recurrence has one strength and one weakness. In the Towers of
+Hanoi, we broke a problem of size $n$ into two subproblem of size $n -
+1$ (which is large), but needed only 1 additional step (which is
+small). In Merge Sort, we divided the problem of size $n$ into two
+subproblems of size $n/2$ (which is small), but needed $(n - 1)$
+additional steps (which is large). Yet, Merge Sort is faster by a
+mile!
+
+This suggests that {\em generating smaller subproblems is far more
+  important to algorithmic speed than reducing the additional steps
+  per recursive call}.  For example, shifting to the variation of
+Towers of Hanoi increased the last term from $+1$ to $+n$, but the
+solution only doubled.  And one of the two subproblems in the
+Fibonacci recurrence is just {\em slightly} smaller than in Towers of
+Hanoi (size $n -2$ instead of $n-1$).  Yet the solution is
+exponentially smaller!  More generally, linear recurrences (which have
+big subproblems) typically have exponential solutions, while
+divide-and-conquer recurrences (which have small subproblems) usually
+have solutions bounded above by a polynomial.
+
+All the examples listed above break a problem of size $n$ into two
+smaller problems.  How does the number of subproblems affect the
+solution?  For example, suppose we increased the number of subproblems
+in Towers of Hanoi from 2 to 3, giving this recurrence:
+\begin{equation*}
+T_n = 3 T_{n-1} + 1
+\end{equation*}
+This increases the root of the characteristic equation from 2 to 3,
+which raises the solution exponentially, from $\Theta(2^n)$ to
+$\Theta(3^n)$.
+
+Divide-and-conquer recurrences are also sensitive to the number of
+subproblems.  For example, for this generalization of the Merge Sort
+recurrence:
+\begin{align*}
+T_1 & = 0 \\
+T_{n} & = a T_{n/2} + n - 1
+\end{align*}
+the Akra-Bazzi formula gives:
+\begin{equation*}
+T_n = \begin{cases}
+\Theta(n) & \text{for $a < 2$} \\
+\Theta(n \log n) & \text{for $a = 2$} \\
+\Theta(n^{\log a}) & \text{for $a > 2$}
+\end{cases}
+\end{equation*}
+So the solution takes on three completely different forms a $a$ goes
+from 1.99 to 2.01!
+
+How do boundary conditions affect the solution to a recurrence?  We've
+seen that they are almost irrelevant for divide-and-conquer
+recurrences.  For linear recurrences, the solution is usually
+dominated by an exponential whose base is determined by the number and
+size of subproblems.  Boundary conditions matter greatly only when
+they give the dominant term a zero coefficient, which changes the
+asymptotic solution.
+
+So now we have a rule of thumb!  The performance of a recursive
+procedure is usually dictated by the size and number of subproblems,
+rather than the amount of work per recursive call or time spent at the
+base of the recursion.  In particular, if subproblems are smaller than
+the original by an additive factor, the solution is most often
+exponential.  But if the subproblems are only a fraction the size of
+the original, then the solution is typically bounded by a polynomial.
+
 \endinput
