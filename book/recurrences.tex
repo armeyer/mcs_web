@@ -7,11 +7,10 @@
 
 A recurrence describes a sequence of numbers.  Early terms are
 specified explicitly and later terms are expressed as a function of
-their precedessors.  As a trivial example, this recurrence describes
-the sequence 1, 2, 3, etc.
+their precedessors.  As a trivial example, the sequence 1, 2, 3, \dots of positive integers can be defined by the recurrence:
 \begin{align*}
 T_1 & = 1 \\
-T_n & = T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}
+T_n & = T_{n-1} + 1 & \text{(for $n \geq 2$)}
 \end{align*}
 Here, the first term is defined to be 1 and each subsequent term is
 one more than its predecessor.
@@ -399,6 +398,7 @@ $T_n = 2^n - 1$.  Let's try to prove the ``nicer'' upper bound $T_n
 \leq 2^n$, proceeding exactly as before.
 
 \begin{proof} (Failed attempt.)
+
   The proof is by induction on $n$.  The induction hypothesis is that
   $T_n \leq 2^n$.  This is true for $n = 1$ because $T_1 = 1 \leq 2^1$.
   Now assume that $T_{n-1} \leq 2^{n-1}$ in order to prove that $T_n
@@ -583,10 +583,10 @@ can be divided in half at every stage of the recursion.
 \end{itemize}
 Therefore, the maximum number of comparisons needed to Merge Sort $n$
 items is given by this recurrence:
-\begin{align*}
-T_1 & = 0 \\
-T_{n} & = 2 T_{n/2} + n - 1 \text{\qquad (for $n \geq 2$ and a power of 2)}
-\end{align*}
+\begin{align}
+T_1 & = 0, \\
+T_{n} & = 2 T_{n/2} + n - 1 & \text{(for $n$ a \arm{positive} power of 2)}.
+\end{align}
 This fully describes the number of comparisons, but not in a very
 useful way; a closed-form expression would be much more helpful.  To
 get that, we have to solve the recurrence.
@@ -653,7 +653,7 @@ know is 0:
 T_n & = 2^k T_{n/2^k} + kn - 2^k + 1 \\
   & = 2^{\log n} T_{n/2^{\log n}} + n \log n - 2^{\log n} + 1 \\
   & = n T_1 + n \log n - n + 1 \\
-  & = n \log n - n + 1
+  & = n \log n - n + 1\, .
 \end{align*}
 We're done!  We have a closed-form expression for the maximum number
 of comparisons used in Merge Sorting a list of $n$ numbers.  In
@@ -789,16 +789,16 @@ linear combination of solutions is another solution.
 \begin{theorem}
 \label{th:recur-linearity}
   If $f(n)$ and $g(n)$ are both solutions to a homogenous linear
-  recurrence, then $h(n) = s f(n) + t g(n)$ is also a solution for all $s, t \in
-  \mathbb{R}$.
+  recurrence, then $h(n) = s f(n) + t g(n)$ is also a solution for all
+  $s, t \in \reals$.
 \end{theorem}
 \begin{proof}
 \begin{align*}
 h(n) & = sf(n) + tg(n) \\
-  & = s \left(a_1 f(n-1) + \ldots + a_d f(n - d)\right) + t \left(a_1 g(n-1) + \ldots + a_d g(n -
-    d)\right) \\
- & = a_1 (s f(n-1) + t g(n-1)) + \ldots + a_d (s f(n-d) + t g(n-d)) \\
-  & =  a_1 h(n-1) + \ldots + a_d h(n-d)
+& = s \paren{a_1 f(n-1) + \cdots + a_d f(n - d)} +
+    t \paren{a_1 g(n-1) + \cdots + a_d g(n - d)} \\
+& = a_1 (s f(n-1) + t g(n-1)) + \cdots + a_d (s f(n-d) + t g(n-d)) \\
+& = a_1 h(n-1) + \cdots + a_d h(n-d)\, .
 \end{align*}
 The first step uses the definition of the function $h$, and the second
 uses the fact that $f$ and $g$ are solutions to the recurrence.  In
@@ -1112,7 +1112,7 @@ where $d_1, \ldots d_k$ are constants to be determined later.
 f(n) = \underbrace{c2^n + d(-1)^n}_{\text{homogeneous solution}} +
 \underbrace{3n + 1}_{\text{inhomogeneous solution}}
 \end{equation*}
-\item Substitute the boundary conditions into the general soultion.
+\item Substitute the boundary conditions into the general solution.
   Each boundary condition gives a linear equation in the unknown
   constants.  For example, substituting $f(1) = 2$ into the general
   solution above gives:
@@ -1131,11 +1131,12 @@ END OF QUICK REFERENCE GUIDE
 \section{Divide-and-Conquer Recurrences}
 
 We now have a recipe for solving general linear recurrences.  But the
-Merge Sort recurrence, which we encountered earlier, is not linear:
-\begin{align*}
-T(1) & = 0 \\
-T(n) & = 2 T(n/2) + n - 1 \text{\qquad (for $n \geq 2$)}
-\end{align*}
+Merge Sort recurrence which we encountered
+earlier is not linear:
+\begin{align}
+T(1) & = 0, \tag{MS.1}\\
+T(n) & = 2 T(n/2) + n - 1 & \text{(for $n \geq 2$).\tag{MS.2}}
+\end{align}
 In particular, $T(n)$ is not a linear combination of a fixed number of
 immediately preceding terms; rather, $T(n)$ is a function of $T(n/2)$,
 a term halfway back in the sequence.
@@ -1144,10 +1145,10 @@ Merge Sort is an example of a divide-and-conquer algorithm: it divides
 the input, ``conquers'' the pieces, and combines the results.
 Analysis of such algorithms commonly leads to \term{divide-and-conquer}
 recurrences, which have this form:
-\begin{equation*}
+\begin{equation}\label{dandc_genl_eq}
 T(n) =
  \sum_{i=1}^k a_i T(b_i n) + g(n)
-\end{equation*}
+\end{equation}
 Here $a_1, \ldots a_k$ are positive constants, $b_1, \ldots, b_k$ are
 constants between 0 and 1, and $g(n)$ is a nonnegative function.  For
 example, setting $a_1 = 2$, $b_1 = 1/2$, and $g(n) = n - 1$ gives the
@@ -1156,69 +1157,62 @@ Merge Sort recurrence.
 \subsection{The Akra-Bazzi Formula}
 
 The solution to virtually all divide and conquer solutions is given by
-the amazing \term{Akra-Bazzi formula}.  Quite simply, the asymptotic
-solution to the general divide-and-conquer recurrence
+the amazing \term{Akra-Bazzi formula}, namely,
+\arm{REDUNDANT:
+The general divide-and-conquer recurrence~\eqref{dandc_genl_eq} is
 \begin{equation*}
-T(n) =
- \sum_{i=1}^k a_i T(b_i n) + g(n)
+T(n) = \sum_{i=1}^k a_i T(b_i n) + g(n)
 \end{equation*}
-is
-\begin{equation*}
-T(n) = \Theta\left(
-n^p \left(1 + \int_1^n \frac{g(u)}{u^{p+1}}\ du\right)
-\right)
-\end{equation*}
-where $p$ satisfies
-\begin{equation*}
-\sum_{i=1}^k {a_i b_i^p} = 1.
-\end{equation*}
-
-A rarely-troublesome requirement is that the function $g(n)$ must not
-grow or oscillate too quickly.  Specifically, $|g'(n)|$ must be
-bounded by some polynomial.  So, for example, the Akra-Bazzi formula
-is valid when $g(n) = x^2 \log n$, but not when $g(n) = 2^n$.
-
-Let's solve the Merge Sort recurrence again, using the Akra-Bazzi
-formula instead of plug-and-chug.  First, we find the value $p$
-that satisfies:
+and its}
+the asymptotic solution to the general
+divide-and-conquer recurrence~\eqref{dandc_genl_eq} is
 \[
-2 \cdot (1/2)^p = 1
+T(n) = \Theta\paren{n^p \paren{1 + \int_1^n \frac{g(u)}{u^{p+1}}\ du}}
 \]
-Looks like $p = 1$ does the job.  Then we compute the integral:
+where $p$ satisfies
+\[
+\sum_{i=1}^k {a_i b_i^p} = 1.
+\]
+
+A rarely troublesome requirement is that the function $g(n)$ must not
+grow or oscillate too quickly.  Specifically, $\abs{g'(n)}$ must be
+bounded by some polynomial.  So, for example, the Akra-Bazzi formula
+is valid when $g(n) = n^2 \log n$, but not when $g(n) = 2^n$.
+
+Let's solve the Merge Sort recurrence (MS.1,MS.2) again, using the
+Akra-Bazzi formula instead of plug-and-chug.  First, we find the value
+$p$ that satisfies:
+\[
+2 \cdot (1/2)^p = 1\, .
+\]
+So $p = 1$ does the job.  \arm{Next, since in this case $g(u) = u-1$,}
+we compute the integral:
 \begin{align*}
-T(n) & = \Theta\left(
-n \left(1 + \int_1^n \frac{u - 1}{u^2} du\right)
-\right) \\
-  & = \Theta\left(
-n \left(1 + \left(\log u + \frac{1}{u}\right)_1^n\right)
-\right) \\
-  & = \Theta\left(
-n \left(\log n + \frac{1}{n}\right)
-\right) \\
-  & = \Theta\left(n \log n\right)
+T(n) & = \Theta\paren{n \paren{1 + \int_1^n \frac{u - 1}{u^2} du}} \\
+  & = \Theta\paren{n\paren{\paren{\log u + \frac{1}{u}}}|_1^n}
+  & = \Theta\paren{n \paren{\log n + \frac{1}{n}}} \\
+  & = \Theta(n\log n)
 \end{align*}
 The first step is integration and the second is simplification.  We
 can drop the $1/n$ term in the last step, because the $\log n$ term
 dominates.  We're done!
 
 Let's try a scary-looking recurrence:
-\begin{align*}
-T(n) & = 2T(n/2) + 8/9T(3n/4) + n^2
-\end{align*}
+\[
+T(n) = 2T(n/2) + (8/9)T(3n/4) + n^2.
+\]
 Here, $a_1 = 2$, $b_1 = 1/2$, $a_2 = 8/9$, and $b_2 = 3/4$.  So we
 find the value $p$ that satisfies:
 \[
-2 \cdot (1/2)^p + (8/9) (3/4)^p = 1
+2 \cdot (1/2)^p + (8/9) (3/4)^p = 1.
 \]
 Equations of this form don't always have closed-form solutions, so you
 may need to approximate $p$ numerically sometimes.  But in this case
 the solution is simple: $p = 2$.  Then we integrate:
 \begin{align*}
-T(n) & = \Theta\left(
-n^2 \left(1 + \int_1^n \frac{u^2}{u^3} du \right) \right) \\
-  & = \Theta\left(
-n^2 (1 + \log n) \right) \\
-  & = \Theta\left(n^2 \log n\right)
+T(n) & = \Theta\paren{n^2 \paren{1 + \int_1^n \frac{u^2}{u^3} du}} \\
+  & = \Theta\paren{n^2 (1 + \log n)} \\
+  & = \Theta\paren{n^2 \log n}.
 \end{align*}
 That was easy!
 
@@ -1230,10 +1224,10 @@ recurrences under the rug.  Let's address those issues now.
 First, the Akra-Bazzi formula makes no use of boundary conditions.  To
 see why, let's go back to Merge Sort.  During the plug-and-chug
 analysis, we found that:
-\begin{equation*}
+\[
 T_n = n T_1 + n \log n - n + 1
-\end{equation*}
-This expresses the $n$-th term as a function of the first term, whose
+\]
+This expresses the $n$th term as a function of the first term, whose
 value is specified in a boundary condition.  But notice that $T_n =
 \Theta(n \log n)$ for \emph{every} value of $T_1$.  The boundary
 condition doesn't matter!
@@ -1266,19 +1260,19 @@ split into approximate halves of size $\lceil n / 2 \rceil$ and
 $\lfloor n / 2 \rfloor$.  So the maximum number of comparisons is
 actually given by this recurrence:
 \begin{align*}
-T(1) & = 0 \\
-T(n) & = T\left(\lceil n/2\rceil\right) + T\left(\lfloor
-  n/2\rfloor\right)+ n - 1 \text{\qquad (for $n \geq 2$)}
+T(1) & = 0, \\
+T(n) & = T\paren{\ceil{n/2}} + T\paren{\floor{n/2}}+ n - 1 & \text{(for $n \geq 2$).}
 \end{align*}
 This may be rigorously correct, but the ceiling and floor operations
 make the recurrence hard to solve exactly.
 
 Fortunately, \emph{the asymptotic solution to a divide and conquer
   recurrence is unaffected by floors and ceilings}.  More precisely,
-the solution is not changed by replacing a term $T(b_i n)$ with either
-$T(\lceil b_i n \rceil)$ or $T(\lfloor b_i n \rfloor)$.  So leaving
-floors and ceilings out of divide-and-conquer recurrences makes sense
-in many contexts; those are complications that make no difference.
+the solution is not changed by replacing a term $T\paren{b_i n}$ with
+either $T\paren{\ceil{b_i n}}$ or $T\paren{\floor{b_i n}}$.  So
+leaving floors and ceilings out of divide-and-conquer recurrences
+makes sense in many contexts; those are complications that make no
+difference.
 
 \subsection{The Akra-Bazzi Theorem}
 
@@ -1288,29 +1282,28 @@ conditions and integrality all follow from the \term{Akra-Bazzi
 
 \begin{theorem}[Akra-Bazzi]
 \label{th:akra-bazzi}
-Suppose that the function $T: \mathbb{R} \to\mathbb{R}$ is satisfies
+Suppose that the function $T: \reals \to \reals$ is satisfies
 the recurrence
-\begin{equation*}
+\[
 T(x) =
 \begin{cases}
-\text{is nonnegative and bounded} & \text{for $0 \leq x \leq x_0$} \\
-\sum_{i=1}^k T(b_1x + h_i(x)) + g(x) & \text{for x > 0}
+\text{is nonnegative and bounded} & \text{for $0 \leq x \leq x_0$}, \\
+\sum_{i=1}^k T\paren{b_1x + h_i(x)} + g(x) & \text{for x > 0}.
 \end{cases}
-\end{equation*}
+\]
 where:
 \begin{enumerate}
-\item $a_1, \ldots, a_k$ are positive constants
-\item $b_1, \ldots, b_k$ are constants between 0 and 1
-\item $x_0$ is large enough so that $T$ is well-defined
-\item $g(x)$ is a nonnegative function such that $|g'(x)|$ is bounded
-by a polynomial
-\item $|h_i(x)| = O(x / \log^2 x)$
+\item $a_1, \dots, a_k$ are positive constants,
+\item $b_1, \dots, b_k$ are constants between 0 and 1,
+\item $x_0$ is large enough so that $T$ is well-defined,
+\item $g:\reals to \reals$ is a nonnegative function such that $\abs{g'}$ is
+  bounded by a polynomial,
+\item $h:\reals to \reals$ is such that $\abs{h_i(x)} = O\paren{x / \log^2 x}$.
 \end{enumerate}
 Then
-\begin{equation*}
-T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} \
-    du\right) \right)
-\end{equation*}
+\[
+T(x) = \Theta\paren{x^p }\paren{1 + \int_1^x \frac{g(u)}{u^{p+1}} \ du}
+\]
 where $p$ satisfies
 \begin{equation*}
 \sum_{i=1}^k {a_i b_i^p} = 1.
