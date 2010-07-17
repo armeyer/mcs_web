@@ -1,3 +1,1250 @@
 \chapter{Expectation}\label{chap:expectation}
 
+%% Probability Distributions Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_bigger_number_game}
+\pinput{CP_3_random_variables}
+
+%\homeworkproblems
+%\pinput{PS_drunken_sailor}
+\end{problems}
+
+%% Average & Expected Value %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Average \& Expected Value}\label{expectation_sec} 
+
+The \term{expectation} of a random variable is its average value,
+where each value is weighted according to the probability that it
+comes up.  The expectation is also called the \term{expected value} or
+the \term{mean} of the random variable.
+
+For example, suppose we select a student uniformly at random from the
+class, and let $R$ be the student's quiz score.  Then \index{$\expect{R}$,
+  expectation of $R$} $\expect{R}$ is just the class average---the first
+thing everyone wants to know after getting their test back!  For similar
+reasons, the first thing you usually want to know about a random variable
+is its expected value.
+
+\begin{definition}\label{expdef}
+\begin{align}
+\expect{R} &\eqdef \sum_{x \in \range{R}} x \cdot \pr{R = x}\label{expsumv}\\
+           & = \sum_{x \in \range{R}} x \cdot \pdf_R(x).\notag
+\end{align}
+\end{definition}
+
+Let's work through an example.  Let $R$ be the number that comes up on a
+fair, six-sided die.  Then by~\eqref{expsumv}, the expected value of $R$
+is:
+%
+\begin{align*}
+\expect{R}
+    & = \sum_{k=1}^6 k \cdot \frac{1}{6} \\
+    & = 1 \cdot \frac{1}{6} + 2 \cdot \frac{1}{6} + 3 \cdot \frac{1}{6} +
+        4 \cdot \frac{1}{6} + 5 \cdot \frac{1}{6} + 6 \cdot \frac{1}{6} \\
+    & = \frac{7}{2}
+\end{align*}
+%
+This calculation shows that the name ``expected value'' is a little
+misleading; the random variable might \emph{never} actually take on that
+value.  You don't ever expect to roll a $3 \frac{1}{2}$ on an ordinary
+die!
+
+There is an even simpler formula for expectation:
+\begin{theorem}\label{alt:expdef}
+If $R$ is a random variable defined on a sample space, $\sspace$, then
+\begin{equation}\label{expsumssp}
+\expect{R} = \sum_{\omega \in \sspace} R(\omega) \pr{\omega}
+\end{equation}
+\end{theorem}
+The proof of Theorem~\ref{alt:expdef}, like many of the elementary proofs
+about expectation in this chapter, follows by judicious regrouping of terms
+in the defining sum~\eqref{expsumv}:
+\begin{proof}
+\begin{align*}
+\expect{R}
+    & \eqdef \sum_{x \in \range{R}} x \cdot \pr{R = x}
+                           &\text{(Def~\ref{expdef} of expectation)}\\
+    & = \sum_{x \in \range{R}} x \paren{\sum_{\omega \in [R=x]} \pr{\omega}}
+              & \text{(def of $\pr{R=x}$)}\\
+    & = \sum_{x \in \range{R}} \sum_{\omega \in [R=x]} x \pr{\omega}
+             & \text{(distributing $x$ over the inner sum)} \\
+    & = \sum_{x \in \range{R}} \sum_{\omega \in [R=x]} R(\omega) \pr{\omega}
+                &\text{(def of the event $[R=x]$)}\\
+    & = \sum_{\omega \in \sspace} R(\omega) \pr{\omega}
+\end{align*}
+The last equality follows because the events $[R=x]$ for $x \in \range{R}$
+partition the sample space, $\sspace$, so summing over the outcomes in
+$[R=x]$ for $x \in \range{R}$ is the same as summing over $\sspace$.
+\end{proof}
+
+In general, the defining sum~\eqref{expsumv} is better for calculating
+expected values and has the advantage that it does not depend on the
+sample space, but only on the density function of the random variable.  On
+the other hand, the simpler sum over all outcomes~\eqref{expsumssp}is
+sometimes easier to use in proofs about expectation.
+
+\subsection{Expected Value of an Indicator Variable}
+
+The \idx{expected value} of an \index{indicator variable} indicator random
+variable for an event is just the probability of that event.  \iffalse
+(Remember that a random variable $I_A$ is the indicator random variable
+for event $A$, if $I_A = 1$ when $A$ occurs and $I_A= 0$ otherwise.)\fi
+
+\begin{lemma}\label{expindic}
+If $I_A$ is the indicator random variable for event $A$, then
+\[
+\expect{I_A} = \pr{A}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+\expect{I_A}
+& =  1 \cdot \pr{I_A = 1} + 0 \cdot \pr{I_A = 0} \\
+& = \pr{I_A = 1} \\
+& =  \pr{A}. & \text{(def of $I_A$)}
+\end{align*}
+\end{proof}
+For example, if $A$ is the event that a coin
+with bias $p$ comes up heads, $\expect{I_A} = \pr{I_A=1} = p$.
+
+\subsection{Conditional Expectation}
+
+Just like event probabilities, expectations can be conditioned on some
+event.
+\begin{definition}\label{condexpdef} %\begin{theorem}\label{alt:condexpdef}
+The \term{conditional expectation}, $\expcond{R}{A}$, of a random
+variable, $R$, given event, $A$, is:
+\begin{equation}\label{condexpsumv}
+\expcond{R}{A} \eqdef \sum_{r \in \range{R}} r \cdot\prcond{R=r}{A}.
+\end{equation}
+\end{definition}
+In other words, it is the average value of the variable $R$ when values
+are weighted by their conditional probabilities given $A$.
+
+For example, we can compute the expected value of a roll of a fair die,
+\emph{given}, for example, that the number rolled is at least 4.  We do
+this by letting $R$ be the outcome of a roll of the die.  Then
+by equation~\eqref{condexpsumv},
+\[
+\expcond{R}{R \geq 4} = \sum_{i=1}^6 i \cdot \prcond{R=i}{R \ge 4}
+%= \sum_{i=4}^6 i \cdot 1/3
+= 1\cdot 0 + 2\cdot 0 + 3\cdot 0 +
+  4\cdot\tfrac{1}{3} + 5\cdot\tfrac{1}{3} + 6\cdot\tfrac{1}{3}
+= 5.
+\]
+
+The power of conditional expectation is that it lets us divide complicated
+expectation calculations into simpler cases.  We can find the desired
+expectation by calculating the conditional expectation in each simple case
+and averaging them, weighing each case by its probability.
+
+For example, suppose that 49.8\% of the people in the world are male and
+the rest female---which is more or less true.  Also suppose the expected
+height of a randomly chosen male is $5'\,11''$, while the expected height
+of a randomly chosen female is $5'\,5''$.  What is the expected height of a
+randomly chosen individual?  We can calculate this by averaging the
+heights of men and women.  Namely, let $H$ be the height (in feet) of a
+randomly chosen person, and let $M$ be the event that the person is male
+and $F$ the event that the person is female.  We have
+\begin{align*}
+\expect{H} &= \expcond{H}{M} \pr{M} + \expcond{H}{F} \pr{F}\\
+&= (5 + 11/12) \cdot 0.498  + (5+ 5/12) \cdot 0.502\\
+&= 5.665
+\end{align*}
+which is a little less that 5'\,8".
+
+The Law of \term{Total Expectation} justifies this method.
+
+\begin{theorem}\label{total_expect} %\label{thm:condexp}
+Let $A_1,A_2,\dots$ be a partition of the sample space.  Then
+\begin{rul*}[Law of Total Expectation]
+\[
+\expect{R} = \sum_i \expcond{R}{A_i} \pr{A_i}.
+\]
+\end{rul*}
+\end{theorem}
+
+\begin{proof}
+  \begin{align*}
+    \expect{R} &\eqdef \sum_{r \in \range{R}} r \cdot \pr{R=r}
+                  & \text{(Def~\ref{expdef} of expectation)}\\
+    &= \sum_r r \cdot \sum_i \prcond{R=r}{A_i} \pr{A_i}
+            & \text{(Law of Total Probability)}\\
+    &= \sum_r \sum_i r \cdot \prcond{R=r}{A_i} \pr{A_i}
+              & \text{(distribute constant $r$)}\\
+    &= \sum_i \sum_r r \cdot \prcond{R=r}{A_i} \pr{A_i}
+              & \text{(exchange order of summation)}\\
+    &= \sum_i \pr{A_i} \sum_r r \cdot \prcond{R=r}{A_i}
+             & \text{(factor constant $\pr{A_i}$)}\\
+    &= \sum_i \pr{A_i} \expcond{R}{A_i}.
+             & \text{(Def~\ref{condexpdef} of cond.\ expectation)}
+  \end{align*}
+\end{proof}
+
+
+\iffalse
+
+\subsubsection{Properties of Conditional Expectation}
+
+\textcolor{red}{
+Not needed, since pset shows that condexp is an expectation using
+the ``relative''probability function  from PS\_conditional\_space.}
+
+If a random variable is independent of an event, then conditional
+expectation given that event coincides with ordinary expectation:
+\begin{lemma}\label{RIA}
+If $R$ and $I_A$ are independent random variables, then
+\[
+\expcond{R}{A} = \expect{R}.
+\]
+\end{lemma}
+
+\begin{proof}
+If $R$ and $I_A$ are independent, then
+\[
+\prcond{R=r}{A} = \prcond{R=r}{I_A=1} = \pr{R=r}
+\]
+by the definition of independence of random variables, so the righthand
+side of equation~\eqref{condexpsumv} for conditional expectation coincides
+with the righthand side of the corresponding equation~\eqref{expsumv} for
+ordinary expectation.
+\end{proof}
+
+Many rules for conditional expectation correspond directly to rules for
+ordinary expectation.\iffalse
+For example, we can calculate conditional
+expectations by summing over outcomes instead of values:
+\begin{theorem}\label{alt:condexpdef}
+\begin{equation}\label{condexpsumssp}
+\expcond{R}{A} = \sum_{\omega \in \sspace} R(\omega) \prcond{w}{A}.
+\end{equation}
+\end{theorem}
+The proof of Theorem~\ref{alt:condexpdef} is essentially the same as the
+proof of the corresponding Theorem~\ref{alt:expdef} for ordinary
+expectation, so we won't repeat it.\fi
+
+For example, linearity of conditional expectation carries over
+with the same proof:
+\begin{theorem}\label{condexplin}
+For any two random variables $R_1$, $R_2$, constants
+$a_1,a_2\in\reals$, and event $A$,
+\[
+\expcond{a_1R_1+a_2R_2}{A} = a_1\expcond{R_1}{A} + a_2\expcond{R_2}{A}.
+\]
+\end{theorem}
+
+Likewise,
+\begin{theorem}
+For any two \emph{independent} random variables $R_1$, $R_2$, and event, $A$,
+\[
+\expcond{R_1 \cdot R_2}{A} = \expcond{R_1}{A} \cdot \expcond{R_2}{A}.
+\]
+\end{theorem}
+\fi
+
+
+\subsection{Mean Time to Failure}\label{mean_time_to_failure_subsec}
+
+A computer program crashes at the end of each hour of use with probability
+$p$, if it has not crashed already.  What is the expected time until the
+program crashes?
+
+If we let $C$ be the number of hours until the crash, then the answer to
+our problem is $\expect{C}$.  Now the probability that, for $i >0$, the
+first crash occurs in the $i$th hour is the probability that it does not
+crash in each of the first $i-1$ hours and it does crash in the $i$th
+hour, which is $(1-p)^{i-1}p$.  So from formula~\eqref{expsumv} for
+expectation, we have
+\begin{align*}
+\expect{C} & = \sum_{i \in \naturals} i \cdot \pr{R=i}\\
+           & = \sum_{i \in \naturals^+} i (1-p)^{i-1}p\\
+           &= p \sum_{i \in \naturals^+} i (1-p)^{i-1}\\
+           &= p\frac{1}{(1-(1-p))^2} & \text{(by~\eqref{sumixi-1})}\\
+           &= \frac{1}{p}
+\end{align*}
+
+
+A simple alternative derivation that does not depend on
+the formula~\eqref{sumixi-1}
+\iffalse
+for $\sum_{i \in \naturals^{+}} ix^{i-1}$
+\begin{equation}\label{Notes11form}
+\sum_{i \in \naturals^{+}} ix^{i-1} =\frac{1}{(1-x)^2}
+\end{equation}
+\fi (which you remembered, right?) is based on \idx{conditional
+  expectation}.  Given that the computer crashes in the first hour, the
+expected number of hours to the first crash is obviously 1!  On the other
+hand, given that the computer does not crash in the first hour, then the
+expected total number of hours till the first crash is the expectation of
+one plus the number of additional hours to the first crash.  So,
+\[
+\expect{C} = p\cdot 1 + (1-p)\expect{C+1} = p + \expect{C} -p\expect{C} +
+1 - p,
+\]
+from which we immediately calculate that $\expect{C} = 1/p$.
+
+\begin{editingnotes}
+There is a useful trick for
+calculating expectations of nonegative integer valued variables:
+\begin{lemma}
+If $R$ is a nonegative integer-valued random variable, then:
+%
+\begin{equation}\label{R>i}
+\expect{R} = \sum_{i \in \naturals} \pr{R > i}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Consider the sum:
+%
+\[
+\begin{array}{ccccccc}
+\pr{R = 1} & + & \pr{R = 2} & + & \pr{R = 3} & + & \cdots \\
+           & + & \pr{R = 2} & + & \pr{R = 3} & + & \cdots \\
+           &   &            & + & \pr{R = 3} & + & \cdots \\
+           &   &            &   &            & + & \cdots
+\end{array}
+\]
+%
+The successive columns sum to $1 \cdot \pr{R = 1}$, $2 \cdot \pr{R = 2}$,
+$3 \cdot \pr{R = 3}$, \dots.  Thus, the whole sum is equal to:
+%
+\[
+\sum_{i \in \naturals} i \cdot \pr{R = i}
+\]
+which equals $\expect{R}$ by~\eqref{expsumv}.  On the other hand, the
+successive rows sum to $\pr{R > 0}$, $\pr{R > 1}$, $\pr{R > 2}$, \dots.
+Thus, the whole sum is also equal to:
+%
+\[
+\sum_{i \in \naturals} \pr{R > i},
+\]
+%
+which therefore must equal $\expect{R}$ as well.
+\end{proof}
+
+Now $\pr{C > i}$ is easy to evaluate: a crash happens later than the $i$th
+hour iff the system did not crash during the first $i$ hours, which
+happens with probability $(1-p)^i$.  Plugging this into~\eqref{R>i} gives:
+%
+\begin{align*}
+\expect{C} & = \sum_{i \in \naturals} (1-p)^i \\
+       & = \frac{1}{1 - (1-p)} & \text{(sum of geometric series)}\\
+       & = \frac{1}{p}
+\end{align*}
+
+The general principle here is well-worth
+remembering: if a system fails at each time step with probability $p$,
+then the expected number of steps up to the first failure is $1 / p$.
+
+\end{editingnotes}
+
+So, for example, if there is a 1\% chance that the program crashes at
+the end of each hour, then the expected time until the program crashes
+is $1 / 0.01 = 100$ hours.
+
+As a further example, suppose a couple really wants to have a baby girl.
+For simplicity assume there is a 50\% chance that each child they have is a
+girl, and the genders of their children are mutually independent.  If the
+couple insists on having children until they get a girl, then how many
+baby boys should they expect first?
+
+This is really a variant of the previous problem.  The question, ``How
+many hours until the program crashes?'' is mathematically the same as
+the question, ``How many children must the couple have until they get
+a girl?''  In this case, a crash corresponds to having a girl, so we
+should set $p = 1/2$.  By the preceding analysis, the couple
+should expect a baby girl after having $1/p = 2$ children.  Since the
+last of these will be the girl, they should expect just one boy.
+
+Something to think about: If every couple follows the strategy of having
+children until they get a girl, what will eventually happen to the
+fraction of girls born in this world?
+
+\subsection{Linearity of Expectation}\label{finlin}
+
+Expected values obey a simple, very helpful rule called
+\term{Linearity of Expectation}.  Its
+simplest form says that the expected value of a sum of random variables is
+the sum of the expected values of the variables.
+
+\begin{theorem}\label{expsum-2}
+For any random variables $R_1$ and $R_2$,
+\[
+\expect{R_1 + R_2} = \expect{R_1} + \expect{R_2}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $T \eqdef R_1+R_2$.  The proof follows straightforwardly by
+rearranging terms in the sum~\eqref{expsumssp}
+\begin{align*}
+\expect{T} & = \sum_{\omega \in \sspace} T(\omega) \cdot \pr{\omega}
+                & \text{(Theorem~\ref{alt:expdef})}\\
+        & = \sum_{\omega \in \sspace} (R_1(\omega) + R_2(\omega)) \cdot \pr{\omega}
+                         & \text{(def of $T$)}\\
+        & = \sum_{\omega \in \sspace} R_1(\omega) \pr{\omega} +
+              \sum_{\omega \in \sspace} R_2(\omega) \pr{\omega} & \text{(rearranging terms)}\\
+        & = \expect{R_1} + \expect{R_2}.   & \text{(Theorem~\ref{alt:expdef})}
+\end{align*}
+\end{proof}
+
+A small extension of this proof, which we leave to the reader, implies
+\begin{theorem}[\idx{Linearity of Expectation}]
+For random variables $R_1$, $R_2$ and constants $a_1,a_2 \in \reals$,
+\[
+\expect{a_1R_1 + a_2R_2} = a_1\expect{R_1} + a_2\expect{R_2}.
+\]
+\end{theorem}
+In other words, expectation is a linear function.  A routine induction
+extends the result to more than two variables:
+\begin{corollary}\label{linexp-k-thm}
+For any random variables $R_1, \dots, R_k$ and constants $a_1, \dots, a_k
+\in \reals$,
+\[
+\expect{\sum_{i=1}^k a_iR_i} = \sum_{i=1}^k a_i\expect{R_i}.
+\]
+\end{corollary}
+
+The great thing about linearity of expectation is that \emph{no
+independence is required}.  This is really useful, because dealing with
+independence is a pain, and we often need to work with random variables
+that are not independent.
+
+\begin{editingnotes}
+Even when the random variables \emph{are} independent, we know
+from previous experience that proving independence requires a lot of
+work.
+\end{editingnotes}
+
+
+\subsubsection{Expected Value of Two Dice}
+
+What is the expected value of the sum of two fair dice?
+
+Let the random variable $R_1$ be the number on the first die, and let
+$R_2$ be the number on the second die.  We observed earlier that the
+expected value of one die is 3.5.  We can find the expected value of the
+sum using linearity of expectation:
+\begin{equation*}
+\expect{R_1 + R_2}
+ =   \expect{R_1} + \expect{R_2}
+ =    3.5 + 3.5
+ =    7.
+\end{equation*}
+
+Notice that we did \emph{not} have to assume that the two dice were
+independent.  The expected sum of two dice is 7, even if they are glued
+together (provided each individual die remainw fair after the gluing).
+Proving that this expected sum is 7 with a tree diagram would be a bother:
+there are 36 cases.  And if we did not assume that the dice were
+independent, the job would be really tough!
+
+\subsubsection{The Hat-Check Problem}
+
+There is a dinner party where $n$ men check their hats.  The hats are
+mixed up during dinner, so that afterward each man receives a random hat.
+In particular, each man gets his own hat with probability $1/n$.  What is
+the expected number of men who get their own hat?
+
+Letting $G$ be the number of men that get their own hat, we want to find
+the expectation of $G$.  But all we know about $G$ is that the probability
+that a man gets his own hat back is $1/n$.  There are many different
+probability distributions of hat permutations with this property, so we
+don't know enough about the distribution of $G$ to calculate its
+expectation directly.  But linearity of expectation makes the problem
+really easy.
+
+The trick is to express $G$ as a sum of indicator variables.  In
+particular, let $G_i$ be an indicator for the event that the $i$th man
+gets his own hat.  That is, $G_i = 1$ if he gets his own hat, and $G_i =
+0$ otherwise.  The number of men that get their own hat is the sum of
+these indicators:
+%
+\begin{equation}\label{GG}
+G = G_1 + G_2 + \cdots + G_n.
+\end{equation}
+%
+These indicator variables are \emph{not} mutually independent.  For
+example, if $n-1$ men all get their own hats, then the last man is
+certain to receive his own hat.  But, since we plan to use linearity
+of expectation, we don't have worry about independence!
+
+Now since $G_i$ is an indicator, we know $1/n = \pr{G_i=1} = \expect{G_i}$
+by Lemma~\ref{expindic}.  Now we can take the expected value of both sides
+of equation~\eqref{GG} and apply linearity of expectation:
+\begin{align*}
+\expect{G} & = \expect{G_1 + G_2 + \cdots + G_n} \\
+       & = \expect{G_1} + \expect{G_2} + \cdots + \expect{G_n}\\
+       & = \frac{1}{n} + \frac{1}{n} + \cdots + \frac{1}{n} =
+       n\paren{\frac{1}{n}} = 1.
+\end{align*}
+So even though we don't know much about how hats are scrambled, we've
+figured out that on average, just one man gets his own hat back!
+
+
+\subsubsection{Expectation of a Binomial Distribution}
+Suppose that we independently flip $n$ biased coins, each with probability
+$p$ of coming up heads.  What is the expected number that come up heads?
+
+Let $J$ be the number of heads after the flips, so $J$ has the
+$(n,p)$-\idx{binomial distribution}.  Now let $I_k$ be the indicator for the
+$k$th coin coming up heads.  By Lemma~\ref{expindic}, we have
+\[
+\expect{I_k} = p.
+\]
+But
+\[
+J = \sum_{k=1}^n I_k,
+\]
+so by linearity
+\[
+\expect{J} = \expect{\sum_{k=1}^n I_k} = \sum_{k=1}^n \expect{I_k} =
+\sum_{k=1}^n p = pn.
+\]
+In short, the expectation of an $(n,p)$-binomially distributed variable is
+$pn$.
+
+
+\subsubsection{The Coupon Collector Problem}
+
+Every time I purchase a kid's meal at Taco Bell, I am graciously presented
+with a miniature ``Racin' Rocket'' car together with a launching device
+which enables me to project my new vehicle across any tabletop or smooth
+floor at high velocity.  Truly, my delight knows no bounds.
+
+There are $n$ different types of Racin' Rocket car (blue, green, red,
+gray, etc.).  The type of car awarded to me each day by the kind woman
+at the Taco Bell register appears to be selected uniformly and
+independently at random.  What is the expected number of kid's meals
+that I must purchase in order to acquire at least one of each type of
+Racin' Rocket car?
+
+The same mathematical question shows up in many guises: for example,
+what is the expected number of people you must poll in order to find
+at least one person with each possible birthday?  Here, instead of
+collecting Racin' Rocket cars, you're collecting birthdays.  The
+general question is commonly called the \term{coupon collector
+problem} after yet another interpretation.
+
+A clever application of linearity of expectation leads to a simple
+solution to the coupon collector problem.  Suppose there are five
+different types of Racin' Rocket, and I receive this sequence:
+%
+\begin{center}
+blue \quad green \quad green \quad red \quad blue \quad orange \quad blue \quad orange \quad gray
+\end{center}
+%
+Let's partition the sequence into 5 segments:
+%
+\[
+\underbrace{\text{blue}}_{X_0} \quad
+\underbrace{\text{green}}_{X_1} \quad
+\underbrace{\text{green} \quad \text{red}}_{X_2} \quad
+\underbrace{\text{blue} \quad \text{orange}}_{X_3} \quad
+\underbrace{\text{blue} \quad \text{orange} \quad \text{gray}}_{X_4}
+\]
+%
+The rule is that a segment ends whenever I get a new kind of car.  For
+example, the middle segment ends when I get a red car for the first
+time.  In this way, we can break the problem of collecting every type
+of car into stages.  Then we can analyze each stage individually and
+assemble the results using linearity of expectation.
+
+Let's return to the general case where I'm collecting $n$ Racin'
+Rockets.  Let $X_k$ be the length of the $k$th segment.  The total
+number of kid's meals I must purchase to get all $n$ Racin' Rockets is
+the sum of the lengths of all these segments:
+%
+\[
+T = X_0 + X_1 + \cdots + X_{n-1}
+\]
+
+Now let's focus our attention on $X_k$, the length of the $k$th segment.
+At the beginning of segment $k$, I have $k$ different types of car, and
+the segment ends when I acquire a new type.  When I own $k$ types, each
+kid's meal contains a type that I already have with probability $k / n$.
+Therefore, each meal contains a new type of car with probability $1 - k /
+n = (n - k) / n$.  Thus, the expected number of meals until I get a new
+kind of car is $n / (n - k)$ by the ``mean time to failure'' formula.  So
+we have:
+%
+\[
+\expect{X_k} = \frac{n}{n - k}
+\]
+
+Linearity of expectation, together with this observation, solves the
+coupon collector problem:
+%
+\begin{align*}
+\expect{T} & = \expect{X_0 + X_1 + \cdots + X_{n-1}} \\ & = \expect{X_0} +
+  \expect{X_1} + \cdots + \expect{X_{n-1}} \\ & = \frac{n}{n - 0} +
+  \frac{n}{n - 1} + \cdots + \frac{n}{3} + \frac{n}{2} + \frac{n}{1} \\ &
+  = n \paren{\frac{1}{n} + \frac{1}{n-1} + \cdots + \frac{1}{3} +
+  \frac{1}{2} + \frac{1}{1}} \\ & n \paren{\frac{1}{1} + \frac{1}{2} +
+  \frac{1}{3} + \cdots + \frac{1}{n-1} + \frac{1}{n}}\\
+  & = n H_n \sim n \ln n.
+\end{align*}
+
+Let's use this general solution to answer some concrete questions.
+For example, the expected number of die rolls required to see every
+number from 1 to 6 is:
+%
+\[
+6 H_6 = 14.7 \dots
+\]
+%
+And the expected number of people you must poll to find at least one
+person with each possible birthday is:
+%
+\[
+365 H_{365} = 2364.6\dots
+\]
+
+\begin{editingnotes}
+\textcolor{red}{unedited from F02}
+
+Let $A_i$ be the event that coin $i$ comes up heads.  Since the coin
+is fair, $\pr{A_i} = 1/2$.  Since there are $N$ coins in all, there
+are $N$ such events.  By linearity of expectation
+(Theorem~\ref{linexp-k-thm}), the expected number of events that
+occur---the number of coins that come up heads---is $N(1/2) = N/2$.
+
+Let's try to solve the same problem the hard way.  In this case,
+assume that the coins are fair.  Let the random variable $R$ be the
+number of heads.  We want to compute the expected value of $R$.
+
+\begin{align*}
+\expect{R}  & = \sum_{i=0}^N i \cdot \pr{R = i} \\
+            & = \sum_{i=0}^N i \binom{N}{i} 2^{-N}
+\end{align*}
+
+The first equation follows from the definition of expectation.  In the
+second step, we evaluate $\pr{R = i}$.  An outcome of tossing the $N$
+coins can be represented by a length $N$ sequence of $H$'s and $T$'s.
+An $H$ in position $i$ indicates that the $i$th coin is heads, and a
+$T$ indicates that the $i$th coin is tails.  The sample space
+consists of all $2^N$ such sequences.  The outcomes are equiprobable,
+and so each has probability $2^{-N}$.  The number of outcomes with
+exactly $i$ heads is the number of length $N$ sequences with $i$
+$H$'s, which is $\binom{N}{i}$.  Therefore, $\pr{R = i} = \binom{N}{i}
+2^{-N}$.
+
+The answer from linearity of expectation and from the hard way must be
+the same, so we can equate the two results to obtain a neat
+identity.\footnote{The identity also has a simple combinatorial proof
+  given in Problem~\ref{CP_com_proof}.}
+
+\begin{align*}
+\sum_{i=0}^N i \binom{N}{i} 2^{-N}  & = \frac{N}{2} \\
+\sum_{i=0}^N i \binom{N}{i}         & = N2^{N-1}
+\end{align*}
+The expected number of heads is $N/2$, even if some coins are glued
+together.
+
+We can extend this reasoning to $n$ tosses of a coin with probability $p$
+of a head, rather than 1/2.  If we do this, we get the generalized
+combinatorial identity:
+\begin{equation*}
+    \sum_{i=0}^N i \binom{N}{i} p^i (1-p)^{N-i} = N p.
+\end{equation*}
+Here, the $p^i$ factor gives the probabilities for the heads and the
+$(1-p)^{N-i}$ factor gives the probabilities for the tails.  The
+right-hand side is the sum of $N$ terms, each giving the probability
+of a particular $A_i$, which is $p$.  The total is $N p$.  For
+example, consider an ordinary die.  Let $A_1$ be the event that the
+value is odd, $A_2$ the event that the value is $1$, $2$, or $3$, and
+$A_3$ the event that the value is $4$, $5$, or $6$.  These events are
+not mutually independent.  However, the expected number of these
+events that occur is still obtainable by adding $\pr{A_1} + \pr{A_2} +
+\pr{A_3}$, which yields 3/2.
+
+\iffalse
+\textbf{Question:} What can we say about the product of expectations?
+For example, can we say $\expect{R_1 R_2} = \expect{R_1}
+\expect{R_2}$?  Not in general.  We will see more of this in just a
+little bit.
+\fi
+
+\subsubsection{The Number-Picking Game}
+
+Here is a game that you and I could play that reveals a strange
+property of expectation.
+
+First, you think of a probability density function on the natural
+numbers.  Your distribution can be absolutely anything you like.  For
+example, you might choose a uniform distribution on $1, 2, \dots, 6$,
+like the outcome of a fair die roll.  Or you might choose a binomial
+distribution on $0, 1, \dots, n$.  You can even give every natural
+number a non-zero probability, provided that the sum of all
+probabilities is 1.
+
+Next, I pick a random number $z$ according to your distribution.
+Then, you pick a random number $y_1$ according to the same
+distribution.  If your number is bigger than mine ($y_1 > z$), then
+the game ends.  Otherwise, if our numbers are equal or mine is bigger
+($z \geq y_1$), then you pick a new number $y_2$ with the same
+distribution, and keep picking values $y_3$, $y_4$, etc. until you get
+a value that is strictly bigger than my number, $z$.  What is the
+expected number of picks that you must make?
+
+Certainly, you always need at least one pick, so the expected number
+is greater than one.  An answer like 2 or 3 sounds reasonable, though
+one might suspect that the answer depends on the distribution.  Let's
+find out whether or not this intuition is correct.
+
+The number of picks you must make is a natural-valued random variable, so
+from formula~\eqref{R>i} we have:
+\begin{align}
+\expect{\text{\# picks by you}}
+    & = \sum_{k \in \naturals} \pr{\text{(\# picks by you)} > k} \label{eqn:1}
+\end{align}
+Suppose that I've picked my number $z$, and you have picked $k$
+numbers $y_1, y_2, \dots, y_k$.  There are two possibilities:
+%
+\begin{itemize}
+
+\item If there is a unique largest number among our picks, then my
+number is as likely to be it as any one of yours.  So with probability
+$1/(k+1)$ my number is larger than all of yours, and you must pick
+again.
+
+\item Otherwise, there are several numbers tied for largest.  My
+number is as likely to be one of these as any of your numbers, so with
+probability greater than $1/(k+1)$ you must pick again.
+
+\end{itemize}
+%
+In both cases, with probability at least $1/(k+1)$, you need more than
+$k$ picks to beat me.  In other words:
+%
+\begin{align}
+\pr{\text{(\# picks by you)} > k} \geq \frac{1}{k+1} \label{eqn:2}
+\end{align}
+
+This suggests that in order to minimize your rolls, you should choose a
+distribution such that ties are very rare.  For example, you might
+choose the uniform distribution on $\set{1, 2, \dots, 10^{100}}$.  In
+this case, the probability that you need more than $k$ picks to beat
+me is very close to $1/(k+1)$ for moderate values of $k$.  For
+example, the probability that you need more than 99 picks is almost
+exactly 1\%.  This sounds very promising for you; intuitively, you
+might expect to win within a reasonable number of picks on average!
+
+Unfortunately for intuition, there is a simple proof that the expected
+number of picks that you need in order to beat me is
+\emph{infinite}, regardless of the distribution!  Let's
+plug~\eqref{eqn:2} into~\eqref{eqn:1}:
+%
+\begin{align*}
+\expect{\text{\# picks by you}}
+    & = \sum_{k \in \naturals} \frac{1}{k+1} \\
+    & = \infty
+\end{align*}
+
+This phenomenon can cause all sorts of confusion!  For example,
+suppose you have a communication network where each packet of data has
+a $1/k$ chance of being delayed by $k$ or more steps.  This sounds
+good; there is only a 1\% chance of being delayed by 100 or more
+steps.  But the \emph{expected} delay for the packet is actually
+infinite!
+
+There is a larger point here as well: not every random variable has a
+well-defined expectation.  This idea may be disturbing at first, but
+remember that an expected value is just a weighted average.  And there
+are many sets of numbers that have no conventional average either, such as:
+%
+\[
+\set{1, -2, 3, -4, 5, -6, \dots}
+\]
+%
+Strictly speaking, we should qualify virtually all theorems involving
+expectation with phrases such as ``...provided all expectations exist.''
+But we're going to leave that assumption implicit.
+
+Random variables with infinite or ill-defined expectations are more the
+exception than the rule, but they do creep in occasionally.
+
+\end{editingnotes}
+
+\section{Expectation of a Quotient}
+
+\subsection{A RISC Paradox}
+
+The following data is taken from a paper by some famous professors.  They
+wanted to show that programs on a RISC processor are generally shorter
+than programs on a CISC processor.  For this purpose, they applied a RISC
+compiler and then a CISC compiler to some benchmark source programs and
+made a table of compiled program lengths.
+\[
+\begin{array}{lccc}
+\text{Benchmark}        & \text{RISC}   & \text{CISC}   & \text{CISC/RISC}\\
+\hline
+\text{E-string search}  & 150           & 120           & 0.8 \\
+\text{F-bit test}       & 120           & 180           & 1.5 \\
+\text{Ackerman}         & 150           & 300           & 2.0 \\
+\text{Rec 2-sort}       & 2800          & 1400          & 0.5 \\
+\hline
+\text{Average}          &               &               & 1.2
+\end{array}
+\]
+Each row contains the data for one benchmark.  The numbers in the second
+and third columns are program lengths for each type of compiler.  The
+fourth column contains the ratio of the CISC program length to the RISC
+program length.  Averaging this ratio over all benchmarks gives the value
+1.2 in the lower right.  The authors conclude that ``CISC programs are
+20\% longer on average''.
+
+However, some critics of their paper took the same data and argued this
+way: redo the final column, taking the other ratio, RISC/CISC instead of
+CISC/RISC.
+\[
+\begin{array}{lccc}
+\text{Benchmark}        & \text{RISC}   & \text{CISC}   & \text{RISC/CISC}\\
+\hline
+\text{E-string search}  & 150           & 120           & 1.25 \\
+\text{F-bit test}       & 120           & 180           & 0.67 \\
+\text{Ackerman}         & 150           & 300           & 0.5 \\
+\text{Rec 2-sort}       & 2800          & 1400          & 2.0 \\
+\hline
+\text{Average}          &               &               & 1.1
+\end{array}
+\]
+From this table, we would conclude that RISC programs are 10\% longer
+than CISC programs on average!  We are using the same reasoning as in
+the paper, so this conclusion is equally justifiable---yet the result
+is opposite!  What is going on?
+
+\subsection{A Probabilistic Interpretation}
+
+To resolve these contradictory conclusions, we can model the RISC vs.\ CISC
+debate with the machinery of probability theory.
+
+Let the sample space be the set of benchmark programs.  Let the random
+variable $R$ be the length of the compiled RISC program, and let the
+random variable $C$ be the length of the compiled CISC program.  We would
+like to compare the average length, $\expect{R}$, of a RISC program to the
+average length, $\expect{C}$, of a CISC program.
+
+To compare average program lengths, we must assign a probability to
+each sample point; in effect, this assigns a ``weight'' to each
+benchmark.  One might like to weigh benchmarks based on how frequently
+similar programs arise in practice.  Lacking such data, however, we
+will assign all benchmarks equal weight; that is, our sample space is
+uniform.
+
+In terms of our probability model, the paper computes $C / R$ for each
+sample point, and then averages to obtain $\expect{C / R} = 1.2$.  This
+much is correct.  The authors then conclude that ``CISC programs are 20\%
+longer on average''; that is, they conclude that $\expect{C} = 1.2\,
+\expect{R}$.
+
+Similarly, the critics calculation correctly showed that $\expect{R/C} =
+1.1$.  They then concluded that $\expect{R} = 1.1 \, \expect{C}$, that is,
+a RISC program is 10\% longer than a CISC program on average.
+
+These arguments make a natural assumption, namely, that
+\begin{falseclm}\label{false-quotient}
+If $S$ and $T$ are independent random variables with $T>0$, then
+\[
+\expect{\frac{S}{T}} = \frac{\expect{S}}{\expect{T}}.
+\]
+\end{falseclm}
+
+In other words False Claim~\ref{false-quotient} simply generalizes the
+rule for expectation of a product to a rule for the expectation of a
+quotient.  But the rule for requires independence, and we surely don't
+expect $C$ and $R$ to be independent: large source programs will lead to
+large compiled programs, so when the RISC program is large, so the CISC
+would be too.
+
+However, we can easily compensate for this kind of dependence: we should
+compare the lengths of the programs \emph{relative to the size of the
+source code}.  While the lengths of $C$ and $R$ are dependent, it's more
+plausible that their \emph{relative} lengths will be independent.  So we
+really want to divide the second and third entries in each row of the
+table by a ``normalizing factor'' equal to the length of the benchmark
+program in the first entry of the row.
+
+But note that normalizing this way will have no effect on the fourth
+column!  That's because the normalizing factors applied to the second and
+and third entries of the rows will cancel.  So the independence hypothesis
+of False Claim~\ref{false-quotient} may be justified, in which case the
+authors' conclusions would be justified.  But then, so would the
+contradictory conclusions of the critics.  Something must be wrong!  Maybe
+it's False Claim~\ref{false-quotient} (duh!), so let's try and prove it.
+
+\begin{falseproof}
+\begin{align}
+\expect{\frac{S}{T}} & = \expect{S \cdot \frac{1}{T}} \notag\\
+       & = \expect{S} \cdot \expect{\frac{1}{T}} & \text{(independence of $S$
+       and $T$)}\label{indST}\\
+      & = \expect{S} \cdot \frac{1}{\expect{T}}. \label{bugindST}\\
+      & = \frac{\expect{S}}{\expect{T}}.\notag
+\end{align}
+Note that line~\eqref{indST} uses the fact that if $S$ and $T$ are
+independent, then so are $S$ and $1/T$.  This holds because functions of
+independent random variables yield independent random variables, as shown
+in Problem~\ref{PS_independent_random_variables}.
+
+\end{falseproof}
+
+But this proof is bogus!  The bug is in line~\eqref{bugindST}, which assumes
+\begin{falsethm}\label{false-inverse}
+\[
+\expect{\frac{1}{T}} =  \frac{1}{\expect{T}}.
+\]
+\end{falsethm}
+Here is a counterexample:
+\begin{example*}
+Suppose $T=1$ with probability $1/2$ and $T= 2$ with probability $1/2$.
+Then
+\begin{align*}
+\frac{1}{\expect{T}}
+    & = \frac{1}{1 \cdot \frac{1}{2} + 2 \cdot \frac{1}{2}}\\
+    & =  \frac{2}{3}\\
+    & \neq  \frac{3}{4}\\
+    & = \frac{1}{1} \cdot \frac{1}{2} + \frac{1}{2} \cdot \frac{1}{2}\\
+    & =  \expect{\frac{1}{T}}.
+\end{align*}
+The two quantities are not equal, so False Claim~\ref{false-inverse}
+really is false.
+\end{example*}
+
+Unfortunately, the fact that Claim~\ref{false-quotient}
+and~\ref{false-inverse} are false does not mean that they are never used!
+
+\subsection{The Proper Quotient}
+
+We can compute $\expect{R}$ and $\expect{C}$ as follows:
+\begin{align*}
+\expect{R}  
+    & = \sum_{i \in \text{Range(R)}} i \cdot \pr{R = i} \\
+    & = \frac{150}{4}+\frac{120}{4}+\frac{150}{4}+\frac{2800}{4} \\
+    & = 805 \\
+\\
+\expect{C}
+    & = \sum_{i \in \text{Range(C)}} i \cdot \pr{C = i} \\
+    & = \frac{120}{4}+\frac{180}{4}+\frac{300}{4}+\frac{1400}{4} \\
+    & = 500
+\end{align*}
+
+Now since $\expect{R}/\expect{C} = 1.61$, we conclude that the average
+RISC program is 61\% longer than the average CISC program.  This is a
+third answer, completely different from the other two!  Furthermore, this
+answer makes RISC look really bad in terms of code length.  This one is
+the correct conclusion, under our assumption that the benchmarks deserve
+equal weight.  Neither of the earlier results were correct---not
+surprising since both were based on the same false Claim.
+
+\subsection{A Simpler Example}
+
+The source of the problem is clearer in the following, simpler example.
+Suppose the data were as follows.
+\[
+\begin{array}{lcccc}
+\text{Benchmark}        & \text{Processor A}    & \text{Processor B}
+                        & B / A                 & A / B  \\
+\hline
+\text{Problem 1}        & 2                     & 1
+                        & 1/2                   & 2 \\
+\text{Problem 2}        & 1                     & 2
+                        & 2                     & 1/2 \\
+\hline
+\text{Average}          &                       &
+                        & 1.25                  & 1.25
+\end{array}
+\]
+
+Now the data for the processors A and B is exactly symmetric; the two
+processors are equivalent.  Yet, from the third column we would
+conclude that Processor B programs are 25\% longer on average, and
+from the fourth column we would conclude that Processor A programs are
+25\% longer on average.  Both conclusions are obviously wrong.
+
+The moral is that one must be very careful in summarizing data, we must
+not take an average of ratios blindly!
+
+\begin{editingnotes}
+\section{Infinite Linearity of Expectation}
+
+We know that expectation is linear over finite sums.  It's useful to
+extend this result to infinite summations.  This works as long as we avoid
+sums whose values may depend on the order of summation.
+
+\subsection{Convergence Conditions for Infinite Linearity}
+
+\begin{theorem}\label{linexp} [Linearity of Expectation]
+Let $R_0$, $R_1$, \dots, be random variables such that
+\[
+\sum_{i = 0}^\infty \expect{\abs{R_i}}
+\]
+converges.  Then
+\[
+   \expect{\sum_{i = 0}^\infty R_i} = \sum_{i = 0}^\infty \expect{R_i}.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $T \eqdef \sum_{i = 0}^\infty R_i$.
+
+We leave it to the reader to verify that, under the given convergence
+hypothesis, all the sums in the following derivation are absolutely
+convergent, which justifies rearranging them as follows:
+\begin{align*}
+\sum_{i=0}^\infty \expect{R_i}
+    &= \sum_{i=0}^\infty \sum_{s \in \sspace} R_i(s) \cdot \prob{s}
+            & \text{(Def.~\ref{expsumssp})}\\
+    &= \sum_{s \in \sspace} \sum_{i=0}^\infty R_i(s) \cdot \prob{s}
+           & \text{(exchanging order of summation)}\\
+    &= \sum_{s \in \sspace} \left[ \sum_{i=0}^\infty R_i(s) \right] \cdot \prob{s}
+                & \text{(factoring out $\pr{s}$)}\\
+    &= \sum_{s \in \sspace} T(s) \cdot \prob{s} & \text{(Def.\ of $T$)}\\
+    &= \expect{T} & \text{(Def.~\ref{expsumssp})}\\
+    &= \expect{\sum_{i = 0}^\infty R_i}. &  \text{(Def.\ of $T$)}.
+\end{align*}
+\end{proof}
+
+Note that the finite linearity of expectation we established in
+Corollary~\ref{linexp-k-thm} follows as a special case of
+Theorem~\ref{linexp}: since $\expect{R_i}$ is finite, so is
+$\expect{\abs{R_i}}$, and therefore so is their sum for $0 \leq i \leq n$.
+Hence the convergence hypothesis of Theorem~\ref{linexp} is trivially
+satisfied if there are only finitely many $R_i$'s.
+
+\textbf{Exercise:} Show that linearity of expectation fails for the sum of
+two variables, one with expectation $+\infty$ and the other with
+$-\infty$.
+
+\subsection{A Paradox}
+One of the simplest casino bets is on ``red'' or ``black'' at the roulette
+table.  In each play at roulette, a small ball is set spinning around a
+roulette wheel until it lands in a red, black, or green colored slot.
+The payoff for a bet on red or black matches the bet; for example, if you bet
+$\$10$ on red and the ball lands in a red slot, you get back your original
+$\$10$ bet plus another matching $\$10$.
+
+In the US, a roulette wheel has 2 green slots among 18 black and 18 red
+slots, so the probability of red is $p::= 18/38 \approx 0.473$.  In
+Europe, where roulette wheels have only 1 green slot, the odds for red
+are a little better---that is, $p = 18/37 \approx 0.486$---but still less
+than even.  To make the game fair, we might agree to ignore green, so that
+$p = 1/2$.
+
+There is a notorious gambling strategy which seems to guarantee a profit
+at roulette: bet $\$10$ on red, and keep doubling the bet until a red
+comes up.  This strategy implies that a player will leave the game as a
+net winner of $\$10$ as soon as the red first appears.  Of course the
+player may need an awfully large bankroll to avoid going bankrupt before
+red shows up---but we know that the mean time until a red occurs is $1/p$,
+so it seems possible that a moderate bankroll might actually work out.
+(In this setting, a ``win'' on red corresponds to a ``failure'' in a
+mean-time-to-failure situation.)
+
+Suppose we have the good fortune to gamble against a fair roulette wheel.
+In this case, our expected win on any spin is zero, since at the $i$th
+spin we are equally likely to win or lose $10 \cdot 2^{i-1}$ dollars.  So
+our expected win after any finite number of spins remains zero, and
+therefore our expected win using this gambling strategy is zero.  This is
+just what we should have anticipated in a fair game.
+
+But wait a minute.  As long as there is a fixed, positive probability of
+red appearing on each spin of the wheel---even if the wheel is
+unfair---it's \emph{certain} that red will eventually come up.  So with
+probability one, we leave the casino having won $\$10$, and our expected
+dollar win is obviously $\$10$, not zero!
+
+Something's wrong here.  What?
+
+\subsection{Solution to the Paradox}
+
+The expected amount won is indeed $\$10$.
+
+The argument claiming the expectation is zero is flawed by an invalid use
+of linearity of expectation for an infinite sum.  To pinpoint this flaw,
+let's first make the sample space explicit: a sample point is a sequence
+$B^nR$ representing a run of $n \geq 0$ black spins terminated by a red
+spin.  Since the wheel is fair, the probability of $B^nR$ is $2^{-(n+1)}$.
+
+Let $C_i$ be the number of dollars won on the $i$th spin.  So
+$C_i = 10 \cdot 2^{i-1}$
+when red comes up for the first time on the $i$th spin, that is, at
+precisely one sample point, namely $B^{i-1}R$.  Similarly,
+$C_i = -10  \cdot  2^{i-1}$
+when the first red spin comes up after the $i$th spin, namely, at the
+sample points $B^nR$ for $n \geq i$.  Finally, we will define $C_i$ by
+convention to be zero at sample points in which the session ends before the
+$i$th spin, that is, at points $B^nR$ for $n < i-1$.
+
+The dollar amount won in any gambling session is the value of the sum
+$\sum_{i = 1}^\infty C_i$.  At any sample point $B^nR$, the value of this
+sum is
+\[
+10 \cdot -(1 + 2 + 2^2 + \dots + 2^{n - 1}) + 10 \cdot 2^n  = 10,
+\]
+which trivially implies that its expectation is 10 as well.  That is, the
+amount we are \emph{certain} to leave the casino with, as well as
+expectation of the amount we win, is $\$10$.
+
+Moreover, our reasoning that $\expect{C_i} = 0$ is sound, so
+\[
+\sum_{i = 1}^\infty \expect{C_i} = \sum_{i = 1}^\infty 0 = 0.
+\]
+
+The flaw in our argument is the claim that, since the expectation at each
+spin was zero, therefore the final expectation would also be zero.
+Formally, this corresponds to concluding that
+\[
+\expect{\mbox{amount won}}  =  \expect{\sum_{i = 1}^\infty C_i}
+  =  \sum_{i = 1}^\infty \expect{C_i} = 0.
+\]
+The flaw lies exactly in the second equality.  This is a case where
+linearity of expectation fails to hold---even though both $\sum_{i =
+1}^\infty \expect{C_i}$ and $\expect{\sum_{i = 1}^\infty C_i}$ are
+finite---because the convergence hypothesis needed for linearity is false.
+Namely, the sum
+\[
+\sum_{i = 1}^\infty \expect{\abs{C_i}}
+\]
+does not converge.  In fact, the expected value of $\abs{C_i}$ is $10$
+because $\abs{C_i} =  10 \cdot 2^{i}$  with probability $2^{-i}$ and
+otherwise is zero, so this sum rapidly approaches infinity.
+
+Probability theory truly leads to this apparently paradoxical conclusion: a
+game allowing an unbounded---even though always finite---number of ``fair''
+moves may not be fair in the end.  In fact, our reasoning leads to an even
+more startling conclusion: even against an \emph{unfair} wheel, as long as
+there is some fixed positive probability of red on each spin, we are
+certain to win $\$10$!
+
+This is clearly a case where naive intuition is unreliable: we don't
+expect to beat a fair game, and we do expect to lose when the odds are
+against us.  Nevertheless, the ``paradox'' that in fact we always win by
+bet-doubling cannot be denied.
+
+But remember that from the start we chose to assume that no one goes
+bankrupt while executing our bet-doubling strategy.  This assumption is
+crucial, because the expected loss while waiting for the strategy to
+produce its ten dollar profit is actually infinite!  So it's not
+surprising, after all, that we arrived at an apparently paradoxical
+conclusion from an unrealistic assumption.
+
+This example also serves a warning that in making use of infinite
+linearity of expectation, the convergence hypothesis which justifies it
+had better be checked.
+
+\textcolor{blue}{For WALD'S theorem see F02 ln11-12.}
+
+\end{editingnotes}
+
+\subsection{The Expected Value of a Product}
+
+While the expectation of a sum is the sum of the expectations, the same is
+usually not true for products.  But it is true in an important special
+case, namely, when the random variables are \emph{independent}.
+
+For example, suppose we throw two \emph{independent}, fair dice and
+multiply the numbers that come up.  What is the expected value of this
+product?
+
+Let random variables $R_1$ and $R_2$ be the numbers shown on the two
+dice.  We can compute the expected value of the product as follows:
+\begin{equation}\label{R1R2}
+  \expect{R_1 \cdot R_2}
+  = \expect{R_1} \cdot \expect{R_2}
+  = 3.5 \cdot 3.5
+  = 12.25.
+\end{equation}
+Here the first equality holds because the dice are independent.
+
+At the other extreme, suppose the second die is always the same as the
+first.  Now $R_1 = R_2$, and we can compute the expectation,
+$\expect{R_1^2}$, of the product of the dice explicitly, confirming that
+it is not equal to the product of the expectations.
+\begin{align*}
+\expect{R_1 \cdot R_2} & = \expect{R_1^2}\\
+        & =    \sum_{i=1}^6 i^2 \cdot \pr{R_{1}^2 = i^2}
+                    &  \\
+        & =    \sum_{i=1}^6 i^2 \cdot \pr{R_{1} = i}\\
+        & =    \frac{1^2}{6} + \frac{2^2}{6} + \frac{3^2}{6} +
+                \frac{4^2}{6} + \frac{5^2}{6} + \frac{6^2}{6} \\
+        & =   15\; 1/6\\
+        & \neq  12 \; 1/4\\
+        & = \expect{R_1} \cdot \expect{R_2}.
+\end{align*}
+\iffalse & \text{from \eqref{R1R2}}\fi
+
+\begin{theorem}\label{th:prod}
+For any two \emph{independent} random variables $R_1$, $R_2$,
+\[
+\expect{R_1 \cdot R_2} = \expect{R_1} \cdot \expect{R_2}.
+\]
+\end{theorem}
+
+\begin{proof}
+The event $[R_1 \cdot R_2=r]$ can be split up into events of the form
+$[R_1 = r_1\ \text{ and }\ R_2 = r_2]$ where $r_1\cdot r_2=r$.  So
+\begin{align*}
+\lefteqn{\expect{R_1 \cdot R_2}}\\
+& \eqdef \sum_{r \in \range{R_1\cdot R_2}} r\cdot \pr{R_1\cdot R_2=r}\\
+\iffalse
+& =      \sum_{\scriptsize \begin{aligned}
+                       r_1 \in \range{R_1},\\
+                       r_2 \in \range{R_2}
+                      \end{aligned}}\fi
+& =      \sum_{r_i \in \range{R_i}}
+            r_1 r_2 \cdot \pr{R_1=r_1\ \text{ and }\ R_2=r_2}\\
+& =      \sum_{r_1 \in \range{R_1}} \sum_{r_2 \in \range{R_2}}
+            r_1 r_2 \cdot \pr{R_1=r_1\ \text{ and }\ R_2=r_2}
+                    &\text{(ordering terms in the sum)}\\
+& =      \sum_{r_1 \in \range{R_1}} \sum_{r_2 \in \range{R_2}}
+            r_1 r_2 \cdot \pr{R_1=r_1}\cdot \pr{R_2=r_2}
+                    &\text{(indep.\ of $R_1,R_2$)}\\
+& =      \sum_{r_1 \in \range{R_1}} \paren{r_1\pr{R_1=r_1} \cdot
+              \sum_{r_2 \in \range{R_2}} r_2 \pr{R_2=r_2}}
+                    &\text{(factoring out $r_1\pr{R_1=r_1}$)}\\
+& =      \sum_{r_1 \in \range{R_1}} r_1\pr{R_1=r_1} \cdot \expect{R_2}
+                    &\text{(def of $\expect{R_2}$)}\\
+& =       \expect{R_2} \cdot \sum_{r_1 \in \range{R_1}} r_1\pr{R_1=r_1}
+                    &\text{(factoring out $\expect{R_2}$)}\\
+& =       \expect{R_2} \cdot  \expect{R_1}.
+                    &\text{(def of $\expect{R_1}$)}
+\end{align*}
+
+\end{proof}
+
+Theorem~\ref{th:prod} extends routinely to a collection of mutually
+independent variables.
+\begin{corollary}
+If random variables $R_1, R_2, \dots, R_k$ are mutually
+independent, then
+\[
+\expect{\prod_{i=1}^k R_i} = \prod_{i=1}^k \expect{R_i}.
+\]
+\end{corollary}
+
+
+%% Average & Expected Value Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\practiceproblems
+\pinput{TP_psets_and_laundry}
+\pinput{TP_grading_final_exam}
+
+\classproblems
+\pinput{CP_carnival_dice_fair}
+\pinput{CP_sixteen_desks}
+\pinput{CP_probable_satisfiability}
+\pinput{CP_consecutive_coin_flips}
+\pinput{CP_independent_product}
+\pinput{CP_probable_satisfiability_nk}
+\pinput{CP_st_petersberg}
+
+\homeworkproblems
+\pinput{PS_independent_random_variables}
+\end{problems}
+
+%% Conclusion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\TBA{Conclusion...}
+
 \endinput
