@@ -1684,8 +1684,8 @@
         \immediate\write\@chapprobs{\the\verbatim@line}%
     }%
     % \immediate\write\@chapprobs{\noexpand\begin{realproblems}}%
-    % \immediate\write\@chapprobs{\noexpand\section*{Problems for
-    %     Section \thesection}}%
+    \immediate\write\@chapprobs{\noexpand\subsection*{Problems for
+        Section\noexpand~\thesection}}%
     \verbatim@start
 }{%
     % \immediate\write\@chapprobs{\noexpand\end{realproblems}}%
