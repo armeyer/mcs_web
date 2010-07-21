@@ -105,6 +105,38 @@
 
 \LoadClass{book}[2005/09/16]
 
+% We don't want to use the twoside option because that affects the
+% margins in a way we don't want, but we do want \@twosidetrue for the
+% rest of the book.
+
+\@twosidetrue
+
+%% Suppress page headings on blank pages
+
+\def\cleardoublepage{%
+    \clearpage
+    \if@twoside
+        \ifodd\c@page\else
+            \thispagestyle{empty}%
+            \hbox{}\newpage
+            \if@twocolumn\hbox{}\newpage\fi
+        \fi
+    \fi
+}
+
+%% Like \cleardoublepage but forces an even page.  Used by \part.
+
+\def\cleardoublepageeven{%
+    \clearpage
+    \if@twoside
+        \ifodd\c@page
+            \thispagestyle{empty}%
+            \hbox{}\newpage
+            \if@twocolumn\hbox{}\newpage\fi
+        \fi
+    \fi
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                        STANDARD PACKAGES                         %%
@@ -544,7 +576,7 @@
 }
 
 \def\chapter{%
-    \clearpage
+    \cleardoublepage
     \thispagestyle{plain}%
     \global\@topnum\z@
     \secdef\@chapter\@schapter
@@ -601,7 +633,9 @@
         \vspace*{12.55pt}%
     \endgroup}
 
-\def\part{\clearpage\thispagestyle{empty}\secdef\@part\@spart}
+\def\part{%
+    \cleardoublepageeven
+    \thispagestyle{empty}\secdef\@part\@spart}
 
 \def\@part[#1]#2{%
     \ifnum\c@secnumdepth>-2
@@ -615,7 +649,7 @@
         \raggedright
         \parindent-\titlehang
         \vspace*{-13.8pt}\par
-        \noindent\hspace*{-\marginparwidth}%
+        \noindent\hspace*{-\titlehang}%
         \rule{\titlewidth}{6pt}\par
         \vspace*{130.78pt}%
         \rule{\titlewidth}{0.5pt}\par
@@ -768,10 +802,12 @@
     \def\@evenhead{%
         \headingfont
         \rlap{\leftmark\vphantom{y}}%
-        \rlap{\hspace*{-\marginparwidth}\thepage}%
+        \rlap{\hspace*{-\titlehang}\thepage}%
     }%
     \let\@mkboth\markboth
-    \def\partmark##1{\markboth{{##1}}{{##1}}}
+    \def\partmark##1{%
+        \markboth{{Part \thepart\quad##1}}{{Part \thepart\quad##1}}%
+    }
     \def\chaptermark##1{%
       \markboth{%
         \ifnum \c@secnumdepth >\m@ne
@@ -780,6 +816,12 @@
           \fi
         \fi
         ##1}{}}%
+    \def\sectionmark##1{%
+      \markright{%
+        \ifnum \c@secnumdepth >\z@
+          \thesection. \ %
+        \fi
+        ##1}}%
 }
 
 \def\ps@pet{%
@@ -788,12 +830,12 @@
     \def\@oddhead{%
         \headingfont
         \rlap{\rightmark\vphantom{y}}%
-        \rlap{\hspace*{-\marginparwidth}\thepage}%
+        \rlap{\hspace*{-\titlehang}\thepage}%
     }%
     \def\@evenhead{%
         \headingfont
         \rlap{\rightmark\vphantom{y}}%
-        \rlap{\hspace*{-\marginparwidth}\thepage}%
+        \rlap{\hspace*{-\titlehang}\thepage}%
     }%
     \let\@mkboth\markboth%
     \def\chaptermark##1{\markboth{{##1}}{{##1}}}%
