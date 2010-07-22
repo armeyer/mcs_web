@@ -276,9 +276,19 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
-\newcommand{\dmj}[1]{\marginpar{\textcolor{red}{\textup{[#1---dmj]}}}}
+\newcommand{\dmj}[1]{%
+    \begingroup
+        \normalbaselines
+        \marginpar{\textcolor{red}{\textup{[#1---dmj]}}}%
+    \endgroup
+}
 
-\newcommand{\arm}[1]{\marginpar{\textcolor{red}{\textup{[#1---arm]}}}}
+\newcommand{\arm}[1]{%
+    \begingroup
+        \normalbaselines
+        \marginpar{\normalbaselines\textcolor{red}{\textup{[#1---arm]}}}%
+    \endgroup
+}
 
 \reversemarginpar
 
