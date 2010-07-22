@@ -673,6 +673,23 @@
     \endgroup
 }
 
+\def\partintro{%
+    \clearpage
+    \thispagestyle{empty}
+    \begingroup
+        \vspace*{126pt}%
+        \raggedright
+        \parindent-\titlehang
+        \Large\bfseries\selectfont
+        \parskip\z@
+        \rule{\titlewidth}{0.5\p@}\par
+        \nobreak
+        \leavevmode
+        Introduction\par
+        \vspace*{12.55pt}%
+    \endgroup}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                        TABLE OF CONTENTS                         %%
