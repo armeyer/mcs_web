@@ -879,7 +879,7 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\renewcommand{\eqref}[1]{Equation~\ref{#1}}
+% \renewcommand{\eqref}[1]{Equation~\ref{#1}}
 
 \newcommand{\stirling}[1]{%
     \sqrt{2\pi #1} \paren{\frac{#1}{e}}^{#1}
