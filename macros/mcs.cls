@@ -32,6 +32,8 @@
         \renewcommand{\baselinestretch}{3}%
 %        \normalbaselineskip=\baselinestretch\normalbaselineskip
         \baselineskip=\baselinestretch\baselineskip
+        \let\problems\comment
+        \let\endproblems\endcomment
     }%    
 }
 
@@ -877,6 +879,12 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\renewcommand{\eqref}[1]{Equation~\ref{#1}}
+
+\newcommand{\stirling}[1]{%
+    \sqrt{2\pi #1} \paren{\frac{#1}{e}}^{#1}
+}
+
 \newenvironment{series}{%
     \vcenter\bgroup\centering
         \tabskip0pt
@@ -1431,7 +1439,6 @@
     }%
 }
 
-
 \long\def\@caption#1[#2]#3{%
     \par
     \global\@hascaptiontrue
@@ -1452,6 +1459,18 @@
         \normalsize
         \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
     \endgroup
+}
+
+\long\def\@makecaption#1#2{%
+    \vskip\abovecaptionskip
+    \sbox\@tempboxa{\textbf{#1}\quad #2}%
+    \ifdim \wd\@tempboxa >\hsize
+        \textbf{#1}\quad#2\par
+    \else
+        \global \@minipagefalse
+        \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
+    \vskip\belowcaptionskip
 }
 
 \renewcommand\listoffigures{%
