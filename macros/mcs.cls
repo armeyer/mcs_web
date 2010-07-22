@@ -687,8 +687,10 @@
         \leavevmode
         Introduction\par
         \vspace*{12.55pt}%
-    \endgroup}
-
+    \endgroup
+    \@afterindentfalse
+    \@afterheading
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
