@@ -143,6 +143,7 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\RequirePackage{datetime}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{amsmath}
@@ -2308,10 +2309,10 @@
 
 
 \newcommand{\stamp}{%
-  {\scriptsize{revised \today, \the\time\ minutes}}}
+  {\scriptsize{revised \today, \currenttime}}}
 
 \newcommand{\Stamp}{%
-  revised \today, \the\time\ minutes}
+  revised \today, \currenttime}
 
 \let\courseurl\@empty
 
