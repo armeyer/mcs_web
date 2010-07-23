@@ -909,13 +909,35 @@
 %% This def gives better spacing.  We're going to get rid of it
 %% anyway.
 
-\newcommand{\mfigure}[3]{%
-    \begin{figure}[h]
-        \resizebox{#1}{#2}{\includegraphics{#3}}
-    \end{figure}
-}
+% \newcommand{\mfigure}[3]{%
+%     \begin{figure}[h]
+%         \resizebox{#1}{#2}{\includegraphics{#3}}
+%     \end{figure}
+% }
 
 %  text highlighting
+
+\RequirePackage[leftbars]{changebar}
+
+\setlength{\changebarwidth}{10pt}
+\setlength{\changebarsep}{10pt}
+
+\def\nocentering{%
+    \rightskip\z@
+    \leftskip\z@
+    \parindent 1em
+    \parfillskip\@flushglue
+    \let\\\@normalcr
+}
+
+\newenvironment{aside}[1][]{%
+    \vbox#1\bgroup
+        \nocentering
+        \cbstart
+}{%
+        \cbend
+    \egroup
+}
 
 \newcommand{\floatingtextbox}[1]{%
   \begin{figure}[htbp]
