@@ -276,6 +276,12 @@
     \textcolor{red}{\textbf{[Illegible]}}%
 }
 
+\newcommand{\cutoff}{%
+    \textcolor{red}{\textbf{[bottom line cut off]}}%
+}
+
+\newcommand{\highlight}[1]{\textcolor{red}{#1}}
+
 \newcommand{\dmj}[1]{%
     \begingroup
         \normalbaselines
@@ -920,7 +926,8 @@
 \RequirePackage[leftbars]{changebar}
 
 \setlength{\changebarwidth}{10pt}
-\setlength{\changebarsep}{10pt}
+\setlength{\changebarsep}{0pt}
+\setcounter{changebargrey}{75}
 
 \def\nocentering{%
     \rightskip\z@
@@ -930,13 +937,22 @@
     \let\\\@normalcr
 }
 
-\newenvironment{aside}[1][]{%
+\newenvironment{pagesidebar}[1][]{%
     \vbox#1\bgroup
         \nocentering
         \cbstart
 }{%
         \cbend
+        \vfill
     \egroup
+}
+
+\newenvironment{inlinesidebar}[1][]{%
+        \cbstart
+        \medskip
+}{%
+        \medskip
+        \cbend
 }
 
 \newcommand{\floatingtextbox}[1]{%
@@ -965,10 +981,14 @@
 }
 
 \newcommand{\textboxtitle}[1]{%
-    \begin{center}
+    \begingroup
+        \flushleft
         \mathversion{bold}%
         \textbf{\Large #1}%
-    \end{center}%
+        \medskip
+    \endgroup
+    \@afterindentfalse
+    \@afterheading
 }
  
 \newcommand{\textboxheader}[1]{%
@@ -1037,6 +1057,8 @@
 \newcommand{\mean}[1]{[\![#1]\!]}
 \newcommand{\subst}[3]{#1[#2 := #3]}
 \newcommand{\patch}[3]{#1[#2 \leftarrow #3]}
+
+\newcommand{\sequence}[1]{\langle#1\rangle}
 
 % A special-case of the use of angle brackets surrounding English
 % text.  Cf. relations.tex.
@@ -1375,12 +1397,24 @@
 % \textbf{group 1}: #1\\
 % \textbf{group 2}: #2}
 
-%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  %%                                                                  %%
-%%  %%                              LISTS                               %%
-%%  %%                                                                  %%
-%%  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%  
+%% Chess notation
+
+\newcommand{\pawn}{\ensuremath{P}}
+\newcommand{\bishop}{\ensuremath{B}}
+\newcommand{\knight}{\ensuremath{N}}
+\newcommand{\rook}{\ensuremath{R}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                              LISTS                               %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\compactlist{%
+    \parskip\z@
+    \itemsep\z@
+}
+
 %%  %% Change hierarchy of enumerate labels: use lowercase roman numerals
 %%  %% for top-level.  We should not use more than two levels.
 %%  
