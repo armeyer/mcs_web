@@ -283,17 +283,21 @@
 \newcommand{\highlight}[1]{\textcolor{red}{#1}}
 
 \newcommand{\dmj}[1]{%
+    \@bsphack
     \begingroup
         \normalbaselines
         \marginpar{\textcolor{red}{\textup{[#1---dmj]}}}%
     \endgroup
+    \@esphack
 }
 
 \newcommand{\arm}[1]{%
+    \@bsphack
     \begingroup
         \normalbaselines
         \marginpar{\normalbaselines\textcolor{red}{\textup{[#1---arm]}}}%
     \endgroup
+    \@esphack
 }
 
 \reversemarginpar
