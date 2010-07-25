@@ -9,3 +9,5 @@ partIII: counting_intro asymptotics recurrences counting \
 
 partIV: probability_intro probability conditional_probability \
 	random_variables expectation deviation random_processes
+
+chapters: partI partII partIII partIV
