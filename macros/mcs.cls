@@ -956,7 +956,7 @@
 }
 
 \newcommand{\floatingtextbox}[1]{%
-  \begin{figure}[htbp]
+  \begin{figure}[htbp]\redrawntrue
     \textbox{#1}
   \end{figure}%
 }
