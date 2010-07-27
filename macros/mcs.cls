@@ -1389,7 +1389,7 @@
 \newcommand{\state}[2]{\ang{#1,\, #2}}
 \newcommand{\step}[4]{\state{#1}{#2} \movesto \state{#3}{#4}}
 \newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^*  \state{\halt}{#3}}
-\newcommand{\after}[3]{#1 \: \set{#2}\: #3}
+\newcommand{\after}[3]{#1 \> \set{#2}\> #3}
 
 \newcommand{\prcef}[3]%
 {\textbf{action}: #1\\
