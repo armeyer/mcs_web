@@ -1403,10 +1403,14 @@
 
 %% Chess notation
 
-\newcommand{\pawn}{\ensuremath{P}}
-\newcommand{\bishop}{\ensuremath{B}}
-\newcommand{\knight}{\ensuremath{N}}
-\newcommand{\rook}{\ensuremath{R}}
+\RequirePackage{chessboard}
+
+\setchessboard{smallboard,showmover=false}
+
+% \newcommand{\pawn}{\ensuremath{P}}
+% \newcommand{\bishop}{\ensuremath{B}}
+% \newcommand{\knight}{\ensuremath{N}}
+% \newcommand{\rook}{\ensuremath{R}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
