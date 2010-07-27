@@ -126,18 +126,18 @@
     \fi
 }
 
-%% Like \cleardoublepage but forces an even page.  Used by \part.
-
-\def\cleardoublepageeven{%
-    \clearpage
-    \if@twoside
-        \ifodd\c@page
-            \thispagestyle{empty}%
-            \hbox{}\newpage
-            \if@twocolumn\hbox{}\newpage\fi
-        \fi
-    \fi
-}
+% %% Like \cleardoublepage but forces an even page.  Used by \part.
+% 
+% \def\cleardoublepageeven{%
+%     \clearpage
+%     \if@twoside
+%         \ifodd\c@page
+%             \thispagestyle{empty}%
+%             \hbox{}\newpage
+%             \if@twocolumn\hbox{}\newpage\fi
+%         \fi
+%     \fi
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -657,7 +657,7 @@
     \endgroup}
 
 \def\part{%
-    \cleardoublepageeven
+    \cleardoublepage
     \thispagestyle{empty}\secdef\@part\@spart}
 
 \def\@part[#1]#2{%
@@ -697,7 +697,7 @@
 }
 
 \def\partintro{%
-    \clearpage
+    \cleardoublepage
     \thispagestyle{empty}
     \begingroup
         \vspace*{126pt}%
