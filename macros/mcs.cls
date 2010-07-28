@@ -1178,10 +1178,10 @@
 
 \let\by\times
 
-\newcommand{\range}[1]{\mathop{\textup{range}}\nolimits\left(#1\right)}
-\newcommand{\domain}[1]{\mathop{\textup{domain}}\nolimits\left(#1\right)}
-\newcommand{\codomain}[1]{\mathop{\textup{codomain}}\nolimits\left(#1\right)}
-\newcommand{\graph}[1]{\mathop{\textup{graph}}\nolimits\left(#1\right)}
+\newcommand{\range}[1]{\operatorname{range}(#1)}
+\newcommand{\domain}[1]{\operatorname{domain}(#1)}
+\newcommand{\codomain}[1]{\operatorname{codomain}(#1)}
+\newcommand{\graph}[1]{\operatorname{graph}(#1)}
 
 %% Graph notation
 
@@ -1189,13 +1189,13 @@
 %% introduce extra space, and no current uses need the larger
 %% delimiters anyway.
 
-\newcommand{\degr}[1]{\operatorname{deg}\nolimits(#1)}
-\newcommand{\indegr}[1]{\operatorname{indegree}\nolimits(#1)}
-\newcommand{\outdegr}[1]{\operatorname{outdegree}\nolimits(#1)}
+\newcommand{\degr}[1]{\operatorname{deg}(#1)}
+\newcommand{\indegr}[1]{\operatorname{indegree}(#1)}
+\newcommand{\outdegr}[1]{\operatorname{outdegree}(#1)}
 
 \newcommand{\dist}{\operatorname{dist}}
 
-\newcommand{\dpth}[1]{\mathop{\textup{depth}}\nolimits\left(#1\right)}
+\newcommand{\dpth}[1]{\operatorname{depth}\left(#1\right)}
 
 %% Math -- Languages
 
@@ -1269,15 +1269,15 @@
 
 \newcommand{\btg}{\text{binary-2PTG}}
 \newcommand{\tg}{\text{2PTG}}
-\newcommand{\ms}[1]{\mathop{\mathrm{#1}}}
+\newcommand{\ms}[1]{\operatorname{#1}}
 
 \providecommand{\sg}{\ms{sg}}
 \providecommand{\ide}{\ms{id}}
 \providecommand{\EF}{\ms{F18}}
 \providecommand{\T}{\ms{ST}}
 
-\newcommand{\binnum}[1]{\mathop{\textup{num}}\nolimits\left(#1\right)}
-\newcommand{\binnumt}[1]{\mathop{\textup{num}}\nolimits\left(\mathtt{#1}\right)}
+\newcommand{\binnum}[1]{\operatorname{num}\left(#1\right)}
+\newcommand{\binnumt}[1]{\operatorname{num}\left(\mathtt{#1}\right)}
 
 \def\lexle{\mathrel{\preceq_{\text{lex}}}}
 \newcommand{\lexls}{\mathrel{\prec_{\text{lex}}}}
@@ -1315,16 +1315,20 @@
 
 %% Parameters/Variables
 
-\newlength{\strutheight}
-
 \newcommand{\sspace}{\mathcal{S}}
 
-\newcommand{\pr}[1]{\Pr\{#1\}}
+\newcommand{\tails}{\mathrm{T}}
+\newcommand{\heads}{\mathrm{H}}
 
-\newcommand{\prBig}[1]{\Pr\left\{#1\right\}}
+\newcommand{\prob}[1]{\Pr[#1]}
+\newcommand{\prsub}[2]{\Pr_{#2}[#1]}
 
-\newcommand{\prob}[1]{\pr{#1}}
-\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#2}}\nolimits\left\{#1\right\}}
+\let\pr\prob
+
+\newcommand{\Prob}[1]{\Pr\left[#1\right]}
+\newcommand{\Prsub}[2]{\Pr_{#2}\left[#1\right]}
+
+\newlength{\strutheight}
 
 \newcommand{\prcond}[2]{%
     \ifinner
@@ -1332,24 +1336,37 @@
     \else
         \settoheight{\strutheight}{$\displaystyle#1 #2$}%
      \fi
-    \mathop{\textup{Pr}}\nolimits\left\{
+    \Prob{
         #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
-    \right\}%
+    }%
 }
 
-\newcommand{\tails}{\mathrm{T}}
-\newcommand{\heads}{\mathrm{H}}
+\newcommand{\Ex}{\operatorname{Ex}}
 
-\newcommand{\Ex}{\mathop{\textup{E}}\nolimits}
-\newcommand{\Var}{\mathop{\textup{Var}}\nolimits}
-\newcommand{\Cov}{\mathop{\textup{Cov}}\nolimits}
-\newcommand{\expect}[1]{\Ex\left[#1\right]}
-\newcommand{\expectsq}[1]{{\Ex}^2\left[#1\right]}
+\newcommand{\expect}[1]{\Ex[#1]}
+\newcommand{\expectsq}[1]{\Ex^2[#1]}
+
+\newcommand{\Expect}[1]{\Ex\left[#1\right]}
+\newcommand{\Expectsq}[1]{\Ex^2\left[#1\right]}
+
 \newcommand{\expcond}[2]{\expect{#1\mid#2}}
-\newcommand{\variance}[1]{\Var\left[#1\right]}
-\newcommand{\varsq}[1]{{\Var}^2\left[#1\right]}
-\newcommand{\covar}[1]{\Cov\left[#1\right]}
-\newcommand{\covariance}[2]{\Cov\left[#1,#2\right]}
+
+\newcommand{\Var}{\operatorname{Var}}
+
+\newcommand{\variance}[1]{\Var[#1]}
+\newcommand{\varsq}[1]{\Var^2[#1]}
+
+\newcommand{\Variance}[1]{\Var\left[#1\right]}
+\newcommand{\Varsq}[1]{\Var^2\left[#1\right]}
+
+\newcommand{\Cov}{\operatorname{Cov}}
+
+\newcommand{\covar}[1]{\Cov[#1]}
+\newcommand{\covariance}[2]{\Cov[#1,#2]}
+
+\newcommand{\Covar}[1]{\Cov\left[#1\right]}
+\newcommand{\Covariance}[2]{\Cov\left[#1,#2\right]}
+
 \newcommand{\pdf}{\textsc{PDF}}
 \newcommand{\cdf}{\textsc{CDF}}
 
