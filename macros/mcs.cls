@@ -1099,6 +1099,15 @@
     \newcommand{\false}{\ensuremath{\mathbf{F}}}
 \fi
 
+\if@usecolor@
+    \newcommand{\lgtrue}{\textcolor{green}{\ensuremath{\mathbf{\Large T}}}}
+    \newcommand{\lgfalse}{\textcolor{red}{\ensuremath{\mathbf{\Large F}}}}
+\else
+    \newcommand{\lgtrue}{\ensuremath{\mathbf{\Large T}}}
+    \newcommand{\lgfalse}{\ensuremath{\mathbf{\Large F}}}
+\fi
+
+
 \newcommand{\True}{\ensuremath{\mathbf{True}}}
 \newcommand{\False}{\ensuremath{\mathbf{False}}}
 
