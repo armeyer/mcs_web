@@ -64,6 +64,8 @@ but also there is another boundary condition, the Pit of Disaster,
 
 \begin{figure}
 
+\gnote{Geoff: Note corrections: Figure P1, p. 3 (P-3), ch19-ftl-jul27.pdf}
+
 \graphic{stencil3}
 
 \caption{An unbiased, one-dimensional random walk with absorbing
@@ -105,22 +107,25 @@ little fella.  So suppose that we instead place him $n$ inches from
 the left side of an island $w$ inches across:
 %
 \begin{figure}[h]
+
+\gnote{Geoff: Change right text to ``Pits of Disaster''.}
+
 \graphic{stencil4}
 \end{figure}
 %
-In other words, Stencil starts at position $n$ and there are cliffs at
-positions 0 and $w$.
+In other words, Stencil starts at position~$n$ and his random walk
+ends if he ever reaches positions 0 or~$w$.
 
 Now he has three possible fates: he could fall off the Cliff of Doom,
-fall off the Cliff of Disaster, or hop around on the island forever.
+fall into the Pit of Disaster, or hop around on the island forever.
 We could compute the probabilities of these three events with a
 horrific summation, but fortunately there's a far easier method: we
 can use a linear recurrence.
 
-Let $R_n$ be the probability that Stencil falls to the right off the
-Cliff of Disaster, given that he starts at position $n$.  In a couple
+Let $R_n$ be the probability that Stencil falls to the right into the
+Pit of Disaster, given that he starts at position~$n$.  In a couple
 special cases, the value of $R_n$ is easy to determine.  If he starts
-at position $w$, he falls from the Cliff of Disaster immediately, so
+at position~$w$, he falls into the Pit of Disaster immediately, so
 $R_w = 1$.  On the other hand, if he starts at position $0$, then he
 falls from the Cliff of Doom immediately, so $R_0 = 0$.
 
@@ -130,13 +135,16 @@ of his fate into two cases based on the direction of his first hop:
 %
 \begin{itemize}
 
-\item If his first hop is to the left, then he lands at position $n-1$
-and eventually falls off the Cliff of Disaster with probability
-$R_{n-1}$.
+\item
 
-\item On the other hand, if his first hop is to the right, then he
-lands at position $n+1$ and eventually falls off the Cliff of Disaster
-with probability $R_{n+1}$.
+If his first hop is to the left, then he lands at position $n-1$ and
+eventually falls into the Pit of Disaster with probability~$R_{n-1}$.
+
+\item
+
+On the other hand, if his first hop is to the right, then he lands at
+position~$n+1$ and eventually falls into the Pit of Disaster with
+probability~$R_{n+1}$.
 
 \end{itemize}
 %
@@ -146,68 +154,64 @@ Therefore, by the Total Probability Theorem, we have:
 R_n = \frac{1}{2} R_{n-1} + \frac{1}{2} R_{n+1}
 \]
 
-\subsubsection*{A Recurrence Solution}
+\subsubsection{Solving the Recurrence}
 
 Let's assemble all our observations about $R_n$, the probability that
-Stencil falls from the Cliff of Disaster if he starts at position $n$:
+Stencil falls into the Pit of Disaster if he starts at position~$n$:
 %
 \[
 \begin{array}{rl}
 R_0 & = 1 \\
 R_w & = 0 \\
-R_n & = \frac{1}{2} R_{n-1} + \frac{1}{2} R_{n+1} \qquad (0 < n < w)
+R_n & = \frac{1}{2} R_{n-1} + \frac{1}{2} R_{n+1} \qquad (0 < n < w).
 \end{array}
 \]
 %
 This is just a linear recurrence---and we know how to solve those!
-Uh, right?  (We've attached a quick reference guide to be on the safe
-side.)
+Uh, right?  Remember Chapter~\ref{chap:recurrences} or
+Chapter~\ref{generating_function_chap}?
 
-There is one unusual complication: in a normal recurrence, $R_n$ is
+There is one unusual complication: in a normal recurrence, $R_n$~is
 written a function of preceding terms.  In this recurrence equation,
-however, $R_n$ is a function of both a preceding term ($R_{n-1}$) and
-a \emph{following} term ($R_{n+1}$).  This is no big deal, however,
+however, $R_n$~is a function of both a preceding term~($R_{n-1}$) and
+a \emph{following} term~($R_{n+1}$).  This is no big deal, however,
 since we can just rearrange the terms in the recurrence equation:
 %
 \[
-R_{n+1} = 2 R_n - R_{n-1}
+    R_{n+1} = 2 R_n - R_{n-1}.
 \]
 %
 Now we're back on familiar territory.
 
-% \begin{figure}[p]
-% \input{on-web-or-inactive/short_guide.tex}
-% \end{figure}
-
 Let's solve the recurrence.  The characteristic equation is:
 %
 \[
-x^2 - 2 x + 1 = 0
+    x^2 - 2 x + 1 = 0.
 \]
 %
-This equation has a double root at $x = 1$.  There is no inhomogenous
+This equation has a double root at~$x = 1$.  There is no inhomogenous
 part, so the general solution has the form:
 %
 \[
-R_n = a \cdot 1^n + b \cdot n 1^n = a + b n
+    R_n = a \cdot 1^n + b \cdot n 1^n = a + b n.
 \]
 %
 Substituting in the boundary conditions $R_0 = 0$ and $R_w = 1$ gives
 two linear equations:
 %
 \begin{align*}
-0 & = a \\
-1 & = a + b w
+0 & = a, \\
+1 & = a + b w.
 \end{align*}
 %
 The solution to this system is $a = 0$, $b = 1 / w$.  Therefore, the
 solution to the recurrence is:
 %
 \[
-R_n = n / w
+    R_n = n / w.
 \]
 
-\subsubsection*{Interpreting the Answer}
+\subsection{Death Is Certain}
 
 Our analysis shows that if we place Stencil $n$ inches from the left
 side of an island $w$ inches across, then he falls off the right side
@@ -222,49 +226,55 @@ as the probability that he falls of the \emph{right} side starting
 at position $w - n$, which is $(w - n) / n$.
 
 This is bad news.  The probability that Stencil eventually falls off
-one cliff or the other is:
+one side or the other is:
 %
 \[
-\frac{n}{w} + \frac{w - n}{w} = 1
+    \frac{n}{w} + \frac{w - n}{w} = 1.
 \]
 %
-There's no hope!  The probability that he hops around on the island
-forever is zero.  And there's even worse news.  Let's go back to the
-original problem where Stencil is 1 inch from the left edge of an
-infinite plateau.  In this case, the probability that he eventually
-falls into the sea is:
+There's no hope!  The probability that Stencil hops around on the
+island forever is zero.
+
+And there's even worse news.  Let's go back to the original problem
+where Stencil is 1 inch from the left edge of an \emph{infinite}
+plateau.  In this case, the probability that he eventually falls into
+the sea is:
 %
 \[
-\lim_{w \to \infty} \frac{w - 1}{w} = 1
+    \lim_{w \to \infty} \frac{w - 1}{w} = 1.
 \]
-%
-Our little friend is doomed!
+So even if there were no Pit of Disaster, Stencil still falls off the
+Cliff of Doom with probability~1.  And since
+\begin{equation*}
+    \lim_{w \to \infty} \frac{w - n }{w} = 1
+\end{equation*}
+for any finite~$n$, this is true no matter where Stencil starts.  Our
+little friend is doomed!
 
 Hey, you know how in the movies they often make it look like the hero
 dies, but then he comes back in the end and everything turns out okay?
-Well, I'm not sayin' anything, just pointing that out.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Well, we're not sayin' anything, just pointing that out.
 
 \subsection{Life Expectancy}
 
 On the bright side, Stencil may get to hop around for a while before
-he sinks beneath the waves.  Let's use the same setup as before, where
-he starts out $n$ inches from the left side of an island $w$ inches
+he goes over an edge.  Let's use the same setup as before, where he
+starts out $n$~inches from the left side of an island $w$~inches
 across:
 %
 \begin{figure}[h]
 \graphic{stencil4}
 \end{figure}
 %
-What is the expected number of hops he takes before falling off a cliff?
+What is the expected number of hops he takes before falling off an
+edge?
 
-Let $X_n$ be his expected lifespan, measured in hops.  If he starts at
-either edge of the island, then he dies immediately:
+Let $X_n$~be Stencil's expected lifespan, measured in hops.  If he
+starts at either edge of the island, then he dies immediately:
 %
 \begin{align*}
-X_0 & = 0 \\
-X_w & = 0
+X_0 & = 0, \\
+X_w & = 0.
 \end{align*}
 %
 If he starts somewhere in the middle of the island ($0 < n < w$), then
@@ -273,24 +283,28 @@ hop:
 %
 \begin{itemize}
 
-\item If his first hop is to the left, then he lands at position $n-1$
-and can expect to live for another $X_{n-1}$ steps.
+\item
 
-\item If his first hop is to the right, then he lands at position
-$n+1$ and his expected lifespan is $X_{n+1}$.
+If his first hop is to the left, then he lands at position $n-1$ and
+can expect to live for another $X_{n-1}$ steps.
+
+\item
+
+If his first hop is to the right, then he lands at position $n+1$ and
+can expect to live for another $X_{n+1}$~steps.
 
 \end{itemize}
 %
-Thus, by the Total Expectation Theorem and linearity, his expected
-lifespan is:
+Thus, by the Law of Total Expectation and Linearity of Expectation,
+Stencil's expected lifespan is:
 %
 \begin{align*}
-X_n & = 1 + \frac{1}{2} X_{n-1} + \frac{1}{2} X_{n+1}
+    X_n & = 1 + \frac{1}{2} X_{n-1} + \frac{1}{2} X_{n+1}.
 \end{align*}
 %
-The leading $1$ accounts for his first hop.
+The leading?~$1$ accounts for his first hop.
 
-\subsubsection*{Solving the Recurrence}
+\subsubsection{Solving the Recurrence}
 
 Once again, Stencil's fate hinges on a recurrence equation:
 %
@@ -298,68 +312,67 @@ Once again, Stencil's fate hinges on a recurrence equation:
 \begin{array}{rl}
 X_0 & = 0 \\
 X_w & = 0 \\
-X_n & = 1 + \frac{1}{2} X_{n-1} + \frac{1}{2} X_{n+1} \qquad (0 < n < w)
+X_n & = 1 + \frac{1}{2} X_{n-1} + \frac{1}{2} X_{n+1} \qquad (0 < n < w).
 \end{array}
 \]
 %
 We can rewrite the last line as:
 %
-\[
-X_{n+1} = 2 X_n - X_{n-1} - 2
-\]
+\begin{equation}\label{eqn:19P1}
+    X_{n+1} = 2 X_n - X_{n-1} - 2.
+\end{equation}
 %
 As before, the characteristic equation is:
 %
 \[
-x^2 - 2 x + 1 = 0
+    x^2 - 2 x + 1 = 0.
 \]
 %
-There is a double-root at 1, so the homogenous solution has the form:
+There is a double-root at~1, so the homogenous solution has the form:
 %
 \[
-X_n = a + b n
+    X_n = a + b n.
 \]
 %
-There's an inhomogenous term, so we also need to find a particular
-solution.  Since this term is a constant, we should try a particular
-solution of the form $X_n = c$ and then try $X_n = c + d n$ and then
-$X_n = c + d n + e n^2$ and so forth.  As it turns out, the first two
-possibilities don't work, but the third does.  Substituting in this
-guess gives:
+But this time, there's an inhomogenous term, so we also need to find a
+particular solution.  Since this term is a constant, we should try a
+particular solution of the form $X_n = c$ and then try $X_n = c + d n$
+and then $X_n = c + d n + e n^2$ and so forth.  As it turns out, the
+first two possibilities don't work, but the third does.  Substituting
+$X_n = c + d n + e n^2$ into Equation~\ref{eqn:19P1} gives
 %
-\begin{align*}
-X_{n+1} & = 2 X_n - X_{n-1} - 2 \\
-c + d(n+1) + e(n+1)^2 & = 2 (c + dn + en^2) - (c + d(n-1) + e(n-1)^2 - 2 \\
-e & = -1
-\end{align*}
-%
-All the $c$ and $d$ terms cancel, so $X_n = c + d n - n^2$ is a
-particular solution for all $c$ and $d$.  For simplicity, let's take
-$c = d = 0$.  Thus, our particular solution is $X_n = - n^2$.
+\begin{equation*}
+c + d(n+1) + e(n+1)^2 & = 2 (c + dn + en^2)
+    - \paren{c + d(n-1) + e(n-1)^2} - 2,
+\end{equation*}
+which simplifies to~$e = -1$.  Since all the $c$ and $d$~terms cancel,
+$X_n = c + d n - n^2$ is a particular solution for all $c$ and~$d$.
+For simplicity, let's take $c = d = 0$.  Thus, our particular solution
+is $X_n = - n^2$.
 
 Adding the homogenous and particular solutions gives the general form
 of the solution:
 %
 \begin{align*}
-X_n & = a + b n - n^2
+    X_n & = a + b n - n^2.
 \end{align*}
 %
 Substituting in the boundary conditions $X_0 = 0$ and $X_w = 0$ gives
 two linear equations:
 %
 \begin{align*}
-0 & = a \\
-0 & = a + b w - w^2
+0 & = a, \\
+0 & = a + b w - w^2.
 \end{align*}
 %
 The solution to this system is $a = 0$ and $b = w$.  Therefore, the
 solution to the recurrence equation is:
 %
 \[
-X_n = w n - n^2 = n (w - n)
+X_n = w n - n^2 = n (w - n).
 \]
 
-\subsubsection*{Interpreting the Solution}
+\subsubsection{Interpreting the Solution}
 
 Stencil's expected lifespan is $X_n = n (w - n)$, which is the
 \emph{product} of the distances to the two cliffs.  Thus, for
@@ -591,7 +604,14 @@ has a steady, downward \emph{drift} because she has a small expected
 loss on every bet.  The situation is illustrated below:
 %
 \begin{figure}[h]
+
 \graphic{gambler}
+
+\capton{In a biased random walk, the downward drift usually dominates
+  swings of good luck.}
+
+\label{fig:19P3}
+
 \end{figure}
 
 For example, in roulette the gambler wins a dollar with probability
