@@ -1021,9 +1021,9 @@
 
 % Reverted from en-dash to em-dash under duress.
 
-% \newcommand{\edge}[2]{#1\text{---}#2}
+\newcommand{\edge}[2]{#1\text{---}#2}
 
-\newcommand{\edge}[2]{\{#1, #2\}}
+%\newcommand{\edge}[2]{\{#1, #2\}}
 
 \newcommand{\diredge}[2]{#1 \to #2}
 \newcommand{\vertices}[1]{V(#1)}
