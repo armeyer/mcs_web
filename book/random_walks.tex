@@ -342,7 +342,7 @@ first two possibilities don't work, but the third does.  Substituting
 $X_n = c + d n + e n^2$ into Equation~\ref{eqn:19P1} gives
 %
 \begin{equation*}
-c + d(n+1) + e(n+1)^2 & = 2 (c + dn + en^2)
+c + d(n+1) + e(n+1)^2 = 2 (c + dn + en^2)
     - \paren{c + d(n-1) + e(n-1)^2} - 2,
 \end{equation*}
 which simplifies to~$e = -1$.  Since all the $c$ and $d$~terms cancel,
@@ -375,9 +375,9 @@ X_n = w n - n^2 = n (w - n).
 \subsubsection{Interpreting the Solution}
 
 Stencil's expected lifespan is $X_n = n (w - n)$, which is the
-\emph{product} of the distances to the two cliffs.  Thus, for
-example, if he's 4 inches from the left cliff and 8 inches from the
-right cliff, then his expected lifespan is $4 \cdot 8 = 32$.
+\emph{product} of the distances to the two edges.  Thus, for example,
+if he's 4~inches from the left edge and 8~inches from the right cliff,
+then his expected lifespan is $4 \cdot 8 = 32$.
 
 Let's return to the original problem where Stencil has the Cliff of
 Doom 1 inch to his left and an infinite plateau to this right.  (Also,
@@ -388,55 +388,148 @@ lifespan is:
 \lim_{w \to \infty} 1 (w - 1) = \infty
 \]
 %
-\emph{Yes, Stencil is certain to eventually fall off the cliff into
-the sea---but his expected lifespan is infinite!}  This sounds almost
+\emph{Yes, Stencil is certain to eventually fall off the Cliff of
+  Doom---but his expected lifespan is infinite!}  This sounds almost
 like a contradiction, but both answers are correct!
 
-Here's an informal explanation.  The probability that Stencil falls
-from the Cliff of Doom on the $k$-th step is approximately $1 /
-k^{3/2}$.  Thus, the probability that he falls eventually is:
-%
-\[
-    \prob{\text{falls off cliff}} \approx \sum_{k=1}^{\infty} \frac{1}{k^{3/2}}
-\]
-%
-You can verify by integration that this sum converges.  The exact sum
-actually converges to 1.  On the other hand, the expected time until
-he falls is:
-%
-\[
-    \expect{\text{hops until fall}}
-        \approx \sum_{k=1}^{\infty} k \cdot \frac{1}{k^{3/2}}
-        = \sum_{k=1}^{\infty} \frac{1}{\sqrt{k}}
-\]
-%
-And you can verify by integration that this sum diverges.  So our
-answers are compatible!
+Here's an informal explanation.  It turns out that the probability
+that Stencil falls from the Cliff of Doom on the $k$th step is~$p_k$
+where $p_k = \Theta(1/k^{3/2})$ and $\sum_{k = 1}^\infty P_k = 1$.
+You can verify by the integration bound that $\sum_{i = 1}^\infty
+1/k^{3/2}$ converges.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+On the other hand, the expected time until Stencil falls over the edge
+is
+\begin{align*}
+\sum_{i = 1}^\infty k p_k
+    &= \ge c \sum_{k = 1}^\infty \frac{k}{k^{3/2}} \\
+    &=     c \sum_{k = 1}^\infty \frac{1}{\sqrt{k}} \\
+    &=     \infty,
+\end{align*}
+where $c$~is a constant that comes from the $\Theta$~notation.  So our
+answers are compatible.
 
-\section{The Gambler's Ruin}
+\subsection{Application to Fair Gambling}
 
-We took the high road for a while, but now let's discuss random walks
-in more conventional terms.  A gambler goes to Las Vegas with $n$
-dollars in her pocket.  Her plan is to make only \$1 bets on red or
-black in roulette, each of which she'll win with probability $9/19
-\approx 0.473$.  She'll play until she's either broke or up \$100.
-What's the probability that she goes home a winner?
+We took the high road for a while, but let's now discuss random walks
+in a more conventional setting---gambling.
 
-This is similar to the flea problem.  The gambler's wealth goes up and
-down randomly, just like the Stencil's position.  Going broke is
-analogous to falling off the Cliff of Doom and winning \$100
-corresponds to falling off the Cliff of Disaster.  In fact, the only
-substantive difference is that the gambler's wealth is slightly more
-likely to go down than up, whereas Stencil was equally likely to hop
-left or right.
+A gambler goes to Las Vegas with~\$$n$ in her pocket.  Her plan is to
+make only \$1~bets and somehow she has found a casino that will offer
+her truly even odds\footnote{Don't worry, we'll get to the more
+  realistic scenario when she is more likely to lose than win in a
+  moment, but let's just fantasize about the fair scenario for a
+  bit.}; namely, she will win or lose~\$1 on each bet with
+probability~$1/2$. She'll play until she is broke or she has
+won~\$$m$.  In the latter case, she will go home with
+\begin{equation*}
+    w = n + m
+\end{equation*}
+dollars. What's the probability that she goes home a winner?
 
-We determined the flea usually falls off the nearest cliff.  So we
-might expect that the gambler can improve her odds of going up \$100
-before going bankrupt by bringing more money to Vegas.  But here's
-some actual data:
-%
+This is identical to the flea problem that we just analyzed.  Going
+broke is analogous to falling off the Cliff of Doom.  Going home a
+winner is analogous to falling into the Pit of Disaster, just a lot
+more fun.
+
+Our analysis of Stencil's life tells us everything we want to know
+about the gambler's prospects:
+\begin{itemize}
+
+\item
+
+The gambler goes home broke with probability
+\begin{equation*}
+    \frac{n}{w} = \frac{n}{n + m},
+\end{equation*}
+
+\item
+
+the gambler goes home a winner with probability
+\begin{equation*}
+    \frac{w - n}{w} = \frac{m}{n + m},
+\end{equation*}
+
+\item
+
+and the gambler goes home with probability
+\begin{equation*}
+    \frac{n}{n + m} + \frac{m}{n + m} = 1.
+\end{equation*}
+
+\item
+
+The number of bets before the gambler goes home is expected to be
+\begin{equation*}
+    n (w - n) = nm.
+\end{equation*}
+
+\end{itemize}
+
+If the gambler gets greedy and keeps playing unless or until she goes
+broke, then
+\begin{itemize}
+
+\item
+
+the gambler eventually goes broke with probability~1, and
+
+\item
+the number of bets before the gambler goes broke is expected to be
+infinite.
+
+\end{itemize}
+
+The bottom line here is clear: when gambling, quit while you are
+ahead---if you play until yo ugo broke, you will certainly go broke.
+
+And that's the good news!  Matters get much worse for the more typical
+scenario where the odds are against you.  Let's see why.
+
+\section{Gambler's Ruin}
+
+So far, we have considered \emph{unbiased} random walks, where the
+probability of moving up or down (or left or right) is~$1/2$.
+Unfortunately, things are never quite this simple (or fair) in real
+casinos.
+
+For example, suppose the gambler goes to Las Vegas and makes \$1~bets
+on red or black in roulette.  In this case, she will win~\$1 with
+probability
+\begin{equation*}
+    \frac{18}{38} \approx 0.473
+\end{equation*}
+and she will lose~\$1 with probability
+\begin{equation*}
+    \frac{20}{38} \approx 0.527.
+\end{equation*}
+That's because the casinos add those bothersome green 0 and~00 to give
+the house a slight advantage.
+
+At first glance (or after a few drinks), $18/38$ seems awfully close
+to~$1/2$ and so our intuition tells us that the game is ``almost
+fair.''  So we might expect the analysis we just did for the fair game
+to be ``almost right'' for the real game.  For example, if the gambler
+starts with~\$100 and quits when she gets ahead by~\$100 in the fair
+game, then she goes home a winner with probability
+\begin{equation*}
+    \frac{100}{200} = .5.
+\end{equation*}
+And, if she wants to improve her chances of going home a winner, she
+could bring more money.  If she brings~\$1000 and quits when she gets
+ahead by~\$100 in the fair game, then she goes home a winner with
+probability
+\begin{equation*}
+    \frac{1000}{1100} \approx .91.
+\end{equation*}
+
+So, given that the real game is ``almost fair,'' we might expect the
+probabilities of going home a winner in these two scenarios to be
+``almost 50\% and~91\%,'' respectively.
+
+Unfortunately for the gambler, all this ``almost'' reasoning will
+almost surely lead to disaster.  Here are the grim facts for the real
+game where the gambler wins~\$1 with probability~$18/38$.
 \[
 \begin{array}{c@{\qquad}c}
 \text{$n =$ starting wealth} &
@@ -448,19 +541,21 @@ some actual data:
 \]
 %
 Except on the very low end, the amount of money she brings makes
-almost no difference!  (The fact that only one digit changes from the
-first case to the second is a peripheral bit of bizarreness that we'll
-leave in your hands.)
+almost no difference!\footnote{The fact that only one digit changes
+  from the first case to the second is a peripheral bit of bizarreness
+  that we'll leave in your hands.} She is almost certain to go broke
+before winning~\$100.  Let's see why.
 
 \subsection{Finding a Recurrence}
 
 We can approach the gambling problem the same way we studied the life
 of Stencil.  Supose that the gambler starts with $n$ dollars.  She
 wins each bet with probability $p$ and plays until she either goes
-bankrupt or has $w \geq n$ dollars in her pocket.  (To be clear, $w$
+bankrupt or has~$w = n + m$ dollars in her pocket.  (To be clear, $w$
 is the total amount of money she wants to end up with, not the amount
-by which she wants to increase her wealth.)  Our objective is to
-compute $R_n$, the probability that she goes home a winner.
+by which she wants to increase her wealth, which is~$m$.)  Our
+objective is to compute $R_n$, the probability that she goes home a
+winner.
 
 As usual, we begin by identifying some boundary conditions.  If she
 starts with no money, then she's bankrupt immediately so $R_0 = 0$.
@@ -484,25 +579,27 @@ with $n - 1$ dollars and probability $R_{n-1}$ of reaching her goal.
 Plugging these facts into the Total Probability Theorem gives the
 equation:
 %
-\[
-R_n = p R_{n+1} + (1 - p) R_{n-1}
-\]
+\begin{equation}\label{eqn:19P3}
+    R_n = p R_{n+1} + (1 - p) R_{n-1}.
+\end{equation}
 
 \subsection{Solving the Recurrence}
 
-We now have a recurrence for $R_n$, the probability that the gambler
-reaches her goal of $w$ dollars if she starts with $n$:
+Rearranging the terms in Equation~\ref{eqn:19P3} gives us a recurrence
+for $R_n$, the probability that the gambler reaches her goal of $w$
+dollars if she starts with $n$:
 %
 \begin{align*}
 R_0 & = 0 \\
 R_w & = 1 \\
-R_n & = p R_{n+1} + (1 - p) R_{n-1} & (0 < n < w)
+p R_{n + 1} - R_n + (1 - p) R_{n - 1} &= 0
+& (0 < n < w).
 \end{align*}
 %
 The characteristic equation is:
 %
 \[
-p x^2 - x + (1-p) = 0
+    p x^2 - x + (1-p) = 0.
 \]
 %
 The quadratic formula gives the roots:
@@ -511,7 +608,7 @@ The quadratic formula gives the roots:
 x & = \frac{1 \pm \sqrt{1 - 4 p (1-p)}}{2p} \\
   & = \frac{1 \pm \sqrt{(1-2p)^2}}{2p} \\
   & = \frac{1 \pm (1-2p)}{2p} \\
-  & = \frac{1-p}{p} \text{ or } 1
+  & = \frac{1-p}{p} \text{ or } 1.
 \end{align*}
 
 There's an important point lurking here.  If the gambler is equally
@@ -533,24 +630,25 @@ has a completely different form:
 R_n = a \cdot \paren{\frac{1-p}{p}}^n + b \cdot 1^n
 \]
 %
-In mathematical terms, this is where the flea problem and the gambler
-problem take off in completely different directions: in one case we
-get a linear solution and in the other we get an exponenetial
-solution!
+In mathematical terms, this is where the fair game and the ``almost
+fair'' game take off in completely different directions: in one case
+we get a linear solution and in the other we get an exponenetial
+solution!  This is going to be bad news for anyone playing the
+``almost fair'' game.
 
 Anyway, substituting the boundary conditions into the general form of
 the solution gives a system of linear equations:
 %
 \begin{align*}
 0 & = a + b \\
-1 & = a \cdot \paren{\frac{1-p}{p}}^w + b
+1 & = a \cdot \paren{\frac{1-p}{p}}^w + b.
 \end{align*}
 %
 Solving this system, gives:
 %
 \begin{align*}
 a & = \frac{1}{\paren{\frac{1-p}{p}}^w-1} &
-b & = - \frac{1}{\paren{\frac{1-p}{p}}^w-1} &
+b & = - \frac{1}{\paren{\frac{1-p}{p}}^w-1}. &
 \end{align*}
 %
 Substituting these values back into the general solution gives:
@@ -564,14 +662,14 @@ R_n
 %
 (Suddenly, Stencil's life doesn't seem so bad, huh?)
 
-\subsection{Interpreting the Solution}
+\subsection{Bad News!}
 
-We have an answer!  If the gambler starts with $n$ dollars and wins
-each bet with probability $p$, then the probability she reaches $w$
-dollars before going broke is:
+We have an answer!  But it's not good news. If the gambler starts with
+$n$ dollars and wins each bet with probability $p$, then the
+probability she reaches $w$ dollars before going broke is:
 %
 \[
-\frac{\paren{\frac{1-p}{p}}^n-1}{\paren{\frac{1-p}{p}}^w-1}
+\frac{\paren{\frac{1-p}{p}}^n-1}{\paren{\frac{1-p}{p}}^w-1}.
 \]
 
 Let's try to make sense of this expression.  If the game is biased
@@ -582,32 +680,36 @@ are big numbers and the -1's don't make much difference.  Thus, her
 probability of reaching $w$ dollars is very close to:
 %
 \[
-\paren{\frac{1-p}{p}}^{n-w}
+    \paren{\frac{1-p}{p}}^{n-w} = \paren{\frac{1 - p}{p}}^m.
 \]
 %
-In particular, if she is hoping to come out \$100 ahead in roulette,
-then $p = 9/19$ and $w = n + 100$, so her probability of success is:
+In particular, if she is hoping to come out~$m = \$100$ ahead in
+roulette, then $p = 18/38$ and her probability of success is:
 %
 \[
-\paren{\frac{10}{9}}^{-100} = 1 \text{ in } 37648.619496
+    \paren{\frac{10}{9}}^{-100} = 1 \text{ in } 37648.619496.
 \]
 %
-This explains the strange number we arrived at earlier!
+This explains the strange number we arrived at earlier!  In fact, this
+number does not change no matter how large $n$~gets, so even if the
+gambler starts with a trillion dollars, she is sill not likely to ever
+get ahead by even~\$100.
 
-\subsection{Some Intuition}
+\subsection{But Why?}
 
 Why does the gambler's starting wealth have so little impact on her
 probability of coming out ahead?  Intuitively, there are two forces at
 work.  First, the gambler's wealth has random upward and downward
 \emph{swings} due to runs of good and bad luck.  Second, her wealth
 has a steady, downward \emph{drift} because she has a small expected
-loss on every bet.  The situation is illustrated below:
+loss on every bet.  The situation is illustrated in
+Figure~\ref{fig:19P3}.
 %
 \begin{figure}[h]
 
 \graphic{gambler}
 
-\capton{In a biased random walk, the downward drift usually dominates
+\caption{In a biased random walk, the downward drift usually dominates
   swings of good luck.}
 
 \label{fig:19P3}
