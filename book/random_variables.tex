@@ -138,7 +138,7 @@ denotes the sum of the two dice.  For example,
 \end{align*}
 
 Random variables can be combined in complicated ways, as we will see
-in Chapter~\ref{deviation_chap}.  For example,
+in Chapter~\ref{chap:deviations}.  For example,
 \begin{equation*}
     Y = e^T
 \end{equation*}
@@ -626,7 +626,7 @@ well.
 The third commonly-used distribution in computer science is the
 \term{binomial distribution}.  The standard example of a random
 variable with a binomial distribution is the number of heads that come
-up in $n$ independent flips of a coin.  If the coin is fair, then the
+up in $n$~independent flips of a coin.  If the coin is fair, then the
 number of heads has an \term{unbiased binomial distribution},
 specified by the pdf
 \begin{equation*}
@@ -1393,7 +1393,388 @@ some respects.  For example, if we set $\mu = n/2$, \ $\sigma^2 =
 n/4$, and~$x = \alpha n$ in Equation~\ref{eqn:16N1}, the resulting pdf
 is exponentially small in~$n$, which is similar to the behavior of
 Equation~\ref{eqn:16F5} when $p = 1/2$.  We'll talk further about the
-relationship in Chapter~\ref{deviation_chap}, where the reasons for
+relationship in Chapter~\ref{chap:deviations}, where the reasons for
 the choices of $\mu$, $\sigma^2$, and~$x$ above will become apparent.
 
 \endinput
+
+
+%% The following were originally sections 5 and 6 of ``Deviations''.
+
+\section{Estimation by Random Sampling}
+
+
+\subsubsection{Polling again}
+\begin{editingnotes}
+
+\textcolor{blue}{This paragraph reflects an alternative exposition
+  where polling estimation and confidence were based only on binomial
+  distribution properties, even before expectation was introduced.}
+
+In Chapter~[none], we used bounds on the binomial distribution to determine
+confidence levels for a poll of voter preferences of Franken vs.\ Coleman.
+Now that we know the variance of the binomial distribution, we can use
+Chebyshev's Theorem as an alternative approach to calculate poll size.
+
+The setup is the same as in Chapter~[none]
+\end{editingnotes}
+
+Suppose we had wanted an advance estimate of the fraction of the
+Massachusetts voters who favored Scott Brown over everyone else in the
+recent Democratic primary election to fill Senator Edward Kennedy's seat.
+
+\iffalse
+\footnote{We can only keep our fingers crossed for this race to
+  happen---when they ran against each other for the U.S. Senate in
+  2000, they generated some of the best entertainment in TV history.}
+\fi
+
+Let $p$ be this unknown fraction, and let's suppose we have some random
+process---say throwing darts at voter registration lists---which will
+select each voter with equal probability.  We can define a Bernoulli
+variable, $K$, by the rule that $K=1$ if the random voter most prefers
+Brown, and $K=0$ otherwise.
+
+Now to estimate $p$, we take a large number, $n$, of random choices of
+voters\footnote{We're choosing a random voter $n$ times \emph{with
+    replacement}.  That is, we don't remove a chosen voter from the set of
+  voters eligible to be chosen later; so we might choose the same voter
+  more than once in $n$ tries!  We would get a slightly better estimate if
+  we required $n$ \emph{different} people to be chosen, but doing so
+  complicates both the selection process and its analysis, with little gain
+  in accuracy.}  and count the fraction who favor Brown.  That is, we
+define variables $K_1, K_2, \dots$, where $K_i$ is interpreted to be the
+indicator variable for the event that the $i$th chosen voter prefers
+Brown.  Since our choices are made independently, the $K_i$'s are
+independent.  So formally, we model our estimation process by simply
+assuming we have mutually independent Bernoulli variables $K_1, K_2,
+\dots,$ each with the same probability, $p$, of being equal to 1.  Now let
+$S_n$ be their sum, that is,
+\begin{equation}\label{LN12:Sn}
+S_n \eqdef \sum_{i=1}^n K_i.
+\end{equation}
+So $S_n$ has the binomial distribution with parameter $n$, which we can
+choose, and unknown parameter $p$.
+
+The variable $S_n/n$ describes the fraction of voters we will sample
+who favor Scott Brown.  Most people intuitively expect this sample
+fraction to give a useful approximation to the unknown fraction,
+$p$---and they would be right.  
+\iffalse Note that
+\[
+\expect{\frac{S_n}{n}} = \sum_{i=1}^n \expect{K_i} = pn.
+\]
+\fi
+So we will use the sample value, $S_n/n$, as our \emph{statistical
+  estimate} of $p$ and use the Pairwise Independent Sampling
+Theorem~\ref{th:pairwise-sampling} to work out how good an estinate
+this is.
+
+\subsection{Sampling}
+Suppose we want our estimate to be within $0.04$ of the Brown favoring
+fraction, $p$, at least 95\% of the time.  This means we want
+\begin{equation}\label{pollsizeinequality}
+\pr{\abs{\frac{S_n}{n} - p} \leq 0.04} \geq 0.95\ .
+\end{equation}
+So we better determine the number, $n$, of times we must poll voters so
+that inequality~\eqref{pollsizeinequality} will hold.
+
+\begin{editingnotes}
+the value, $S_n/n$, of our estimate will, with probability at least
+$1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
+favoring Brown.
+
+We let $\epsilon$ be the margin of error we can tolerate, and let $\delta$
+be the probability that our result lies outside this margin, so in this
+case we'd have $\epsilon = 0.04$ and $\delta \le 0.05$.
+
+We want to determine the number, $n$, of times we must poll voters so that
+the value, $S_n/n$, of our estimate will, with probability at least
+$1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
+favoring Brown.
+\end{editingnotes}
+
+Now $S_n$ is binomially distributed, so from~\eqref{p1p} we have
+\[
+\variance{S_n}  = n(p(1-p)) \leq n \cdot \frac{1}{4} = \frac{n}{4}\label{n4}
+\]
+The bound of 1/4 follows from the fact that $p(1-p)$ is maximized when $p
+= 1-p$, that is, when $p=1/2$ (check this yourself!).
+
+Next, we bound the variance of $S_n/n$:
+\begin{align}
+\variance{\frac{S_n}{n}}
+       & = \paren{\frac{1}{n}}^2 \variance{S_n}
+                     & \text{(by~\eqref{a2R})}\notag\\
+       & \leq \paren{\frac{1}{n}}^2 \frac{n}{4} & \text{(by~\eqref{n4})}\notag\\
+       & = \frac{1}{4n}\label{1/4n}
+\end{align}
+Now from Chebyshev and~\eqref{1/4n} we have:
+\begin{equation}\label{CK}
+\pr{\abs{\frac{S_n}{n} - p} \geq 0.04}
+    \leq \frac{\variance{S_n/n}}{(0.04)^2}
+       = \frac{1}{4n(0.04)^2} = \frac{156.25}{n}
+\end{equation}
+
+To make our our estimate with  95\% confidence, we want the righthand
+side of~\eqref{CK} to be at most 1/20.  So we choose $n$ so that
+\[
+\frac{156.25}{n} \leq \frac{1}{20},
+\]
+that is,
+\[
+n \geq 3,125.
+\]
+
+A more exact calculation of the tail of this binomial distribution
+shows that the above sample size is about four times larger than
+necessary, but it is still a feasible size to sample.  The fact that
+the sample size derived using \idx{Chebyshev's Theorem} was unduly
+pessimistic should not be surprising.  After all, in applying the
+Chebyshev Theorem, we only used the variance of $S_n$.  It makes sense
+that more detailed information about the distribution leads to better
+bounds.  But working through this example using only the
+\idx{variance} has the virtue of illustrating an approach to
+estimation that is applicable to arbitrary random variables, not just
+binomial variables.
+
+\subsection{Matching Birthdays}\label{bday_deviation_subsec}
+
+There are important cases where the relevant distributions are not
+binomial because the mutual independence properties of the voter
+preference example do not hold.  In these cases, estimation methods
+based on the Chebyshev bound may be the best approach.  Birthday
+Matching is an example.  We already saw in
+Section~\ref{birthday_principle_sec} that in a class of 85 students it
+is virtually certain that two or more students will have the same
+birthday.  This suggests that quite a few pairs of students are likely
+to have the same birthday.  How many?
+
+So as before, suppose there are $n$ students and $d$ days in the year, and
+let $D$ be the number of pairs of students with the same birthday.  Now it
+will be easy to calculate the expected number of pairs of students with
+matching birthdays.  Then we can take the same approach as we did in
+estimating voter preferences to get an estimate of the probability of
+getting a number of pairs close to the expected number.
+
+Unlike the situation with voter preferences, having \idx{matching
+  birthdays} for different pairs of students are not \idx{mutually
+  independent} events, but the matchings are \emph{\idx{pairwise
+    independent}}, as explained in
+Section~\ref{birthday_principle_sec}.
+%
+\iffalse For example, knowing that Alice and Bob have matching
+birthdays, and also that Ted and Alice have matching birthdays
+obviously implies that Bob and Ted have matching birthdays.  On the
+other hand, knowing that Alice and Bob have matching birthdays tells
+us nothing about whether Alice and Carol have matching birthdays,
+namely, these two events really are independent.  So even though the
+events that various pairs of students have matching birthdays are not
+mutually independent, indeed not even three-way independent, they are
+\index{pairwise independent} \emph{pairwise} independent.  \fi
+% This will allow us to apply the same reasoning to Birthday Matching
+as we did for voter preference.  Namely, let $B_1,B_2,\dots,B_n$ be
+the birthdays of $n$ independently chosen people, and let $E_{i,j}$ be
+the indicator variable for the event that the $i$th and $j$th people
+chosen have the same birthdays, that is, the event $[B_i = B_j]$.  So
+our probability model, the $B_i$'s are mutually independent variables,
+the $E_{i,j}$'s are pairwise independent.  Also, the expectations of
+$E_{i,j}$ for $i \neq j$ equals the probability that $B_i = B_j$,
+namely, $1/d$.
+
+Now, $D$, the number of matching pairs of birthdays among the $n$
+choices is simply the sum of the $E_{i,j}$'s:
+\begin{equation}\label{Vn}
+D \eqdef \sum_{1\le i < j \le n} E_{i,j}.
+\end{equation}
+So by linearity of expectation
+\[
+\expect{D} = \expect{\sum_{1\le i < j \le n} E_{i,j}} =
+               \sum_{1\le i < j \le n} \expect{E_{i,j}} =
+               \binom{n}{2}\cdot \frac{1}{d}.
+\]
+Similarly,
+\begin{align*}
+\variance{D}
+   & = \variance{\sum_{1\le i < j \le n} E_{i,j}}\\
+   & = \sum_{1\le i < j \le n} \variance{E_{i,j}}
+           & \text{(by Theorem~\ref{th:varsum})}\\
+   & = \binom{n}{2} \cdot \frac{1}{d}\paren{1-\frac{1}{d}}.
+           & (by Lemma~\ref{bernoulli-variance})
+\end{align*}
+
+In particular, for a class of $n= 85$ students with $d=365$ possible
+birthdays, we have $\expect{D} \approx 9.7$ and $\variance{D} < 9.7 (1-
+1/365) < 9.7$.  So by Chebyshev's Theorem
+\[
+\pr{\abs{D - 9.7} \geq x} < \frac{9.7}{x^2}.
+\]
+
+Letting $x=5$, we conclude that there is a better than 50\% chance that in
+a class of 85 students, the number of pairs of students with the same
+birthday will be between 5 and 14.
+
+%In fact, there turned out to be
+%\emph{exactly} the 16 matches expected in the class this term!
+
+
+\subsection{Pairwise Independent Sampling}\label{sec:pairwise_ind_samp}
+
+The reasoning we used above to analyze voter polling and matching
+birthdays is very similar.  We summarize it in slightly more general form
+with a basic result we call the \idx{Pairwise Independent Sampling}
+Theorem.  In particular, we do not need to restrict ourselves to sums of
+zero-one valued variables, or to variables with the same distribution.
+For simplicity, we state the Theorem for pairwise independent variables
+with possibly different distributions but with the same mean and variance.
+
+\begin{theorem}[Pairwise Independent Sampling]\label{th:pairwise-sampling}
+Let $G_1, \dots, G_n$ be pairwise independent variables with the same
+mean, $\mu$, and deviation, $\sigma$.  Define
+\begin{equation}\label{ln14.Sn}
+S_n \eqdef \sum_{i=1}^n G_i.
+\end{equation}
+Then
+\[
+\pr{\abs{\frac{S_n}{n} - \mu} \geq x}
+    \leq \frac{1}{n} \paren{\frac{\sigma}{x}}^2.
+\]
+\end{theorem}
+
+\begin{proof}
+We observe first that the expectation of $S_n/n$ is $\mu$:
+\begin{align*}
+\expect{\frac{S_n}{n}} & = \expect{\frac{\sum_{i=1}^n G_i}{n}}
+         & \text{(def of $S_n$)}\\
+ & = \frac{\sum_{i=1}^n \expect{G_i}}{n}
+     & \text{(linearity of expectation)}\\
+ & = \frac{\sum_{i=1}^n \mu}{n}\\
+ & = \frac{n\mu}{n} = \mu.
+\end{align*}
+
+The second important property of $S_n/n$ is that its variance is the
+variance of $G_i$ divided by $n$:
+\begin{align}
+\variance{\frac{S_n}{n}} & =  \paren{\frac{1}{n}}^2 \variance{S_n}
+          & \mbox{(by~\eqref{a2R})}\notag\\
+ & =  \frac{1}{n^2} \variance{\sum_{i=1}^n G_i}
+          & \text{(def of $S_n$)}\notag\\
+ & =  \frac{1}{n^2} \sum_{i=1}^n \variance{G_i}
+        & \text{(pairwise independent additivity)}\notag\\
+ & =  \frac{1}{n^2}\cdot n\sigma^2 =  \frac{\sigma^2}{n}.\label{Snu}
+\end{align}
+
+This is enough to apply \idx{Chebyshev's Theorem} and conclude:
+\begin{align*}
+\pr{\abs{\frac{S_n}{n} - \mu} \geq x} & \leq \frac{\variance{S_n/n}}{x^2}.
+       & \text{(Chebyshev's bound)}\\
+    & = \frac{\sigma^2/n}{x^2} & \text{(by~\eqref{Snu})}\\
+    & = \frac{1}{n} \paren{\frac{\sigma}{x}}^2.
+\end{align*}
+
+\end{proof}
+
+The Pairwise Independent Sampling Theorem provides a precise general
+statement about how the average of independent samples of a random
+variable approaches the mean.  In particular, it proves what is known as
+the \idx{Law of Large Numbers}\footnote{This is the \index{Weak Law of
+    Large Numbers} \emph{Weak} Law of Large Numbers.  As you might
+  suppose, there is also a Strong Law, but it's outside the scope of
+  this text.} : by choosing a large enough sample size, we can get arbitrarily
+accurate estimates of the mean with confidence arbitrarily close to 100\%.
+
+\begin{corollary}\label{weaklaw}[Weak Law of Large Numbers]
+  Let $G_1, \dots, G_n$ be pairwise independent variables with the same
+  mean, $\mu$, and the same finite deviation, and let
+\[
+S_n \eqdef \frac{\sum_{i=1}^n G_i}{n}.
+\]
+Then for every $\epsilon > 0$,
+\[
+\lim_{n \rightarrow \infty}
+        \pr{\abs{S_n - \mu}  \leq \epsilon} = 1.
+\]
+\end{corollary}
+
+\section{Confidence versus Probability}
+
+So Chebyshev's Bound implies that sampling 3,125 voters will yield a
+fraction that, 95\% of the time, is within 0.04 of the actual fraction
+of the voting population who prefer Brown.
+\begin{editingnotes}
+  Estimates of the binomial distribution show that a sample size
+  around 664 would do.
+\end{editingnotes}
+
+Notice that the actual size of the voting population was never
+considered because \emph{it did not matter}.  People who have not
+studied probability theory often insist that the \idx{population size}
+should matter.  But our analysis shows that polling a little over 3000
+people people is always sufficient, whether there are ten thousand, or
+million, or billion \dots voters.  You should think about an intuitive
+explanation that might persuade someone who thinks population size
+matters.
+
+Now suppose a pollster actually takes a sample of 3,125 random voters to
+estimate the fraction of voters who prefer Brown, and the pollster finds
+that 1250 of them prefer Brown.  It's tempting, \textbf{but sloppy}, to
+say that this means:
+\begin{falseclm*}
+  With probability 0.95, the fraction, $p$, of voters who prefer Brown
+  is $1250/3125 \pm 0.04$.  Since $1250/3125 -0.04 > 1/3$, there is a 95\%
+  chance that more than a third of the voters prefer Brown to all other
+  candidates.
+\end{falseclm*}
+What's objectionable about this statement is that it talks about the
+probability or ``chance'' that a real world fact is true, namely that the
+actual fraction, $p$, of voters favoring Brown is more than 1/3.  But $p$
+is what it is, and it simply makes no sense to talk about the probability
+that it is something else.  For example, suppose $p$ is actually 0.3;
+then it's nonsense to ask about the probability that it is within 0.04 of
+1250/3125---it simply isn't.
+
+This example of voter preference is typical: we want to estimate a fixed,
+unknown real-world quantity.  But \emph{being unknown does not make this
+  quantity a random variable}, so it makes no sense to talk about the
+probability that it has some property.
+
+A more careful summary of what we have accomplished goes this way:
+\begin{quote}
+We have described a probabilistic procedure for estimating the value of
+the actual fraction, $p$.  The probability that \emph{our estimation
+procedure} will yield a value within 0.04 of $p$ is 0.95.
+\end{quote}
+This is a bit of a mouthful, so special phrasing closer to the sloppy
+language is commonly used.  The pollster would describe his conclusion by
+saying that
+\begin{quote}
+At the 95\% \term{confidence level}, the fraction of voters
+who prefer Brown is $1250/3125 \pm 0.04$.
+\end{quote}
+
+So confidence levels refer to the results of estimation procedures for
+real-world quantities.  The phrase ``confidence level'' should be heard as
+a reminder that some statistical procedure was used to obtain an estimate,
+and in judging the credibility of the estimate, it may be important to
+learn just what this procedure was.
+
+\begin{editingnotes}
+Maybe include example from CP\_drug\_confidence here.
+\end{editingnotes}
+
+\begin{problems}
+\practiceproblems
+\pinput{FP_random_sampling}
+
+\classproblems
+\pinput{CP_gallup_poll}
+\pinput{CP_birthday-deviation}
+\pinput{CP_size_of_sample_vs_population}
+\pinput{CP_pairwise_independent_theorem}
+\pinput{CP_drug_confidence}
+
+\examproblems
+\pinput{FP_sampling_concepts}
+\end{problems}
+
+
