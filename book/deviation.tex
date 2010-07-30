@@ -1,778 +1,137 @@
-\chapter{Deviations}\label{deviation_chap}
+\chapter{Deviations}\label{chap:deviations}
 
-\section{Why the Mean?}
+In some cases, a random variable is likely to be very close to its
+expected value.  For example, if we flip 100~fair,
+mutually-independent coins, it is very likely that we will get about
+50~heads.  In fact, we proved in
+Section~\ref{binomial_distribution_section} that the probability of
+getting fewer than 25 or more than 75~heads is less than~$2.9 \cdot
+10^{-7}$.  In such cases, the mean provides a lot of information about
+the random variable.
 
-In the previous chapter we took it for granted that expectation is
-important, and we developed a bunch of techniques for calculating expected
-(mean) values.  But why should we care about the \idx{mean}?  After all, a
-random variable may never take a value anywhere near its expected value.
+In other cases, a random variable is likely to be \emph{far} from its
+expected value.  For example, suppose we flipped 100~fair coins that
+are glued together so that they all come out ``heads'' or they call
+all come out ``tails.''  In this case, the expected value of the
+number of heads is still~50, but the actual number of heads is
+guaranteed to be far from this value---it will be 0 or~100, each with
+probability~$1/2$.
 
-The most important reason to care about the mean value comes from its
-connection to estimation by sampling.  For example, suppose we want to
-estimate the average age, income, family size, or other measure of a
-population.  To do this, we determine a random process for selecting
-people---say throwing darts at census lists.  This process makes the
-selected person's age, income, and so on into a random variable whose
-\emph{mean} equals the \emph{actual \idx{average}} age or income of the
-population.  So we can select a random sample of people and calculate the
-average of people in the sample to estimate the true average in the whole
-population.  Many fundamental results of probability theory explain
-exactly how the reliability of such estimates improves as the sample size
-increases, and in this chapter we'll examine a few such results.
+Mathematicians have developed a variety of measures and methods to help
+us understand how a random variable performs in comparison to its
+mean.  The simplest and most widely used measure is called the
+\term{variance} of the random variable.  The variance is a single
+value associated with the random variable that is large for random
+variables that are likely to deviate significantly from the mean and
+that is small otherwise.
 
-In particular, when we make an estimate by repeated sampling, we need to
-know how much confidence we should have that our estimate is OK.
-Technically, this reduces to finding the probability that an estimate
-\emph{deviates} a lot from its expected value.  This topic of
-\term{deviation from the mean} is the focus of this final chapter.
+\section{Variance}\label{sec:variance}
 
-The first technical result about deviation will be \idx{Markov's Theorem},
-which gives a simple, but typically coarse, upper bound on the
-probability that the value of a random variable is more than a certain
-multiple of its mean.  Markov's result holds if we know nothing about
-a random variable except what its mean is and that its values are
-nonnegative.  Accordingly, Markov's Theorem is very general, but also
-is much weaker than results which take into account more information
-about the distribution of the variable.
+\subsection{Definition and Example}
 
-In many situations, we not only know the mean, but also another numerical
-quantity called the \emph{variance} of the random variable.  The second
-basic result is \idx{Chebyshev's Theorem}, which combines Markov's Theorem and
-information about the variance to give more refined bounds.
+Consider the following two gambling games:
+\begin{description}
 
-The final result we obtain about deviation is \idx{Chernoff's bound}.
-Chernoff's bound applies to a random variable that is a sum of bounded
-independent random variables.  Its bound is exponentially tighter than
-the other two.
+\item[Game A:]
 
-\begin{editingnotes}
-A random variable may never take a value anywhere near its expected value,
-so why is its expected value important?  The reason is suggested by a
-property of gambling games that most people recognize intuitively.
-Suppose your gamble hinges on the roll of two dice, where you win if the
-sum of the dice is seven.  If the dice are fair, the probabilty you win is
-$1/6$, which is also your expected number of wins in one roll.  Of course
-there's no such thing as $1/6$ of a win in one roll, since either you win
-or you don't.  But if you play \emph{many times}, you would expect that
-the \emph{fraction} of times you win would be close to $1/6$.  In fact, if
-you played a lot of times and found that your fraction of wins wasn't
-pretty close to $1/6$, you would become pretty sure that the dice weren't
-fair.
-\end{editingnotes}
+You win~\$2 with probability~$2/3$ and lose~\$1 with
+probability~$1/3$.
 
+\item[Game B:]
 
-\section{Markov's Theorem}
+You win~\$1002 with probability~$2/3$ and lose~\$2001 with
+probability~$1/3$.
 
-Markov's theorem is an easy result that gives a generally rough estimate
-of the probability that a random variable takes a value \emph{much larger}
-than its mean.
-
-The idea behind \idx{Markov's Theorem} can be explained with a simple
-example of \emph{intelligence quotient}, \idx{\IQ}.  This quantity was
-devised so that the average \IQ\ measurement would be 100.  Now from this
-fact alone we can conclude that at most 1/3 the population can have an
-\IQ\ of 300 or more, because if more than a third had an \IQ\ of 300, then
-the average would have to be \emph{more} than $(1/3)300 = 100$,
-contradicting the fact that the average is 100.  So the probability that a
-randomly chosen person has an \IQ\ of 300 or more is at most 1/3.  Of
-course this is not a very strong conclusion; in fact no \IQ\ of over 300
-has ever been recorded.  But by the same logic, we can also conclude that
-at most 2/3 of the population can have an \IQ\ of 150 or more.  \IQ's of
-over 150 have certainly been recorded, though again, a much smaller
-fraction than 2/3 of the population actually has an \IQ\ that high.
-
-But although these conclusions about \IQ\ are weak, they are actually the
-strongest general conclusions that can be reached about a random
-variable using \emph{only} the fact that it is nonnegative and its mean is
-100.  For example, if we choose a random variable equal to 300 with
-probability 1/3, and 0 with probability 2/3, then its mean is 100, and the
-probability of a value of 300 or more really is 1/3.  So we can't hope to
-get a better upper bound based solely on this limited amount of
-information.
-
-\begin{editingnotes}
-
-Note that very different distributions can still have the same mean.
-
-\begin{example}
-  Suppose that we roll a fair die.  This gives a random variable
-  uniformly distributed on $1, 2, \dots 6$.  The mean, or expected
-  value, is 3.5.  Of course, this random variable never takes on
-  exactly the expected value; in fact, the outcome deviates from the
-  mean by at least 0.5 with probability 1.  Furthermore, there is a
-  $\frac{2}{3}$ probability that the outcome deviates from the mean by
-  at least 1.5 (roll 1, 2, 5, or 6), a $\frac{1}{3}$ probability that
-  the outcome deviates by at least 2.5 (roll 1 or 6), and zero
-  probability that the outcome deviates by more than 2.5.
-\end{example}
-
-\begin{example}
-  A random variable with the binomial distribution is much less likely
-  to deviate far from the mean.  For example, suppose we flip 100
-  fair, mutually independent coins and count the number of heads.  The
-  expected number of heads is 50.  There is an 8\% chance that the
-  outcome is exactly the mean, and the probability of flipping more
-  than 75 heads or fewer than 25 is less than 1 in a billion.
-\end{example}
-
-The probability distribution functions for the two preceding examples
-are graphed in Figure~\ref{fig:uniform} and Figure~\ref{fig:binom2}.
-There is a big difference!  For the uniform distribution, the graph is
-flat; that is, outcomes far from the mean are as likely as outcomes
-close to the mean.  However, the binomial distribution has a peak
-centered on the expected value and the tails fall off rapidly.  This
-shape implies that outcomes close to the expected value are vastly
-more likely than outcomes far from the expected value.  In other
-words, a random variable with the binomial distribution rarely
-deviates far from the mean.
-
-\begin{figure}
-
-\graphic[height=2in]{uniform}
-
-\caption{This is a graph of the uniform distribution arising from
-  rolling a fair die.  Outcomes within the range of the distribution
-  are equally likely, regardless of distance from the mean.}
-
-\label{fig:uniform}
-
-\end{figure}
-
-\begin{figure}
-
-\graphic[height=2in]{binom2}
-
-\caption{This is a rough graph of the binomial distribution given by
-  the number of heads that come up when we flip 100 fair, mutually
-  independent coins.  Outcomes close to the mean are much more
-  likely than outcomes far from the mean.}
-
-\label{fig:binom2}
-
-\end{figure}
-
-On the other hand, we can define a random variable that always
-deviates substantially from its expected value.  Suppose that we glue
-100 coins together, so that with probability 1/2 all are heads and
-with probability 1/2 all are tails.  The graph of the probability
-distribution function for the number of heads is shown in
-Figure~\ref{fig:nasty}.  While the expected value of this random
-variable is 50, the actual value is always 0 or~100.
-
-\begin{figure}
-
-\graphic[height=2in]{nasty}
-
-\caption{This is the nasty distribution corresponding to the number of
-  heads that come up when we flip 100 coins that are all glued
-  together. The outcome always differs from the mean by at least~50.}
-
-\label{fig:nasty}
-
-\end{figure}
-
-Even in this last example, however, the random variable is twice the
-mean with probability only $1/2$.  In fact, we will see that this is a
-worst-case distribution with respect to deviation from the mean.
-
-\subsection{Theorem Statement and Some Applications}
-
-\end{editingnotes}
-
-\begin{theorem}[\idx{Markov's Theorem}]\label{markovthm}
-  If R is a nonnegative random variable, then for all $x > 0$
-  \begin{displaymath}
-    \pr{R \geq x} \leq \frac{\expect{R}}{x}.
-  \end{displaymath}
-\end{theorem}
-
-\begin{editingnotes}
-
-Before we prove Markov's Theorem, let's apply it to the three examples in
-the preceding subsection.  First, let the random variable~$R$ be the
-number that comes up when we roll a fair die.  By Markov's Theorem, the
-probability of rolling a 6 is at most:
-\[
-\pr{R \geq 6} \leq \frac{\expect{R}}{6} = \frac{3.5}{6} = 0.583\dots
-\]
-This conclusion is true, but weak.  The actual probability of rolling
-a 6 is $1/6 = 0.166\dots$.
-
-This is typical of Markov's Theorem.  The theorem is easy to apply
-because it requires so little information about a random variable,
-only the expected value and nonnegativity.  But as a consequence,
-Markov's Theorem often leads to weak conclusions like the one above.
-
-Suppose that we flip 100 mutually independent, fair coins.  Markov's
-Theorem says that the probability of throwing 75 or more heads is at
-most:
-\[
-\pr{\text{heads} \geq 75} \leq \frac{\expect{\text{heads}}}{75} =
-\frac{50}{75} = \frac{2}{3}.
-\]
-Markov's Theorem says that the probability of 75 or more heads is at
-most $2/3$, but the actual probability is less than 1 in a
-billion!
-
-These two examples show that Markov's Theorem gives weak results for
-well-behaved random variables; however, the theorem is actually tight
-for some nasty examples.  Suppose we flip 100 fair coins and use
-Markov's Theorem to compute the probability of getting all heads:
-\[
-\pr{\text{heads} \geq 100} \leq \frac{\expect{\text{heads}}}{100} =
-\frac{50}{100} = \frac{1}{2}.
-\]
-If the coins are mutually independent, then the actual probability of
-getting all heads is a miniscule 1 in $2^{100}$.  In this case, Markov's
-Theorem looks very weak.  However, in applying Markov's Theorem, we made
-no independence assumptions.  In fact, if all the coins are glued
-together, then probability of throwing all heads is exactly $1/2$.
-In this nasty case, Markov's Theorem is actually tight!
-
-\subsection{Proof of Markov's Theorem}
-
-Let $R$ be the weight of a person selected randomly and uniformly.
-Suppose that an average person weighs 100 pounds; that is, $\expect{R} =
-100$.  What is the probability that a random person weighs at least
-200 pounds?
-
-There is insufficient information for an exact answer.  However, we
-can safely say that the probability that $R \geq 200$ is most
-$1/2$.  If more than half of the people weigh 200 pounds or
-more, then the average weight would exceed 100 pounds, even if
-everyone else weighed zero!  Markov's Theorem gives the same result:
-\begin{displaymath}
-  \pr{R \geq 200} \leq \frac{\expect{R}}{200} = \frac{100}{200} = \frac{1}{2}.
-\end{displaymath}
-
-Reasoning similar to that above underlies the proof of Markov's
-Theorem.  Since expectation is a weighted average of all the outcomes
-of the random variable, that is, a sum over all the variables the random
-variable can assume, we can give a lower bound on the expectation by
-removing some of the terms from the sum defining the expectation; this
-new sum can then be modified into an expression involving the
-probability of an event in the tail $[R \geq x]$.
-
-\end{editingnotes}
-
-\begin{proof}%[Proof of Markov's Theorem]
-For any $x > 0$
-\begin{align}
-  \expect{R}
-  & \eqdef \sum_{y \in \range{R}} y\pr{R=y}\notag\\
-  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} y\pr{R=y} & \text{(because $R \geq 0$)}\notag\\
-  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} x\pr{R=y}\notag\\
-  & = x \sum_{\substack{y \geq x,\\ y \in \range{R}}} \pr{R=y}\notag\\
-  & = x \pr{R \geq x}.\label{markovproof}
-\end{align}
-Dividing the first and last expression~\eqref{markovproof} by $x$ gives
-the desired result.
-\end{proof}
-
-\iffalse
-We will show that $\expect{R} \geq x \pr{R \geq x}$.  Dividing
-both sides by $x$ gives the desired result.
-
-So let $I_x$ be the indicator variable for the event $[R \geq x]$, and
-consider the random variable $x I_x$.  Note that
-\[
-R \geq x I_x,
-\]
-because at any sample point, $\omega$,
-\begin{itemize}
-\item if $R(\omega) \geq x$ then $R(\omega) \geq x = x\cdot 1 = x I_x(\omega)$, and
-\item if $R(\omega) < x$ then $R(\omega) \geq 0 = x \cdot 0 = xI_x(\omega)$.
-\end{itemize}
-Therefore,
+\end{description}
+Which game would you rather play?  Which game is better financially?
+We have the same probability, 2/3, of winning each game, but that does
+not tell the whole story.  What about the expected return for each
+game?  Let random variables $A$ and $B$ be the payoffs for the two
+games.  For example, $A$ is 2 with probability 2/3 and -1 with
+probability 1/3.  We can compute the expected payoff for each game as
+follows:
 \begin{align*}
-\expect{R} & \geq \expect{x I_x} & (\text{since } R \geq xI_x)\\
-   & = x \expect{I_x} & \text{(linearity of $\expect{\cdot}$)}\\
-   & = x \pr{I_x=1}  &  \text{($I_x$ is an indicator)}\\
-   & = x \pr{R \geq x}.  &  (\text{def\ of $I_x$})
-\end{align*}
-
-\fi
-
-Our focus is deviation from the mean, so it's useful to rephrase
-Markov's Theorem this way:
-\begin{corollary}
-If $R$ is a nonnegative random variable, then for all $c \geq 1$
-\begin{equation}
-\pr{R \geq c \cdot \expect{R}}  \leq  \frac{1}{c}.\label{markovaboveemean}
-\end{equation}
-\end{corollary}
-This Corollary follows immediately from Markov's Theorem\eqref{markovthm}
-by letting $x$ be $c \cdot \expect{R}$.
-
-\iffalse
-This gives:
-\[
-\pr{R \geq c \cdot \expect{R}} \leq \frac{\expect{R}}{c \cdot \expect{R}} =
-\frac{1}{c}.
-\]
-\end{proof}
-\fi
-
-\subsection{Applying Markov's Theorem}
-
-Let's consider the \idx{Hat-Check problem} again.  Now we ask what the
-probability is that $x$ or more men get the right hat, this is, what the
-value of $\pr{G \geq x}$ is.
-
-We can compute an upper bound with Markov's Theorem.  Since we know
-$\expect{G}=1$, Markov's Theorem implies
-\[
-\pr{G \geq x} \leq \frac{\expect{G}}{x} = \frac{1}{x}.
-\]
-For example, there is no better than a 20\% chance that 5 men get the
-right hat, regardless of the number of people at the dinner party.
-
-The \idx{Chinese Appetizer problem} is similar to the Hat-Check problem.
-In this case, $n$ people are eating appetizers arranged on a circular,
-rotating Chinese banquet tray.  Someone then spins the tray so that each
-person receives a random appetizer.  What is the probability that everyone
-gets the same appetizer as before?
-
-There are $n$ equally likely orientations for the tray after it stops
-spinning.  Everyone gets the right appetizer in just one of these $n$
-orientations.  Therefore, the correct answer is $1/n$.
-
-But what probability do we get from Markov's Theorem?  Let the random
-variable, $R$, be the number of people that get the right appetizer.
-%We showed in previous notes that $\expect{R} = 1$.
-Then of course $\expect{R} = 1$ (right?), so
-applying Markov's Theorem, we find:
-\begin{displaymath}
-  \pr{R \geq n} \leq \frac{\expect{R}}{n} = \frac{1}{n}\,.
-\end{displaymath}
-So for the Chinese appetizer problem, Markov's Theorem is tight!
-
-On the other hand, Markov's Theorem gives the same $1/n$ bound for the
-probability everyone gets their hat in the Hat-Check problem in the case
-that all permutations are equally likely.  But the probability of this
-event is $1/(n!)$.  So for this case, Markov's Theorem gives a probability
-bound that is way off.
-
-\subsection{Markov's Theorem for Bounded Variables}
-
-Suppose we learn that the average \IQ\ among MIT students is 150 (which is
-not true, by the way).  What can we say about the probability that an MIT
-student has an \IQ\ of more than 200?  Markov's theorem immediately tells
-us that no more than $150/200$ or $3/4$ of the students can have such a
-high \IQ.  Here we simply applied Markov's Theorem to the random variable,
-$R$, equal to the \IQ\ of a random MIT student to conclude:
-\[
-\pr{R > 200} \leq \frac{\expect{R}}{200}= \frac{150}{200} = \frac{3}{4}.
-\]
-
-But let's observe an additional fact (which may be true): no MIT student
-has an \IQ\ less than 100.  This means that if we let $T \eqdef R-100$,
-then $T$ is nonnegative and $\expect{T} = 50$, so we can apply Markov's
-Theorem to $T$ and conclude:
-\[
-\pr{R > 200} = \pr{T > 100} \leq \frac{\expect{T}}{100}= \frac{50}{100} =
-\frac{1}{2}.
-\]
-So only half, not 3/4, of the students can be as amazing as they think
-they are.  A bit of a relief!
-
-More generally, we can get better bounds applying Markov's Theorem to
-$R-l$ instead of $R$ for any lower bound $l>0$ on $R$.
-
-Similarly, if we have any upper bound, $u$, on a random variable, $S$,
-then $u-S$ will be a nonnegative random variable, and applying Markov's
-Theorem to $u-S$ will allow us to bound the probability that $S$ is much
-\emph{less} than its expectation.
-
-\iffalse
-Suppose we know that $R \geq \ell$, then can we do better?
-Let $T=R-\ell$.  Note that $T \geq 0$.  So, we can use Markov's
-Theorem on $T$, to say that
-\begin{equation*}
-\pr{R  \geq x }   & = &   \pr{T \geq x -\ell}
-  \leq
-  \frac{\expect{T}}{x -\ell}
-  =   \frac{\expect{R - \ell}}{x - \ell}
-  =   \frac{\expect{R} - \ell}{x - \ell}
-  % \\ & < &  \frac{\expect{R}}{x}
-\end{equation*}
-%$\pr{R - \ell \geq x} = \pr{T \geq x}
-%\leq
-%\frac{\expect{T}}{x}
-%= \frac{\expect{R - \ell}}{x} =
-%= \frac{\expect{R}{x} - \ell/x$
-This gives a somewhat better bound on the probability that
-$R$ goes crazy!
-\fi
-
-\begin{editingnotes}
-
-\subsection{Why \emph{R} Must be Nonnegative}
-
-Remember that Markov's Theorem applies only to nonnegative random
-variables!  The following example shows that the theorem is false if this
-restriction is removed.  Let $R$ be -10 with probability $1/2$ and 10 with
-probability $1/2$.  Then we have:
-\[
-\expect{R} = -10 \cdot \frac{1}{2} + 10 \cdot \frac{1}{2} = 0
-\]
-Suppose that we now tried to compute $\pr{R \geq 5}$ using Markov's
-Theorem:
-\begin{displaymath}
-  \pr{R \geq 5} \leq \frac{\expect{R}}{5} = \frac{0}{5} = 0.
-\end{displaymath}
-This is the wrong answer!  Obviously, $R$ is at least 5 with
-probability $1/2$.
-
-On the other hand, we can still apply Markov's Theorem indirectly to
-derive a bound on the probability that an arbitrary variable like $R$ is 5
-more.  Namely, given any random variable, $R$ with expectation 0 and
-values $\geq -10$, we can conclude that $\pr{R \geq 5} \le 2/3$.
-\begin{proof}
-Let $T \eqdef R+10$.  Now $T$ is a nonnegative random variable with
-expectation $\expect{R + 10} = \expect{R}+10= 10$, so Markov's Theorem
-applies and tells us that $\pr{T \geq 15} \le 10/15 = 2/3$.  But $T \geq
-15$ iff $R \geq 5$, so $\pr{R \geq 5} \leq 2/3$, as claimed.
-\end{proof}
-
-\subsection{Deviation Below the Mean}
-
-Markov's Theorem says that a random variable is unlikely to greatly exceed
-the mean.  Correspondingly, there is a theorem that says a random variable
-is unlikely to be much smaller than its mean.
-
-\begin{theorem}
-\label{th:below}
-Let $l$ be a real number and let $R$ be a random variable such that $R
-\leq l$.  For all $x < l$, we have:
-\[
-\pr{R \leq x} \leq \frac{l - \expect{R}}{l - x}.
-\]
-\end{theorem}
-
-\begin{proof}
-The event that $R \leq x$ is the same as the event that $l - R \geq l -
-x$.  Therefore:
-\begin{align}
-\pr{R \leq x} &  = \pr{l - R \geq l - x}\notag\\
- & \leq \frac{\expect{l - R}}{l - x}. & \text{(by Markov' Theorem)}\label{LR}
-\end{align}
-Applying Markov's Theorem in line~\eqref{LR} is permissible
-since $l - R$ is a nonnegative random variable and $l - x > 0$.
-\end{proof}
-
-For example, suppose that the class average on a midterm was
-75/100.  What fraction of the class scored below 50?
-
-There is not enough information here to answer the question exactly,
-but Theorem~\ref{th:below} gives an upper bound.  Let $R$ be the score
-of a random student.  Since 100 is the highest possible score, we
-can set $L = 100$ to meet the condition in the theorem that $R \leq
-L$.  Applying Theorem~\ref{th:below}, we find:
-\begin{displaymath}
-  \pr{R \leq 50} \leq \frac{100 - 75}{100 - 50} = \frac{1}{2}\,.
-\end{displaymath}
-
-That is, at most half of the class scored 50 or worse.  This makes
-sense; if more than half of the class scored 50 or worse, then the
-class average could not be 75, even if everyone else scored 100.
-As with Markov's Theorem, Theorem~\ref{th:below} often gives weak
-results.  In fact, based on the data given, the entire class could
-have scored above 50.
-
-\end{editingnotes}
-
-\begin{editingnotes}
-\subsubsection{Using Markov To Analyze Non-Random Events}
-
-In the previous examples, we used a theorem about a random variable to
-conclude facts about non-random data.  For example, we concluded that
-if the average score on a test is 75, then at most $1/2$ the
-class scored 50 or worse.  There is no randomness in this problem,
-so how can we apply Theorem~\ref{th:below} to reach this conclusion?
-
-The explanation is not difficult.  For any set of scores $S = \set{s_1,
-s_2, \dots, s_n}$, we introduce a random variable, $R$, such that
-\[
-\pr{R = s_i} = \frac{\text{(\# of students with score $s_i$)}}{n}
-\]
-We then use Theorem~\ref{th:below} to conclude that $\pr{R \leq 50}
-\leq 1/2$.  To see why this means (with certainty) that at most
-$1/2$ of the students scored 50 or less, we observe that
-\begin{align*}
-\pr{R \leq 50}
-    & = \sum_{s_i \leq 50} \pr{R = s_i} \\
-    & = \sum_{s_i \leq 50} \frac{\text{(\# of students with score $s_i$)}}{n} \\
-    & = \frac{1}{n} \text{(\# of students with score 50 or less)}.
-\end{align*}
-So, if $\pr{R \leq 50} \leq 1/2$, then the number of students
-with score 50 or less is at most $n/2$.
-
-\end{editingnotes}
-
-\begin{problems}
-
-\classproblems
-\pinput{CP_cold_cows_markov}
-
-\end{problems}
-
-\section{Chebyshev's Theorem}
-
-There's a really good trick for getting more mileage out of Markov's
-Theorem: instead of applying it to the variable, $R$, apply it to some
-function of $R$.  One useful choice of functions to use turns out to be
-taking a power of $\abs{R}$.
-
-In particular, since $\abs{R}^\alpha$ is nonnegative, Markov's inequality
-also applies to the event $[\abs{R}^\alpha \geq x^\alpha]$.  But this
-event is equivalent to the event $[\abs{R} \geq x]$, so we have:
-
-\iffalse
-It is a bit messy to apply Markov's Theorem directly to this problem,
-because it's generally not easy to compute $\expect{\ \abs{R -
-\expect{R}}\ }$.  However, since $\abs{R}$ and hence $\abs{R}^k$ are
-nonnegative variables for any $R$, Markov's inequality also applies to the
-event $[\abs{R}^k \geq x^k]$.  But this event is equivalent to the event
-$[\abs{R} \geq x]$, so we have:
-\fi
-
-\begin{lemma}\label{lem:Markov2}
-For any random variable~$R$, $\alpha \in \reals^+$, and $x > 0$,
-\[
-\pr{\abs{R} \geq x} \leq \frac{\expect{\abs{R}^\alpha}}{x^\alpha}.
-\]
-\end{lemma}
-Rephrasing~\eqref{lem:Markov2} in terms of the random variable, $\abs{R -
-  \expect{R}}$, that measures $R$'s deviation from its mean, we get
-
-\begin{equation}\label{chebE2}
-  \pr{\abs{R - \expect{R}} \geq x} \leq \frac{\expect{(R - \expect{R})^\alpha}}{x^\alpha}.
-\end{equation}
-The case when $\alpha =2$ is turns out to be so important that numerator
-of the right hand side of~\eqref{chebE2} has been given a name:
-
-\begin{definition}\label{defvar}
-The \term{variance}, $\variance{R}$, of a random variable, $R$, is:
-\[
-\variance{R} \eqdef \expect{(R - \expect{R})^2}.
-\]
-\end{definition}
-
-The restatement of~\eqref{chebE2} for $\alpha=2$ is known as \term{Chebyshev's
-  Theorem}.
-\begin{theorem}[Chebyshev]\label{chebthm}
-  Let $R$ be a random variable and $x \in \reals^+$.  Then
-\[
-\pr{\abs{R - \expect{R}} \geq x} \leq \frac{\variance{R}}{x^2}.
-\]
-\end{theorem}
-
-The expression $\expect{(R - \expect{R})^2}$ for variance is a bit
-cryptic; the best approach is to work through it from the inside out.  The
-innermost expression, $R - \expect{R}$, is precisely the deviation of $R$
-above its mean.  Squaring this, we obtain, $(R - \expect{R})^2$.  This is
-a random variable that is near 0 when $R$ is close to the mean and is a
-large positive number when $R$ deviates far above or below the mean.  So
-if $R$ is always close to the mean, then the variance will be small.  If
-$R$ is often far from the mean, then the variance will be large.
-
-\subsection{Variance in Two Gambling Games}
-
-The relevance of variance is apparent when we compare the following
-two gambling games.
-
-\textbf{Game A:} We win \$2 with probability $2/3$ and lose \$1 with probability
-$1/3$.
-
-\textbf{Game B:} We win \$1002 with probability $2/3$ and lose \$2001 with
-probability $1/3$.
-
-Which game is better financially?  We have the same probability, 2/3,
-of winning each game, but that does not tell the whole story.  What about
-the expected return for each game?  Let random variables $A$ and $B$ be
-the payoffs for the two games.  For example, $A$ is 2 with probability
-2/3 and -1 with probability 1/3.  We can compute the
-expected payoff for each game as follows:
-\begin{align*}
-\expect{A} &= 2 \cdot \frac{2}{3} + (-1) \cdot \frac{1}{3} = 1, \\
-\expect{B} &= 1002 \cdot \frac{2}{3} + (-2001) \cdot \frac{1}{3} = 1.
+    \expect{A} &= 2 \cdot \frac{2}{3} + (-1) \cdot \frac{1}{3} = 1, \\
+    \expect{B} &= 1002 \cdot \frac{2}{3} + (-2001) \cdot \frac{1}{3} = 1.
 \end{align*}
 
 The expected payoff is the same for both games, but they are obviously
-very different!  This difference is not apparent in their expected value,
-but is captured by variance.  We can compute the $\variance{A}$ by working
-``from the inside out'' as follows:
-\begin{align*}
-A - \expect{A}
-        & =     \left\{
-                \begin{array}{cl}
-                        1 & \text{ with probability } \frac{2}{3} \\
-                        -2 & \text{ with probability } \frac{1}{3}
-                \end{array}
-                \right. \\
-(A - \expect{A})^2
-        & =     \left\{
-                \begin{array}{cl}
-                        1 & \text{ with probability } \frac{2}{3} \\
-                        4 & \text{ with probability } \frac{1}{3}
-                \end{array}
-                \right. \\
-\expect{(A - \expect{A})^2}
-        & =     1 \cdot \frac{2}{3} + 4 \cdot \frac{1}{3} \\
-\variance{A} & =  2.
-\end{align*}
+very different! The stakes are a lot higher for Game~B and so it is
+likely to deviate much farther from its mean than is Game~A\@.  This
+fact is captured by the notion of \term{variance}.
 
-Similarly, we have for $\variance{B}$:
-\begin{align*}
-B - \expect{B}
-        & =     \left\{
-                \begin{array}{cl}
-                        1001 & \text{ with probability } \frac{2}{3} \\
-                        -2002 & \text{ with probability } \frac{1}{3}
-                \end{array}
-                \right. \\
-(B - \expect{B})^2
-        & =     \left\{
-                \begin{array}{cl}
-                        1,002,001 & \text{ with probability } \frac{2}{3} \\
-                        4,008,004 & \text{ with probability } \frac{1}{3}
-                \end{array}
-                \right. \\
-\expect{(B - \expect{B})^2}
-        & =     1,002,001 \cdot \frac{2}{3} + 4,008,004 \cdot \frac{1}{3} \\
-\variance{B} & =   2,004,002.
-\end{align*}
-
-The variance of Game A is 2 and the variance of Game B is more than
-two million!  Intuitively, this means that the payoff in Game A is
-usually close to the expected value of \$1, but the payoff in Game B
-can deviate very far from this expected value.
-
-High variance is often associated with high risk.  For example, in ten
-rounds of Game A, we expect to make \$10, but could conceivably lose
-\$10  instead.  On the other hand, in ten rounds of game B, we also
-expect to make \$10, but could actually lose more than \$20,000!
-
-\subsection{Standard Deviation}
-
-Because of its definition in terms of the square of a random variable, the
-variance of a random variable may be very far from a typical deviation
-from the mean.  For example, in Game B above, the deviation from the mean
-is 1001 in one outcome and -2002 in the other. But the variance is a
-whopping 2,004,002.  From a dimensional analysis viewpoint, the ``units''
-of variance are wrong: if the random variable is in dollars, then the
-expectation is also in dollars, but the variance is in square dollars.
-For this reason, people often describe random variables using standard
-deviation instead of variance.
-
-\begin{definition}
-The \term{standard deviation}, $\sigma_R$, of a random variable, $R$, is
-the square root of the variance:
+\begin{definition}\label{defvar}
+The \term{variance}~$\variance{R}$ of a random variable~$R$ is
 \[
-\sigma_R \eqdef \sqrt{\variance{R}} = \sqrt{\expect{(R - \expect{R})^2}}.
+    \variance{R} \eqdef \expect{(R - \expect{R})^2}.
 \]
 \end{definition}
 
-So the standard deviation is the square root of the mean of the square of
-the deviation, or the \term{root mean square} for short.  It has the same
-units---dollars in our example---as the original random variable and as
-the mean.  Intuitively, it measures the average deviation from the mean,
-since we can think of the square root on the outside as canceling the
-square on the inside.
+In words, the variance of a random variable~$R$ is the expectation of
+the square of the amount by which $R$~differs from its expectation.
 
-\begin{example}
-The standard deviation of the payoff in Game B is:
-\[
-    \sigma_B  = \sqrt{\variance{B}} = \sqrt{2,004,002} \approx 1416.
-\]
+Yikes!  That's a mouthful.  Try saying that 10~times in a row!
 
-The random variable~$B$ actually deviates from the mean by either
-positive 1001  or negative 2002; therefore, the standard
-deviation of 1416 describes this situation reasonably well.
-\end{example}
+Let's look at this definition more carefully.  First, we look at~$R -
+\expect{R}$.  That's the amount by which $R$~differs from its
+expectation and it is obviously an important measure.  Next, we square
+this value.  More on why we do that in a moment.  Finally, we take the
+the expected value of the square.  \dmj{What do the highlighted
+  ``it''s refer to?  Proximity suggests ``the expected value of the
+  square'', but then the two sentences become vacuous because that's
+  the definition of variance.  Presumably ``it'' is supposed to be the
+  square itself?}If \highlight{it} is likely to be large, then the
+variance will be large.  If \highlight{it} is likely to be small, then
+the variance will be small.  That's just the kind of statistic we are
+looking for.  Let's see how it works out for our two gambling games.
 
-Intuitively, the standard deviation measures the ``width'' of the ``main
-part'' of the distribution graph, as illustrated in
-Figure~\ref{fig:stdev}.
+We'll start with Game~A:
+\begin{align}
+A - \expect{A}
+        & = \begin{cases}
+                 1 & \text{ with probability $\frac{2}{3}$} \\
+                -2 & \text{ with probability $\frac{1}{3}$}
+            \end{cases}
+    \notag\\
+(A - \expect{A})^2
+        & = \begin{cases}
+                1\phantom{-} & \text{ with probability $\frac{2}{3}$} \\
+                4 & \text{ with probability $\frac{1}{3}$}
+            \end{cases}
+    \notag\\
+\expect{(A - \expect{A})^2}
+        & =     1 \cdot \frac{2}{3} + 4 \cdot \frac{1}{3} \notag\\
+\variance{A} & =  2. \label{eqn:18A7}
+\end{align}
 
-\begin{figure}
+For Game~B, we have
+\begin{align*}
+B - \expect{B}
+        & = \begin{cases}
+                1001\phantom{,001} & \text{ with probability $\frac{2}{3}$} \\
+               -2002 & \text{ with probability $\frac{1}{3}$}
+            \end{cases} \\
+(B - \expect{B})^2
+        & = \begin{cases}
+                1{,}002{,}001 & \text{ with probability $\frac{2}{3}$} \\
+                4{,}008{,}004 & \text{ with probability $\frac{1}{3}$}
+            \end{cases} \\
+\expect{(B - \expect{B})^2}
+        & =     1{,}002{,}001 \cdot \frac{2}{3} + 4{,}008{,}004 \cdot \frac{1}{3} \\
+\variance{B} & =   2{,}004{,}002.
+\end{align*}
 
-\graphic[height=2in]{stdev}
+The variance of Game~A is~2 and the variance of Game~B is more than
+two million!  Intuitively, this means that the payoff in Game!A is
+usually close to the expected value of!\$1, but the payoff in Game B
+can deviate very far from this expected value.
 
-\caption{The standard deviation of a distribution indicates how wide
-  the ``main part'' of it is.}
+High variance is often associated with high risk.  For example, in ten
+rounds of Game~A, we expect to make~\$10, but could conceivably
+lose~\$10 instead.  On the other hand, in ten rounds of Game~B, we
+also expect to make~\$10, but could actually lose more than~\$20,000!
 
-\label{fig:stdev}
-
-\end{figure}
-
-It's useful to rephrase Chebyshev's Theorem in terms of standard
-deviation.
-\begin{corollary}
-\label{cor:cheby}
-Let $R$ be a random variable, and let $c$ be a positive real number.
-\[
-\pr{\abs{R - \expect{R}} \geq c \sigma_R} \leq \frac{1}{c^2}.
-\]
-\end{corollary}
-Here we see explicitly how the ``likely'' values of $R$ are clustered in
-an $O(\sigma_R)$-sized region around $\expect{R}$, confirming that the
-standard deviation measures how spread out the distribution of $R$ is
-around its mean.
-
-\begin{proof}
-  Substituting $x = c \sigma_R$ in Chebyshev's Theorem gives:
-  \begin{displaymath}
-    \pr{\card{R - \expect{R}} \geq c \sigma_R}
-    \leq
-    \frac{\variance{R}}{(c \sigma_R)^2}
-    =  \frac{\sigma_R^2}{(c \sigma_R)^2}
-    = \frac{1}{c^2}.
-  \end{displaymath}
-\iffalse
-  The last equality holds because variance is the square of standard
-  deviation: $\variance{R} = \sigma_R^2$.
-\fi
-
-\end{proof}
-
-\subsubsection{The IQ\ Example}\label{IQsec}
-
-Suppose that, in addition to the national average \idx{\IQ}\ being 100, we
-also know the \idx{standard deviation} of \IQ's is 10.  How rare is an
-\IQ\ of 300 or more?
-
-Let the random variable, $R$, be the \IQ\ of a random person.  So we are
-supposing that $\expect{R} = 100$, $\sigma_R = 10$, and $R$ is
-nonnegative.  We want to compute $\pr{R \geq 300}$.
-
-We have already seen that Markov's Theorem~\ref{markovthm} gives a coarse
-bound, namely,
-\[
-  \pr{R \geq 300} \leq \frac{1}{3}.
-\]
-Now we apply Chebyshev's Theorem to the same problem:
-\[
-\pr{R \geq 300} = \pr{\abs{R - 100} \geq 200} \leq
-\frac{\variance{R}}{200^2} = \frac{10^2}{200^2} = \frac{1}{400}.
-\]
-\iffalse
-The purpose of the first step is to express the desired probability in the
-form required by Chebyshev's Theorem; the equality holds because $R$ is
-nonnegative.  Chebyshev's Theorem then yields the inequality.\fi
-
-So Chebyshev's Theorem implies that at most one person in four hundred has
-an \IQ\ of 300 or more.  We have gotten a much tighter bound using the
-additional information, namely the variance of $R$, than we could get
-knowing only the expectation.
-
-\section{Properties of Variance}
-
-The definition of variance of $R$ as $\expect{(R - \expect{R})^2}$ may
-seem rather arbitrary.
-%
-\begin{editingnotes}
+\subsubsection{Why Bother Squaring?}
 
 The variance is the average \emph{of the square} of the deviation from the
 mean.  For this reason, variance is sometimes called the ``mean squared
@@ -790,187 +149,113 @@ Since $\expect{R}$ is a constant, its expected value is itself. Therefore
 \[
 \expect{R - \expect{R}} = \expect{R} - \expect{R} = 0.
 \]
-By this definition, every random variable has zero variance.  That is not
-useful!  Because of the square in the conventional definition, both
-positive and negative deviations from the mean increase the variance;
-positive and negative deviations do not cancel.
+By this definition, every random variable would have zero variance,
+which would not be very useful!  Because of the square in the
+conventional definition, both positive and negative deviations from
+the mean increase the variance, and they do not cancel.
 
 Of course, we could also prevent positive and negative deviations from
-canceling by taking an absolute value.
-\end{editingnotes}
-%
-A direct measure of average deviation would be $\expect{\ \abs{R -
-    \expect{R}}\ }$.  But the direct measure doesn't have the many useful
-properties that variance has, which is what this section is about.
+canceling by taking an absolute value.  In other words, we could
+compute $\expect{\ \abs{R - \expect{R}}\ }$.  But this measure doesn't
+have the many useful properties that variance has, and so
+mathematicians went with squaring.
 
-\iffalse
-For example, for independent random variables, the variance of a sum
-is the sum of the variances; that is, $\variance{R_1 + R_2} =
-\variance{R_1} + \variance{R_2}$.  We will prove this fact below.
-\fi
+\subsection{Standard Deviation}
 
-\subsection{A Formula for Variance}
+Because of its definition in terms of the square of a random variable,
+the variance of a random variable may be very far from a typical
+deviation from the mean.  For example, in Game B above, the deviation
+from the mean is 1001 in one outcome and -2002 in the other. But the
+variance is a whopping 2,004,002.  From a dimensional analysis
+viewpoint, the ``units'' of variance are wrong: if the random variable
+is in dollars, then the expectation is also in dollars, but the
+variance is in square dollars.  For this reason, people often describe
+the deviation of a random variable using standard deviation instead of
+variance.
 
-Applying linearity of expectation to the formula for variance yields a convenient
-alternative formula.
-\begin{lemma}\label{alt:var}
+\begin{definition}
+The \term{standard deviation}~$\sigma_R$ of a random variable~$R$~is
+the square root of the variance:
 \[
-\variance{R} = \expect{R^2} - \expectsq{R},
+    \sigma_R \eqdef \sqrt{\variance{R}} = \sqrt{\expect{(R - \expect{R})^2}}.
 \]
-for any random variable, $R$.
+\end{definition}
+
+So the standard deviation is the square root of the mean of the square
+of the deviation, or the \term{root mean square} for short.  It has
+the same units---dollars in our example---as the original random
+variable and as the mean.  Intuitively, it measures the average
+deviation from the mean, since we can think of the square root on the
+outside as roughly canceling the square on the inside.
+
+For example, the standard deviations for $A$ and~$B$ are
+\begin{align*}
+    \sigma_A & = \sqrt{\variance{A}} = \sqrt{2} \approx 1.41, \\
+    \sigma_B & = \sqrt{\variance{B}} = \sqrt{2,004,002} \approx 1416.
+\end{align*}
+The random variable~$B$ actually deviates from the mean by either
+positive 1001 or negative 2002; therefore, the standard deviation of
+1416 describes this situation reasonably well.
+
+\subsection{An Alternative Formulation}
+
+Applying linearity of expectation to the formula for variance yields a
+convenient alternative formula.
+\begin{lemma}\label{alt:var}
+For any random variable~$R$,
+\[
+    \variance{R} = \expect{R^2} - \expectsq{R}.
+\]
 \end{lemma}
 Here we use the notation \idx{$\expectsq{R}$} as shorthand for
-$(\expect{R})^2$.
+$(\expect{R})^2$.  Remember that $\expect{R^2}$ is generally not equal
+to $\expectsq{R}$.  We know the expected value of a product is the
+product of the expected values for independent variables, but not in
+general.  And $R$ is not independent of itself unless it is constant.
 
-\begin{editingnotes}
-Remember that $\expect{R^2}$ is generally not equal to $\expectsq{R}$.  We
-know the expected value of a product is the product of the expected values
-for independent variables, but not in general.  And $R$ is not independent
-of itself unless it is constant.
-
-\end{editingnotes}
-
-\begin{proof}
+\begin{proof}[Proof of Lemma~\ref{alt:var}]
 Let $\mu = \expect{R}$.  Then
 \begin{align*}
 \variance{R} & =   \expect{(R - \expect{R})^2}
-               & \text{(Def~\ref{defvar} of variance)}\\
-        & = \expect{(R - \mu)^2} & \text{(def of $\mu$)}\\
+               & \text{(Definition~\ref{defvar} of variance)}\\
+        & = \expect{(R - \mu)^2} & \text{(definition of $\mu$)}\\
         & = \expect{R^2 - 2  \mu R + \mu^2} \\
         & = \expect{R^2} - 2 \mu \expect{R} + \mu^2
                 & \text{(linearity of expectation)}\\
         & = \expect{R^2} - 2 \mu^2 + \mu^2
-              &  \text{(def of $\mu$)}\\
+              &  \text{(definition of $\mu$)}\\
         & = \expect{R^2} - \mu^2\\
         & = \expect{R^2} - \expectsq{R}.
-                  &  \text{(def of $\mu$)}
+                  &  \text{(definition of $\mu$)} & \qedhere
 \end{align*}
 \end{proof}
 
-For example, if $B$ is a \idx{Bernoulli variable} where $p\eqdef
-\pr{B=1}$, then
-\begin{lemma}\label{bernoulli-variance}
-\begin{equation}%\label{bv}
-\variance{B} = p-p^2 = p(1-p).
-\end{equation}
-\begin{proof}
-  By Lemma~\ref{expindic}, $\expect{B}= p$.  But since $B$ only takes
-  values 0 and 1, $B^2 = B$.  So Lemma~\ref{bernoulli-variance} follows
-  immediately from Lemma~\ref{alt:var}.
-\end{proof}
-
-\end{lemma}
-
-\subsection{Variance of Time to Failure}
-According to section~\ref{mean_time_to_failure_subsec}, the mean time to
-failure is $1/p$ for a process that fails during any given hour with
-probability $p$.  What about the variance?  That is, let $C$ be the hour
-of the first failure, so $\pr{C=i} = (1-p)^{i-1}p$.  We'd like to find a
-formula for $\variance{C}$.
-
-By Lemma~\ref{alt:var},
-\begin{equation}\label{varCEC2}
-\variance{C} = \expect{C^2} - (1/p)^2
-\end{equation}
-so all we need is a formula for $\expect{C^2}$:
-\begin{align}
-\expect{C^2}
-   & \eqdef \sum_{i\geq 1} i^2(1-p)^{i-1}p \notag\\ %\label{var_sum_time_to_fail}
-   & = p\sum_{i\geq 1} i^2x^{i-1} & \text{(where $x=1-p$)}\label{time_to_fail_gen_func}.
-\end{align}
-But~\eqref{squares_gen_func} gives the generating function
-$x(1+x)/(1-x)^3$ for the nonnegative integer squares, and this implies that
-the generating function for the sum in~\eqref{time_to_fail_gen_func} is
-$(1+x)/(1-x)^3$.  So,
-\begin{align}
-\expect{C^2} & = p\, \frac{(1+x)}{(1-x)^3} & \text{(where $x=1-p$)}\notag\\
-             & = p\, \frac{2+p}{p^3}\notag\\
-             & = \frac{1-p}{p^2} + \frac{1}{p^2}\label{plus1p2},
-\end{align}
-Combining~\eqref{varCEC2} and~\eqref{plus1p2} gives a simple answer:
-\begin{equation}\label{var_time_to_fail}
-\variance{C} = \frac{1-p}{p^2} \,.
-\end{equation}
-
-It's great to be able to apply generating function expertise to knock off
-equation~\eqref{var_time_to_fail} mechanically just from the definition of
-variance, but there's a more elementary, and memorable, alternative.  In
-section~\ref{mean_time_to_failure_subsec} we used conditional expectation
-to find the mean time to failure, and a similar approach works for the
-variance.  Namely, the expected value of $C^2$ is the probability, $p$, of
-failure in the first hour times $1^2$, plus $(1-p)$ times the expected
-value of $(C+1)^2$.  So
+For example, let's take another look at Game~A from
+Section~\ref{sec:variance} where you win~\$2 with probability~$2/3$
+and lose~\$1 with probability~$1/3$.  Then
+\begin{equation*}
+    \expect{A} = 2 \cdot \frac{2}{3} + (-1) \cdot \frac{1}{3} = 1
+\end{equation*}
+and
+\begin{equation*}
+    \expect{A^2} = 4 \cdot \frac{2}{3} + 1 \cdot \frac{1}{3} = 3.
+\end{equation*}
+By Lemma~\ref{alt:var}, this means that
 \begin{align*}
-\expect{C^2} & = p\cdot 1^2 + (1-p)\expect{(C+1)^2}\\
-             & = p + (1-p) \paren{\expect{C^2} + \frac{2}{p} +1},
+\variance{A}
+    &= \expect{A^2} - \expectsq{A} \\
+    &= 3 - 1^2 \\
+    &= 2,
 \end{align*}
-\iffalse
-             & = p+ (1-p)\expect{C^2} + (1-p)\paren{\frac{2}{p} + 1}, \text{
-               so}\\
-p \expect{C^2} & = p+ (1-p)\paren{\frac{2}{p} + 1}\\
-               & = \frac{p^2+(1-p)(2+p)}{p}\\
-\expect{C^2} & = \frac{2 -p}{p^2}\\
-             & =  frac{1-p}{p^2} + \frac{1}{p^2}
-\fi
-which directly simplifies to~\eqref{plus1p2}.
+confirming the result in Equation~\ref{eqn:18A7}.
 
-\begin{editingnotes}
-
-Lemma~\ref{alt:var} gives a convenient way to compute the variance of a
-random variable: find the expected value of the square and subtract the
-square of the expected value.  For example, we can compute the variance of
-the outcome of a fair die as follows:
-\begin{gather*}
-  \expect{R^2} = \frac{1}{6} (1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2) = \frac{91}{6}, \\
-  \expectsq{R} = \left(3 \frac{1}{2}\right)^2 = \frac{49}{4}, \\
-  \variance{R}  = \expect{R^2} - \expectsq{R}
-  = \frac{91}{6} - \frac{49}{4} = \frac{35}{12}.
-\end{gather*}
-
-This result is particularly useful when we want to estimate the variance
-of a random variable from a sequence $x_1,x_2,\dots,x_n$, of sample values
-of the variable.
-
-\begin{definition*}
-For any sequence of real numbers $x_1,x_2,\dots,x_n$, define the
-\emph{sample mean}, $\mu_n$, and the \emph{sample variance}, $v_n$, of the
-sequence to be:
-\begin{align*}
-    \mu_n   & \eqdef \frac{\sum_{i=1}^n x_i}{n},\\
-    v_n     & \eqdef \frac{\sum_{i=1}^n (x_i - \mu_n)^2}{n}.
-\end{align*}
-\end{definition*}
-Notice that if we define a random variable, $R$, which is equally likely
-to take each of the values in the sequence, that is $\pr{R = x_i} = 1/n$
-for $i = 1,\dots,n$, then $\mu_n = \expect{R}$ and $v_n = \variance{R}$.
-So Lemma~\ref{alt:var} applies to $R$ and lets us conclude that
-\begin{equation}\label{vn:alt}
-v_n = \frac{\sum_{i=1}^n x_i^2}{n} - \left(\frac{\sum_{i=1}^n x_i}{n}\right)^2.
-\end{equation}
-This leads to a simple procedure for computing the sample mean and
-variance while reading the sequence $x_1,\dots,x_n$ from left to right.
-Namely, maintain a sum of all numbers seen and also maintain a sum of the
-squares of all numbers seen.  That is, we store two values, starting with
-the values $x_1$ and $x_1^2$.  Then, as we get to the next number, $x_i$,
-we add it to the first sum and add its square, $x_{i}^2$, to the second
-sum.  After a single pass through the sequence $x_1,\dots,x_n$, we wind up
-with the values of the two sums $\sum_{i=1}^n x_i$ and $\sum_{i=1}^n
-x_i^2$.  Then we just plug these two values into~\eqref{vn:alt} to find
-the sample variance.
-
-\end{editingnotes}
-
-\begin{editingnotes}
-
-\subsection{Expectation Squared}
-
-The alternate definition of variance given in Lemma~\ref{alt:var} has
+The alternate formulation of variance given in Lemma~\ref{alt:var} has
 a cute implication:
 \begin{corollary}
 If $R$ is a random variable, then $\expect{R^2} \geq \expectsq{R}$.
 \end{corollary}
 \begin{proof}
-We first defined $\variance{R}$ as an average of a squared expression, so
+We defined $\variance{R}$ as an average of a squared expression, so
 $\variance{R}$ is nonnegative.  Then we proved that $\variance{R} =
 \expect{R^2} - \expectsq{R}$.  This implies that $\expect{R^2} -
 \expectsq{R}$ is nonnegative.  Therefore, $\expect{R^2} \geq
@@ -979,118 +264,169 @@ $\variance{R}$ is nonnegative.  Then we proved that $\variance{R} =
 
 In words, the expectation of a square is at least the square of the
 expectation. The two are equal exactly when the variance is zero:
-\begin{displaymath}
+\begin{equation*}
 \expect{R^2} = \expectsq{R} \text{  iff  } \expect{R^2} - \expectsq{R} = 0
 \text{  iff  } \variance{R} = 0.
-\end{displaymath}
+\end{equation*}
+This happens precisely when
+\begin{equation*}
+    \prob{R = \expect{R}} = 1,
+\end{equation*}
+namely when $R$~is a constant.\footnote{Technically, $R$~could deviate
+  from its mean on some sample points with probability~0, but we are
+  ignoring events of probability~0 when computing expectations and
+  variances.}
 
-\end{editingnotes}
+\subsection{Indicator Random Variables}
 
-\begin{editingnotes}
+Computing the variance of an indicator random variable is
+straightforward given Lemma~\ref{alt:var}.
 
-\subsubsection{Zero Variance}
-
-When does a random variable, $R$, have zero variance?\dots when the random
-variable \emph{never} deviates from the mean!
-\begin{lemma*}%\label{zvar}
-The variance of a random variable, $R$, is zero if and only if $\pr{R =
-\expect{R}} = 1$.
-\end{lemma*}
-
-So saying that $\variance{R}=0$ is almost the same as saying that $R$ is
-constant.  Namely, it takes the constant value equal to its expectation on
-all sample points with nonzero probability.  (It can take on any finite
-values on sample points with zero probability without affecting the
-variance.)
+\begin{lemma}\label{bernoulli-variance}
+Let $B$~be an indicator random variable for which $\prob{B = 1} = p$.
+Then
+\begin{equation}
+    \variance{B} = p-p^2 = p(1-p).
+\end{equation}
+\end{lemma}
 
 \begin{proof}
-By the definition of variance,
-\[
-\variance{R} = 0\qiff \expect{\paren{R - \expect{R}}^2} = 0.
-\]
-The inner expression on the right, $(R - \expect{R})^2$, is always
-nonnegative because of the square.  As a result, $\expect{(R -
-\expect{R})^2} = 0$ if and only if $\pr{(R - \expect{R})^2 \neq 0}$ is
-zero, which is the same as saying that $\pr{(R - \expect{R})^2 = 0}$ is
-one.  That is,
-\[
-\variance{R} = 0 \QIFF \pr{(R - \expect{R})^2 = 0} = 1.
-\]
-But the $(R - \expect{R})^2 = 0$ and $R = \expect{R}$ are different
-descriptions of the same event.  Therefore,
-\[
-\variance{R} = 0 \qiff \pr{R = \expect{R}} =1.
-\]
+  By Lemma~\ref{expindic}, $\expect{B}= p$.  But since $B$ only takes
+  values 0 and 1, $B^2 = B$.  So 
+\begin{equation*}
+    \variance{B} = \expect{B^2} - \expectsq{B} = p - p^2,
+\end{equation*}
+as claimed.
 \end{proof}
 
-\end{editingnotes}
+For example, let $R$~be the number of heads when you flip a single
+fair coin.  Then
+\begin{equation}\label{eqn:18H1}
+    \variance{R} = \frac{1}{2} - \paren{\frac{1}{2}}^2 = \frac{1}{4}
+\end{equation}
+and
+\begin{equation*}
+    \sigma_R = \sqrt{\frac{1}{4}} = \frac{1}{2}.
+\end{equation*}
+
+\subsubsection{Mean Time to Failure}
+
+As another example, consider the mean time to failure problem,
+described in Section~\ref{mean_time_to_failure_subsec}.  If the system
+crashes at each step with probability~$p$, then we already know that
+the mean time to failure is~$1/p$.  In other words, if $C$~is the
+number of steps up to and including the step when the first crash
+occurs, then
+\begin{equation*}
+    \expect{C} = \frac{1}{p}.
+\end{equation*}
+
+What about the variance of~$C$?  To use Lemma~\ref{alt:var}, we need
+to compute~$\expect{C^2}$.  As in
+Section~\ref{mean_time_to_failure_subsec}, we can do this by summing
+over all the sample points or we can use the Law of Total
+Expectation.  The latter approach is simpler, so we'll do that.  The
+analysis breaks into two cases: the system crashes in the first step
+or it doesn't.  Hence,
+\begin{align*}
+\expect{C^2}
+    &= 1^2 \cdot p + \expect{(C + 1)^2} (1 - p) \\
+    &= p + \expect{C^2} (1 - p) + 2 \expect{C} (1 - p) + (1 - p) \\
+    &= 1 + \expect{C^2} (1 - p) + 2 \paren{\frac{1 - p}{p}}.
+\end{align*}
+Simplifying, we find that
+\begin{equation*}
+    p \expect{C^2} = \frac{2 - p}{p}
+\end{equation*}
+and that
+\begin{equation*}
+    \expect{C^2} = \frac{2 - p}{p^2}.
+\end{equation*}
+Using Lemma~\ref{alt:var}, we conclude that
+\begin{align*}
+\variance{C}
+    &= \expect{C^2} - \expectsq{C} \\
+    &= \frac{2 - p}{p^2} - \frac{1}{p^2} \\
+    &= \frac{1 - p}{p^2}.
+\end{align*}
+
+\subsection{Uniform Random Variables}
+
+Computing the expected value of a uniform random variable is also
+straightforward given Lemma~\ref{alt:var}.  For example, we can
+compute the variance of the outcome of a fair die~$R$ as follows:
+\begin{align*}
+\expect{R^2}
+    &= \frac{1}{6} (1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2) = \frac{91}{6},\\
+\expectsq{R}
+    &= \paren{3\frac{1}{2}}^2 = \frac{49}{4}, \\
+\variance{R}
+    &= \expect{R^2} - \expectsq{R} = \frac{91}{6} - \frac{49}{4}
+        = \frac{35}{12}.
+\end{align*}
+
+For a general uniform random variable~$R$ on~$\set{1, 2, 3, \dots n}$,
+the variance can be computed as follows:
+\begin{align*}
+\expect{R}
+    &= \frac{1}{n} (1 + 2 + \dots + n) \\
+    &= \frac{1}{n} \frac{n (n + 1)}{2} \\
+    &= \frac{n + 1}{2}. \\[\jot]
+%
+\expect{R^2}
+    &= \frac{1}{n} (1^2 + 2^2 + \dots + n^2) \\
+    &= \frac{1}{n} \frac{(2n + 1) n (n + 1)}{6} \\
+    &= \frac{(2n + 1) (n + 1)}{6}. \\[\jot]
+%
+\variance{R}
+    &= \expect{R^2} - \expectsq{R} \\
+    &= \frac{(2n + 1) (n + 1)}{6} - \paren{\frac{n + 1}{2}}^2 \\
+    &= \frac{4n^2 + 2n - 3n^2}{12} \\
+    &= \frac{n^2 - 1}{12}.
+\end{align*}
 
 \subsection{Dealing with Constants}
 
-It helps to know how to calculate the variance of $aR+b$:
+It helps to know how to calculate the variance of $a R + b$:
 
-\begin{theorem}\label{var.const}
-Let $R$ be a random variable, and $a$ a constant. Then
+\begin{theorem}\label{var.const}\label{var+const}\label{thm:var(aR+b)}
+Let $R$ be a random variable, and let $a$ and~$b$ be constants. Then
 \begin{equation}\label{a2R}
-\variance{a R} = a^2 \variance{R}.
+    \variance{a R + b} = a^2 \variance{R}.
 \end{equation}
 \end{theorem}
 
 \begin{proof}
-Beginning with the definition of variance and repeatedly applying
-linearity of expectation, we have:
+Beginning with Lemma~\ref{alt:var} and repeatedly applying linearity
+of expectation, we have:
 \begin{align*}
 \variance{aR}
-    & \eqdef \expect{(aR-\expect{aR})^2}\\
-    & = \expect{(aR)^2 -2aR\expect{aR} + \expectsq{aR}}\\
-    & = \expect{(aR)^2} -\expect{2aR\expect{aR}} + \expectsq{aR}\\
-    & = a^2\expect{R^2} -2\expect{aR}\expect{aR} + \expectsq{aR}\\
+    &= \expect{(a R + b)^2} - \expectsq{a R + b} \\
+    &= \expect{a^2 R^2 + 2 a b R + b^2}
+            - \paren{a \expect{R} + b}^2 \\
+    &= a^2 \expect{R^2} + 2 a b \expect{R} + b^2
+        - a^2 \expectsq{R} - 2 a b \expect{R} - b^2 \\
     & = a^2\expect{R^2} -a^2\expectsq{R}\\
     & = a^2\paren{\expect{R^2} - \expectsq{R}}\\
-    & = a^2\variance{R} & \text{(by Lemma~\ref{alt:var})}
+    & = a^2\variance{R} \qquad \text{(by Lemma~\ref{alt:var})}. & \qedhere
 \end{align*}
 \end{proof}
 
-It's even simpler to prove that adding a constant does not change the
-variance, as the reader can verify:
-\begin{theorem}\label{var+const}
-Let $R$ be a random variable, and $b$ a constant. Then
-\begin{equation}\label{R+b}
-\variance{R+b} = \variance{R}.
-\end{equation}
-\end{theorem}
-
-\begin{solution}
-\begin{proof}
-\begin{align*}
-\variance{R+b} & \eqdef \expect{((R+b) - \expect{R+b})^2}\\
-               & =  \expect{((R+b) - (\expect{R}+ b))^2}\\
-               & =  \expect{(R - \expect{R})^2}\\
-               & = \variance{R}.
-\end{align*}
-\end{proof}
-
-\end{solution}
-
-Recalling that the \idx{standard deviation} is the square root of
-variance, this implies that the standard deviation of $a R + b$ is simply
-$\abs{a}$ times the standard deviation of $R$:
 \begin{corollary}
 \[
 \sigma_{aR+b} = \abs{a}\sigma_{R}.
 \]
 \end{corollary}
 
-
 \subsection{Variance of a Sum}
 
 In general, the variance of a sum is not equal to the sum of the
-variances, but variances do add for \emph{\idx{independent}} variables.
-In fact, \index{mutual independence} \emph{mutual} independence is not
-necessary: \index{pairwise independence} \emph{pairwise} independence will
-do.  This is useful to know because there are some important situations
-involving variables that are pairwise independent but not mutually
-independent.
+variances, but variances do add for \emph{\idx{independent}} random
+variables.  In fact, \index{mutual independence} \emph{mutual}
+independence is not necessary: \index{pairwise independence}
+\emph{pairwise} independence will do.  This is useful to know because
+there are some important situations involving variables that are
+pairwise independent but not mutually independent.
 
 \begin{theorem}\label{indvar}
 If $R_1$ and $R_2$ are independent random variables, then
@@ -1100,572 +436,611 @@ If $R_1$ and $R_2$ are independent random variables, then
 \end{theorem}
 
 \begin{proof}
-We may assume that $\expect{R_i} = 0$ for $i=1,2$, since we could always
-replace $R_i$ by $R_i-\expect{R_i}$ in equation~\eqref{vR+R}.  This
-substitution preserves the independence of the variables, and by
-Theorem~\ref{var+const}, does not change the variances.
 
-Now by Lemma~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
-$\variance{R_1+R_2} = \expect{(R_1+R_2)^2}$, so we need only prove
-\begin{equation}\label{E2R+R}
-\expect{(R_1+R_2)^2} = \expect{R_1^2} + \expect{R_2^2}.
-\end{equation}
-But~\eqref{E2R+R} follows from linearity of expectation and the fact that
-\begin{equation}\label{rrind}
-\expect{R_1R_2} = \expect{R_1}\expect{R_2}
-\end{equation}
-since $R_1$ and $R_2$ are independent:
-\begin{align*}
-\expect{(R_1+R_2)^2}
-   & = \expect{R_1^2+2R_1R_2 +R_2^2}\\
-   & = \expect{R_1^2}+2\expect{R_1R_2} +\expect{R_2^2}\\
-   & = \expect{R_1^2}+2\expect{R_1}\expect{R_2} +\expect{R_2^2}
-             & \text{(by~\eqref{rrind})}\\
-   & = \expect{R_1^2}+2\cdot 0 \cdot 0 +\expect{R_2^2}\\
-   & =  \expect{R_1^2} + \expect{R_2^2}
-\end{align*}
-
-\iffalse
-We will transform the left side into the right side.  We begin by
-applying the alternate definition of variance.
-\[
-\variance{R_1 + R_2} = \expect{(R_1 + R_2)^2} - \expectsq{R_1 + R_2}.
-\]
-
-We will work on the first term and then the second term separately.
-For the first term, note
-\begin{align*}
-\expect{(R_1+R_2)^2}
-    & = \expect{R_1^2 + 2 R_1 R_2 + R_2^2} \\
-    & = \expect{R_1^2} + \expect{2 R_1 R_2} + \expect{R_2^2} \\
-    & = \expect{R_1^2} + 2 \expect{R_1} \expect{R_2} + \expect{R_2^2}.
-\end{align*}
-First, we multiply out the squared expression.  The second step uses
-linearity of expectation.  In the last step, we break the
-expectation of the product $R_1 R_2$ into a product of expectations;
-this is where we use the fact that $R_1$ and $R_2$ are independent.
-Now we work on the second term.
-\begin{align*}
-\expectsq{R_1+R_2}
-    & = (\expect{R_1} + \expect{R_2})^2 \\
-    & = \expectsq{R_1} + 2 \expect{R_1} \expect{R_2} + \expectsq{R_2}.
-\end{align*}
-The first step uses linearity of expectation, and in the second step
-we multiply out the squared expression.  Now we subtract the
-(expanded) second term from the first. Cancelling and rearranging
-terms, we find that
+As with the proof of Theorem~\ref{thm:var(aR+b)}, this proof uses
+repeated applications of Lemma~\ref{alt:var} and Linearity of
+Expectation.
 \begin{align*}
 \variance{R_1 + R_2}
-    & = (\expect{R_1^2} - \expectsq{R_1}) + (\expect{R_2^2}) - \expectsq{R_2}) \\
-    & = \variance{R_1} + \variance{R_2}.
+    &= \expect{(R_1 + R_2)^2} - \expectsq{R_1 + R_2} \\
+    &= \expect{R_1^2 + 2 R_1 R_2 + R^2}
+            - \paren{\expect{R_1} + \expect{R_2}}^2 \\
+    &= \expect{R_1^2} + 2 \expect{R_1 R_2} + \expect{R_2^2}
+            - \expectsq{R_1} - 2 \expect{R_1} \expect{R_2}
+            - \expectsq{R_2} \\
+    &= \variance{R_1} + \variance{R_2}
+            + 2( \expect{R_1 R_2} - \expect{R_1} \expect{R_2} ) \\
+    &= \variance{R_1} + \variance{R_2}.
 \end{align*}
-\fi
+The last step follows because
+\begin{equation*}
+    \expect{R_1 R_2} = \expect{R_1} \expect{R_2}
+\end{equation*}
+when $R_1$ and~$R_2$ are independent.
 \end{proof}
 
-An independence condition is necessary.  If we ignored independence, then
-we would conclude that $\variance{R + R} = \variance{R} + \variance{R}$.
-However, by Theorem~\ref{var.const}, the left side is equal to $4
-\variance{R}$, whereas the right side is $2 \variance{R}$.  This implies
-that $\variance{R}=0$, which, by the Lemma above,
-\iffalse Lemma~\ref{zvar}\fi
-essentially only holds if $R$ is constant.
+Note that Theorem~\ref{indvar} does not necessarily hold if $R_1$
+and~$R_2$ are dependent since then it would generally not be true that
+\begin{equation}\label{eqn:18J1}
+    \expect{R_1 R_2} = \expect{R_1} \expect{R_2}
+\end{equation}
+in the last step of the proof.  For example, suppose that $R_1 = R_2 =
+R$.  Then Equation~\ref{eqn:18J1} holds only if $R$~is essentially
+constant.
 
 The proof of Theorem~\ref{indvar} carries over straightforwardly to
-the sum of any finite number of variables.  So we have:
+the sum of any finite number of variables.
 
-\begin{theorem}\label{th:varsum}[\idx{Pairwise Independent Additivity} of
-  Variance]
-  If $R_1, R_2, \dots, R_n$ are \index{pairwise independent}
-  \emph{pairwise} independent random variables, then
+\begin{theorem}[Pairwise Independent Additivity of Variance]
+\label{thm:variance_additivity}
+If $R_1$, $R_2$, \dots, $R_n$ are \emph{pairwise} independent random
+variables, then
 \begin{equation}\label{vsum}
 \variance{R_1 + R_2 + \cdots + R_n} = \variance{R_1} + \variance{R_2} +
   \cdots + \variance{R_n}.
 \end{equation}
 \end{theorem}
 
-\begin{editingnotes}
+\subsection{Binomial Distributions}
 
-\begin{proof}
-  We may assume that $\expect{R_i} = 0$ for $i=1,\dots,n$, since we could
-  always replace $R_i$ by $\paren{R_i-\expect{R_i}}$ in
-  equation~\eqref{vsum}.  This substitution preserves the independence of
-  the variables, and by Theorem~\ref{var+const}, does not change the
-  variances.
+Unfortunately, there is no product rule for computing variances, even
+if the random variables are mutually independent.  However, we can use
+Theorem~\ref{thm:variance_additivity} to quickly compute the variance
+of a random variable with a general binomial distribution.
 
-  Now by Lemma~\ref{alt:var}, $\variance{R_i} = \expect{R_i^2}$ and
-\[
-\variance{R_1+R_2+\cdots+R_n} = \expect{(R_1+R_2+\cdots+R_n)^2},
-\]
-so we need only prove
-\begin{equation}\label{E2R+R}
-\expect{(R_1+R_2+\cdots+R_n)^2} = \expect{R_1^2} + \expect{R_2^2} + \cdots
-+ \expect{R_n^2}
-\end{equation}
-But~\eqref{E2R+R} follows from linearity of expectation and the fact that
-\begin{equation}\label{rrind}
-\expect{R_iR_j} = \expect{R_i}\expect{R_j} = 0 \cdot 0 = 0
-\end{equation}
-for $i \neq j$, since $R_i$ and $R_j$ are independent.  Namely,
-\begin{align*}
-\expect{(R_1+R_2+\cdots+R_n)^2}
-   & = \expect{\sum_{1\leq i,j \leq n} R_iR_j}\\
-   & = \sum_{1\leq i,j \leq n} \expect{R_iR_j} & \text{linearity of $\expect{}$}\\
-   & = \sum_{1 \leq i \leq n} \expect{R_i^2}
-             + \sum_{1 \leq i \neq j \leq n} \expect{R_iR_j} &
-             \text{(rearranging the sum)}\\
-   & = \sum_{1 \leq i \leq n} \expect{R_i^2}
-            + \sum_{1 \leq i \neq j \leq n} 0
-             & \text{(by~\eqref{rrind})}\\
-   & =  \expect{R_1^2} + \expect{R_2^2} + \cdots + \expect{R_n^2}.
-\end{align*}
-
-\iffalse
-By linearity of expectation, we have
-\begin{align}
-\expect{\biggl(\sum_{i=1}^n R_i\biggr)^2} &
-    = \expect{\sum_{i=1}^n \sum_{j=1}^n R_i R_j} \notag\\
-   &  = \sum_{i=1}^n \sum_{j=1}^n \expect{R_i R_j} & \text{(linearity)}\notag\\
-   & = \sum_{1\le i \neq j \le n} \expect{R_i}\expect{R_j} + \sum_{i=1}^n
-     \expect{R_i^2}.
-       & \text{(pairwise independence)} \label{ER2}
-\end{align}
-In~\eqref{ER2}, we use the fact that the expectation
-of the product of two independent variables is the product of their
-expectations.
-
-Also,
-\begin{align}
-\expectsq{\sum_{i=1}^n R_i} & = \biggl(\expect{\sum_{i=1}^n R_i}\biggr)^2 \notag\\
-  &  = \biggl(\sum_{i=1}^n \expect{R_i}\biggr)^2 &\text{(linearity)} \notag\\
-  &  = \sum_{i=1}^n \sum_{j=1}^n \expect{R_i} \expect{R_j}\notag\\
-  & = \sum_{1\le i \neq j \le n} \expect{R_i}\expect{R_j} + \sum_{i=1}^n
-     \expectsq{R_i}.\label{E2R}
-\end{align}
-So,
-\begin{align*}
-\variance{\biggl(\sum_{i=1}^n R_i\biggr)}
-   & =  \expect{\biggl(\sum_{i=1}^n R_i\biggr)^2} -
-\expectsq{\sum_{i=1}^n R_i}  & \text{(Lemma~\ref{alt:var})}\\
-   &  = \sum_{1\le i \neq j \le n} \expect{R_i} \expect{R_j}
-        + \sum_{i=1}^n \expect{R_i^2} - \\
-   & \quad \paren{\sum_{1\le i \neq j \le n} \expect{R_i}\expect{R_j}
-        + \sum_{i=1}^n \expectsq{R_i}}
-      & \text{(by~\eqref{ER2} and~\eqref{E2R})}\\
-   & = \sum_{i=1}^n \expect{R_i^2} - \sum_{i=1}^n \expectsq{R_i}\\
-   & = \sum_{i=1}^n (\expect{R_i^2} - \expectsq{R_i})
-             & \text{(reordering the sums)}\\
-   & = \sum_{i=1}^n \variance{R_i}. & \text{(Theorem~\ref{th:alt})}
-\end{align*}
-\fi
-\end{proof}
-\end{editingnotes}
-
-
-Now we have a simple way of computing the variance of a variable, $J$,
-that has an $(n,p)$-\idx{binomial distribution}.  We know that $J =
-\sum_{k=1}^n I_k$ where the $I_k$ are mutually independent indicator
-variables with $\pr{I_k=1}=p$.  The variance of each $I_k$ is $p(1-p)$
-by Lemma~\ref{bernoulli-variance}, so by linearity of variance, we have
-\begin{lemma*}[Variance of the Binomial Distribution]
+\begin{lemma}[Variance of the Binomial Distribution]
+\label{lem:binomial_variance}
 If $J$ has the $(n,p)$-binomial distribution, then
 \begin{equation}\label{p1p}
-\variance{J} = n \variance{I_k} = np(1-p).
+\variance{J} = n p (1-p).
 \end{equation}
-\end{lemma*}
+\end{lemma}
 
-\begin{problems}
-\practiceproblems
-\pinput{TP_markov_chebyshev_for_card_games}
+\begin{proof}
 
-\classproblems
-\pinput{CP_chebyshev_hat_check}
-\pinput{CP_chebyshev_tight}
-\pinput{CP_infinite_variance}
+From the definition of the binomial distribution, we can think of
+$J$~as being the number of ``heads'' when you flip $n$~mutually
+independent coins, each of which is ``heads'' with probability~$p$.
+Thus $J$~can be expressed as the sum of $n$~mutually independent
+indicator variables~$I_p$ where
+\begin{equation*}
+    \prob{I_p = 1} = p.
+\end{equation*}
+From Lemma~\ref{bernoulli-variance}, we know that
+\begin{equation*}
+    \variance{I_p} = p (1 - p).
+\end{equation*}
+By Theorem~\ref{thm:variance_additivity}, this means that
+\begin{equation*}
+    \variance{J} = n \variance{I_p} = n p (1 - p),
+\end{equation*}
+as claimed.
+\end{proof}
 
-\homeworkproblems
-\pinput{PS_Chebyshev-one-sided}
-\pinput{PS_n_keys}
-\end{problems}
+For example, suppose we flip $n$~mutually
+independent\footnote{Actually, we only need to assume pairwise
+  independence for this to be true using
+  Theorem~\ref{thm:variance_additivity}.} fair coins.  Let $R$~be the
+number of heads.  Then Theorem~\ref{thm:variance_additivity} tells us
+that
+\begin{equation*}
+    \variance{R} = n \paren{\frac{1}{2}} \paren{1 - \frac{1}{2}}
+                 = \frac{n}{4}.
+\end{equation*}
+Hence,
+\begin{equation*}
+    \sigma_R = \frac{\sqrt{n}}{2}.
+\end{equation*}
+This value is small compared with
+\begin{equation*}
+    \expect{R} = \frac{n}{2},
+\end{equation*}
+which should not be surprising since we already knew from
+Section~\ref{binomial_distribution_section} that $R$~is unlikely to
+stray very far from its mean.
 
-%\subsection{Applying Chebyshev's Theorem}
+\section{Markov's Theorem}
 
-\section{Estimation by Random Sampling}
+The variance of a random variable gives us a rough idea of the amount
+by which a random variable is likely to deviate from its mean.  But it
+does not directly give us specific bounds on the probability that the
+deviation exceeds a specified threshold.  To obtain such specific
+bounds, we'll need to work a little harder.
+
+In this section, we derive a famous result known as Markov's Theorem
+that gives an upper bound on the probability that a random variable
+exceeds a specified threshold.  In the next section, we give a similar
+but stronger result known as Chebyshev's Theorem.  The difference
+between these results is that Markov's Theorem depends only on the
+mean of the random variable, whereas Chebyshev's Theorem makes use of
+the mean \emph{and} the variance.  Basically, the more you know about
+a random variable, the better bounds you can derive on the probability
+that it deviates from its mean.
+
+\subsection{A Motivating Example}
 
 
-\subsubsection{Polling again}
-\begin{editingnotes}
+The idea behind \idx{Markov's Theorem} can be explained with a simple
+example involving \emph{intelligence quotients}, or \IQ s.  This
+quantity was devised so that the average \IQ\ measurement would
+be~100.  From this fact alone we can conclude that at most 1/3 the
+population can have an \IQ\ of 300 or more, because if more than a
+third had an \IQ\ of 300, then the average would have to be
+\emph{more} than $(1/3)300 = 100$, contradicting the fact that the
+average is 100.  So the probability that a randomly chosen person has
+an \IQ\ of 300 or more is at most 1/3.  Of course this is not a very
+strong conclusion; in fact no \IQ\ over~200 has ever been recorded.
 
-\textcolor{blue}{This paragraph reflects an alternative exposition
-  where polling estimation and confidence were based only on binomial
-  distribution properties, even before expectation was introduced.}
+By the same logic, we can also conclude that at most 2/3 of the
+population can have an \IQ\ of 150 or more.  \IQ's over 150 have
+certainly been recorded, although a much smaller fraction than 2/3 of
+the population actually has an \IQ\ that high.
 
-In Chapter~[none], we used bounds on the binomial distribution to determine
-confidence levels for a poll of voter preferences of Franken vs.\ Coleman.
-Now that we know the variance of the binomial distribution, we can use
-Chebyshev's Theorem as an alternative approach to calculate poll size.
+Although these conclusions about \IQ\ are weak, they are actually the
+strongest general conclusions that can be reached about a random
+variable using \emph{only} the fact that it is nonnegative and its
+mean is 100.  For example, if we choose a random variable equal to 300
+with probability 1/3, and 0 with probability 2/3, then its mean is
+100, and the probability of a value of 300 or more really is 1/3.  So
+we can't hope to get a better upper bound based solely on this limited
+amount of information.
 
-The setup is the same as in Chapter~[none]
-\end{editingnotes}
+Markov's Theorem characterizes the bounds that can be achieved with
+this kind of analysis
 
-Suppose we had wanted an advance estimate of the fraction of the
-Massachusetts voters who favored Scott Brown over everyone else in the
-recent Democratic primary election to fill Senator Edward Kennedy's seat.
+\subsection{The Theorem}
 
-\iffalse
-\footnote{We can only keep our fingers crossed for this race to
-  happen---when they ran against each other for the U.S. Senate in
-  2000, they generated some of the best entertainment in TV history.}
-\fi
+\begin{theorem}[\idx{Markov's Theorem}]\label{thm:markov}
+  If $R$~is a nonnegative random variable, then for all~$x > 0$
+  \begin{equation*}
+    \prob{R \geq x} \leq \frac{\expect{R}}{x}.
+  \end{equation*}
+\end{theorem}
 
-Let $p$ be this unknown fraction, and let's suppose we have some random
-process---say throwing darts at voter registration lists---which will
-select each voter with equal probability.  We can define a Bernoulli
-variable, $K$, by the rule that $K=1$ if the random voter most prefers
-Brown, and $K=0$ otherwise.
-
-Now to estimate $p$, we take a large number, $n$, of random choices of
-voters\footnote{We're choosing a random voter $n$ times \emph{with
-    replacement}.  That is, we don't remove a chosen voter from the set of
-  voters eligible to be chosen later; so we might choose the same voter
-  more than once in $n$ tries!  We would get a slightly better estimate if
-  we required $n$ \emph{different} people to be chosen, but doing so
-  complicates both the selection process and its analysis, with little gain
-  in accuracy.}  and count the fraction who favor Brown.  That is, we
-define variables $K_1, K_2, \dots$, where $K_i$ is interpreted to be the
-indicator variable for the event that the $i$th chosen voter prefers
-Brown.  Since our choices are made independently, the $K_i$'s are
-independent.  So formally, we model our estimation process by simply
-assuming we have mutually independent Bernoulli variables $K_1, K_2,
-\dots,$ each with the same probability, $p$, of being equal to 1.  Now let
-$S_n$ be their sum, that is,
-\begin{equation}\label{LN12:Sn}
-S_n \eqdef \sum_{i=1}^n K_i.
-\end{equation}
-So $S_n$ has the binomial distribution with parameter $n$, which we can
-choose, and unknown parameter $p$.
-
-The variable $S_n/n$ describes the fraction of voters we will sample
-who favor Scott Brown.  Most people intuitively expect this sample
-fraction to give a useful approximation to the unknown fraction,
-$p$---and they would be right.  
-\iffalse Note that
-\[
-\expect{\frac{S_n}{n}} = \sum_{i=1}^n \expect{K_i} = pn.
-\]
-\fi
-So we will use the sample value, $S_n/n$, as our \emph{statistical
-  estimate} of $p$ and use the Pairwise Independent Sampling
-Theorem~\ref{th:pairwise-sampling} to work out how good an estinate
-this is.
-
-\subsection{Sampling}
-Suppose we want our estimate to be within $0.04$ of the Brown favoring
-fraction, $p$, at least 95\% of the time.  This means we want
-\begin{equation}\label{pollsizeinequality}
-\pr{\abs{\frac{S_n}{n} - p} \leq 0.04} \geq 0.95\ .
-\end{equation}
-So we better determine the number, $n$, of times we must poll voters so
-that inequality~\eqref{pollsizeinequality} will hold.
-
-\begin{editingnotes}
-the value, $S_n/n$, of our estimate will, with probability at least
-$1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
-favoring Brown.
-
-We let $\epsilon$ be the margin of error we can tolerate, and let $\delta$
-be the probability that our result lies outside this margin, so in this
-case we'd have $\epsilon = 0.04$ and $\delta \le 0.05$.
-
-We want to determine the number, $n$, of times we must poll voters so that
-the value, $S_n/n$, of our estimate will, with probability at least
-$1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
-favoring Brown.
-\end{editingnotes}
-
-Now $S_n$ is binomially distributed, so from~\eqref{p1p} we have
-\[
-\variance{S_n}  = n(p(1-p)) \leq n \cdot \frac{1}{4} = \frac{n}{4}\label{n4}
-\]
-The bound of 1/4 follows from the fact that $p(1-p)$ is maximized when $p
-= 1-p$, that is, when $p=1/2$ (check this yourself!).
-
-Next, we bound the variance of $S_n/n$:
+\begin{proof}%[Proof of Markov's Theorem]
+For any $x > 0$
 \begin{align}
-\variance{\frac{S_n}{n}}
-       & = \paren{\frac{1}{n}}^2 \variance{S_n}
-                     & \text{(by~\eqref{a2R})}\notag\\
-       & \leq \paren{\frac{1}{n}}^2 \frac{n}{4} & \text{(by~\eqref{n4})}\notag\\
-       & = \frac{1}{4n}\label{1/4n}
+  \expect{R}
+  & \eqdef \sum_{y \in \range{R}} y\prob{R=y}\notag\\
+  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} y\prob{R=y} & \text{(because $R \geq 0$)}\notag\\
+  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} x\prob{R=y}\notag\\
+  & = x \sum_{\substack{y \geq x,\\ y \in \range{R}}} \prob{R=y}\notag\\
+  & = x \prob{R \geq x}.\label{markovproof}
 \end{align}
-Now from Chebyshev and~\eqref{1/4n} we have:
-\begin{equation}\label{CK}
-\pr{\abs{\frac{S_n}{n} - p} \geq 0.04}
-    \leq \frac{\variance{S_n/n}}{(0.04)^2}
-       = \frac{1}{4n(0.04)^2} = \frac{156.25}{n}
+Hence,
+\begin{equation*}
+    \prob{R \ge x} \le \frac{\expect{R}}{x},
+\end{equation*}
+as claimed.
+\end{proof}
+
+\begin{corollary}
+If $R$~is a nonnegative random variable, then for all~$c \geq 1$
+\begin{equation}
+\Prob{\strut R \geq c \cdot \expect{R}}
+    \leq \frac{1}{c}.\label{markovaboveemean}
 \end{equation}
+\end{corollary}
 
-To make our our estimate with  95\% confidence, we want the righthand
-side of~\eqref{CK} to be at most 1/20.  So we choose $n$ so that
+\begin{proof}
+    Set $x = c \expect{R}$ in Theorem~\ref{thm:markov}.
+\end{proof}
+
+As an example, suppose we flip 100~fair coins and use Markov's Theorem
+to compute the probability of getting all heads:
 \[
-\frac{156.25}{n} \leq \frac{1}{20},
+\prob{\text{heads} \geq 100} \leq \frac{\expect{\text{heads}}}{100} =
+\frac{50}{100} = \frac{1}{2}.
 \]
-that is,
-\[
-n \geq 3,125.
-\]
+If the coins are mutually independent, then the actual probability of
+getting all heads is a minuscule 1 in $2^{100}$.  In this case, Markov's
+Theorem looks very weak.  However, in applying Markov's Theorem, we made
+no independence assumptions.  In fact, if all the coins are glued
+together, then probability of throwing all heads is exactly $1/2$.
+In this nasty case, Markov's Theorem is actually tight!
 
-A more exact calculation of the tail of this binomial distribution
-shows that the above sample size is about four times larger than
-necessary, but it is still a feasible size to sample.  The fact that
-the sample size derived using \idx{Chebyshev's Theorem} was unduly
-pessimistic should not be surprising.  After all, in applying the
-Chebyshev Theorem, we only used the variance of $S_n$.  It makes sense
-that more detailed information about the distribution leads to better
-bounds.  But working through this example using only the
-\idx{variance} has the virtue of illustrating an approach to
-estimation that is applicable to arbitrary random variables, not just
-binomial variables.
+\subsubsection{The Chinese Appetizer Problem}
 
-\subsection{Matching Birthdays}\label{bday_deviation_subsec}
+Suppose that $n$~people are seated at a circular table and that each
+person has an appetizer in front of them on a rotating Chinese banquet
+tray.  Just as everyone is about to dig in, some joker spins the tray
+so that each person receives a random appetizer.  We are interested in
+the number of people~$R$ that get their same appetizer as before,
+assuming that the $n$~appetizers are all different.
 
-There are important cases where the relevant distributions are not
-binomial because the mutual independence properties of the voter
-preference example do not hold.  In these cases, estimation methods
-based on the Chebyshev bound may be the best approach.  Birthday
-Matching is an example.  We already saw in
-Section~\ref{birthday_principle_sec} that in a class of 85 students it
-is virtually certain that two or more students will have the same
-birthday.  This suggests that quite a few pairs of students are likely
-to have the same birthday.  How many?
-
-So as before, suppose there are $n$ students and $d$ days in the year, and
-let $D$ be the number of pairs of students with the same birthday.  Now it
-will be easy to calculate the expected number of pairs of students with
-matching birthdays.  Then we can take the same approach as we did in
-estimating voter preferences to get an estimate of the probability of
-getting a number of pairs close to the expected number.
-
-Unlike the situation with voter preferences, having \idx{matching
-  birthdays} for different pairs of students are not \idx{mutually
-  independent} events, but the matchings are \emph{\idx{pairwise
-    independent}}, as explained in
-Section~\ref{birthday_principle_sec}.
-%
-\iffalse For example, knowing that Alice and Bob have matching
-birthdays, and also that Ted and Alice have matching birthdays
-obviously implies that Bob and Ted have matching birthdays.  On the
-other hand, knowing that Alice and Bob have matching birthdays tells
-us nothing about whether Alice and Carol have matching birthdays,
-namely, these two events really are independent.  So even though the
-events that various pairs of students have matching birthdays are not
-mutually independent, indeed not even three-way independent, they are
-\index{pairwise independent} \emph{pairwise} independent.  \fi
-% This will allow us to apply the same reasoning to Birthday Matching
-as we did for voter preference.  Namely, let $B_1,B_2,\dots,B_n$ be
-the birthdays of $n$ independently chosen people, and let $E_{i,j}$ be
-the indicator variable for the event that the $i$th and $j$th people
-chosen have the same birthdays, that is, the event $[B_i = B_j]$.  So
-our probability model, the $B_i$'s are mutually independent variables,
-the $E_{i,j}$'s are pairwise independent.  Also, the expectations of
-$E_{i,j}$ for $i \neq j$ equals the probability that $B_i = B_j$,
-namely, $1/d$.
-
-Now, $D$, the number of matching pairs of birthdays among the $n$
-choices is simply the sum of the $E_{i,j}$'s:
-\begin{equation}\label{Vn}
-D \eqdef \sum_{1\le i < j \le n} E_{i,j}.
-\end{equation}
-So by linearity of expectation
-\[
-\expect{D} = \expect{\sum_{1\le i < j \le n} E_{i,j}} =
-               \sum_{1\le i < j \le n} \expect{E_{i,j}} =
-               \binom{n}{2}\cdot \frac{1}{d}.
-\]
-Similarly,
+Each person gets their original appetizer with probability~$1/n$.
+Hence, by Linearity of Expectation,
+\begin{equation*}
+    \expect{R} = n \cdot \frac{1}{n} = 1.
+\end{equation*}
+What is the probability that all $n$~people get their original
+appetizer back?  Markov's Theorem tells us that
 \begin{align*}
-\variance{D}
-   & = \variance{\sum_{1\le i < j \le n} E_{i,j}}\\
-   & = \sum_{1\le i < j \le n} \variance{E_{i,j}}
-           & \text{(by Theorem~\ref{th:varsum})}\\
-   & = \binom{n}{2} \cdot \frac{1}{d}\paren{1-\frac{1}{d}}.
-           & (by Lemma~\ref{bernoulli-variance})
+\prob{R = n}
+    &= \prob{R \ge n} \\
+    &\le \frac{\expect{R}}{n} \\
+    &= \frac{1}{n}.
 \end{align*}
+In fact, this bound is tight sine everyone gets their original
+appetizers back if and only if the rotating tray returns to its
+original configuration, which happens with probability~$1/n$.
 
-In particular, for a class of $n= 85$ students with $d=365$ possible
-birthdays, we have $\expect{D} \approx 9.7$ and $\variance{D} < 9.7 (1-
-1/365) < 9.7$.  So by Chebyshev's Theorem
+The Chinese Appetizer problem is similar to the Hat Check problem that
+we studied in Section~\ref{sec:hat_check}, except that no distribution
+was specified in the Hat Check problem---we were told only that each
+person gets their correct hat back with probability~$1/n$.  If the
+hats are scrambled according to random permutations, then the
+probability that everyone gets the right hat back is~$1/n!$, which is
+much less than the $1/n$~upper bound given by Markov's Theorem.  So in
+this case, the bound given by Markov's Theorem is not close to the
+actual probability.
+
+What is the probability that at least two people get their right hats
+back?  Markov's Theorem tells us that
+\begin{equation*}
+    \prob{R \ge 2} \le \frac{\expect{R}}{2} = \frac{1}{2}.
+\end{equation*}
+In this case, Markov's Theorem is not too far off from the right
+answer if the hats are distributed according to a random
+permutation\footnote{Proving this requires some effort.} but it is not
+very close to the correct answer~$1/n$ for the case when the hats are
+distributed as in the Chinese Appetizer problem.
+
+\subsubsection{Why $R$ Must be Nonnegative}
+
+Remember that Markov's Theorem applies only to nonnegative random
+variables!  Indeed, the theorem is false if this restriction is
+removed.  For example, let $R$~be -10 with probability~$1/2$ and 10
+with probability~$1/2$.  Then
 \[
-\pr{\abs{D - 9.7} \geq x} < \frac{9.7}{x^2}.
+\expect{R} = -10 \cdot \frac{1}{2} + 10 \cdot \frac{1}{2} = 0
+\]
+Suppose that we now tried to compute $\prob{R \geq 5}$ using Markov's
+Theorem:
+\begin{equation*}
+  \prob{R \geq 5} \leq \frac{\expect{R}}{5} = \frac{0}{5} = 0.
+\end{equation*}
+This is the wrong answer!  Obviously, $R$ is at least 5 with
+probability $1/2$.
+
+On the other hand, we can still apply Markov's Theorem indirectly to
+derive a bound on the probability that an arbitrary variable like $R$
+is 5 more.  Namely, given any random variable, $R$ with expectation 0
+and values $\geq -10$, we can conclude that $\prob{R \geq 5} \le 2/3$.
+To prove this fact, we define $T \eqdef R+10$.  Then $T$~is a
+nonnegative random variable with expectation $\expect{R + 10} =
+\expect{R}+10= 10$, so Markov's Theorem applies and tells us that
+$\prob{T \geq 15} \le 10/15 = 2/3$.  But $T \geq 15$ iff $R \geq 5$, so
+$\prob{R \geq 5} \leq 2/3$, as claimed.
+
+\subsection{Markov's Theorem for Bounded Variables}
+
+Suppose we learn that the average \IQ\ among MIT students is 150
+(which is not true, by the way).  What can we say about the
+probability that an MIT student has an \IQ\ of more than 200?
+Markov's Theorem immediately tells us that no more than $150/200$ or
+$3/4$ of the students can have such a high \IQ.  That's because if
+$R$~is the \IQ\ of a random MIT student, then
+\[
+    \prob{R > 200} \leq \frac{\expect{R}}{200}= \frac{150}{200} = \frac{3}{4}.
 \]
 
-Letting $x=5$, we conclude that there is a better than 50\% chance that in
-a class of 85 students, the number of pairs of students with the same
-birthday will be between 5 and 14.
-
-%In fact, there turned out to be
-%\emph{exactly} the 16 matches expected in the class this term!
-
-
-\subsection{Pairwise Independent Sampling}\label{sec:pairwise_ind_samp}
-
-The reasoning we used above to analyze voter polling and matching
-birthdays is very similar.  We summarize it in slightly more general form
-with a basic result we call the \idx{Pairwise Independent Sampling}
-Theorem.  In particular, we do not need to restrict ourselves to sums of
-zero-one valued variables, or to variables with the same distribution.
-For simplicity, we state the Theorem for pairwise independent variables
-with possibly different distributions but with the same mean and variance.
-
-\begin{theorem}[Pairwise Independent Sampling]\label{th:pairwise-sampling}
-Let $G_1, \dots, G_n$ be pairwise independent variables with the same
-mean, $\mu$, and deviation, $\sigma$.  Define
-\begin{equation}\label{ln14.Sn}
-S_n \eqdef \sum_{i=1}^n G_i.
-\end{equation}
-Then
+But let's also suppose that no MIT student has an \IQ\ less than~100
+(which may be true).  This means that if we let $T \eqdef R-100$, then
+$T$ is nonnegative and $\expect{T} = 50$, so we can apply Markov's
+Theorem to $T$ and conclude:
 \[
-\pr{\abs{\frac{S_n}{n} - \mu} \geq x}
-    \leq \frac{1}{n} \paren{\frac{\sigma}{x}}^2.
+\prob{R > 200} = \prob{T > 100} \leq \frac{\expect{T}}{100}= \frac{50}{100} =
+\frac{1}{2}.
+\]
+So only half, not 3/4, of the students can be as amazing as they think
+they are.  A bit of a relief!
+
+More generally, we can get better bounds applying Markov's Theorem to
+$R-l$ instead of $R$ for any lower bound~$l$ on~$R$, even when $l$~is
+negative.
+
+\begin{theorem}\label{thm:18C1}
+Let $R$~be a random variable for which $R \ge l$ for some $l \in
+\reals$.  The for all~$x \ge l$,
+\begin{equation*}
+    \prob{R \ge x} \le \frac{\expect{R} - l}{x - l}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+Define
+\begin{equation*}
+    T \eqdef R - l.
+\end{equation*}
+Then $T$~is a non-negative random variable with mean
+\begin{equation*}
+\expect{T} = \expect{R - l} = \expect{R} - l.
+\end{equation*}
+Hence, Markov's Theorem implies that
+\begin{align*}
+\prob{T \ge x - l}
+    &\le \frac{\expect{T}}{x - l} \\
+    &=   \frac{\expect{R} - l}{x - l}.
+\end{align*}
+The result then follows from the fact that
+\begin{align*}
+\prob{R \ge x}
+    &= \prob{R - l \ge x - l} \\
+    &= \prob{T \ge x - l}. \qedhere
+\end{align*}
+\end{proof}
+
+\subsection{Deviations Below the Mean}
+
+Markov's Theorem says that a random variable is unlikely to greatly exceed
+the mean.  Correspondingly, there is a theorem that says a random variable
+is unlikely to be much smaller than its mean.
+
+\begin{theorem}
+\label{th:below}
+Let $u \in \reals$ and let $R$~be a random variable such that $R \leq
+u$.  Then for all~$x < u$, 
+\[
+    \prob{R \leq x} \leq \frac{u - \expect{R}}{u - x}.
 \]
 \end{theorem}
 
 \begin{proof}
-We observe first that the expectation of $S_n/n$ is $\mu$:
+The proof is similar to that of Theorem~\ref{thm:18C1}.  Define
+\begin{equation*}
+    S \eqdef u - R.
+\end{equation*}
+Then $S$~is a non-negative random variable with mean
+\begin{equation*}
+    \expect{S} = \expect{u - R} = u - \expect{R}.
+\end{equation*}
+Hence, Markov's Theorem implies that
 \begin{align*}
-\expect{\frac{S_n}{n}} & = \expect{\frac{\sum_{i=1}^n G_i}{n}}
-         & \text{(def of $S_n$)}\\
- & = \frac{\sum_{i=1}^n \expect{G_i}}{n}
-     & \text{(linearity of expectation)}\\
- & = \frac{\sum_{i=1}^n \mu}{n}\\
- & = \frac{n\mu}{n} = \mu.
+\prob{S \ge u - x}
+    & \le \frac{\expect{S}}{u - x} \\
+    &= \frac{u - \expect{R}}{u - x}.
 \end{align*}
-
-The second important property of $S_n/n$ is that its variance is the
-variance of $G_i$ divided by $n$:
-\begin{align}
-\variance{\frac{S_n}{n}} & =  \paren{\frac{1}{n}}^2 \variance{S_n}
-          & \mbox{(by~\eqref{a2R})}\notag\\
- & =  \frac{1}{n^2} \variance{\sum_{i=1}^n G_i}
-          & \text{(def of $S_n$)}\notag\\
- & =  \frac{1}{n^2} \sum_{i=1}^n \variance{G_i}
-        & \text{(pairwise independent additivity)}\notag\\
- & =  \frac{1}{n^2}\cdot n\sigma^2 =  \frac{\sigma^2}{n}.\label{Snu}
-\end{align}
-
-This is enough to apply \idx{Chebyshev's Theorem} and conclude:
+The result then follows from the fact that
 \begin{align*}
-\pr{\abs{\frac{S_n}{n} - \mu} \geq x} & \leq \frac{\variance{S_n/n}}{x^2}.
-       & \text{(Chebyshev's bound)}\\
-    & = \frac{\sigma^2/n}{x^2} & \text{(by~\eqref{Snu})}\\
-    & = \frac{1}{n} \paren{\frac{\sigma}{x}}^2.
+\prob{R \le x}
+    &= \prob{u - S \le x} \\
+    &= \prob{S \ge u - x}. \qedhere
 \end{align*}
-
 \end{proof}
 
-The Pairwise Independent Sampling Theorem provides a precise general
-statement about how the average of independent samples of a random
-variable approaches the mean.  In particular, it proves what is known as
-the \idx{Law of Large Numbers}\footnote{This is the \index{Weak Law of
-    Large Numbers} \emph{Weak} Law of Large Numbers.  As you might
-  suppose, there is also a Strong Law, but it's outside the scope of
-  this text.} : by choosing a large enough sample size, we can get arbitrarily
-accurate estimates of the mean with confidence arbitrarily close to 100\%.
+For example, suppose that the class average on a midterm was
+75/100.  What fraction of the class scored below 50?
 
-\begin{corollary}\label{weaklaw}[Weak Law of Large Numbers]
-  Let $G_1, \dots, G_n$ be pairwise independent variables with the same
-  mean, $\mu$, and the same finite deviation, and let
+There is not enough information here to answer the question exactly,
+but Theorem~\ref{th:below} gives an upper bound.  Let $R$ be the score
+of a random student.  Since 100 is the highest possible score, we can
+set $u = 100$ to meet the condition in the theorem that $R \leq u$.
+Applying Theorem~\ref{th:below}, we find:
+\begin{equation*}
+  \prob{R \leq 50} \leq \frac{100 - 75}{100 - 50} = \frac{1}{2}\,.
+\end{equation*}
+
+That is, at most half of the class scored 50 or worse.  This makes
+sense; if more than half of the class scored 50 or worse, then the
+class average could not be 75, even if everyone else scored 100.  As
+with Markov's Theorem, Theorem~\ref{th:below} often gives weak
+results.  In fact, based on the data given, the entire class could
+have scored above 50.
+
+\subsection{Using Markov's Theorem to Analyze Non-Random Events}
+
+In the previous example, we used a theorem about a random variable to
+conclude facts about non-random data.  For example, we concluded that
+if the average score on a test is 75, then at most $1/2$ the class
+scored 50 or worse.  There is no randomness in this problem, so how
+can we apply Theorem~\ref{th:below} to reach this conclusion?
+
+The explanation is not difficult.  For any set of scores $S =
+\set{s_1, s_2, \dots, s_n}$, we introduce a random variable~$R$ such
+that
 \[
-S_n \eqdef \frac{\sum_{i=1}^n G_i}{n}.
+\prob{R = s_i} = \frac{\text{(\# of students with score $s_i$)}}{n}.
 \]
-Then for every $\epsilon > 0$,
+We then use Theorem~\ref{th:below} to conclude that $\prob{R \leq 50}
+\leq 1/2$.  To see why this means (with certainty) that at most
+$1/2$ of the students scored 50 or less, we observe that
+\begin{align*}
+\prob{R \leq 50}
+    & = \sum_{s_i \leq 50} \prob{R = s_i} \\
+    & = \sum_{s_i \leq 50} \frac{\text{(\# of students with score $s_i$)}}{n} \\
+    & = \frac{1}{n} \text{(\# of students with score 50 or less)}.
+\end{align*}
+So, if $\prob{R \leq 50} \leq 1/2$, then the number of students
+with score 50 or less is at most $n/2$.
+
+\begin{problems}
+
+\classproblems
+\pinput{CP_cold_cows_markov}
+
+\end{problems}
+
+\section{Chebyshev's Theorem}
+
+As we have just seen, Markov's Theorem can be extended by applying it
+to functions of a random variable~$R$ such as $R - l$ and $u - R$.
+Even stronger results can be obtained by applying Markov's Theorem to
+powers of~$R$.
+
+\begin{lemma}\label{lem:Markov2}
+For any random variable~$R$, $\alpha \in \reals^+$, and $x > 0$,
 \[
-\lim_{n \rightarrow \infty}
-        \pr{\abs{S_n - \mu}  \leq \epsilon} = 1.
+\prob{\abs{R} \geq x} \leq \frac{\expect{\abs{R}^\alpha}}{x^\alpha}.
+\]
+\end{lemma}
+
+\begin{proof}
+The event $\abs{R} \ge x$ is the same as the event $\abs{R}^\alpha \ge
+x^\alpha$.  Since $\abs{R}^\alpha$~is non-negative, the result follows
+immediately from Markov's Theorem.
+\end{proof}
+
+Similarly,
+
+\begin{equation}\label{chebE2}
+\prob{\abs{R - \expect{R}} \geq x}
+    \leq \frac{\expect{(R - \expect{R})^\alpha}}{x^\alpha}.
+\end{equation}
+
+The restatement of~Equation \ref{chebE2} for $\alpha=2$ is known as
+\term{Chebyshev's Theorem}.
+\begin{theorem}[Chebyshev]\label{chebthm}
+  Let $R$ be a random variable and $x \in \reals^+$.  Then
+\[
+\prob{\abs{R - \expect{R}} \geq x} \leq \frac{\variance{R}}{x^2}.
+\]
+\end{theorem}
+
+\begin{proof}
+
+Define
+\begin{equation*}
+    T \eqdef R - \expect{R}.
+\end{equation*}
+Then
+\begin{align*}
+\prob{ \abs{R - \expect{R}} \ge x }
+    &= \prob{\abs{T} \ge x} \\
+     &= \prob{T^2 \ge x^2} \\
+     &\le \frac{\expect{R^2}}{x^2} && \text{(by Markov's Theorem)} \\
+     & = \frac{ \expect{ (R - \expect{R})^2 } }{x^2} \\
+     &= \frac{\variance{R}}{x^2},  && \text{(by Definition~\ref{defvar})}
+\end{align*}
+as claimed.
+\end{proof}
+
+
+\begin{corollary}
+\label{cor:cheby}
+Let $R$ be a random variable, and let $c$~be a positive real number.
+\[
+\prob{\abs{R - \expect{R}} \geq c \sigma_R} \leq \frac{1}{c^2}.
 \]
 \end{corollary}
 
-\section{Confidence versus Probability}
+\begin{proof}
+  Substituting $x = c \sigma_R$ in Chebyshev's Theorem gives:
+  \begin{equation*}
+    \prob{\card{R - \expect{R}} \geq c \sigma_R}
+    \leq
+    \frac{\variance{R}}{(c \sigma_R)^2}
+    =  \frac{\sigma_R^2}{(c \sigma_R)^2}
+    = \frac{1}{c^2}.\qedhere
+  \end{equation*}
+\end{proof}
 
-So Chebyshev's Bound implies that sampling 3,125 voters will yield a
-fraction that, 95\% of the time, is within 0.04 of the actual fraction
-of the voting population who prefer Brown.
-\begin{editingnotes}
-  Estimates of the binomial distribution show that a sample size
-  around 664 would do.
-\end{editingnotes}
+As an example, suppose that, in addition to the national average
+\idx{\IQ}\ being 100, we also know the \idx{standard deviation} of
+\IQ's is 10.  How rare is an \IQ\ of 300 or more?
 
-Notice that the actual size of the voting population was never
-considered because \emph{it did not matter}.  People who have not
-studied probability theory often insist that the \idx{population size}
-should matter.  But our analysis shows that polling a little over 3000
-people people is always sufficient, whether there are ten thousand, or
-million, or billion \dots voters.  You should think about an intuitive
-explanation that might persuade someone who thinks population size
-matters.
+Let the random variable~$R$ be the \IQ\ of a random person.  So we are
+supposing that $\expect{R} = 100$, $\sigma_R = 10$, and $R$ is
+nonnegative.  We want to compute $\prob{R \geq 300}$.
 
-Now suppose a pollster actually takes a sample of 3,125 random voters to
-estimate the fraction of voters who prefer Brown, and the pollster finds
-that 1250 of them prefer Brown.  It's tempting, \textbf{but sloppy}, to
-say that this means:
-\begin{falseclm*}
-  With probability 0.95, the fraction, $p$, of voters who prefer Brown
-  is $1250/3125 \pm 0.04$.  Since $1250/3125 -0.04 > 1/3$, there is a 95\%
-  chance that more than a third of the voters prefer Brown to all other
-  candidates.
-\end{falseclm*}
-What's objectionable about this statement is that it talks about the
-probability or ``chance'' that a real world fact is true, namely that the
-actual fraction, $p$, of voters favoring Brown is more than 1/3.  But $p$
-is what it is, and it simply makes no sense to talk about the probability
-that it is something else.  For example, suppose $p$ is actually 0.3;
-then it's nonsense to ask about the probability that it is within 0.04 of
-1250/3125---it simply isn't.
+We have already seen that Markov's Theorem~\ref{thm:markov} gives a
+coarse bound, namely,
+\[
+  \prob{R \geq 300} \leq \frac{1}{3}.
+\]
+Now we apply Chebyshev's Theorem to the same problem:
+\begin{equation}\label{eqn:18I3}
+\prob{R \geq 300} = \prob{\abs{R - 100} \geq 200} \leq
+    \frac{\variance{R}}{200^2} = \frac{10^2}{200^2} = \frac{1}{400}.
+\end{equation}
 
-This example of voter preference is typical: we want to estimate a fixed,
-unknown real-world quantity.  But \emph{being unknown does not make this
-  quantity a random variable}, so it makes no sense to talk about the
-probability that it has some property.
+So Chebyshev's Theorem implies that at most one person in four hundred
+has an \IQ\ of 300 or more.  We have gotten a much tighter bound using
+the additional information, namely the variance of~$R$, than we could
+get knowing only the expectation.
 
-A more careful summary of what we have accomplished goes this way:
-\begin{quote}
-We have described a probabilistic procedure for estimating the value of
-the actual fraction, $p$.  The probability that \emph{our estimation
-procedure} will yield a value within 0.04 of $p$ is 0.95.
-\end{quote}
-This is a bit of a mouthful, so special phrasing closer to the sloppy
-language is commonly used.  The pollster would describe his conclusion by
-saying that
-\begin{quote}
-At the 95\% \term{confidence level}, the fraction of voters
-who prefer Brown is $1250/3125 \pm 0.04$.
-\end{quote}
+More generally, Corollary~\ref{cor:cheby} tells us that a random
+variable is never likely to stray by more than a few standard
+deviations from its mean.  For example, plugging~$c = 3$ int
+Corollary~\ref{cor:cheby}, we find that the probability that a random
+variable strays from the mean by more than~$3 \sigma$ is at
+most~$1/9$.
 
-So confidence levels refer to the results of estimation procedures for
-real-world quantities.  The phrase ``confidence level'' should be heard as
-a reminder that some statistical procedure was used to obtain an estimate,
-and in judging the credibility of the estimate, it may be important to
-learn just what this procedure was.
+This fact has a nice pictorial characterization for pdf's with a
+``bell-curve'' shape; namely, the width of the bell is~$O(\sigma)$, as
+shown in Figure~\ref{fig:stdev}.
 
-\begin{editingnotes}
-Maybe include example from CP\_drug\_confidence here.
-\end{editingnotes}
+\begin{figure}
 
-\begin{problems}
-\practiceproblems
-\pinput{FP_random_sampling}
+\graphic[height=2in]{stdev}
 
-\classproblems
-\pinput{CP_gallup_poll}
-\pinput{CP_birthday-deviation}
-\pinput{CP_size_of_sample_vs_population}
-\pinput{CP_pairwise_independent_theorem}
-\pinput{CP_drug_confidence}
+\caption{If the pdf of a random variable is ``bell-shaped,'' then the
+  width of the bell is~$O(\sigma)$.}
 
-\examproblems
-\pinput{FP_sampling_concepts}
-\end{problems}
+\label{fig:stdev}
 
-\section{The Chernoff Bound}
+\end{figure}
+
+\subsection{Bounds on One-Sided Errors}
+
+Corollary~\ref{cor:cheby} gives bounds on the probability of deviating
+from the mean in \emph{either} direction.  If you only care about
+deviations in one direction, as was the case in the \IQ\ example, then
+slightly better bounds can be obtained.
+
+\begin{theorem}\label{thm:18I2}
+For any random variable~$R$ and any~$c > 0$,
+\begin{equation*}
+    \prob{R - \expect{R} \ge c \sigma_R} \le \frac{1}{c^2 + 1}
+\end{equation*}
+and
+\begin{equation*}
+    \prob{R - \expect{R} \le -c \sigma_R} \le \frac{1}{c^2 + 1}.
+\end{equation*}
+\end{theorem}
+
+The proof of Theorem~\ref{thm:18I2} is trickier than the proof of
+Chebyshev's Theorem and we will not give the details here.  In fact,
+the bounds in Theorem~\ref{thm:18I2} are the best bounds that you can
+obtain if you know only the mean and standard deviation of the random
+variable~$R$.
+
+Returning to the \IQ\ example, Theorem~\ref{thm:18I2} tells us that
+\begin{equation*}
+    \prob{R \ge 300} \le \prob{R - 100 \ge 20 \sigma_R} \le \frac{1}{401},
+\end{equation*}
+which is a very slight improvement over Equation~\ref{eqn:18I3}.
+
+As another example, suppose we give an exam.  What fraction of the
+class can score more than 2~standard deviations from the average?  If
+$R$ is the score of a random student, then
+\begin{equation*}
+    \prob{\abs{R - \expect{R}} \ge 2 \sigma_R} \le \frac{1}{4}.
+\end{equation*}
+For one-sided error, the fraction that could be 2~standard deviations
+or more above the average is at most
+\begin{equation*}
+    \frac{1}{2^2 + 1} = \frac{1}{5}.
+\end{equation*}
+This results holds no matter what the test scores are, and is again a
+deterministic fact derived using probabilistic tools.
+
+\section{Bounds for Sums of Random Variables}
+
+If all you know about a random variable is its mean and variance, then
+Chebyshev's Theorem is the best you can do when it comes to bounding
+the probability that the random variable deviates from its mean.  In
+some cases, however, we know more---for example, that the random
+variable has a binomial distribution---and then it is possible to
+prove much stronger bounds.  Instead of polynomially small bounds such
+as~$1/c^2$, we can sometimes even obtain exponentially small bounds
+such as~$1/e^c$.  As we will soon discover, this is the case whenever
+the random variable~$T$ is the sum of $n$~mutually independent random
+variables~$T_1$, $T_2$, \dots, $T_n$ where $0 \le T_i \le 1$.  A
+random variable with a binomial distribution is just one of many
+examples of such a~$T$.  Here is another.
+
+\subsection{A Motivating Example}
 
 Fussbook is a new social networking site oriented toward unpleasant
 people.
@@ -1693,9 +1068,9 @@ there are no guarantees.
 If the length of every task were known in advance, then finding a
 balanced distribution would be a kind of ``\idx{bin packing}''
 problem.  Such problems are hard to solve exactly, though
-approximation algorithms can come close.  But in this case task
+approximation algorithms can come close.  But in this case, task
 lengths are not known in advance, which is typical for workload
-problems.
+problems in the real world.
 
 So the load balancing problem seems sort of hopeless, because there is
 no data available to guide decisions.  Heck, we might as well assign
@@ -1711,29 +1086,30 @@ Some arithmetic shows that Fussbook's traffic is sufficient to keep $m
 = 10$ computers running at 100\% capacity with perfect load balancing.
 Surely, more than 10 servers are needed to cope with random
 fluctuations in task length and imperfect load balance.  But how many
-is enough?  11?  15?  20?  We'll answer that question with a new
+is enough?  11?  15?  20?  100? We'll answer that question with a new
 mathematical tool.
 
 \subsection{The \idx{Chernoff Bound}}
 
-The Chernoff bound is a hammer that you can use to nail a great many
-problems.  Roughly, the Chernoff bound says that certain random
-variables are very unlikely to significantly exceed their expectation.
-For example, if the expected load on a computer is just a bit below
-its capacity, then that computer is unlikely to be overloaded,
-provided the conditions of the Chernoff bound are satisfied.
+The Chernoff\footnote{Yes, this is the same Chernoff who figured out
+  how to beat the state lottery.  So you might want to pay
+  attention---this guy knows a thing or two.} bound is a hammer that
+you can use to nail a great many problems.  Roughly, the Chernoff
+bound says that certain random variables are very unlikely to
+significantly exceed their expectation.  For example, if the expected
+load on a computer is just a bit below its capacity, then that
+computer is unlikely to be overloaded, provided the conditions of the
+Chernoff bound are satisfied.
 
 More precisely, the Chernoff Bound says that \emph{the sum of lots of
   little, independent random variables is unlikely to significantly
-  exceed the mean}.  The Markov and Chebychev bounds lead to the same
-kind of conclusion but typically provide much weaker conclusions.
+  exceed the mean}.  The Markov and Chebyshev bounds lead to the same
+kind of conclusion but typically provide much weaker conclusions.  In
+particular, the Markov and Chebyshev bounds are polynomial, while the
+Chernoff bound is exponential.
 
-\begin{editingnotes}
-In particular, the Markov and Chebychev bounds are polynomial, while
-the Chernoff bound is exponential.
-\end{editingnotes}
-
-Here is the theorem.  The proof is at the end of the chapter.
+Here is the theorem.  The proof will come later in
+Section~\ref{sec:chernoff_proof}.
 
 \begin{theorem}[\idx{Chernoff Bound}]
 \label{chernoff}
@@ -1741,7 +1117,7 @@ Let $T_1, \dots T_n$ be mutually independent random variables such
 that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
 Then for all $c \geq 1$,
 \begin{equation}\label{chernoff-leq}
-\pr{T \geq c \expect{T}} \leq e^{-k \expect{T}}
+\prob{T \geq c \expect{T}} \leq e^{-k \expect{T}}
 \end{equation}
 where $k = c \ln c - c + 1$.
 \end{theorem}
@@ -1749,32 +1125,35 @@ where $k = c \ln c - c + 1$.
 The Chernoff bound applies only to distributions of sums of
 independent random variables that take on values in the interval $[0,
   1]$.  The binomial distribution is of course such a distribution,
-but are lots of other distributions because the Chernoff bound allows
-the variables in the sum to have differing, arbitrary, and even unknown
-distributions over the range $[0, 1]$.  Furthermore, there is no
-direct dependence on the number of random variables in the sum or
+but there are lots of other distributions because the Chernoff bound
+allows the variables in the sum to have differing, arbitrary, and even
+unknown distributions over the range $[0, 1]$.  Furthermore, there is
+no direct dependence on the number of random variables in the sum or
 their expectations.  In short, the Chernoff bound gives strong results
 for lots of problems based on little information---no wonder it is
 widely used!
 
-\subsubsection{A Simple Example}
+\subsubsection{More Examples}
 
 The Chernoff bound is pretty easy to apply, though the details can be
 daunting at first.  Let's walk through a simple example to get the
 hang of it.
 
-What are the odds that the number of heads that come up in 1000
-independent tosses of a fair coin exceeds the expectation by 20\% or
-more?  Let $T_i$ be an indicator variable for the event that the
-$i$-th coin is heads.  Then the total number of heads is $T = T_1 +
-\cdots + T_{1000}$.  The Chernoff bound requires that the random
-variables $T_i$ be \idx{mututally independent} and take on values in the
-range $[0, 1]$.  Both conditions hold here.  In fact, this example is
-similar to many applications of the Chernoff bound in that every $T_i$
-is \emph{either} 0 or 1, since they're indicators.
+What is the probability that the number of heads that come up in
+1000~independent tosses of a fair coin exceeds the expectation by 20\%
+or more?  Let $T_i$ be an indicator variable for the event that the
+$i$-th coin is heads.  Then the total number of heads is
+\begin{equation*}
+    T = T_1 + \cdots + T_{1000}.
+\end{equation*}
+The Chernoff bound requires that the random variables~$T_i$ be
+\idx{mutually independent} and take on values in the range $[0, 1]$.
+Both conditions hold here.  In fact, this example is similar to many
+applications of the Chernoff bound in that every $T_i$ is
+\emph{either} 0 or 1, since they're indicators.
 
 The goal is to bound the probability that the number of heads exceeds
-its expectation by 20\% or more; that is, to bound $\pr{T \geq c
+its expectation by 20\% or more; that is, to bound $\prob{T \geq c
   \expect{T}}$ where c = $1.2$.  To that end, we compute $k$ as
 defined in the theorem:
 \[
@@ -1782,7 +1161,7 @@ k = c \ln c - c + 1 = 0.0187\dots
 \]
 Plugging this value into the Chernoff bound gives:
 \begin{align*}
-\pr{T \geq 1.2 \expect{T}} & \leq  e^{- k \expect{T}} \\
+\prob{T \geq 1.2 \expect{T}} & \leq  e^{- k \expect{T}} \\
   & = e^{- (0.0187\dots) \cdot 500} \\
   & <  0.0000834
 \end{align*}
@@ -1808,50 +1187,47 @@ decreases from around 1 in 10,000 to about 1 in a billion!
 
 \subsubsection{Pick-4}
 
-\idx{Pick-4} is a lottery game where you pick a 4-digit number between 0000
-and 9999.  If your number comes up in a random drawing, then you win.
-Your chance of winning is 1 in 10,000.  And if 10 million people play,
-then the expected number of winners is 1000.  The lottery operator's
-nightmare is that the number of winners is much greater; say, 2000 or
-more.  What are the odds of that?
+\idx{Pick-4} is a lottery game where you pick a 4-digit number between
+0000 and 9999.  If your number comes up in a random drawing, then you
+win~\$5,000.  Your chance of winning is 1 in 10,000.  And if 10
+million people play, then the expected number of winners is 1000.  The
+lottery operator's nightmare is that the number of winners is much
+greater; say, 2000 or more.  What is the probability that will happen?
 
 Let $T_i$ be an indicator for the event that the $i$-th player wins.
 Then $T = T_1 + \cdots + T_n$ is the total number of winners.  If we
-assume that the players' picks and the winning number are independent
-and uniform, then the indicators $T_i$ are independent, as required by
-the Chernoff bound.
+assume\footnote{As we noted in Chapter~\ref{chap:expectation}, human
+  choices are often not uniform and they can be highly dependent.  For
+  example, lots of people will pick an important date.  So the lottery
+  folks should not get too much comfort from the analysis that
+  follows, unless they are sure to assign random 4-digit numbers to
+  each player.} that the players' picks and the winning number are
+random, independent and uniform, then the indicators $T_i$~are
+independent, as required by the Chernoff bound.
 
-\begin{editingnotes}
-Add comment about how unrealistic these assumptions are because people
-frequently play a few favorite numbers.
 
-The assumptions would be plausible for a version where people buy
-tickets with randomly assigned numbers, so they can't pick their own
-number.
-\end{editingnotes}
-
-Now, 2000 winners would be twice the expected
-number.  So we choose $c = 2$, compute $k = c \ln c - c + 1 =
-0.386\dots$, and plug these values into the Chernoff bound:
+Since 2000~winners would be twice the expected number, we choose $c =
+2$, compute $k = c \ln c - c + 1 = 0.386\dots$, and plug these values
+into the Chernoff bound:
 \begin{align*}
-\pr{T \geq 2000} & = \pr{T \geq 2 \expect{T}} \\
+\prob{T \geq 2000} & = \prob{T \geq 2 \expect{T}} \\
   & \leq e^{-k \expect{T}} \\
   & = e^{- (0.386\dots) \cdot 1000} \\
-  & < e^{-386}
+  & < e^{-386}.
 \end{align*}
 So there is almost no chance that the lottery operator pays out
 double.  In fact, the number of winners won't even be 10\% higher than
 expected very often.  To prove that, let $c = 1.1$, compute $k = c \ln
 c - c + 1 = 0.00484\dots$, and plug in again:
 \begin{align*}
-\pr{T \geq 1.1 \expect{T}} & \leq e^{-k \expect{T}} \\
+\prob{T \geq 1.1 \expect{T}} & \leq e^{-k \expect{T}} \\
   & = e^- 0.00484\dots * 1000 \\
   & < 0.01
 \end{align*}
 So the Pick-4 lottery may be exciting for the players, but the lottery
 operator has little doubt about the outcome!
 
-\subsection{Randomized Load Balancing}
+\subsubsection{Randomized Load Balancing}
 
 Now let's return to Fussbook and its \idx{load balancing} problem.
 Specifically, we need to determine how many machines suffice to ensure
@@ -1862,18 +1238,18 @@ To begin, let's find the probability that the first server is
 overloaded.  Let $T_i$ be the number of seconds that the first server
 spends on the $i$-th task.  So $T_i$ is zero if the task is assigned
 to another machine, and otherwise $T_i$ is the length of the task.
-Then $T = \sum T_i$ is the total length of tasks assigned to the
-server.  We need to upper bound $\pr{T \geq 600}$; that is, the
-probability that the first server is assigned more than 600 seconds
-(or, equivalently, 10 minutes) of work.
+Then $T = \sum_{i = 1}^n T_i$ is the total length of tasks assigned to
+the server, where~$n = 24{,}000$.  We need an upper bound on~$\prob{T
+  \geq 600}$; that is, the probability that the first server is
+assigned more than 600 seconds (or, equivalently, 10 minutes) of work.
 
 The Chernoff bound is applicable only if the $T_i$ are mutually
 independent and take on values in the range $[0, 1]$.  The first
-condition is satisfied if we assume that tasks lengths and assignments
+condition is satisfied if we assume that task lengths and assignments
 are independent.  And the second condition is satisfied because
 processing even the most interminable harangue takes at most 1 second.
 
-In all, there are 24,000 tasks each with an expected length of 1/4
+In all, there are 24,000 tasks, each with an expected length of~1/4
 second.  Since tasks are assigned to computers at random, the expected
 load on the first server is:
 \begin{align*}
@@ -1887,16 +1263,19 @@ the first server is 600 seconds, which is 100\% of its capacity.
 Now we can use the Chernoff bound to upper bound the probability that
 the first server is overloaded:
 \begin{align*}
-\pr{T \geq 600} & = \pr{T \geq c \expect{T}} \\
+\prob{T \geq 600} & = \prob{T \geq c \expect{T}} \\
   & \leq e^{-(c \ln c - c + 1) \cdot 6000 / m}
 \end{align*}
 Equality holds on the first line when $c = m / 10$, since $c \expect{T} =
 (m / 10) \cdot (6000 / m) = 600$.  The probability that \emph{some}
 server is overloaded is at most $m$ times the probability that the
-first server is overloaded:
-\[
-\pr{\mbox{some server is overloaded}} \leq m e^{-(c \ln c - c + 1) \cdot 6000 / m}
-\]
+first server is overloaded by the union bound.  So
+\begin{align*}
+\prob{\text{some server is overloaded}}
+    &\le \sum_{i = 1}^m \prob{\text{server $i$ is overloaded}} \\
+    &= m \prob{\text{the first server is overloaded}} \\
+    &\leq m e^{-(c \ln c - c + 1) \cdot 6000 / m}.
+\end{align*}
 Some values of this upper bound are tabulated below:
 \[
 \begin{array}{rcll}
@@ -1909,47 +1288,48 @@ These values suggest that a system with $m = 11$ machines might suffer
 immediate overload, $m = 12$ machines could fail in a few days, but $m
 = 13$ should be fine for a century or two!
 
-\subsection{Proof of the Chernoff Bound}
+\subsection{Proof of the Chernoff Bound}\label{sec:chernoff_proof}
 
 The proof of the Chernoff bound is somewhat involved.  Heck, even
 \emph{Chernoff} didn't come up with it!  His friend, \idx{Herman
   Rubin}, showed him the argument.  Thinking the bound not very
 significant, Chernoff did not credit Rubin in print.  He felt pretty
-bad when it became famous!
-\begin{editingnotes}
- References: ``A Conversation with Herman Chernoff" Statistical
- Science 1996, Vol 11, No 4, pp 335-350.
+bad when it became famous!\footnote{See ``A Conversation with Herman
+  Chernoff,'' \emph{Statistical Science} 1996, Vol.~11, No.~4, pp
+  335--350.}
 
 Here is the theorem again, for reference:
 
-\begin{theorem}[Chernoff Bound]
+\begin{theorem}[\idx{Chernoff Bound}]
 Let $T_1, \dots T_n$ be mutually independent random variables such
 that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
 Then for all $c \geq 1$,
-\[
-\pr{T \geq c \expect{T}} \leq e^{- k \expect{T}}
-\]
+\begin{equation}\label{chernoff-leq}
+\prob{T \geq c \expect{T}} \leq e^{-k \expect{T}}
+\end{equation}
 where $k = c \ln c - c + 1$.
 \end{theorem}
-\end{editingnotes}
 
-For clarity, we'll go through the proof "top down"; that is, we'll use
-facts that are proved immediately afterward.
+\begin{proof} 
 
-\begin{proof} The key step is to exponentiate both sides of the
-  inequality $T > c \expect{T}$ and then apply the Markov bound.
+For clarity, we'll go through the proof ``top down''; that is, we'll
+use facts that are proved immediately afterward.
+
+The key step is to exponentiate both sides of the inequality $T \ge c
+\expect{T}$ and then apply the Markov bound:
 \begin{align*}
-\pr{T \geq c \expect{T}} & = \pr{c^T \geq c^{c \expect{T}}} \\
+\prob{T \geq c \expect{T}} & = \prob{c^T \geq c^{c \expect{T}}} \\
   & \leq \frac{\expect{c^T}}{c^{c \expect{T}}} & \text{(by Markov)}\\
   & \leq \frac{e^{(c-1) \expect{T}}}{c^{c \expect{T}}} \\
-  & = e^{- (c \ln c - c + 1) \expect{T}}
+  & = e^{- (c \ln c - c + 1) \expect{T}}.
 \end{align*}
 In the third step, the numerator is rewritten using the inequality
 \[
 \expect{c^T} \leq e^{(c-1) \expect{T}}
 \]
 which is proved below in Lemma~\ref{chernoff-lemma1}.  The final step
-is simplification.  (Recall that $c^c$ is equal to $e ^{c \ln c}$.)
+is simplification, using the fact that $c^c$ is equal to $e ^{c \ln
+  c}$.
 \end{proof}
 
 Algebra aside, there is a brilliant idea in this proof: in this
@@ -1962,7 +1342,7 @@ variables take on values as in Theorem~\ref{chernoff}.
 \begin{lemma}
 \label{chernoff-lemma1}
 \[
-\expect{c^T} \leq e^{(c-1) \expect{T}}
+    \expect{c^T} \leq e^{(c-1) \expect{T}}.
 \]
 \end{lemma}
 
@@ -1974,15 +1354,15 @@ variables take on values as in Theorem~\ref{chernoff}.
             & \leq e^{(c-1) \expect{T_1}} \cdots  e^{(c-1) \expect{T_n}} \\
             & = e^{(c-1) (\expect{T_1} + \cdots + \expect{T_n})} \\
             & = e^{(c-1) \expect{T_1 + \cdots + T_n}} \\
-            & = e^{(c-1) \expect{T}}
+            & = e^{(c-1) \expect{T}}.
 \end{align*}
 The first step uses the definition of $T$, and the second is just
-algegra.  The third step uses the fact that the expectation of a
+algebra.  The third step uses the fact that the expectation of a
 product of independent random variables is the product of the
-expectations.  (This is where the requirement that the $T_i$ be
-independent is used.)  Then we bound each term using the inquality
+expectations.  This is where the requirement that the $T_i$~be
+independent is used.  Then we bound each term using the inequality
 \[
-    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
+    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}},
 \]
 which is proved in Lemma~\ref{chernoff-lemma2}.  The last steps are
 simplifications using algebra and linearity of expectation.
@@ -1991,47 +1371,154 @@ simplifications using algebra and linearity of expectation.
 \begin{lemma}
 \label{chernoff-lemma2}
 \[
-\expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
+    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
 \]
 \end{lemma}
 
 \begin{proof}
-All summations below range over values $v$ taken on by the random
-variable $T_i$, which are all required to be in the interval $[0, 1]$.
+All summations below range over values $v$ taken by the random
+variable~$T_i$, which are all required to be in the interval~$[0, 1]$.
 \begin{align*}
-\expect{c^{T_i}} & = \sum c^v \pr{T_i = v} \\
-           & \leq \sum (1 + (c-1) v) \pr{T_i = v} \\
-           & = \sum \pr{T_i = v} + (c-1) v \pr{T_i = v} \\
-           & = \sum \pr{T_i = v} + \sum(c-1) v \pr{T_i = v} \\
-           & = 1 + (c - 1) \sum v \pr{T_i = v} \\
+\expect{c^{T_i}} & = \sum_v c^v \prob{T_i = v} \\
+           & \leq \sum_v (1 + (c-1) v) \prob{T_i = v} \\
+           & = \sum_v \prob{T_i = v} + (c-1) v \prob{T_i = v} \\
+           & = \sum_v \prob{T_i = v} + \sum(c-1) v \prob{T_i = v} \\
+           & = 1 + (c - 1) \sum_v v \prob{T_i = v} \\
            & = 1 + (c - 1) \expect{T_i} \\
-           & \leq e^{(c - 1) \expect{T_i}}
+           & \leq e^{(c - 1) \expect{T_i}}.
 \end{align*}
 The first step uses the definition of expectation.  The second step
-relies on the inequality $c^v \leq 1 + (c-1) v$, which holds for all v
-in $[0,1]$ and $c \geq 1$.  This follows from the general principle
-that a \idx{convex function}, namely $c^v$, is less than the linear
-function, $1 + (c-1) v$, between their points of intersection, namely
-$v = 0$ and $1$.  This inequality is why the variables $T_i$ are
-restricted to the interval $[0, 1]$.  We then multiply out inside the
-summation and split into two sums.  The first sum adds the
+relies on the inequality $c^v \leq 1 + (c-1) v$, which holds for all
+$v$ in~$[0,1]$ and~$c \geq 1$.  This follows from the general
+principle that a \idx{convex function}, namely $c^v$, is less than the
+linear function, $1 + (c-1) v$, between their points of intersection,
+namely $v = 0$ and $1$.  This inequality is why the variables $T_i$
+are restricted to the interval $[0, 1]$.  We then multiply out inside
+the summation and split into two sums.  The first sum adds the
 probabilities of all possible outcomes, so it is equal to 1.  After
 pulling the constant $c - 1$ out of the second sum, we're left with
 the definition of $\expect{T_i}$.  The final step uses the standard
-inequality $1 + z \leq e^z$, which holds for all real $z$.
+inequality $1 + z \leq e^z$, which holds for all~$z > 0$.
 \end{proof}
 
-\begin{editingnotes}
-Add problems
-\end{editingnotes}
+\subsection{Mutually Independent Events}
 
-\iffalse
+Suppose that we have a collection of mutually independent events $A_1$,
+$A_2$, \dots, $A_n$, and we want to know how many of the events are
+likely to occur.
 
-\begin{problems}
-\classproblems
+Let $T_i$ be the indicator random variable for~$A_i$ and define
+\begin{equation*}
+    p_i = \prob{T_i = 1} = \Prob{A_i}
+\end{equation*}
+for $1 \le i \le n$.  Define
+\begin{equation*}
+    T = T_1 + T_2 + \dots + T_n
+\end{equation*}
+to be the number of events that occur.
 
-\end{problems}
-\fi
+We know from Linearity of Expectation that
+\begin{align*}
+\expect{T}
+    &= \expect{T_1} + \expect{T_2} + \dots + \expect{T_n} \\
+    &= \sum_{i = 1}^n p_i.
+\end{align*}
+This is true even if the events are \emph{not} independent.
+
+By Theorem~\ref{thm:variance_additivity}, we also know that
+\begin{align*}
+\variance{T}
+     &= \variance{T_1} + \variance{T_2} + \dots + \variance{T_n} \\
+     &= \sum_{i = 1}^n p_i (1 - p_i),
+\end{align*}
+and thus that
+\begin{equation*}
+    \sigma_T = \sqrt{ \sum_{i = 1}^n p_i (1 - p_i) }.
+\end{equation*}
+This is true even if the events are only pairwise independent.
+
+Markov's Theorem tells us that for any~$c > 1$,
+\begin{equation*}
+    \prob{ T \ge c \expect{T} } \le \frac{1}{c}.
+\end{equation*}
+If $\expect{T} \le 1$, this means that the probability that at least
+one event occurs is
+\begin{equation*}
+\prob{T \ge 1}
+    \le \expect{T}
+    =   \sum_{i = 1}^n p_i.
+\end{equation*}
+Chebyshev's Theorem gives us the stronger result that
+\begin{equation*}
+    \prob{ \abs{T - \expect{T}} \ge c \sigma_T } \le \frac{1}{c^2}.
+\end{equation*}
+
+The Chernoff Bounds gives us an even stronger result; namely, that for
+any~$c > 0$,
+\begin{equation*}
+\prob{T - \expect{T} \ge c \expect{T}}
+    \le e^{-(c \ln(c) - c + 1) \expect{T}}.
+\end{equation*}
+In this case, the probability of exceeding the mean by~$c \expect{T}$
+decreases as an exponentially small function of the deviation.
+
+By a substitution of variables, we can also use the Chernoff Bound to
+prove that the probability that $T$~is much lower than~$\expect{T}$ is
+also exponentially small.  We conclude this chapter with a special
+case of this result, which we will call Murphy's Law\footnote{This is
+  a reference and deference to the famous saying that ``If something
+  can go wrong, it will go wrong.''}.
+
+\begin{theorem}[Murphy's Law]\label{thm:18ML}
+Let $A_1$, $A_2$, \dots, $A_n$ be mutually independent events.  Let
+$T_i$ be the indicator random variable for~$A_i$ and define
+\begin{equation*}
+    T \eqdef T_1 + T+2 + \dots + T_n
+\end{equation*}
+to be the number of events that occur.  Then
+\begin{equation*}
+    \prob{T = 0} \le e^{- \expect{T}}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+\prob{T = 0}
+    &= \prob{ \bar{A}_1 \land \bar{A}_2 \land \dots \land \bar{A}_n } \\
+    &= \prod_{i = 1}^n \prob{\bar{A}_i}
+        && \text{(by independence of $A_i$)} \\
+    &= \prod_{i = 1}^n (1 - \prob{A_i}) \\
+    &\le \prod_{i = 1}^n e^{-\prob{A_i}}
+        && \text{(since $\forall x. 1 - x \le e^{-x}$)} \\
+    &= e^{-\sum_{i = 1}^n \prob{A_i}} \\
+    &= e^{-\sum_{i = 1}^n \expect{T_i}} 
+        && \text{(since $T_i$ is an indicator for $A_i$)} \\
+    &= e^{-\expect{T}}
+        && \text{(Linearity of Expectation)}
+        & \qedhere
+\end{align*}
+\end{proof}
+
+For example, give any set of mutually independent events, if you
+expect 10 of them to happen, then at least one of them will happen
+with probability at least~$1 - e^{-1}$.  The probability that none of
+them happen is at most~$e_{-10} < 1/22000$.
+
+So if there are a lot of unrelated things that can go wrong and their
+probabilities sum to a number much greater than~1, then
+Theorem~\ref{thm:18ML} proves that some of them surely will go wrong.
+
+This result can help to explain ``coincidences'' or ``acts of God'' or
+crazy events that seem to have been very unlikely to happen.  Such
+events do happen, in part, because there are so many possible unlikely
+events that the sum of their probabilities is greater than~one.  For
+example, someone \emph{does} win the lottery.
+
+In fact, if there are 100,000 random tickets in Pick-4,
+Theorem~\ref{thm:18ML} says that the probability that there is no
+winner is less than~$e^{-10} < 1/22000$.
+
+\section{Problems}
 
 \endinput
 
