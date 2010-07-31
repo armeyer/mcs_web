@@ -1027,7 +1027,7 @@
 
 \newcommand{\diredge}[2]{#1 \to #2}
 \newcommand{\vertices}[1]{V(#1)}
-\newcommand{\edges}[1]{E(G)}
+\newcommand{\edges}[1]{E(#1)}
 
 %% Text -- Abbreviations
 
