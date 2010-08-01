@@ -1091,22 +1091,11 @@
 
 %% Math -- Logic
 
-\if@usecolor@
-    \newcommand{\true}{\textcolor{green}{\ensuremath{\mathbf{T}}}}
-    \newcommand{\false}{\textcolor{red}{\ensuremath{\mathbf{F}}}}
-\else
-    \newcommand{\true}{\ensuremath{\mathbf{T}}}
-    \newcommand{\false}{\ensuremath{\mathbf{F}}}
-\fi
+\newcommand{\true}{\ensuremath{\mathbf{T}}}
+\newcommand{\false}{\ensuremath{\mathbf{F}}}
 
-\if@usecolor@
-    \newcommand{\lgtrue}{\textcolor{green}{\ensuremath{\mathbf{\Large T}}}}
-    \newcommand{\lgfalse}{\textcolor{red}{\ensuremath{\mathbf{\Large F}}}}
-\else
-    \newcommand{\lgtrue}{\ensuremath{\mathbf{\Large T}}}
-    \newcommand{\lgfalse}{\ensuremath{\mathbf{\Large F}}}
-\fi
-
+\newcommand{\lgtrue}{\ensuremath{\mbox{\Large\textbf{T}}}}
+\newcommand{\lgfalse}{\ensuremath{\mbox{\Large\textbf{F}}}}
 
 \newcommand{\True}{\ensuremath{\mathbf{True}}}
 \newcommand{\False}{\ensuremath{\mathbf{False}}}
