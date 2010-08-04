@@ -1028,6 +1028,11 @@
 \newcommand{\diredge}[2]{#1 \to #2}
 \newcommand{\vertices}[1]{V(#1)}
 \newcommand{\edges}[1]{E(#1)}
+\newcommand{\leftbi}[1]{L(#1)}
+\newcommand{\rightbi}[1]{R(#1)}
+\newcommand{\walkv}[1]{\vec{\mathbf{#1}}}
+\newcommand{\catv}[3]{#1\ang{#2}#3}
+
 
 %% Text -- Abbreviations
 
