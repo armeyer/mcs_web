@@ -9,7 +9,7 @@ use File::Basename;
 
 use File::Copy;
 
-use File::Spec::Functions qw(rel2abs catdir);
+use File::Spec::Functions qw(rel2abs catdir catfile);
 
 use Getopt::Long qw(:config no_ignore_case);
 
@@ -36,48 +36,10 @@ my %TRANSLATION = (texttt  => '',
     );
 
 my $ROOT = dirname(rel2abs(dirname $0));
-my $ROOT1 = (dirname $0);
-my $ROOT2 = rel2abs(dirname $0);
-my $ROOT3 = dirname($ROOT2);
-my $ROOT4 = dirname(rel2abs(dirname $0));
 
 my $VIEW_DIR = catdir($ROOT, 'mcs-web');
 
-######################################################################
-##                                                                  ##
-##                           ENVIRONMENT                            ##
-##                                                                  ##
-######################################################################
-
 my $CWD = getcwd();
-
-sub add_to_environment($@) {
-    my $varname = shift;
-    my @values = @_;
-
-    if (nonempty($ENV{$varname})) {
-        push @values, $ENV{$varname};
-    } else {
-        push @values, "";
-    }
-
-    $ENV{$varname} = join ":", @values;
-
-    return;
-}
-
-add_to_environment(TEXINPUTS =>
-                   $CWD,
-                   "$CWD/macros",
-                   $ROOT,
-                   "$ROOT/macros//",
-                   "$ROOT/figures/{final,drafts}//",
-                   "$ROOT/{problems,book}//",
-    );
-
-add_to_environment(TFMFONTS => "$ROOT/macros/mtp2fonts/texmf/fonts/tfm//");
-add_to_environment(T1FONTS  => "$ROOT/macros/mtp2fonts/texmf/fonts/type1//");
-add_to_environment(TEXFONTMAPS => "$ROOT/macros/mtp2fonts/texmf/fonts/map//");
 
 ######################################################################
 ##                                                                  ##
@@ -724,14 +686,6 @@ sub process_chapter($) {
     }
 
     if (-d $VIEW_DIR) {
-	print "$0\n";
-	print "$ROOT1\n";
-	print "$ROOT2\n";
-	print "$ROOT3\n";
-        print "Copying $target_pdf to $ROOT\n";
-        print "$VIEW_DIR\n";
-        print "Copying $target_pdf to $VIEW_DIR\n";
-
         copy($target_pdf, $VIEW_DIR) or do {
             warn "Couldn't copy $target_pdf to $VIEW_DIR: $!\n";
         };
@@ -785,6 +739,65 @@ sub is_note( $ ) {
 
 ######################################################################
 ##                                                                  ##
+##                           ENVIRONMENT                            ##
+##                                                                  ##
+######################################################################
+
+sub add_to_environment($@) {
+    my $varname = shift;
+    my @values = @_;
+
+    push @values, "";
+
+    $ENV{$varname} = join ":", @values;
+
+    return;
+}
+
+sub customize_environment() {
+    my $paths = catfile($ROOT, ".paths");
+
+    open(my $fh, $paths) or do {
+        warn "Can't read file $paths\n";
+
+        die "Unable to continue without custom path information.\n";
+    };
+
+    my %env;
+
+    local $_;
+
+    while (<$fh>) {
+        chomp;
+
+        next if m{\A\s*\z}smx;
+
+        m{\A (\w+): \s* (\S+) \z}smx and do {
+            my $varname = $1;
+            my $path    = $2;
+
+            $path =~ s{<CWD>}{$CWD}g;
+            $path =~ s{<ROOT>}{$ROOT}g;
+
+            push @{ $env{$varname} }, $path;
+
+            next;
+        };
+
+        warn "Invalid .paths line: $_\n";
+    }
+
+    close($fh);
+
+    while (my ($varname, $paths) = each %env) {
+        add_to_environment($varname, @{ $paths });
+    }
+
+    return;
+}
+
+######################################################################
+##                                                                  ##
 ##                               MAIN                               ##
 ##                                                                  ##
 ######################################################################
@@ -805,6 +818,8 @@ if ($OPT{ftl}) {
 }
 
 usage unless @ARGV;
+
+customize_environment();
 
 while (my $chapter = shift) {
     if (is_note($chapter)) {
