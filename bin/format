@@ -35,11 +35,11 @@ my %TRANSLATION = (texttt  => '',
                    textsc  => '',
     );
 
-my $ROOT = dirname(rel2abs(dirname $0));
+my $CWD = getcwd();
+
+my $ROOT = dirname(rel2abs($CWD));
 
 my $VIEW_DIR = catdir($ROOT, 'mcs-web');
-
-my $CWD = getcwd();
 
 ######################################################################
 ##                                                                  ##
@@ -757,11 +757,16 @@ sub add_to_environment($@) {
 sub customize_environment() {
     my $paths = catfile($ROOT, ".paths");
 
+    print STDERR "CWD=$CWD\n";
+    print STDERR "ROOT=$ROOT\n";
+
     open(my $fh, $paths) or do {
         warn "Can't read file $paths\n";
 
         die "Unable to continue without custom path information.\n";
     };
+
+    my $trunk = $ROOT;
 
     my %env;
 
@@ -778,8 +783,17 @@ sub customize_environment() {
 
             $path =~ s{<CWD>}{$CWD}g;
             $path =~ s{<ROOT>}{$ROOT}g;
+            $path =~ s{<TRUNK>}{$trunk}g;
 
-            push @{ $env{$varname} }, $path;
+            if ($varname eq 'TRUNK') {
+                $trunk = rel2abs(catdir($ROOT, $path));
+
+                print STDERR "TRUNK=$trunk\n";
+            } else {
+                push @{ $env{$varname} }, $path;
+
+                print STDERR "$varname: adding $path\n";
+            }
 
             next;
         };
