@@ -291,14 +291,16 @@
     \@esphack
 }
 
-\newcommand{\arm}[1]{%
-    \@bsphack
-    \begingroup
-        \normalbaselines
-        \marginpar{\normalbaselines\textcolor{red}{\textup{[#1---arm]}}}%
-    \endgroup
-    \@esphack
-}
+\newcommand{\arm}[1]{\textcolor{purple}{#1}}
+
+% \newcommand{\arm}[1]{%
+%     \@bsphack
+%     \begingroup
+%         \normalbaselines
+%         \marginpar{\normalbaselines\textcolor{red}{\textup{[#1---arm]}}}%
+%     \endgroup
+%     \@esphack
+% }
 
 \reversemarginpar
 
