@@ -37,6 +37,13 @@
     }%    
 }
 
+\newif\ifftlbranch
+\ftlbranchfalse
+
+\DeclareOption{ftlbranch}{%
+    \ftlbranchtrue
+}
+
 \renewcommand{\normalbaselines}{%
     \renewcommand{\baselinestretch}{1}%
 %    \normalbaselineskip=\baselinestretch\normalbaselineskip
@@ -371,8 +378,10 @@
         \if@filesw
             \immediate\closeout\@chapprobs
         \fi
-        \@input@{#1.probs}%
-        \clearpage
+        \ifftlbranch\else
+            \@input@{#1.probs}%
+            \clearpage
+        \fi
         \@writeckpt{#1}%
         \if@filesw
             \immediate\closeout\@partaux
@@ -1023,7 +1032,11 @@
 
 % Reverted from en-dash to em-dash under duress.
 
-\newcommand{\edge}[2]{#1\text{---}#2}
+\ifftlbranch
+    \newcommand{\edge}[2]{\{#1, #2\}}
+\else
+    \newcommand{\edge}[2]{#1\text{---}#2}
+\fi
 
 %\newcommand{\edge}[2]{\{#1, #2\}}
 
@@ -1850,6 +1863,12 @@
 %%                             PROBLEMS                             %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifftlbranch
+    \def\problemsection{\endinput}
+\else
+    \def\problemsection{\section{Problems}}
+\fi
 
 % %% This is based on the verbatimwrite environment from verbatim.dtx.
 
