@@ -298,6 +298,15 @@
     \@esphack
 }
 
+\newcommand{\ftl}[1]{%
+    \@bsphack
+    \begingroup
+        \normalbaselines
+        \marginpar{\textcolor{red}{\textup{[#1---ftl]}}}%
+    \endgroup
+    \@esphack
+}
+
 \newcommand{\arm}[1]{\textcolor{purple}{#1}}
 
 % \newcommand{\arm}[1]{%
@@ -912,8 +921,12 @@
 
 % \renewcommand{\eqref}[1]{Equation~\ref{#1}}
 
-\newcommand{\stirling}[1]{%
-    \sqrt{2\pi #1} \paren{\frac{#1}{e}}^{#1}
+\newcommand{\stirling}{%
+    \@ifstar{\@stirling()}{\@stirling\@empty\@empty}%
+}
+
+\newcommand{\@stirling}[3]{%
+    \sqrt{2\pi #1#3#2} \paren{\frac{#3}{e}}^{#3}
 }
 
 \newenvironment{series}{%
@@ -1097,9 +1110,9 @@
 \newcommand{\setcomp}{}
 \let\setcomp\bar
 
-%% ARGH!!!
-
-\renewcommand{\bar}[1]{\overline{#1}}
+%% You can't use \overline for single characters.
+% 
+% \renewcommand{\bar}[1]{\overline{#1}}
 
 \newcommand{\mop}[1]{\mathop{#1}}
 \newcommand{\mbin}[1]{\mathbin{#1}}
