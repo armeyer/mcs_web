@@ -1189,6 +1189,8 @@
 %% Math -- Set theory
 
 \newcommand{\set}[1]{\{#1\}}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+
 \newcommand{\card}[1]{|#1|}
 \newcommand{\lnth}[1]{|#1|}
 \newcommand{\ident}[1]{\text{Id}_{#1}}
