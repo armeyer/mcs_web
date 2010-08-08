@@ -1231,7 +1231,7 @@
 \newcommand{\indegr}[1]{\operatorname{indegree}(#1)}
 \newcommand{\outdegr}[1]{\operatorname{outdegree}(#1)}
 
-%\newcommand{\dist}{\operatorname{d}}
+\newcommand{\dist}{\operatorname{dist}}
 \newcommand{\dstuv}[3][]{\operatorname{\text{dist}_{#1}}\left(#2,#3\right)}
 \newcommand{\minplus}{\mathbin{\cdot_{\min,+}}}
 
