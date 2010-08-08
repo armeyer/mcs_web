@@ -1367,7 +1367,7 @@
 
 \let\pr\prob
 
-\newcommand{\Prob}[1]{\Pr\left[#1\right]}
+\newcommand{\Prob}[1]{\Pr\left[\strut#1\right]}
 \newcommand{\Prsub}[2]{\Pr_{#2}\left[#1\right]}
 
 \newlength{\strutheight}
