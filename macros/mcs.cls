@@ -454,13 +454,17 @@
 
 \newcommand{\idx}[1]{\index{#1}#1}
 
-\newcommand{\printchapindex}[1]{%
-    \begingroup
-        \def\@indextype{default}%
-        \let\index@prologue\@empty
-        \@input@{#1.ind}%
-    \endgroup
-}
+\ifftlbranch
+    \newcommand{\printchapindex}[1]{}
+\else
+    \newcommand{\printchapindex}[1]{%
+        \begingroup
+            \def\@indextype{default}%
+            \let\index@prologue\@empty
+            \@input@{#1.ind}%
+        \endgroup
+    }
+\fi
 
 \newcommand{\printchapglossary}[1]{%
     \begingroup
@@ -1885,7 +1889,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \ifftlbranch
-    \def\problemsection{\endinput}
+    \def\problemsection{\clearpage\endinput}
 \else
     \def\problemsection{\section{Problems}}
 \fi
