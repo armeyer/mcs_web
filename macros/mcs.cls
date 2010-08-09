@@ -293,7 +293,7 @@
     \@bsphack
     \begingroup
         \normalbaselines
-        \marginpar{\textcolor{red}{\textup{[#1---dmj]}}}%
+        \marginpar{\textcolor{orange}{\textup{[#1---dmj]}}}%
     \endgroup
     \@esphack
 }
@@ -302,7 +302,7 @@
     \@bsphack
     \begingroup
         \normalbaselines
-        \marginpar{\textcolor{red}{\textup{[#1---ftl]}}}%
+        \marginpar{\textcolor{blue}{\textup{[#1---ftl]}}}%
     \endgroup
     \@esphack
 }
@@ -1233,7 +1233,8 @@
 
 \newcommand{\dist}{\operatorname{dist}}
 \newcommand{\dstuv}[3][]{\operatorname{\text{dist}_{#1}}\left(#2,#3\right)}
-\newcommand{\minplus}{\mathbin{\cdot_{\min,+}}}
+\newcommand{\minplusop}{\underset{\text{min+}}{\cdot}}
+\newcommand{\minplus}{\text{min+}}
 
 \newcommand{\dpth}[1]{\operatorname{depth}\left(#1\right)}
 
