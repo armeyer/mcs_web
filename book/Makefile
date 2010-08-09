@@ -8,6 +8,6 @@ partIII: counting_intro asymptotics recurrences counting \
 	generating_functions infinity
 
 partIV: probability_intro probability conditional_probability \
-	random_variables expectation deviation random_processes
+	random_variables expectation deviation random_walks
 
 chapters: partI partII partIII partIV
