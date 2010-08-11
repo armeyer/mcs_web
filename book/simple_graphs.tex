@@ -3330,40 +3330,39 @@ to be at least one gray edge.  In fact, there will have to be at least
 as many gray edges as there are components with the same color.
 Here's the punchline:
 
-\begin{theorem}\label{thm:edgeextends}
-An edge extends a pre-MST $F$ iff it is a minimum weight gray edge in
+\begin{lemma}\label{lem:edgeextends}
+An edge extends a pre-MST $F$ if it is a minimum weight gray edge in
 some solid coloring of $F$.
-\end{theorem}
+\end{lemma}
 So to extend a pre-MST, choose any solid coloring, find the gray
 edges, and among them choose one with minimum weight.  Each of these
 steps is easy to do, so it is easy to keep extending and arrive at an
 MST.  For example, here are two possible algorithms based on
-Theorem~\ref{thm:edgeextends}:
+Lemma~\ref{lem:edgeextends}:
 
 \begin{algorithm}\label{alg:MST1}
+  Grow a tree one edge at a time by adding a minimum weight edge
+  among the edges that have exactly one endpoint in the tree.
+\end{algorithm}
 
 \begin{editingnotes}
 Is this Kruskal or Prin?
 \arm{rephrased}
 \end{editingnotes}
 
-  Grow a tree one edge at a time by adding a minimum weight edge
-  among the edges that have exactly one endpoint in the tree.
-\end{algorithm}
 This is the algorithm that comes from coloring the growing tree white
 and all the vertices not in the tree black.  Then the gray edges are
 the ones with exactly one endpoint in the tree.
 
 \begin{algorithm}\label{alg:MST2}
 
+  Grow a forest one edge at a time by adding a minimum-weight edge
+  among the edges with endpoints in different connected components.
+\end{algorithm}
 \begin{editingnotes}
 Then this would be Prin or Kruskal?
 \arm{rephrased}
 \end{editingnotes}
-
-  Grow a forest one edge at a time by adding a minimum-weight edge
-  among the edges with endpoints in different connected components.
-\end{algorithm}
 The edges between different component are exactly the edges that are
 gray under some solid coloring, namely any coloring where the
 components it connects have different colors.
@@ -3414,20 +3413,80 @@ each of these spannning trees by suitable tie-breaking.
 \end{editingnotes}
 
 These are examples of greedy approaches to optimization.  Sometimes it
-works and sometimes it doesn't.  The good news is that it works to
-find the MST\@.
+works and sometimes it doesn't.  The good news is that it works to find
+the MST\@.  So we can be sure that the MST for our example graph has
+weight~17 since it was produced by Algorithm~\ref{alg:MST2}.  And we have
+a fast algorithm for finding a minimum-weight spanning tree for any graph.
 
-Ok, there is one last chore to do to wrap up this story, namely, to
-prove that extending edges are the same as minimal gray edges.
+Ok, to wrap up this story, all that's left is the proof that extending
+edges are the same as minimal gray edges.  This might sound like a chore,
+but it just uses the same reasoning we use to be sure there will be a gray
+edge when you need it.
 
-\begin{proof} (of Theorem~\ref{thm:edgeextends})
+\begin{proof} (of Lemma~\ref{lem:edgeextends})
 
+  Let $F$ be a pre-MST that is a subgraph some some MST $M$ of $G$, and
+  suppose $e$ is a minimum weight gray edge under some solid coloring of
+  $F$.  We want to show that $F+e$ is also a pre-MST.
+
+  If $e$ happens to be an edge of $M$, then $F+e$ remains a subgraph of
+  $M$, and so is a pre-MST.
+
+  The other case is when $e$ is not an edge of $M$.  Then since $M$ is a
+  spannning tree, $M+e$ is a spanning subgraph.  Also $M$ has a path
+  $\walkv{p}$ between the different colored endpoints of $e$, so $M+e$ has
+  a cycle consisting of $e$ together with $walkv{p}$.  Now $\walkv{p}$ has
+  both a black endpoint and a white one, so it must contain some gray edge
+  $g \neq e$.  The trick is to remove $g$ from $M+e$ to obtain a subgraph
+  $M+e-g$.  We claim that $M+e-g$ is an MST that contains $F+e$, which
+  shows that $e$ extends $F$.
+
+\begin{editingnotes}
+  CLR illustrate $M+e-g$ in a figure, but I don't think the figure helped
+  --ARM.
+\end{editingnotes}
+
+To being with, $M+e-g$ contains $F+e$ because gray edges are by definition
+not edges of $F$.  Also, since the weight $w(e)$ is minimum, $w(M+e-g)$ is
+no greater than $w(M)$, which by definition is the minimum weight of a
+spanning tree.  So to confirm that $M+e-g$ is an MST, we just have to show
+that it is a spanning tree,
+
+But $M+e$ is a spanning subgraph, and $g$ is on a cycle of $M+e$, so by
+Lemma~\ref{cutiffcycle}, removing $g$ won't disconnect anything, which
+means that $M+e-g$ is still a spanning subgraph.  Moreover, $M+e-g$ has
+the same number of edges as $M$, so Lemma~\ref{iffe=v-1} confirms that it
+must be a tree, as claimed.
+
+\begin{editingnotes}
+  Hmm, this came out a little longer than I expected --ARM.
+\end{editingnotes}
 
 \end{proof}
 
+Its interesting that the converse of Lemma~\ref{lem:edgeextends} is also
+true.  We didn't need this fact since the Lemma is enough to justify all
+the extension based algorithms that come up.  But the equivalence of
+extending edges and minimumn weight gray edges means that theoretically
+\emph{every} extension based construction of MST's can be implemented as a
+search for gray edges.
 
+\begin{editingnotes}
+Insert the problem: prove the converse of Lemma~\ref{lem:edgeextends}.
+With some subparts, the problem should be manageable.
+\end{editingnotes}
 
+Another interesting fact falls out of the proof of Lemma~\ref{lem:edgeextends}):
+\begin{corollary}\label{cor:uniqMST}
+If all edges in a weighted graph have distinct weights, then the graph has
+a \emph{unique} MST.
+\end{corollary}
 
+The proof of Corollary~\ref{cor:uniqMST} will be given in a problem.
+
+\begin{editingnotes}
+\arm{Make sure to include the problem and insert ref above.}
+\end{editingnotes}
 
 \iffalse  FTL's earlier draft
 
@@ -3560,11 +3619,6 @@ Since $S \union \set{e} \subseteq \edges{T^{**}}$, we have shown that
   the subgraph it builds.
 \end{proof}
 \fi
-
-So now we know for sure that the MST for our example graph has
-weight~17 since it was produced by Algorithm~\ref{alg:MST2}.  And we
-have a fast algorithm for finding a minimum-weight spanning tree for
-any graph.
 
 %% Trees Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
