@@ -1,5 +1,6 @@
 SOLUTIONSPOLICY = .solutionspolicy
 EDITNOTEPOLICY  = .editnotepolicy
+PROBLEMSPOLICY  = .problemspolicy
 
 SUBDIRS = book problems spring10
 
@@ -15,6 +16,7 @@ clean veryclean:
 showpolicy:
 	@ cat $(SOLUTIONSPOLICY)
 	@ cat $(EDITNOTEPOLICY)
+	@ cat $(PROBLEMSPOLICY)
 
 .PHONY: shownotes
 
@@ -30,6 +32,21 @@ hidenotes:
 
 togglenotes:
 	sed -i -e "s/false/true/;t;s/true/false/" $(EDITNOTEPOLICY)
+
+.PHONY: showproblems
+
+showproblems:
+	echo '\showproblemstrue' > $(PROBLEMSPOLICY)
+
+.PHONY: hideproblems
+
+hideproblems:
+	echo '\showproblemsfalse' > $(PROBLEMSPOLICY)
+
+.PHONY: toggleproblems
+
+toggleproblems:
+	sed -i -e "s/false/true/;t;s/true/false/" $(PROBLEMSPOLICY)
 
 .PHONY: showsolutions
 

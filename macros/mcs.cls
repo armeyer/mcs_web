@@ -10,6 +10,9 @@
 
 \def\currentsemester{none}
 
+\newif\ifshowproblems
+\showproblemstrue
+
 \newif\ifshowsolutions
 \showsolutionsfalse
 
@@ -32,8 +35,7 @@
         \renewcommand{\baselinestretch}{3}%
 %        \normalbaselineskip=\baselinestretch\normalbaselineskip
         \baselineskip=\baselinestretch\baselineskip
-        \let\problems\comment
-        \let\endproblems\endcomment
+        \showproblemsfalse
     }%    
 }
 
@@ -42,6 +44,7 @@
 
 \DeclareOption{ftlbranch}{%
     \ftlbranchtrue
+    \showproblemsfalse
 }
 
 \renewcommand{\normalbaselines}{%
@@ -1889,11 +1892,7 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\ifftlbranch
-    \def\problemsection{\clearpage\endinput}
-\else
-    \def\problemsection{\section{Problems}}
-\fi
+\def\problemsection{\section{Problems}}
 
 % %% This is based on the verbatimwrite environment from verbatim.dtx.
 
@@ -2301,6 +2300,14 @@
 }
 
 \AtBeginDocument{%
+    \ifshowproblems
+        \typeout{^^JProblems *INCLUDED*.^^J}%
+    \else
+        \typeout{^^JProblems *NOT INCLUDED*.^^J}%
+        \let\problems\comment
+        \let\endproblems\endcomment
+        \def\problemsection{\clearpage\endinput}%
+    \fi
     \ifshowsolutions
         \typeout{^^JSolutions *INCLUDED*.^^J}%
         \let\insolutions\@firstofone
@@ -3251,6 +3258,14 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 \IfFileExists{.editnotepolicy}{%
     \input{.editnotepolicy}%
 }{}
+
+\IfFileExists{.problemspolicy}{%
+    \input{.problemspolicy}%
+}{}
+
+%% Don't let the trunk's .problemspolicy override ftlbranch
+
+\ifftlbranch\showproblemsfalse\fi
 
 \AtBeginDocument\decideaboutsolutions
 

@@ -41,6 +41,7 @@ veryclean: clean
               shownotes hidenotes togglenotes
 
 showpolicy showsolutions staffsolutions hidesolutions \
+              hideproblems showproblems toggleproblems \
               togglesolutions asksolutions\
               shownotes hidenotes togglenotes:
 	$(MAKE) -C .. $@
