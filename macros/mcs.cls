@@ -310,7 +310,7 @@
     \@esphack
 }
 
-\newcommand{\arm}[1]{\textcolor{purple}{#1}}
+\newcommand{\arm}[1]{\textcolor{Maroon}{#1---ARM}}
 
 % \newcommand{\arm}[1]{%
 %     \@bsphack
@@ -1236,7 +1236,7 @@
 
 \newcommand{\dist}{\operatorname{dist}}
 \newcommand{\dstuv}[3][]{\operatorname{\text{dist}_{#1}}\left(#2,#3\right)}
-\newcommand{\minplusop}{\underset{\text{min+}}{\cdot}}
+\newcommand{\minplusop}{\!\!\negthickspace\underset{\text{min+}}{\cdot}\negthickspace\!\!}
 \newcommand{\minplus}{\text{min+}}
 
 \newcommand{\dpth}[1]{\operatorname{depth}\left(#1\right)}

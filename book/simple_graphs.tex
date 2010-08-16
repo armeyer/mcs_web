@@ -1682,6 +1682,7 @@ Another simple example is a complete graph $K_n$:
 \]
 since no two vertices can have the same color.
 
+\arm{paragraph below  and Lemma~\ref{2color-iff-bip} inserted}
 Being bipartite is another property closely related to colorability.  If a
 graph is bipartite, then you can color it with 2 colors usiing one color
 for the nodes on the ``left'' and a second color for the nodes on the
@@ -2198,7 +2199,7 @@ sum of the products by the minimum.
 \begin{definition}\label{def:minplus}
   The $\minplus$ product of two $n\times n$ matrices $W$ and $M$ with
   entries in $\reals\union \set{\infty}$ is the $n \times n$ matrix
-  $(W\minplusop M)$ whose $ij$ entry is
+  $W\minplusop M$ whose $ij$ entry is
 \[
 (W\minplusop M )_{ij} \eqdef \min \set{W_{ik} + M_{kj} \suchthat 1 \leq k \leq n}\, .
 \]
@@ -2207,7 +2208,7 @@ sum of the products by the minimum.
 \begin{theorem}\label{thm:weightmatrix}
   If $W$ is the minimum weight matrix for length $k$ walks in a weighted
   graph $G$, and $M$ is the minimum weight matrix for length $m$ walks,
-  then then $(W\minplusop M)$ is the minimum weight matrix for length $k+m$
+  then then $W\minplusop M$ is the minimum weight matrix for length $k+m$
   walks.
 \end{theorem}
 
@@ -2231,15 +2232,15 @@ sum of the products by the minimum.
               \min_{x \in \vertices{G}} W_{ux}+M_{xv}\, .
 \end{equation}
 But the right hand side of~\eqref{ln+nuv} is precisely the definition of
-$(W\minplusop M)_{uv}$.  Thus, $(W\minplusop M)$ is indeed the minimum weight
+$(W\minplusop M)_{uv}$.  Thus, $W\minplusop M$ is indeed the minimum weight
 matrix for walks of length $k+m$.
 \end{proof}
 
 Now Theorem~\ref{thm:weightmatrix} implies that the $k$th $\minplus$ power
 of $A_G$, that is,
 \[
-(A_G)^{k, \minplus} \eqdef \underbrace{\paren{A_G \minplusop \paren{A_G
-      \minplusop \paren{\cdots \paren{A_G \minplusop A_G}} }}}_{k\ A_G\text{'s}},
+(A_G)^{k, \minplus} \eqdef \underbrace{\paren{A_G\ \minplusop\ \paren{A_G\
+      \minplusop\ \paren{\cdots \paren{A_G\ \minplusop\ A_G}} }}}_{k\ A_G\text{'s}},
 \]
 is the minimum weight matrix for the length $k$ walks.
 
@@ -2372,8 +2373,11 @@ just say ``\idx{connected}.''\footnote{There is an obvious definition
 For example, in the graph in Figure~\ref{dg}, vertices $c$ and~$e$ are
 3 connected, $b$ and~$e$ are 2 connected, $g$ and $e$ are 1 connected,
 and no vertices are 4 connected.  The graph as a whole is only 1
-connected.  A complete graph, $K_n$, is $(n-1)$ connected.  Every
-cycle is 2-connected.
+connected.  A complete graph, $K_n$, is $(n-1)$ connected.
+\begin{editingnotes}
+\arm{inserted cycles and cut edges }
+\end{editingnotes}
+Every cycle is 2-connected.
 
 The idea of a \emph{cut edge} is a useful way to explain 2-connectivity.
 \begin{definition}
@@ -3345,10 +3349,10 @@ Here's the punchline:
 An edge extends a pre-MST $F$ if it is a minimum weight gray edge in
 some solid coloring of $F$.
 \end{lemma}
-So to extend a pre-MST, choose any solid coloring, find the gray
-edges, and among them choose one with minimum weight.  Each of these
-steps is easy to do, so it is easy to keep extending and arrive at an
-MST.  For example, here are two possible algorithms based on
+So to extend a pre-MST, choose any solid coloring, find the gray edges,
+and among them choose one with minimum weight.  Each of these steps is
+easy to do, so it is easy to keep extending and arrive at an MST.  For
+example, here are three nown algorithms that are explained by
 Lemma~\ref{lem:edgeextends}:
 
 \begin{algorithm}\label{alg:MST1}
@@ -3360,16 +3364,15 @@ Lemma~\ref{lem:edgeextends}:
 Is this Kruskal or Prin?
 \arm{rephrased}
 \end{editingnotes}
-
 This is the algorithm that comes from coloring the growing tree white
 and all the vertices not in the tree black.  Then the gray edges are
 the ones with exactly one endpoint in the tree.
 
 \begin{algorithm}\label{alg:MST2}
-
   Grow a forest one edge at a time by adding a minimum-weight edge
   among the edges with endpoints in different connected components.
 \end{algorithm}
+
 \begin{editingnotes}
 Then this would be Prin or Kruskal?
 \arm{rephrased}
@@ -3423,6 +3426,22 @@ each of these spannning trees by suitable tie-breaking.
   but not the other?}
 \end{editingnotes}
 
+
+The coloring that explains Algorithm~\ref{alg:MST1} also justifies a more
+flexible algorithm which has Algorithm~\ref{alg:MST1} a special case:
+\begin{algorithm}\label{alg:MST3}
+  Grow a forest one edge at a time by picking any component and adding a
+  minimum-weight edge among the edges leaving that component.
+\end{algorithm}
+This algorithm allows components that are not too close to grow in
+parallel and independently, which is great for ``distributed'' computation
+where separate processors share the work with limited communication
+between processors.
+
+\begin{editingnotes}
+ref Lynch's book.
+\end{editingnotes}
+
 These are examples of greedy approaches to optimization.  Sometimes it
 works and sometimes it doesn't.  The good news is that it works to find
 the MST\@.  So we can be sure that the MST for our example graph has
@@ -3457,11 +3476,12 @@ edge when you need it.
   --ARM.
 \end{editingnotes}
 
-To being with, $M+e-g$ contains $F+e$ because gray edges are by definition
-not edges of $F$.  Also, since the weight $w(e)$ is minimum, $w(M+e-g)$ is
-no greater than $w(M)$, which by definition is the minimum weight of a
-spanning tree.  So to confirm that $M+e-g$ is an MST, we just have to show
-that it is a spanning tree,
+We begin proving the claim with the observation that $M+e-g$ contains
+$F+e$, which follows because gray edges like $g$ are by definition not
+edges of $F$.  Also, since the weight $w(e)$ is minimum among gray edges,
+$w(M+e-g)$ is at most $w(M)$, the minimum possible weight of a spanning
+tree.  So to confirm that $M+e-g$ is an MST containing $F+e$, we just have
+to show that $M+e-g$ is a spanning tree,
 
 But $M+e$ is a spanning subgraph, and $g$ is on a cycle of $M+e$, so by
 Lemma~\ref{cutiffcycle}, removing $g$ won't disconnect anything, which
@@ -3469,22 +3489,22 @@ means that $M+e-g$ is still a spanning subgraph.  Moreover, $M+e-g$ has
 the same number of edges as $M$, so Lemma~\ref{iffe=v-1} confirms that it
 must be a tree, as claimed.
 
-\begin{editingnotes}
-  Hmm, this came out a little longer than I expected --ARM.
-\end{editingnotes}
-
 \end{proof}
 
-Its interesting that the converse of Lemma~\ref{lem:edgeextends} is also
+\begin{editingnotes}
+  \arm{The proof for converse of Lemma~\ref{lem:edgeextends} that I had on
+    mind to support the following paragraph didn't work.  But I have no
+    counterexample, so the Lemma still might be true.}
+
+It's interesting that the converse of Lemma~\ref{lem:edgeextends} is also
 true.  We didn't need this fact since the Lemma is enough to justify all
 the extension based algorithms that come up.  But the equivalence of
 extending edges and minimumn weight gray edges means that theoretically
 \emph{every} extension based construction of MST's can be implemented as a
 search for gray edges.
 
-\begin{editingnotes}
-Insert the problem: prove the converse of Lemma~\ref{lem:edgeextends}.
-With some subparts, the problem should be manageable.
+\arm{If it's true, insert the problem:} Prove the converse of
+Lemma~\ref{lem:edgeextends}.
 \end{editingnotes}
 
 Another interesting fact falls out of the proof of Lemma~\ref{lem:edgeextends}):
@@ -3496,7 +3516,23 @@ a \emph{unique} MST.
 The proof of Corollary~\ref{cor:uniqMST} will be given in a problem.
 
 \begin{editingnotes}
-\arm{Make sure to include the problem and insert ref above.}
+  \arm{Make sure to include the problem and insert ref above.}
+
+  There are two approaches to proving uniqueness: show that any MST can be
+  the result of Algorithm~\ref{alg:MST1} (also true for
+  Algorithm~\ref{alg:MST2}).  But Algorithm~\ref{alg:MST1} deterministic
+  without ties, so the unique tree its produces must be all the trees
+  there are.
+
+  Second approach by contradiction: assume $M \neq N$ are MST's.  Choose
+  the smallest edge in one and not the other, say $e \in M-N$.  Then $N+e$
+  has a cycle with a larger edge $g$, so $N+e-g$ will be a smaller weight
+  MST than $N$ by the same reasoning as proof of
+  Lemma~\ref{lem:edgeextends}.
+\end{editingnotes}
+
+\begin{editingnotes}
+  CLR have lots of great exercises about all this.
 \end{editingnotes}
 
 \iffalse  FTL's earlier draft
