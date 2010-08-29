@@ -1821,6 +1821,8 @@
 \newtheorem{axiom}[theorem]{Axiom}
 \newtheorem*{axiom*}{Axiom}
 
+\newtheorem*{caveat}{Caveat}
+
 %% REMARK-LIKE
 
 \theoremstyle{remark}

@@ -922,6 +922,11 @@ where $\alpha$~is a number between 0 and~1.
 \binom{n}{\alpha n}
         \sim \frac{2^{n H(\alpha)}}{\sqrt{2 \pi \alpha (1 - \alpha) n}}
 \end{equation}
+and
+\begin{equation}\label{eqn:17A3}
+\binom{n}{\alpha n} < \frac{ 2^{n H(\alpha)} }
+                           { \sqrt{2 \pi \alpha (1 - \alpha) n} }
+\end{equation}
 where $H(\alpha)$ is the \term{entropy function}\footnote{$\log(x)$
   means $\log_2(x)$.}
 \begin{equation*}
@@ -929,13 +934,12 @@ H(\alpha) \eqdef \alpha \log\paren{\frac{1}{\alpha}} +
                 (1 - \alpha) \log\paren{\frac{1}{1 - \alpha}}.
 \end{equation*}
 Moreover, if $\alpha n > 10$ and $(1 - \alpha) n > 10$, then the left
-and right sides of Equation~\ref{eqn:17BA} differ by at most~2\%.  If
+and right sides of Equation~\ref{eqn:17BA} differ by at most~$2\%$.  If
 $\alpha n > 100$ and $(1 - \alpha) n > 100$, then the difference is at
-most~0.02\%.
+most~$0.2\%$.
 \end{lemma}
 
-%
-The graph of $H$ is shown in Figure~\ref{LN12:entropy}.
+The graph of~$H$ is shown in Figure~\ref{LN12:entropy}.
 
                                 % GNUPLOT: LaTeX picture
 \begin{figure}
@@ -1209,14 +1213,21 @@ f_{n, p}(\alpha n)
             }
             { \sqrt{2 \pi \alpha (1 - \alpha) n} }, \label{LN12:binbnd}
 \end{align}
-where the margins of error in the approximation are the same as in
-Lemma~\ref{LN12:bincoeff-bound}.
+where the margin of error in the approximation is the same as in
+Lemma~\ref{LN12:bincoeff-bound}.  From Equation~\ref{eqn:17A3}, we
+also find that
+\begin{equation}\label{eqn:17A4}
+    f_{n, p}(\alpha n) < \frac{ 2^{n \paren{\alpha
+        \log\paren{\frac{p}{\alpha}} + (1 - \alpha) \log\paren{\frac{1
+          - p}{1 - \alpha}}}} }
+                              { \sqrt{2 \pi \alpha (1 - \alpha) n} }.
+\end{equation}
 
-The formula in Equation~\ref{LN12:binbnd} is as ugly as a bowling
-  shoe, but it's useful because it's easy to evaluate.  For example,
-  suppose we flip a fair coin $n$ times.  What is the probability of
-  getting \emph{exactly} $pn$ heads?  Plugging $\alpha = p$
-  into~Equation~\ref{LN12:binbnd} gives:
+The formula in Equations~\ref{LN12:binbnd} and \ref{eqn:17A4} is as
+ugly as a bowling shoe, but it's useful because it's easy to evaluate.
+For example, suppose we flip a fair coin $n$ times.  What is the
+probability of getting \emph{exactly} $pn$ heads?  Plugging $\alpha =
+p$ into~Equation~\ref{LN12:binbnd} gives:
 %
 \begin{equation*}
 f_{n, p}(pn)
@@ -1297,12 +1308,11 @@ where $p = 1/2$ and $\alpha = 1/4$,
     = \frac{3}{2}.
 \end{equation*}
 Plugging $n = 100$, \ $\alpha = 1/4$, and $p = 1/2$ into
-Equation~\ref{LN12:binbnd}, we find that the probability of at most
-25~heads in 100~coin flips is\footnote{The factor of~1.02 accounts for
-the possible 2\%~error in Equation~\ref{LN12:binbnd}.}
+Equation~\ref{eqn:17A4}, we find that the probability of at most
+25~heads in 100~coin flips is
 \begin{equation*}
 F_{100, 1/2}(25)
-    < 1.02 \cdot \frac{3}{2} \cdot
+    < \frac{3}{2} \cdot
         \frac{  \displaystyle
                 2^{100 \left( \frac{1}{4} \log(2)
                      + \frac{3}{4} \log\paren{\frac{2}{3}} \right) }
@@ -1319,12 +1329,13 @@ probability of flipping \emph{exactly 25} heads.  Thus, flipping
 exactly 25 heads is twice as likely as flipping any number between 0
 and 24!
 
-\noindent \textbf{Caveat}: The upper bound on $F_{n, p}(\alpha n)$ in
-Equation~\ref{eqn:16F7} holds only if $\alpha < p$.  If this is not
-the case in your problem, then try thinking in complementary terms;
-that is, look at the number of tails flipped instead of the number of
-heads.  In fact, this is precisely what we will don in the next
-example.
+\begin{caveat}
+The upper bound on $F_{n, p}(\alpha n)$ in Equation~\ref{eqn:16F7}
+holds only if $\alpha < p$.  If this is not the case in your problem,
+then try thinking in complementary terms; that is, look at the number
+of tails flipped instead of the number of heads.  In fact, this is
+precisely what we will do in the next example.
+\end{caveat}
 
 \subsection{Noisy Channels}
 
@@ -1334,23 +1345,23 @@ that packet losses are independent.  You need to figure out how much
 redundancy (or error correction) to build into your communication
 protocol.  Since redundancy is expensive overheard, you would like to
 use as little as possible.  On the other hand, you never want to be
-caught short.  Would it be safe to for you to assume that in any batch
+caught short.  Would it be safe for you to assume that in any batch
 of 10,000~packets, only 200 (or~2\%) are lost?  Let's find out.
 
 The noisy channel is analogous to flipping $n = 10{,}000$ independent
 coins, each with probability~$p = .01$ of coming up heads, and asking
-for the probability that there are at least $\alpha n$heads
+for the probability that there are at least $\alpha n$~heads
 where~$\alpha = .02$.  Since $\alpha > p$, we cannot use
 Equation~\ref{eqn:16F7}.  So we need to recast the problem by looking
 at the numbers of tails.  In this case, the probability of tails is~$p
 = .99$ and we are asking for the probability of at most $\alpha
 n$~tails where~$\alpha = .98$.
 
-No we can use Equations \ref{LN12:binbnd} and~\ref{eqn:16F7} to find
+Now we can use Equations \ref{eqn:17A4} and~\ref{eqn:16F7} to find
 that the probability of losing~2\% or more of the 10,000~packets is at
 most
 \begin{equation*}
-    1.02 \paren{\frac{1 - .98}{1 - .98/.99}}
+    \paren{\frac{1 - .98}{1 - .98/.99}}
     \frac{ 2^{10000\paren{.98 \log\paren{\frac{.99}{.98}}
                         + .02 \log\paren{\frac{.01}{.02}}} } }
          {\sqrt{2\pi (.98)(1 - .98) 10000}}
@@ -1358,7 +1369,7 @@ most
 \end{equation*}
 This is good news.  It says that planning on at most 2\%~packet loss
 in a batch of 10,000~packets should be very safe, at least for the
-next few centuries.
+next few millennia.
 
 \subsection{Estimation by Sampling}
 
@@ -1376,13 +1387,13 @@ Republican, the pollster reports that 45\% of all Americans will vote
 Republican.  In addition, the pollster will usually also provide some
 sort of qualifying statement such as
 \begin{quote}
-There is a 95\% probability that the poll is accurate to within $\pm
-4$~percentage points.
+``There is a 95\% probability that the poll is accurate to within $\pm
+  4$~percentage points.''
 \end{quote}
 
 The qualifying statement is often the source of confusion and
 misinterpretation.  For example, many people interpret the qualifying
-statement to mean that there is a 98\%~chance that between 41\%
+statement to mean that there is a 95\%~chance that between 41\%
 and~49\% of Americans intend to vote Republican.  But this is wrong!
 The fraction of Americans that intend to vote Republican is a fixed
 (and unknown) value~$p$ that is \emph{not} a random variable.  Since
@@ -1394,14 +1405,15 @@ results of the poll, it is helpful to introduce some notation.
 
 Define~$R_i$ to be the indicator random variable for the $i$th
 contacted American in the sample.  In particular, set $R_i = 1$ if the
-$i$th contacted intends to vote Republican and $R_i = 0$ otherwise.
-For the purposes of the analysis, we will assume that the $i$th
-contacted American is selected uniformly at random (with replacement)
-from the set of all Americans.  This means that someone could be
-contacted twice.  We will also assume that every contacted person
-responds honestly about whether or not they intend to vote Republican
-and that there are only two options---each American intends to vote
-Republican or they don't.  Thus,
+$i$th contacted American intends to vote Republican and $R_i = 0$
+otherwise.  For the purposes of the analysis, we will assume that the
+$i$th contacted American is selected uniformly at random (with
+replacement) from the set of all Americans.\footnote{This means that
+someone could be contacted multiple times.}  We will also assume
+that every contacted person responds honestly about whether or not
+they intend to vote Republican and that there are only two
+options---each American intends to vote Republican or they don't.
+Thus,
 \begin{equation}
     \prob{R_i = 1} = p
 \end{equation}
@@ -1441,10 +1453,10 @@ desired confidence is~.95, and the set being sampled is the set of
 Americans.  It's a good thing that $n$~won't depend on the size of the
 set being sampled---there are over 300 million~Americans!
 
-The task of finding an~$n$ that satisfied Equation~\ref{eqn:17CA} is
-made tractable by observing that $T/n$~has a general binomial
+The task of finding an~$n$ that satisfies Equation~\ref{eqn:17CA} is
+made tractable by observing that $T$~has a general binomial
 distribution with parameters $n$ and~$p$ and then applying Equations
-\ref{LN12:binbnd} and~\ref{eqn:16F7}.  Let's see how this works.
+\ref{eqn:17A4} and~\ref{eqn:16F7}.  Let's see how this works.
 
 Since we will be using bounds on the tails of the binomial
 distribution, we first do the standard conversion
@@ -1455,7 +1467,7 @@ distribution, we first do the standard conversion
 We then proceed to upper bound
 \begin{align}
 \Prob{\abs{T/n - p} > .04}
-    & = \prob{T < (p - .04) n} + \prob{T < (p + .04) n} \notag\\
+    & = \prob{T < (p - .04) n} + \prob{T > (p + .04) n} \notag\\
     &= F_{n, p}((p - 0.4)n) + F_{n, 1-p}((1 - p - .04) n).
         \label{eqn:17CB}
 \end{align}
@@ -1469,7 +1481,7 @@ maximized when~$p = 1/2$ and so
     &\le 2 F_{n, 1/2}(.46n) \notag\\
     &<   2 \paren{\frac{1 - .46}{1 - (.46/.5)}} f_{n, 1/2}(.46n)
         \notag\\
-    &< 13.5 \cdot 1.0002 \cdot
+    &< 13.5 \cdot 
         \frac{ 2^{n \paren{.46 \log\paren{\frac{.5}{.46}}
                          + .54 \log\paren{\frac{.5}{.54}} } } }
              {\sqrt{2\pi \cdot 0.46 \cdot 0.54 \cdot n}} \notag\\
@@ -1478,20 +1490,18 @@ maximized when~$p = 1/2$ and so
 \end{align}
 \endgroup
 The second line comes from Equation~\ref{eqn:16F7} using~$\alpha =
-.46$.  The third line comes from Equation~\ref{LN12:binbnd} and
-includes the .02\%~error factor (1.0002) on the assumption
-that~$\alpha n > 100$.
+.46$.  The third line comes from Equation~\ref{eqn:17A4}.
 
 Equation~\ref{eqn:17CD} provides bounds on the confidence of the poll
 for different values of~$n$.  For example, if~$n = 665$, the bound in
-Equation~\ref{eqn:17CD} evaluates to~$.04991\dots$.  Hence, if the
+Equation~\ref{eqn:17CD} evaluates to~$.04978\dots$.  Hence, if the
 pollster contacts 665~Americans, the poll will be accurate to within
 $\pm 4$~percentage points with at least 95\%~probability.
 
 Since the bound in Equation~\ref{eqn:17CD} is exponential in~$n$, the
 confidence increases greatly as $n$~increases.  For example, if $n =
 6{,}650$ Americans are contacted, the poll will be accurate to within
-$\pm 4$~points with probability at least~$1 - 8 \cdot 10^{-1}$.  Of
+$\pm 4$~points with probability at least~$1 - 10^{-10}$.  Of
 course, most pollsters are not willing to pay the added cost of
 polling 10~times as many people when they already have a confidence
 level of~95\% from polling 665~people.
