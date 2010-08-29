@@ -301,6 +301,8 @@
     \@esphack
 }
 
+\newcommand{\dmjadd}{\textcolor{orange}}
+
 \newcommand{\ftl}[1]{%
     \@bsphack
     \begingroup
