@@ -986,7 +986,12 @@
 
 \newenvironment{inlinesidebar}[1][]{%
         \cbstart
-        \medskip
+        \if###1##
+            \medskip
+        \else
+            \noindent\textbf{\Large#1}\par
+            \smallskip
+        \fi
 }{%
         \medskip
         \cbend
@@ -1077,10 +1082,8 @@
 % \newcommand{\ie}{\emph{i.e.},\xspace}  %avoid
 % \newcommand{\eg}{\emph{e.g.},\xspace}  %avoid
 
-% Temporarily highlight these for editing purposes.
-
-\newcommand{\ie}{\textcolor{red}{that is,}\xspace}
-\newcommand{\eg}{\textcolor{red}{for example,}\xspace}
+\newcommand{\ie}{that is,\xspace}
+\newcommand{\eg}{for example,\xspace}
 
 \newcommand{\etc}{etc.\@\xspace}
 
