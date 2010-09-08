@@ -2545,8 +2545,10 @@
 
 
 \newcommand{\coursecopyright}{%
-\symbolfootnote[0]{Copyright~\copyright~\coursecopyrightyear, 
-    \coursecopyrightnames. All rights reserved.}}
+    \symbolfootnote[0]{Copyright~\copyright~\coursecopyrightyear, 
+    \coursecopyrightnames. All rights reserved.}%
+    \symbolfootnote[0]{Illustrations by Geoffrey Allen Hyche.}%
+}
 
 \iffalse
 
