@@ -296,7 +296,9 @@
     \@bsphack
     \begingroup
         \normalbaselines
-        \marginpar{\textcolor{orange}{\textup{[#1---dmj]}}}%
+        \if@figuredraft@
+            \marginpar{\textcolor{orange}{\textup{[#1---dmj]}}}%
+        \fi
     \endgroup
     \@esphack
 }
@@ -307,12 +309,18 @@
     \@bsphack
     \begingroup
         \normalbaselines
-        \marginpar{\textcolor{blue}{\textup{[#1---ftl]}}}%
+        \if@figuredraft@
+            \marginpar{\textcolor{blue}{\textup{[#1---ftl]}}}%
+        \fi
     \endgroup
     \@esphack
 }
 
-\newcommand{\arm}[1]{\textcolor{Maroon}{#1---ARM}}
+\newcommand{\arm}[1]{%
+    \if@figuredraft@
+        \textcolor{Maroon}{#1---ARM}%
+    \fi
+}
 
 % \newcommand{\arm}[1]{%
 %     \@bsphack
@@ -928,6 +936,13 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\XasWideAsY}[2]{%
+    \begingroup
+        \setbox\@tempboxa=\hbox{#2}%
+        \hbox to \wd\@tempboxa{\hss#1\hss}%
+    \endgroup
+}
+
 % \renewcommand{\eqref}[1]{Equation~\ref{#1}}
 
 \newcommand{\stirling}{%
@@ -1123,9 +1138,11 @@
 \newcommand{\setcomp}{}
 \let\setcomp\bar
 
-%% You can't use \overline for single characters.
-% 
-% \renewcommand{\bar}[1]{\overline{#1}}
+%% This is ugly, but we'll argue about it later.
+
+\renewcommand{\bar}[1]{\overline{#1}}
+
+\let\setcomp\bar
 
 \newcommand{\mop}[1]{\mathop{#1}}
 \newcommand{\mbin}[1]{\mathbin{#1}}
@@ -1397,7 +1414,7 @@
 \newcommand{\expect}[1]{\Ex[#1]}
 \newcommand{\expectsq}[1]{\Ex^2[#1]}
 
-\newcommand{\Expect}[1]{\Ex\left[#1\right]}
+\newcommand{\Expect}[1]{\Ex\left[\strut#1\right]}
 \newcommand{\Expectsq}[1]{\Ex^2\left[#1\right]}
 
 \newcommand{\expcond}[2]{\expect{#1\mid#2}}
@@ -1475,10 +1492,10 @@
 
 \setchessboard{smallboard,showmover=false}
 
-% \newcommand{\pawn}{\ensuremath{P}}
-% \newcommand{\bishop}{\ensuremath{B}}
-% \newcommand{\knight}{\ensuremath{N}}
-% \newcommand{\rook}{\ensuremath{R}}
+\newcommand{\PAWN}{\ensuremath{P}}
+\newcommand{\BISHOP}{\ensuremath{B}}
+\newcommand{\KNIGHT}{\ensuremath{N}}
+\newcommand{\ROOK}{\ensuremath{R}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -1805,6 +1822,8 @@
 
 \newtheorem{rul}[theorem]{Rule}
 \newtheorem*{rul*}{Rule}
+
+\newtheorem*{nonrul*}{Non-Rule}
 
 \newtheorem{mathrule}{Rule}
 \newtheorem*{mathrule*}{Rule}
