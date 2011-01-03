@@ -316,11 +316,13 @@
     \@esphack
 }
 
-\newcommand{\arm}[1]{%
-    \if@figuredraft@
-        \textcolor{Maroon}{#1---ARM}%
-    \fi
-}
+\newcommand{\arm}[1]{}
+
+% \newcommand{\arm}[1]{%
+%     \if@figuredraft@
+%         \textcolor{Maroon}{#1---ARM}%
+%     \fi
+% }
 
 % \newcommand{\arm}[1]{%
 %     \@bsphack
