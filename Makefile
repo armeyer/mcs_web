@@ -2,7 +2,7 @@ SOLUTIONSPOLICY = .solutionspolicy
 EDITNOTEPOLICY  = .editnotepolicy
 PROBLEMSPOLICY  = .problemspolicy
 
-xSUBDIRS = book problems spring11 spring10 fall09
+SUBDIRS = book problems spring11 spring10 fall09
 
 .PHONY: clean veryclean
 
