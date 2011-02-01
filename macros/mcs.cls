@@ -2545,30 +2545,35 @@
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
 
+\iffalse
 
 \newcommand{\coursecopyright}{%
     \symbolfootnote[0]{Copyright~\copyright~\coursecopyrightyear, 
     \coursecopyrightnames. All rights reserved.}%
     % \symbolfootnote[0]{Illustrations by Geoffrey Allen Hyche.}%
 }
-
-\iffalse
+\fi
 
 \newcommand{\coursecopyright}{%
 \symbolfootnote[0]{Creative Commons
 \resizebox{!}{0.15in}{\includegraphics{by-nc-sa}}~\coursecopyrightyear, 
     \coursecopyrightnames.}}
-\fi
+
 
 \newcommand{\coursecopyrightyear}{
-  2010%
+  2011%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
+
+\renewcommand{\coursecopyrightyear}{2011}
 
 \newcommand{\coursecopyrightnames}{
 Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightyear}{2010}
+\renewcommand{\coursecopyrightnames}{
+Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
+}
+
 
 % Formats the top matter (title+headers), given the paper supertitle,
 % paper title, and release date. 
