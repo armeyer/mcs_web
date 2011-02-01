@@ -1,0 +1,958 @@
+\chapter{Generating Functions}\label{generating_function_chap}
+
+\idx{Generating Functions} are one of the most surprising and useful
+inventions in Discrete Math.  Roughly speaking, generating functions
+transform problems about \textit{sequences} into problems about
+\textit{functions}.  This is great because we've got piles of mathematical
+machinery for manipulating functions.  Thanks to generating functions, we
+can apply all that machinery to problems about sequences.  In this way, we
+can use generating functions to solve all sorts of counting problems.
+There is a huge chunk of mathematics concerning generating functions, so
+we will only get a taste of the subject.
+
+In this chapter, we'll put sequences in angle brackets to more clearly
+distinguish them from the many other mathematical expressions floating
+around.
+
+The \term{ordinary generating function} for $\ang{g_0, g_1, g_2, g_3
+  \dots}$ is the power series:
+\[
+G(x) = g_0 + g_1 x + g_2 x^2 + g_3 x^3 + \cdots.
+\]
+There are a few other kinds of generating functions in common use,
+but ordinary generating functions are enough to illustrate the power of
+the idea, so we'll stick to them.  So from now on \emph{generating
+  function} will mean the ordinary kind.
+
+A generating function is a ``formal'' power series in the sense that we
+usually regard $x$ as a placeholder rather than a number.  Only in rare
+cases will we actually evaluate a generating function by letting $x$ take
+a real number value, so we generally ignore the issue of \idx{convergence}.
+
+Throughout this chapter, we'll indicate the correspondence between a
+sequence and its generating function with a double-sided arrow as
+follows:
+%
+\[
+\ang{g_0, g_1, g_2, g_3, \dots}
+    \corresp g_0 + g_1 x + g_2 x^2 + g_3 x^3 + \cdots
+\]
+%
+For example, here are some sequences and their generating functions:
+%
+\begin{align*}
+\ang{0, 0, 0, 0, \dots}
+    & \corresp 0 + 0 x + 0 x^2 + 0 x^3 + \cdots = 0 \\
+\ang{1, 0, 0, 0, \dots}
+    & \corresp 1 + 0 x + 0 x^2 + 0 x^3 + \cdots = 1 \\
+\ang{3, 2, 1, 0, \dots}
+    & \corresp 3 + 2 x + 1 x^2 + 0 x^3 + \cdots = 3 + 2 x + x^2
+\end{align*}
+%
+The pattern here is simple: the $i$th term in the sequence (indexing
+from 0) is the coefficient of $x^i$ in the generating function.
+
+Recall that the sum of an infinite \idx{geometric series} is:
+%
+\[
+1 + z + z^2 + z^3 + \cdots = \frac{1}{1 - z}
+\]
+%
+This equation does not hold when $\abs{z} \geq 1$, but as remarked, we
+don't worry about convergence issues.  This formula gives \idx{closed
+  form} generating functions for a whole range of sequences.  For example:
+%
+\[
+\begin{array}{rll}
+\ang{1, 1, 1, 1, \dots}
+    & \corresp 1 + x + x^2 + x^3 + \cdots
+    & = \dfrac{1}{1-x} \\
+\\
+\ang{1, -1, 1, -1, \dots}
+    & \corresp 1 - x + x^2 - x^3 + x^4 - \cdots
+    &  = \dfrac{1}{1+x} \\
+\\
+\ang{1, a, a^2, a^3, \dots}
+    & \corresp 1 + a x + a^2 x^2 + a^3 x^3 + \cdots
+    &  = \dfrac{1}{1-ax} \\
+\\
+\ang{1, 0, 1, 0, 1, 0, \dots}
+    & \corresp 1 + x^2 + x^4 + x^6 + \cdots
+    & = \dfrac{1}{1 - x^2}
+\end{array}
+\]
+
+\section{Operations on Generating Functions}
+
+The magic of generating functions is that we can carry out all sorts
+of manipulations on sequences by performing mathematical operations on
+their associated generating functions.  Let's experiment with various
+operations and characterize their effects in terms of sequences.
+
+\subsection{Scaling}
+
+Multiplying a generating function by a constant scales every term in
+the associated sequence by the same constant.  For example, we noted
+above that:
+%
+\[
+\ang{1, 0, 1, 0, 1, 0, \dots}
+    \corresp 1 + x^2 + x^4 + x^6 + \cdots = \frac{1}{1 - x^2}
+\]
+%
+Multiplying the generating function by 2 gives
+%
+\[
+\frac{2}{1 - x^2} = 2 + 2 x^2 + 2 x^4 + 2 x^6 + \cdots
+\]
+%
+which generates the sequence:
+%
+\[
+\ang{2, 0, 2, 0, 2, 0, \dots}
+\]
+
+\begin{mathrule}[\idx{Scaling Rule}]
+\label{rule:scaling}
+If
+\[\ang{f_0, f_1, f_2, \dots} \corresp F(x),\]
+then
+%
+\[
+\ang{c f_0,\ c f_1,\ c f_2,\ \dots} \corresp c \cdot F(x).
+\]
+\end{mathrule}
+
+The idea behind this rule is that:
+\begin{eqnarray*}
+\ang{c f_0, c f_1, c f_2, \dots}
+    & \corresp & c f_0 + c f_1 x + c f_2 x^2 + \cdots \\
+    & = & c \cdot (f_0 + f_1 x + f_2 x^2 + \cdots) \\
+    & = & c F(x)
+\end{eqnarray*}
+
+\subsection{Addition}
+
+Adding generating functions corresponds to adding the two sequences
+term by term.  For example, adding two of our earlier examples gives:
+%
+\[
+\begin{array}{cccccccccccl}
+  & \langle & 1, & 1, & 1, & 1, & 1, & 1, & \dots & \rangle &
+    \corresp & \dfrac{1}{1-x} \\
+\\
++ & \langle & 1, & -1, & 1, & -1, & 1, & -1, & \dots & \rangle &
+    \corresp & \dfrac{1}{1+x} \\
+\\
+\hline
+\\
+& \langle & 2, & 0, & 2, & 0, & 2, & 0, & \dots & \rangle &
+    \corresp & \dfrac{1}{1-x} + \dfrac{1}{1+x}
+\end{array}
+\]
+%
+We've now derived two different expressions that both generate the
+sequence $\ang{2, 0, 2, 0, \dots}$.  They are, of course, equal:
+%
+\[
+\frac{1}{1-x} + \frac{1}{1+x} = \frac{(1 + x) + (1 - x)}{(1-x)(1+x)} = \frac{2}{1-x^2}
+\]
+
+\begin{mathrule}[\index{Addition Rule (for generating functions)}Addition Rule]
+\label{rule:addition}
+If
+%
+\begin{align*}
+\ang{f_0, f_1, f_2, \dots} & \corresp F(x), & \text{and} \\
+\ang{g_0, g_1, g_2, \dots} & \corresp G(x),
+\end{align*}
+%
+then
+%
+\[
+\ang{f_0 + g_0,\ f_1 + g_1,\ f_2 + g_2,\ \dots}
+    \corresp F(x) + G(x).
+\]
+\end{mathrule}
+
+The idea behind this rule is that:
+\begin{eqnarray*}
+\ang{f_0 + g_0,\ f_1 + g_1,\ f_2 + g_2,\ \dots}
+    & \corresp & \sum_{n=0}^\infty (f_n + g_n) x^n \\
+    & = & \paren{\sum_{n=0}^\infty f_n x^n} +
+        \paren{\sum_{n=0}^\infty g_n x^n} \\
+    & = & F(x) + G(x)
+\end{eqnarray*}
+
+\subsection{Right Shifting}
+
+Let's start over again with a simple sequence and its generating
+function:
+%
+\[
+\ang{1, 1, 1, 1, \dots} \corresp \frac{1}{1-x}
+\]
+%
+Now let's \term{right-shift} the sequence by adding $k$ leading
+zeros:
+%
+\begin{eqnarray*}
+\langle\underbrace{0, 0, \dots, 0}_{\text{$k$ zeroes}}, 1, 1, 1, \dots\rangle
+        & \corresp & x^k + x^{k+1} + x^{k+2} + x^{k+3} + \cdots \\
+        & = & x^k \cdot (1  + x + x^2 + x^3 + \cdots) \\
+        & = &\frac{x^k}{1-x}
+\end{eqnarray*}
+%
+Evidently, adding $k$ leading zeros to the sequence corresponds to
+multiplying the generating function by $x^k$.  This holds true in
+general.
+
+\begin{mathrule}[\idx{Right-Shift Rule}]
+\label{rule:shift}
+If $\ang{f_0, f_1, f_2, \dots} \corresp F(x)$, then:
+%
+\[
+\langle \underbrace{0, 0, \dots, 0}_{\text{$k$ zeroes}}, f_0, f_1, f_2, \dots\rangle \corresp x^k \cdot F(x)
+\]
+\end{mathrule}
+
+The idea behind this rule is that:
+\begin{eqnarray*}
+\langle\overbrace{0, 0, \dots, 0}^{\text{$k$ zeroes}}, f_0, f_1, f_2, \dots\rangle
+ & \corresp & f_0 x^k + f_1 x^{k+1} + f_2 x^{k+2} + \cdots \\
+ & = & x^k \cdot (f_0 + f_1 x + f_2 x^2 + f_3 x^3 + \cdots) \\
+ & = & x^k \cdot F(x)
+\end{eqnarray*}
+
+\subsection{Differentiation}
+
+What happens if we take the \term{derivative} of a generating
+function?  As an example, let's differentiate the now-familiar
+generating function for an infinite sequence of 1's.
+%
+\begin{eqnarray}
+\frac{d}{dx} \ (1 + x + x^2 + x^3 + x^4 + \cdots)
+        & = & \frac{d}{dx} \paren{\frac{1}{1-x}} \notag\\
+1 + 2x + 3x^2 + 4x^3 + \cdots & = & \frac{1}{(1-x)^2} \label{sumixi-1}\\
+\ang{1, 2, 3, 4, \dots}  & \corresp & \frac{1}{(1-x)^2}\notag
+\end{eqnarray}
+%
+We found a generating function for the sequence $\ang{1, 2, 3, 4,
+\dots}$ of positive integers!
+
+In general, differentiating a generating function has two effects on
+the corresponding sequence: each term is multiplied by its index and
+the entire sequence is shifted left one place.
+
+\begin{mathrule}[\idx{Derivative Rule}]
+\label{rule:derivative}
+If
+\[
+\ang{f_0, f_1, f_2, f_3, \dots} \corresp F(x),
+\]
+then
+%
+\[
+\ang{f_1, 2f_2, 3f_3, \dots} \corresp F'(x).
+\]
+\end{mathrule}
+
+The idea behind this rule is that:
+\begin{align*}
+\ang{f_1, 2f_2, 3f_3, \dots}
+    & \corresp f_1 + 2 f_2 x + 3 f_3 x^2 + \cdots \\
+    & = \frac{d}{dx} \ (f_0 + f_1 x + f_2 x^2 + f_3 x^3 + \cdots) \\
+    & = \frac{d}{dx} \ F(x)
+\end{align*}
+
+The Derivative Rule is very useful.  In fact, there is frequent,
+independent need for each of differentiation's two effects,
+multiplying terms by their index and left-shifting one place.
+Typically, we want just one effect and must somehow cancel out the
+other.  For example, let's try to find the generating function for the
+sequence of squares, $\ang{0, 1, 4, 9, 16, \dots}$.  If we could
+start with the sequence $\ang{1, 1, 1, 1, \dots}$ and multiply each term by
+its index two times, then we'd have the desired result:
+%
+\[
+\ang{0 \cdot 0,\ 1 \cdot 1,\ 2 \cdot 2,\ 3 \cdot 3,\ \dots}
+= 
+\ang{0, 1, 4, 9, \dots}
+\]
+%
+A challenge is that differentiation not only multiplies each term by
+its index, but also shifts the whole sequence left one place.
+However, the Right-Shift Rule~\ref{rule:shift} tells how to cancel out
+this unwanted left-shift: multiply the generating function by $x$.
+
+Our procedure, therefore, is to begin with the generating function for
+$\ang{1, 1, 1, 1, \dots}$, differentiate, multiply by $x$, and then
+differentiate and multiply by $x$ once more.
+%
+\begin{align*}
+\ang{1, 1, 1, 1, \dots}  & \corresp \frac{1}{1-x} \\
+\ang{1, 2, 3, 4, \dots}  & \corresp \frac{d}{dx} \ \frac{1}{1-x}
+                                          = \frac{1}{(1-x)^2} \\
+\ang{0, 1, 2, 3, \dots}  & \corresp x \cdot \frac{1}{(1-x)^2}
+                                          = \frac{x}{(1-x)^2} \\
+\ang{1, 4, 9, 16, \dots} & \corresp \frac{d}{dx} \ \frac{x}{(1-x)^2}
+                                          = \frac{1+x}{(1-x)^3} \\
+\ang{0, 1, 4, 9, \dots}  & \corresp x \cdot \frac{1+x}{(1-x)^3}
+                                          = \frac{x(1+x)}{(1-x)^3}
+\end{align*}
+%
+Thus, the generating function for squares is:
+%
+\begin{equation}\label{squares_gen_func}
+\frac{x(1+x)}{(1-x)^3}
+\end{equation}
+
+\subsection{Products}
+
+\begin{mathrule}[\index{Product Rule (for generating functions)} Product Rule]
+\label{rule:product}
+If
+%
+\[
+\ang{a_0, a_1, a_2, \dots} \corresp A(x),\quad \text{and}\quad
+\ang{b_0, b_1, b_2, \dots} \corresp B(x),
+\]
+%
+then
+%
+\[
+\ang{c_0,\ c_1 ,\ c_2,\ \dots} \corresp A(x) \cdot B(x),
+\]
+\end{mathrule}
+where
+\[
+c_n \eqdef a_0 b_n + a_1 b_{n-1} + a_2 b_{n-2} + \cdots + a_n b_0.
+\]
+
+To understand this rule, let
+\[
+C(x) \eqdef A(x) \cdot B(x) = \sum_{n=0}^{\infty} c_n x^n.
+\]
+
+We can evaluate the product $A(x) \cdot B(x)$ by using a table to identify
+all the cross-terms from the product of the sums:
+%
+\[
+\begin{array}{c|@{\quad}c@{\qquad}c@{\qquad}c@{\qquad}c@{\qquad}c}
+        & b_0 x^0 & b_1 x^1 & b_2 x^2 & b_3 x^3 & \dots \\
+\hline
+\\
+a_0 x^0 & a_0 b_0 x^0 & a_0 b_1 x^1 & a_0 b_2 x^2 & a_0 b_3 x^3 & \dots \\
+\\
+a_1 x^1 & a_1 b_0 x^1 & a_1 b_1 x^2 & a_1 b_2 x^3 & \dots \\
+\\
+a_2 x^2 & a_2 b_0 x^2 & a_2 b_1 x^3 & \dots \\
+\\
+a_3 x^3 & a_3 b_0 x^3 & \dots \\
+\\
+\vdots & \dots\\
+\end{array}
+\]
+%
+Notice that all terms involving the same power of $x$ lie on a
+/-sloped diagonal.  Collecting these terms together, we find that the
+coefficient of $x^n$ in the product is the sum of all the terms on the
+$(n+1)$st diagonal, namely,
+\begin{equation}\label{conv}
+a_0 b_n + a_1 b_{n-1} + a_2 b_{n-2} + \cdots + a_n b_0.
+\end{equation}
+This expression~\eqref{conv} may be familiar from a signal processing
+course; the sequence $\ang{c_0, c_1, c_2, \dots}$ is called the
+\term{convolution} of sequences $\ang{a_0, a_1, a_2, \dots}$ and
+$\ang{b_0, b_1, b_2, \dots}$.
+
+\hyperdef{recur}{rences}{\section{The Fibonacci Sequence}}
+
+Sometimes we can find nice generating functions for more complicated
+sequences.  For example, here is a generating function for the
+\idx{Fibonacci} numbers:
+%
+\[
+\ang{0, 1, 1, 2, 3, 5, 8, 13, 21, \dots} \corresp \frac{x}{1-x-x^2}
+\]
+%
+The Fibonacci numbers may seem like a fairly nasty bunch, but the
+generating function is simple!
+
+We're going to derive this generating function and then use it to find a
+closed form for the $n$th Fibonacci number.  The techniques we'll use are
+applicable to a large class of recurrence equations.
+
+\subsection{Finding a Generating Function}
+
+Let's begin by recalling the definition of the Fibonacci numbers:
+%
+\begin{align*}
+f_0 & = 0 \\
+f_1 & = 1 \\
+f_n & = f_{n-1} + f_{n-2} \qquad \text{(for $n \geq 2$)}
+\end{align*}
+%
+We can expand the final clause into an infinite sequence of equations.
+Thus, the Fibonacci numbers are defined by:
+%
+\begin{align*}
+f_0 = & 0 \\
+f_1 = & 1 \\
+f_2 = & f_1 + f_0 \\
+f_3 = & f_2 + f_1 \\
+f_4 = & f_3 + f_2 \\
+      & \vdots
+\end{align*}
+
+Now the overall plan is to \textit{define} a function $F(x)$ that
+generates the sequence on the left side of the equality symbols, which
+are the Fibonacci numbers.  Then we \textit{derive} a function that
+generates the sequence on the right side.  Finally, we equate the two
+and solve for $F(x)$.  Let's try this.  First, we define:
+%
+\[
+F(x) = f_0 + f_1 x + f_2 x^2 + f_3 x^3 + f_4 x^4 + \cdots
+\]
+%
+Now we need to derive a generating function for the sequence:
+%
+\[
+\ang{0,\ 1,\ f_1 + f_0,\ f_2 + f_1,\ f_3 + f_2,\ \dots}
+\]
+%
+One approach is to break this into a sum of three sequences for which
+we know generating functions and then apply the Addition Rule:
+%
+\[
+\begin{array}{ccccccccccl}
+  & \langle & 0, & 1, & 0, & 0, & 0, & \dots & \rangle
+    & \corresp & x \\
+  & \langle & 0, & f_0, & f_1, & f_2, & f_3, & \dots & \rangle
+    & \corresp & x F(x) \\
++ & \langle & 0, & 0, & f_0, & f_1, & f_2, & \dots & \rangle
+    & \corresp & x^2 F(x) \\ \hline
+  & \langle & 0, & 1 + f_0, & f_1 + f_0, & f_2 + f_1, & f_3 + f_2, & \dots & \rangle
+    & \corresp & x + x F(x) + x^2 F(x) \\
+\end{array}
+\]
+%
+This sequence is almost identical to the right sides of the Fibonacci
+equations.  The one blemish is that the second term is $1 + f_0$
+instead of simply 1.  However, this amounts to nothing, since $f_0 =
+0$ anyway.
+
+Now if we equate $F(x)$ with the new function $x + x F(x) + x^2 F(x)$,
+then we're implicitly writing down \textit{all} of the equations that
+define the Fibonacci numbers in one fell swoop:
+%
+\[
+\begin{array}{ccc@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c@{\ }c}
+F(x)
+    & = & f_0 & + & f_1 & x & + & f_2 & x^2 & + & f_3 & x^3 & + \cdots \\
+\shortparallel && \shortparallel && \shortparallel &&& \shortparallel &&& \shortparallel\\
+x + x F(x) + x^2 F(x)
+    & = & 0 & + & (1 + f_0) & x & + & (f_1 + f_0) & x^2 & + & (f_2 + f_1) & x^3 & + \cdots
+\end{array}
+\]
+%
+Solving for $F(x)$ gives the generating function for the Fibonacci
+sequence:
+%
+\[
+F(x)  = x + x F(x) + x^2 F(x)
+\]
+so
+\[
+F(x) = \frac{x}{1 - x - x^2}.
+\]
+%
+Sure enough, this is the simple generating function we claimed at the
+outset.
+
+\subsection{Finding a Closed Form}
+
+Why should one care about the generating function for a sequence?  There
+are several answers, but here is one: if we can find a generating function
+for a sequence, then we can often find a closed form for the $n$th
+coefficient--- which can be pretty useful!  For example, a \idx{closed
+  form} for the coefficient of $x^n$ in the power series for $x / (1 - x -
+x^2)$ would be an explicit formula for the $n$th Fibonacci number.
+
+So our next task is to extract coefficients from a generating function.
+There are several approaches.  For a generating function that is a ratio
+of polynomials, we can use the method of \term{partial fractions}, which
+you learned in calculus.  Just as the terms in a partial fraction
+expansion are easier to integrate, the coefficients of those terms are
+easy to compute.
+
+Let's try this approach with the generating function for Fibonacci
+numbers.  First, we factor the denominator:
+%
+\[
+1 - x - x^2 = (1 - \alpha_1 x) (1 - \alpha_2 x)
+\]
+%
+where $\alpha_1 = \frac{1}{2}(1 + \sqrt{5})$ and $\alpha_2 =
+\frac{1}{2}(1 - \sqrt{5})$.  Next, we find $A_1$ and $A_2$ which
+satisfy:
+%
+\[
+\frac{x}{1 - x - x^2} =
+        \frac{A_1}{1 - \alpha_1 x} + \frac{A_2}{1 - \alpha_2 x}
+\]
+%
+We do this by plugging in various values of $x$ to generate linear
+equations in $A_1$ and $A_2$.  We can then find $A_1$ and $A_2$ by
+solving a linear system.  This gives:
+%
+\begin{gather*}
+A_1 = \frac{1}{\alpha_1 - \alpha_2} = \frac{1}{\sqrt{5}} \\
+A_2 = \frac{-1}{\alpha_1 - \alpha_2} = -\frac{1}{\sqrt{5}}
+\end{gather*}
+
+Substituting into the equation above gives the partial fractions
+expansion of $F(x)$:
+%
+\[
+\frac{x}{1 - x - x^2} =
+        \frac{1}{\sqrt{5}}
+        \paren{\frac{1}{1 - \alpha_1 x} - \frac{1}{1 - \alpha_2 x}}
+\]
+%
+Each term in the partial fractions expansion has a simple power series
+given by the geometric sum formula:
+%
+\begin{align*}
+\frac{1}{1 - \alpha_1 x} & = 1 + \alpha_1 x + \alpha_1^2 x^2 + \cdots \\
+\frac{1}{1 - \alpha_2 x} & = 1 + \alpha_2 x + \alpha_2^2 x^2 + \cdots
+\end{align*}
+%
+Substituting in these series gives a power series for the generating
+function:
+%
+\begin{align*}
+F(x) & =
+  \frac{1}{\sqrt{5}}
+  \paren{\frac{1}{1 - \alpha_1 x} -
+        \frac{1}{1 - \alpha_2 x}}\\
+    & = \frac{1}{\sqrt{5}}
+        \paren{(1 + \alpha_1 x + \alpha_1^2 x^2 + \cdots) -
+        (1 + \alpha_2 x + \alpha_2^2 x^2 + \cdots)},
+\end{align*}
+so
+\begin{align*}
+ f_n & = \frac{\alpha_1^n - \alpha_2^n}{\sqrt{5}} \\
+                & = \frac{1}{\sqrt{5}}
+        \paren{
+         \paren{\frac{1 + \sqrt{5}}{2}}^n -
+         \paren{\frac{1 - \sqrt{5}}{2}}^n}
+\end{align*}
+
+This formula may be scary and astonishing ---it's not even obvious that
+its value is an integer ---but it's very useful.  For example, it provides
+(via the repeated squaring method) a much more efficient way to compute
+Fibonacci numbers than crunching through the recurrence, and it also
+clearly reveals the exponential growth of these numbers.
+
+\begin{problems}
+\classproblems
+\pinput{CP_Fibonacci_and_bunnies}
+\pinput{CP_towers_of_Sheboygan}
+
+\homeworkproblems
+\pinput{PS_gen_fcn_quotient_polynomials}
+\pinput{PS_Catalan_numbers_meyer_version}
+
+\examproblems
+\pinput{MQ_gen_2}
+
+\end{problems}
+
+\hyperdef{gen}{count}{\section{Counting with Generating Functions}}
+
+Generating functions are particularly useful for solving counting
+problems.  In particular, problems involving choosing items from a set
+often lead to nice generating functions by letting the coefficient of
+$x^n$ be the number of ways to choose $n$ items.
+
+\subsection{Choosing Distinct Items from a Set}
+
+The generating function for binomial coefficients follows directly
+from the \idx{Binomial Theorem}:
+%
+\begin{eqnarray*}
+\ang{ \binom{k}{0}, \binom{k}{1}, \binom{k}{2}, \dots, \binom{k}{k},
+        0, 0, 0, \dots }
+    & \corresp & \binom{k}{0} + \binom{k}{1} x + \binom{k}{2} x^2 + \cdots + \binom{k}{k} x^k \\
+    & = & (1 + x)^k
+\end{eqnarray*}
+
+Thus, the coefficient of $x^n$ in $(1 + x)^k$ is $\binom{k}{n}$, the
+number of ways to choose $n$ distinct items from a set of size $k$.  For
+example, the coefficient of $x^2$ is $\binom{k}{2}$, the number of ways to
+choose 2 items from a set with $k$ elements.  Similarly, the coefficient
+of $x^{k+1}$ is the number of ways to choose $k+1$ items from a size $k$
+set, which is zero.  (Watch out for this reversal of the roles that $k$
+and $n$ played in earlier examples; we're led to this reversal because
+we've been using $n$ to refer to the power of $x$ in a power series.)
+
+\subsection{Building Generating Functions that Count}
+
+Often we can translate the description of a counting problem directly
+into a generating function for the solution.  For example, we could
+figure out that $(1 + x)^k$ generates the number of ways to select $n$
+distinct items from a $k$-element set without resorting to the
+Binomial Theorem or even fussing with binomial coefficients!
+
+Here is how.  First, consider a single-element set $\set{a_1}$.  The
+generating function for the number of ways to select $n$ elements from
+this set is simply $1 + x$: we have 1 way to select zero elements, 1
+way to select one element, and 0 ways to select more than one element.
+Similarly, the number of ways to select $n$ elements from the set
+$\set{a_2}$ is also given by the generating function $1 + x$.  The
+fact that the elements differ in the two cases is irrelevant.
+
+Now here is the main trick: \textit{the generating function for
+choosing elements from a union of disjoint sets is the product of the
+generating functions for choosing from each set.}  We'll justify this
+in a moment, but let's first look at an example.  According to this
+principle, the generating function for the number of ways to select
+$n$ elements from the $\set{a_1, a_2}$ is:
+%
+\[
+\underbrace{(1 + x)}_{
+\begin{array}{cc}
+\text{gen func for} \\
+\text{selecting an $a_1$}
+\end{array}}
+\cdot
+\underbrace{(1 + x)}_{
+\begin{array}{cc}
+\text{gen func for} \\
+\text{selecting an $a_2$}
+\end{array}}
+=
+\underbrace{(1 + x)^2}_{
+\begin{array}{cc}
+\text{gen func for} \\
+\text{selecting from} \\
+\set{a_1, a_2}
+\end{array}}
+= 1 + 2x + x^2
+\]
+%
+Sure enough, for the set $\set{a_1, a_2}$, we have 1 way to select
+zero elements, 2 ways to select one element, 1 way to select two
+elements, and 0 ways to select more than two elements.
+
+Repeated application of this rule gives the generating function for
+selecting $n$ items from a $k$-element set $\set{a_1, a_2, \dots,
+a_k}$:
+%
+\[
+\underbrace{(1 + x)}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{selecting an $a_1$}
+\end{array}}
+\cdot
+\underbrace{(1 + x)}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{selecting an $a_2$}
+\end{array}}
+\cdots
+\underbrace{(1 + x)}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{selecting an $a_k$}
+\end{array}}
+=
+\underbrace{(1 + x)^k}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{selecting from} \\
+\set{a_1, a_2, \dots, a_k}
+\end{array}}
+\]
+%
+This is the same generating function that we obtained by using the
+Binomial Theorem.  But this time around we translated directly from
+the counting problem to the generating function.
+
+We can extend these ideas to a general principle:
+
+% This is hand wavy and could use improvement.  I hope they get the idea.
+
+\begin{mathrule}[\idx{Convolution Rule}]
+Let $A(x)$ be the generating function for selecting items from set
+${\cal A}$, and let $B(x)$ be the generating function for selecting
+items from set ${\cal B}$.  If ${\cal A}$ and ${\cal B}$ are disjoint,
+then the generating function for selecting items from the union ${\cal
+A} \cup {\cal B}$ is the product $A(x) \cdot B(x)$.
+\end{mathrule}
+
+This rule is rather ambiguous: what exactly are the rules governing
+the selection of items from a set?  Remarkably, the Convolution Rule
+remains valid under \textit{many} interpretations of selection.  For
+example, we could insist that distinct items be selected or we might
+allow the same item to be picked a limited number of times or any
+number of times.  Informally, the only restrictions are that (1) the
+order in which items are selected is disregarded and (2) restrictions
+on the selection of items from sets ${\cal A}$ and ${\cal B}$ also
+apply in selecting items from ${\cal A} \cup {\cal B}$.  (Formally,
+there must be a bijection between $n$-element selections from ${\cal
+A} \cup {\cal B}$ and ordered pairs of selections from ${\cal A}$ and
+${\cal B}$ containing a total of $n$ elements.)
+
+To count the number of ways to select $n$ items from ${\cal A} \cup {\cal
+B}$, we observe that we can select $n$ items by choosing $j$ items from
+${\cal A}$ and $n - j$ items from ${\cal B}$, where $j$ is any number from
+0 to $n$.  This can be done in $a_j b_{n-j}$ ways.  Summing over all the
+possible values of $j$ gives a total of
+\[
+a_0 b_n + a_1 b_{n-1} + a_2 b_{n-2} + \cdots + a_n b_0
+\]
+ways to select $n$ items from ${\cal A} \cup {\cal B}$.  By the Product
+Rule, this is precisely the coefficient of $x^n$ in the series for
+$A(x)B(x)$.
+
+
+\subsection{Choosing Items with Repetition}
+\label{sec:rep}
+
+The first counting problem we considered was the number of ways to select
+a dozen doughnuts when five flavors were available.  We can generalize
+this question as follows: in how many ways can we select $n$ items from a
+$k$-element set if we're allowed to pick the same item multiple times?
+In these terms, the doughnut problem asks in how many ways we can select
+$n=12$ doughnuts from the set of $k=5$ flavors
+\[
+\set{\text{chocolate}, \text{lemon-filled}, \text{sugar}, \text{glazed}, \text{plain}}
+\]
+%
+where, of course, we're allowed to pick several doughnuts of the same
+flavor.   Let's approach this question from a generating functions
+perspective.
+
+Suppose we make $n$ choices (with repetition allowed) of items from a set
+containing a single item.  Then there is one way to choose zero items, one
+way to choose one item, one way to choose two items, etc.  Thus, the
+generating function for choosing $n$ elements with repetition from a
+1-element set is:
+%
+\begin{eqnarray*}
+\ang{1, 1, 1, 1, \dots}
+     & \corresp & 1 + x + x^2 + x^3 + \cdots \\
+     & = & \frac{1}{1-x}
+\end{eqnarray*}
+
+The Convolution Rule says that the generating function for selecting
+items from a union of disjoint sets is the product of the generating
+functions for selecting items from each set:
+%
+\[
+\underbrace{\frac{1}{1-x}}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{choosing $a_1$'s}
+\end{array}}
+\cdot
+\underbrace{\frac{1}{1-x}}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{choosing $a_2$'s}
+\end{array}}
+\cdots
+\underbrace{\frac{1}{1-x}}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{choosing $a_k$'s}
+\end{array}}
+=
+\underbrace{\frac{1}{(1-x)^k}}_{
+\begin{array}{cc}
+\mbox{gen func for} \\
+\text{repeated choice from} \\
+\set{a_1, a_2, \dots, a_k}
+\end{array}}
+\]
+%
+Therefore, the generating function for choosing items from a
+$k$-element set with repetition allowed is $1 / (1 - x)^k$.
+
+Now the Bookkeeper Rule tells us that the number of ways to choose $n$
+items with repetition from an $k$ element set is
+\[
+\binom{n+k-1}{n},
+\]
+so this is the coefficient of $x^n$ in the series expansion of $1 / (1 -
+x)^k$.
+
+On the other hand, it's instructive to derive this coefficient
+algebraically, which we can do using Taylor's Theorem:
+
+\begin{theorem}[Taylor's Theorem]
+\[
+f(x) = f(0) + f'(0) x + \frac{f''(0)}{2!} x^2 + \frac{f'''(0)}{3!} x^3 + \cdots
++ \frac{f^{(n)}(0)}{n!} x^n + \cdots.
+\]
+\end{theorem}
+
+This theorem says that the $n$th coefficient of $1 / (1 - x)^k$ is
+equal to its $n$th derivative evaluated at 0 and divided by $n!$.
+Computing the $n$th derivative turns out not to be very difficult
+(Problem~\ref{CP_nth_derivative_of_A}).
+\begin{staffnotes}
+
+Let
+%
+\[
+G(x) \eqdef \frac{1}{(1-x)^k} = (1-x)^{-k}.
+\]
+%
+Then we have:
+%
+\begin{align*}
+G'(x) & = k (1-x)^{-(k+1)} \\
+G''(x) & = k (k+1) (1-x)^{-(k+2)} \\
+G'''(x) & = k (k+1) (k+2) (1-x)^{-(k+3)} \\
+G^{(n)}(x) & = k (k+1) \cdots (k + n - 1)(1-x)^{-(k+n)}
+\end{align*}
+%
+Thus, the coefficient of $x^n$ in the generating function is:
+%
+\begin{align*}
+G^{(n)}(0) / n! & = \frac{k (k+1) \cdots (k + n - 1)}{n!} \\
+                & = \frac{(k + n - 1)!}{(k - 1)! \ n!} \\
+                & = \binom{n + k - 1}{n}.
+\end{align*}
+
+\end{staffnotes}
+
+\begin{problems}
+\practiceproblems
+\pinput{MQ_bouquet}
+
+\classproblems
+\pinput{CP_nth_derivative_of_A}
+\pinput{CP_bag_of_donuts}
+\pinput{CP_gen_func_sum_of_squares}
+
+\homeworkproblems
+\pinput{PS_gen_fcns_pennies_nickels_etc}
+
+\end{problems}
+
+\examproblems
+\pinput{MQ_sick_days}
+\pinput{MQ_gen_2}
+\pinput{MQ_binomial_coef}
+
+\section{An ``Impossible'' Counting Problem}
+
+
+\begin{staffnotes}
+
+Not so impossible.  From Rebecca Freund, F09:
+
+Note that the fruits can be divided into two groups, the apples-and-pears
+and the bananas-and-oranges. Once you know how many are apples-and-pears,
+there's only one way to distribute them: Use a pear if the number is odd,
+otherwise don't. Make the rest apples. Similarly, once you've decided on
+the number of bananas-and-oranges, you have to throw in
+the-greatest-multiple-of-five-less-than-or-equal-to-that bananas and add
+oranges as needed. So the number of apples-and-pears exactly determines
+the arrangement. You can have 0-n apples-and-pears, so there are n+1
+possibilities.
+
+\end{staffnotes}
+
+So far everything we've done with generating functions we could have
+done another way.  But here is an absurd counting problem--- really
+over the top!  In how many ways can we fill a bag with $n$ fruits
+subject to the following constraints?
+
+\begin{itemize}
+\item The number of apples must be even.
+\item The number of bananas must be a multiple of 5.
+\item There can be at most four oranges.
+\item There can be at most one pear.
+\end{itemize}
+
+For example, there are 7 ways to form a bag with 6 fruits:
+%
+\[
+\begin{array}{c|ccccccc}
+\text{Apples}  & 6 & 4 & 4 & 2 & 2 & 0 & 0 \\
+\text{Bananas} & 0 & 0 & 0 & 0 & 0 & 5 & 5 \\
+\text{Oranges} & 0 & 2 & 1 & 4 & 3 & 1 & 0 \\
+\text{Pears}   & 0 & 0 & 1 & 0 & 1 & 0 & 1
+\end{array}
+\]
+%
+These constraints are so complicated that the problem seems hopeless!
+But let's see what generating functions reveal.
+
+Let's first construct a generating function for choosing apples.  We
+can choose a set of 0 apples in one way, a set of 1 apple in zero
+ways (since the number of apples must be even), a set of 2 apples in
+one way, a set of 3 apples in zero ways, and so forth.  So we have:
+%
+\[
+A(x) = 1 + x^2 + x^4 + x^6 + \cdots = \frac{1}{1 - x^2}
+\]
+%
+Similarly, the generating function for choosing bananas is:
+%
+\[
+B(x) = 1 + x^5 + x^{10} + x^{15} + \cdots = \frac{1}{1 - x^5}
+\]
+Now, we can choose a set of 0 oranges in one way, a set of 1 orange in
+one way, and so on.  However, we can not choose more than four
+oranges, so we have the generating function:
+%
+\[
+O(x) = 1 + x + x^2 + x^3 + x^4 = \frac{1-x^5}{1-x}
+\]
+%
+Here we're using the geometric sum formula.  Finally, we can choose
+only zero or one pear, so we have:
+%
+\[
+P(x) = 1 + x
+\]
+
+The Convolution Rule says that the generating function for choosing
+from among all four kinds of fruit is:
+%
+\begin{align*}
+A(x) B(x) O(x) P(x)
+    & = \frac{1}{1-x^2} \frac{1}{1-x^5} \frac{1-x^5}{1-x} (1 + x) \\
+    & = \frac{1}{(1-x)^2} \\
+    & = 1 + 2x + 3x^2 + 4 x^3 + \cdots
+\end{align*}
+%
+Almost everything cancels!  We're left with $1 / (1-x)^2$, which we
+found a power series for earlier: the coefficient of $x^n$ is simply
+$n+1$.  Thus, the number of ways to form a bag of $n$ fruits is just
+$n+1$.  This is consistent with the example we worked out, since there
+were 7 different fruit bags containing 6 fruits.  \textit{Amazing!}
+\begin{problems}
+
+\homeworkproblems
+\pinput{PS_crazy_pet_lady}
+
+% generating functions, counting
+%\pinput{PS_gen_fcns_with_donuts}
+
+% generating functions
+\pinput{PS_Catalan_numbers_meyer_version}
+
+\examproblems
+\pinput{FP_boat_trip}
+
+\end{problems}
+
+\endinput

@@ -1,0 +1,227 @@
+\chapter{Directed graphs}\label{digraphs_chap}
+
+\section{Digraphs}\label{digraphs_sec}
+
+\hyperdef{directed}{graph}{A \term{directed graph}} (\term{digraph}
+for short) is formally the same as a binary relation, $R$, on a set,
+$A$ ---that is, a relation whose domain and codomain are the same set,
+$A$.  But we describe digraphs as though they were diagrams, with
+elements of $A$ pictured as points on the plane and arrows drawn
+between related points.  The elements of $A$ are referred to as the
+\emph{vertices} of the digraph, and the pairs $(a,b) \in \graph{R}$
+are \term{directed edges}.  Writing $\diredge{a}{b}$ is a more
+suggestive alternative for the pair $(a,b)$.  Directed edges are also
+called \term{arrows}.
+
+For example, the divisibility relation on $\set{1,2,\dots,12}$ is
+could be pictured by the digraph:
+\begin{figure}[h]
+\centering \includegraphics{figures/divisibility.pdf}
+\caption{The Digraph for Divisibility on $\set{1,2,\dots,12}$.}
+\label{fig:divisibility-digraph}
+\end{figure}
+
+%\hfill
+%\includegraphics{divi2.pdf}
+%{figures/divide12.mps}
+
+\subsection{Paths in Digraphs}
+
+Picturing digraphs with points and arrows makes it natural to talk
+about following a \term{path} of successive edges through the graph.
+For example, in the digraph of Figure~\ref{fig:divisibility-digraph},
+a path might start at vertex 1, successively follow the edges from
+vertex 1 to vertex 2, from 2 to 4, from 4 to 12, and then from 12 to
+12 twice (or as many times as you like).  We can represent the path
+with the sequence of sucessive vertices it went through, in this case:
+\[
+1,2,4,12,12,12.
+\]
+So a path is just a sequence of vertices, with consecutive vertices on
+the path connected by directed edges.  Here is a formal
+definition:
+
+\begin{definition}\label{def:digraph-paths}
+A \emph{path in a digraph} is a sequence of vertices $a_0,\dots,a_k$
+with $k \ge 0$ such that $\diredge{a_i}{a_{i+1}}$ is an edge of the
+digraph for $i = 0,1,\dots, k-1$.  The path is said to \emph{start} at
+$a_0$, to \emph{end} at $a_k$, and the \emph{length} of the path is
+defined to be $k$.  The path is \emph{simple} iff all the $a_i$'s are
+different, that is, if $i \neq j$, then $a_i \neq a_j$.
+\end{definition}
+Note that a single vertex counts as length zero path that begins and
+ends at itself.
+
+It's pretty natural to talk about the edges in a path, but
+technically, paths only have points, not edges.  So to instead, we'll
+say a path \term{traverses} an edge $\diredge{a}{b}$ when $a$ and $b$
+are consecutive vertices in the path.
+
+For any digraph, $R$, we can define some new relations on vertices
+based on paths, namely, the \emph{path relation}, $R^*$, and the
+\emph{positive-length path relation}, $R^+$:
+\begin{align*}
+a \mrel{R^*} b &\eqdef \mbox{there is a path in $R$ from $a$ to $b$},\\
+a \mrel{R^+} b &\eqdef \mbox{there is a positive length path in $R$ from $a$ to $b$}.
+\end{align*}
+
+By the definition of path, both $R^*$ and $R^+$ are transitive.  Since
+edges count as length one paths, the edges of $R^+$ include all the
+edges of $R$.  The edges of $R^*$ in turn include all the edges of
+$R^+$ and, in addition include an edge (self-loop) from each vertex to
+itself.  The self-loops get included in $R^*$ because of the a length
+zero paths in $R$.  So $R^*$ is reflexive.  \footnote{In many texts,
+  $R^+$ is called the \term{transitive closure} and $R^*$ is called
+  the \term{reflexive transitive closure} of $R$.}
+
+\section{Picturing Relational Properties}
+
+Many of the relational properties we've discussed have natural
+descriptions in terms of paths.  For example:
+\begin{description}
+
+\item[Reflexivity:] All vertices have self-loops (a \emph{self-loop} at a
+vertex is an arrow going from the vertex back to itself).
+
+\item[Irreflexivity:] No vertices have self-loops.
+
+\item[Antisymmetry:] At most one (directed) edge between different
+  vertices.
+
+\item[Asymmetry:] No self-loops and at most one (directed) edge
+  between different vertices.
+
+\item[Transitivity:] Short-circuits---for any path through the graph,
+there is an arrow from the first vertex to the last vertex on the path.
+
+\item[Symmetry:] A binary relation $R$ is
+  \hyperdef{graphs}{symmetric}{\term{symmetric}} iff $aRb$ implies
+  $bRa$ for all $a,b$ in the domain of $R$.  That is, if there is an
+  edge from $a$ to $b$, there is also one in the reverse direction.
+  \begin{staffnotes}
+  The pair of directed edges between two vertices may be
+  represented by a single \idx{undirected edge} may as well be
+  represented without arrows, indicating that they can be followed in
+  either direction.
+\end{staffnotes}
+
+\end{description}
+
+\section{Composition of Relations}\label{relation_compose_subsec}
+
+There is a simple way to extend \idx{composition} of functions to
+composition of relations, and this gives another way to talk about
+paths in digraphs.
+
+Let $R: B\to C$ and $S: A \to B$ be relations.  Then the
+\idx{composition} of $R$ with $S$ is the binary relation $(R \compose
+S): A\to C$ defined by the rule
+\[
+a \mrel{(R \compose S)} c \eqdef\ \exists b \in B.\, (b \mrel{R} c)
+\QAND (a \mrel{S} b).
+\]
+This agrees with the Definition~\ref{func_compose_def} of composition
+in the special case when $R$ and $S$ are functions.
+\begin{staffnotes}
+
+\footnote{Some texts define $R \compose S$ the other way around, that
+  is, with $S$ applied to the result of applying $R$ first.}
+
+\end{staffnotes}
+
+Now when $R$ is a digraph, it makes sense to compose $R$ with itself.
+Then if we let $R^n$ denote the composition of $R$ with itself $n$
+times, it's easy to check that $R^n$ is the length-$n$ path relation:
+\[
+a  \mrel{R^n} b \qiff \mbox{ there is a length $n$ path in $R$ from $a$ to $b$}.
+\]
+This even works for $n=0$, if we adopt the convention that $R^0$ is
+the identity relation $\ident{A}$ on the set, $A$, of vertices.  That
+is, $(a \mrel{\ident{A}} b)$ iff $a = b$.
+
+\section{Directed Acyclic Graphs}\label{sec:dag}
+
+\begin{definition}
+A \term{cycle} in a digraph is defined by a path that begins and ends
+at the same vertex.  This includes the cycle of length zero that
+begins and ends at the vertex.  A \term{directed acyclic graph (DAG)}
+is a directed graph with no \emph{positive} length cycles.
+
+A \term{simple cycle} in a digraph is a cycle whose vertices are distinct
+except for the beginning and end vertices.
+\end{definition}
+
+\begin{staffnotes}
+
+In contrast to undirected graphs, a single vertex \emph{is} considered to
+be a simple cycle.
+
+\end{staffnotes}
+
+DAG's can be an economical way to represent partial orders.  For
+example, the \emph{direct prerequisite} relation between MIT subjects
+in Chapter~\ref{partial-order-chapter} was used to determine the
+partial order of indirect prerequisites on subjects.  This indirect
+prerequisite partial order is precisely the positive length path
+relation of the direct prerequisites.
+
+\begin{lemma}
+If $D$ is a DAG, then $D^+$ is a strict partial order.
+\end{lemma}
+
+\begin{proof}
+We know that $D^+$ is transitive.  Also, a positive length path from a
+vertex to itself would be a cycle, so there are no such paths.  This means
+$D^+$ is irreflexive, which implies it is a strict partial order (see
+problem~\ref{CP_strict_PO_irreflexive}).
+\end{proof}
+
+It's easy to check that conversely, the graph of any strict partial
+order is a DAG.
+
+The divisibility partial order can also be more economically represented by
+the path relation in a DAG.  \hyperdef{divisibility}{DAG}{A DAG whose
+\emph{path} relation is divisibility} on $\set{1,2,\dots,12}$ is shown in
+Figure~\ref{fig:divisibility-DAG}; the arrowheads are omitted in the
+Figure, and edges are understood to point upwards.
+
+\begin{figure}[h]
+%\centering \includegraphics{figures/divi2.pdf}
+\begin{center}
+\input{figures/divi2.tex}
+\end{center}
+\caption{A DAG whose Path Relation is Divisibility on $\set{1,2,\dots,12}$.}
+\label{fig:divisibility-DAG}
+\end{figure}
+
+If we're using a DAG to represent a partial order ---so all we care
+about is the the path relation of the DAG ---we could replace the DAG
+with any other DAG with the same path relation.  This raises the
+question of finding a DAG with the same path relation but the
+\emph{smallest} number of edges.  This DAG turns out to be unique and
+easy to find (see problem~\ref{CP_covering_edges}).
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_strictPOs_are_DAGs}
+
+\classproblems
+\pinput{CP_covering_edges}
+
+\homeworkproblems
+\pinput{PS_path_relation_composition}
+\pinput{PS_finite_transitive_closure}
+\end{problems}
+
+\begin{staffnotes}
+* add problem building on matrix rep to compute transitive closure
+
+* add section on shortest paths?
+
+* add section on directed tours and walks?
+\end{staffnotes}
+
+
+
+\endinput
+

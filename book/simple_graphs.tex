@@ -1,0 +1,1329 @@
+%\input{cp6m}
+%\input{cp6t}
+%\input{cp6r}
+%\input{cp7m}
+%\input{ps5}
+
+\hyperdef{simple}{graphs}{\chapter{Simple Graphs}}\label{simple_graphs_chap}
+
+Graphs in which edges are \emph{not} directed are called \term{simple
+graphs}.  They come up in all sorts of applications, including
+scheduling, optimization, communications, and the design and analysis
+of algorithms.  Two Stanford students even used graph theory to become
+multibillionaires!
+
+But we'll start with an application designed to get your attention: we are
+going to make a professional inquiry into sexual behavior.  Namely, we'll
+look at some data about who, on average, has more opposite-gender
+partners, men or women.
+
+Sexual demographics have been the subject of many studies.  In one of the
+largest, researchers from the University of Chicago interviewed a random
+sample of 2500 people over several years to try to get an answer to this
+question.  Their study, published in 1994, and entitled \emph{The Social
+  Organization of Sexuality} found that on average men have 74\% more
+opposite-gender partners than women.
+
+Other studies have found that the disparity is even larger.  In
+particular, ABC News claimed that the average man has 20 partners over his
+lifetime, and the average woman has 6, for a percentage disparity of
+233\%.  The ABC News study, aired on Primetime Live in 2004, purported to
+be one of the most scientific ever done, with only a 2.5\% margin of
+error.  It was called "American Sex Survey: A peek between the sheets,"
+---which raises some question about the seriousness of their reporting.
+\begin{staffnotes}
+The promotion for the study is even better:
+\begin{quote} 
+A ground breaking ABC News ``Primetime Live'' survey finds a range of
+eye-popping sexual activities, fantasies and attitudes in this country,
+confirming some conventional wisdom, exploding some myths -- and venturing
+where few scientific surveys have gone before.
+\end{quote}
+Probably that last part about going where few scientific surveys have gone
+before is pretty accurate!
+\end{staffnotes}
+
+Yet again, in August, 2007, the N.Y. Times
+\href{The-Myth-the-Math-the-Sex.pdf}{reported}
+\iffalse
+\href{http://www.nytimes.com/2007/08/12/weekinreview/12kolata.html?_r=1&n=Top/Reference/Times%20Topics/People/K/Kolata,%20Gina&oref=slogin}{reported}
+\fi
+on a study by the National Center for Health Statistics of the U.S. government
+showing that men had seven partners while women had four.  Anyway, whose numbers do
+you think are more accurate, the University of Chicago, ABC News, or the National
+Center? ---don't answer; this is a setup question like ``When did you stop beating
+your wife?''  Using a little graph theory, we'll explain why none of these findings
+can be anywhere near the truth.
+
+\hyperdef{graph}{degrees}{\section{Degrees \& Isomorphism}}\label{degreessec}
+
+\subsection{Definition of Simple Graph}
+Informally, a graph is a bunch of dots with lines connecting some of
+them.  Here is an example:
+
+\mfigure{!}{1.5in}{figures/graph-example.pdf}
+
+For many mathematical purposes, we don't really care how the points and
+lines are laid out ---only which points are connected by lines.  The
+definition of \emph{simple graphs} aims to capture just this connection
+data.
+
+\begin{definition}\label{graphdef} 
+A \term{simple graph}, $G$, consists of a nonempty set, $V$, called the
+\term{vertices} of $G$, and a collection, $E$, of two-element subsets of
+$V$.  The members of $E$ are called the \term{edges} of $G$.
+\end{definition}
+The vertices correspond to the dots in the picture, and the edges
+correspond to the lines.  For example, the connection data given in the
+diagram above can also be given by listing the vertices and edges according
+to the official definition of simple graph:
+\begin{align*}
+V & =  \set{A, B, C, D, E, F, G, H, I} \\
+E & =  \set{ \set{A, B}, \set{A, C}, \set{B, D}, \set{C, D},
+              \set{C, E}, \set{E, F}, \set{E, G}, \set{H, I} }.
+\end{align*}          
+It will be helpful to use the notation $\edge{A}{B}$ for the edge
+$\set{A,B}$.  Note that $\edge{A}{B}$ and $\edge{B}{A}$ are different
+descriptions of the same edge, since sets are unordered.
+
+So the definition of simple graphs is the same as for directed graphs,
+except that instead of a directed edge $\diredge{v}{w}$ which starts
+at vertex $v$ and ends at vertex $w$, a simple graph only has an
+undirected edge, $\edge{v}{w}$, that connects $v$ and $w$.
+
+\begin{definition}
+Two vertices in a simple graph are said to be \term{adjacent} if they are
+joined by an edge, and an edge is said to be \term{incident} to the
+vertices it joins.  The number of edges incident to a vertex is called the
+\term{degree} of the vertex; equivalently, the degree of a vertex is
+equals the number of vertices adjacent to it.
+\end{definition}
+For example, in the simple graph above, $A$ is adjacent to $B$ and $B$ is
+adjacent to $D$, and the edge $\edge{A}{C}$ is incident to vertices $A$
+and $C$.  Vertex $H$ has degree 1, $D$ has degree 2, and $E$ has degree 3.
+
+\subsubsection{Graph Synonyms}
+A synonym for ``vertices'' is ``\term{nodes},'' and we'll use these
+words interchangeably.  Simple graphs are sometimes
+called \emph{networks}, edges are sometimes called \emph{arcs}.  We
+mention this as a ``heads up'' in case you look at other graph theory
+literature; we won't use these words.
+
+Some technical consequences of Definition~\ref{graphdef} are worth noting
+right from the start:
+\begin{enumerate}
+\item Simple graphs do \emph{not} have self-loops ($\set{a,a}$ is not an undirected edge because an undirected edge is defined to be a set of \emph{two} vertices.)
+
+\item There is at most one edge between two vertices of a simple graph.
+
+\item Simple graphs have at least one vertex, though they might not have
+any edges.
+\end{enumerate}
+There's no harm in relaxing these conditions, and some authors do, but we don't need
+self-loops, multiple edges between the same two vertices, or graphs with no vertices,
+and it's simpler not to have them around.
+
+For the rest of this Chapter we'll only be considering simple graphs, so we'll just
+call them ``graphs'' from now on.
+
+\hyperdef{sex}{america}{\subsection{Sex in America}\label{sexam}}
+%A 1994 University of Chicago study entitled \emph{The Social
+%Organization of Sexuality} found that on average men have 74\% more
+%opposite-gender partners than women.
+
+Let's model the question of heterosexual partners in graph theoretic terms.  To do
+this, we'll let $G$ be the graph whose vertices, $V$, are all the people in America.
+Then we split $V$ into two separate subsets: $M$, which contains all the males, and
+$F$, which contains all the females.\footnote{For simplicity, we'll ignore the
+possibility of someone being both, or neither, a man and a woman.}  We'll put an edge
+between a male and a female iff they have been sexual partners.  This graph is pictured
+in Figure~\ref{fig:partners} with males on the left and females on the right.
+
+\begin{figure}[htbp]
+\centering \includegraphics[height=1.75in]{figures/sex-edges.pdf}
+\caption{The sex partners graph}
+\label{fig:partners}
+\end{figure}
+
+Actually, this is a pretty hard graph to figure out, let alone draw.
+The graph is \emph{enormous}: the US population is about 300 million,
+so $\card{V} \approx 300M$.  Of these, approximately 50.8\% are female
+and 49.2\% are male, so $\card{M} \approx 147.6M$, and
+$\card{F} \approx 152.4M$.  And we don't even have trustworthy
+estimates of how many edges there are, let alone exactly which couples
+are adjacent.  But it turns out that we don't need to know any of this
+---we just need to figure out the relationship between the average
+number of partners per male and partners per female.  To do this, we
+note that every edge is incident to exactly one $M$ vertex (remember,
+we're only considering male-female relationships); so the sum of the
+degrees of the $M$ vertices equals the number of edges.  For the same
+reason, the sum of the degrees of the $F$ vertices equals the number
+of edges.  So these sums are equal:
+%
+\[
+\sum_{x \in M} \degr{x} = \sum_{y \in F} \degr{y}.
+\]
+%
+Now suppose we divide both sides of this equation by the product of the sizes of the
+two sets, $\card{M} \cdot \card{F}$:
+%
+\[
+\left(\frac{\sum_{x \in M} \degr{x}}{\card{M}}\right) \cdot \frac{1}{\card{F}} =
+\left(\frac{\sum_{y \in F} \degr{y}}{\card{F}}\right) \cdot \frac{1}{\card{M}}
+\]
+%
+The terms above in parentheses are the \emph{\idx{average degree} of an $M$ vertex} and
+  the \emph{average degree of a $F$} vertex.  So we know:
+\[
+\text{Avg. deg in $M$} = \frac{\card{F}}{\card{M}} \cdot \text{Avg. deg in $F$}
+\]
+
+In other words, we've proved that the average number of female partners of males in the
+population compared to the average number of males per female is \emph{determined
+solely by the relative number of males and females in the population}.
+
+Now the Census Bureau reports that there are slightly more females than males in
+America; in particular $\card{F} / \card{M}$ is about 1.035.  So we know that on
+average, males have 3.5\% more opposite-gender partners than females, and this tells us
+nothing about any sex's promiscuity or selectivity.  Rather, it just has to do with the
+relative number of males and females.  Collectively, males and females have the same
+number of opposite gender partners, since it takes one of each set for every
+partnership, but there are fewer males, so they have a higher ratio.  This means that
+the University of Chicago, ABC, and the Federal government studies are way off.  After
+a huge effort, they gave a totally wrong answer.
+
+There's no definite explanation for why such surveys are consistently wrong.  One
+hypothesis is that males exaggerate their number of partners ---or maybe females
+downplay theirs ---but these explanations are speculative.  Interestingly, the
+principal author of the National Center for Health Statistics study reported that she
+knew the results had to be wrong, but that was the data collected, and her job was to
+report it.
+
+The same underlying issue has led to serious misinterpretations of other survey data.
+For example, a couple of years ago, the Boston Globe ran a story on a survey of the
+study habits of students on Boston area campuses.  Their survey showed that on average,
+minority students tended to study with non-minority students more than the other way
+around.  They went on at great length to explain why this ``remarkable phenomenon''
+might be true.  But it's not remarkable at all ---using our graph theory formulation,
+we can see that all it says is that there are fewer minority students than non-minority
+students, which is, of course what ``minority'' means.
+
+\subsection{Handshaking Lemma}
+The previous argument hinged on the connection between a sum of degrees and the number
+edges.  There is a simple connection between these in any graph:
+
+\begin{lemma}\label{sumedges}
+The sum of the degrees of the vertices in a graph equals twice the number of edges.
+\end{lemma}
+
+\begin{proof}
+Every edge contributes two to the sum of the degrees, one for each of its endpoints.
+\end{proof}
+
+Lemma~\ref{sumedges} is sometimes called the \term{Handshake Lemma}: if we total up the
+number of people each person at a party shakes hands with, the total will be twice the
+number of handshakes that occurred.
+
+\subsection{Some Common Graphs}
+Some graphs come up so frequently that they have names.  The
+\term{complete graph} on $n$ vertices, also called \term{$K_n$}, has an edge
+between every two vertices.  Here is $K_5$:
+
+\mfigure{!}{1.5in}{figures/complete-graph.pdf}
+
+The \term{empty graph} has no edges at all.  Here is the empty graph on 5 vertices:
+
+\mfigure{!}{1.5in}{figures/empty-graph.pdf}
+
+Another 5 vertex graph is $L_4$, the \term{line graph} of length four:
+
+\mfigure{!}{1in}{figures/path-graph.pdf}
+
+And here is $C_5$, a \term{simple cycle} with 5 vertices:
+
+\mfigure{!}{1.5in}{figures/cycle.pdf}
+
+\subsection{Isomorphism}
+Two graphs that look the same might actually be different in a formal sense.  For
+example, the two graphs below are both simple cycles with 4~vertices:
+
+\mfigure{!}{1.5in}{figures/isomorphism.pdf}
+But one graph has vertex set $\set{A, B, C, D}$ while the other has vertex set $\set{1,
+2, 3, 4}$.  If so, then the graphs are different mathematical objects, strictly
+speaking.  But this is a frustrating distinction; the graphs \emph{look the same}!
+
+Fortunately, we can neatly capture the idea of ``looks the same'' by adapting
+Definition~\ref{relation-isomorphism} of isomorphism of digraphs to handle simple
+graphs.
+
+\begin{definition}\label{simple-isomorphism}
+  If $G_1$ is a graph with vertices, $V_1$, and edges, $E_1$, and likewise for $G_2$,
+  then $G_1$ is \term{isomorphic} to $G_2$ iff there exists a \textbf{bijection}, $f:
+  V_1 \to V_2$, such that for every pair of vertices $u, v \in V_1$:
+\[
+\edge{u}{v} \in E_1 \qiff \edge{f(u)}{f(v)} \in E_2.
+\]
+The function $f$ is called an \term{isomorphism} between $G_1$ and $G_2$.
+\end{definition}
+
+
+\begin{staffnotes}
+Graphs $G_1$ and $G_2$ are \emph{isomorphic} if there exists a bijection between the
+vertices in $G_1$ and the vertices in $G_2$ such that there is an edge between two
+vertices in $G_1$ if and only if there is an edge between the two corresponding
+vertices in $G_2$.
+
+\end{staffnotes}
+
+For example, here is an isomorphism between vertices in the two graphs above:
+\[
+\begin{array}{lll}
+A \text{ corresponds to } 1 & \hspace{0.5in} & B \text{ corresponds to } 2 \\
+D \text{ corresponds to } 4 & & C \text{ corresponds to } 3.
+\end{array}
+\]
+You can check that there is an edge between two vertices in the graph on the left if
+and only if there is an edge between the two corresponding vertices in the graph on the
+right.
+
+Two isomorphic graphs may be drawn very differently.  For example, here
+are two different ways of drawing $C_5$:
+
+\mfigure{!}{1.5in}{figures/isomorphism-c5.pdf}
+
+Isomorphism preserves the connection properties of a graph, abstracting out what the
+vertices are called, what they are made out of, or where they appear in a drawing of
+the graph.  More precisely, a property of a graph is said to be \term{preserved under
+isomorphism} if whenever $G$ has that property, every graph isomorphic to $G$ also has
+that property.  For example, since an isomorphism is a bijection between sets of
+vertices, isomorphic graphs must have the same number of vertices.  What's more, if $f$
+is a graph isomorphism that maps a vertex, $v$, of one graph to the vertex, $f(v)$, of
+an isomorphic graph, then by definition of isomorphism, every vertex adjacent to $v$ in
+the first graph will be mapped by $f$ to a vertex adjacent to $f(v)$ in the isomorphic
+graph.  That is, $v$ and $f(v)$ will have the same degree.  So if one graph has a
+vertex of degree 4 and another does not, then they can't be isomorphic.  In fact, they
+can't be isomorphic if the number of degree 4 vertices in each of the graphs is not the
+same.
+
+Looking for preserved properties can make it easy to determine that
+two graphs are not isomorphic, or to actually find an isomorphism
+between them, if there is one.  In practice, it's frequently easy to
+decide whether two graphs are isomorphic.  However, no one has yet
+found a
+\emph{general} procedure for determining whether two graphs are isomorphic
+that is \emph{guaranteed} to run much faster than an exhaustive (and
+exhausting) search through all possible bijections between their
+vertices.
+
+Having an efficient procedure to detect isomorphic graphs would, for
+example, make it easy to search for a particular molecule in a database
+given the molecular bonds.  On the other hand, knowing there is no such
+efficient procedure would also be valuable: secure protocols for
+encryption and remote authentication can be built on the hypothesis that
+graph isomorphism is computationally exhausting.
+
+%% Simple Graphs Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_Handshaking_Lemma}
+\pinput{CP_isomorphic_graphs}
+% S09.cp6m.1
+% S09.cp6m.3
+% S09.cp6m.4
+
+\homeworkproblems
+\pinput{PS_choose_isomorphic_graphs}
+\pinput{PS_neighbors_under_isomorphisms}
+\pinput{PS_graph_two_ends}
+
+\examproblems
+\pinput{MQ_list_isomorphisms}
+\pinput{FP_bipartite_matching_sex}
+\end{problems}
+
+%% Connectedness %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hyperdef{connect}{edness}{\section{Connectedness}}
+
+\subsection{Paths and Simple Cycles}
+
+\emph{Paths} in simple graphs are esentially the same as paths in digraphs.
+We just modify the digraph definitions using undirected edges instead of directed
+ones.  For example, the formal definition of a path in a simple graph is a virtually
+that same as Definition~\ref{def:digraph-paths} of paths in digraphs:
+
+\begin{definition}\label{def:undirected-path}
+A \term{path} in a graph, $G$, is a sequence of $k \geq 0$ vertices
+\[
+v_0,\dots,v_k
+\]
+such that $\edge{v_i}{v_{i+1}}$ is an edge of $G$ for all $i$ where $0
+\leq i < k$ .  The path is said to \index{start of path}\emph{start} at
+$v_0$, to \index{end of path}\emph{end} at $v_k$, and the \index{length of
+  path}\emph{length} of the path is defined to be $k$.
+
+An edge, $\edge{u}{v}$, is \term{traversed} $n$ times by the path if there
+are $n$ different values of $i$ such that $\edge{v_i}{v_{i+1}} =
+\edge{u}{v}$.  The path is \term{simple}\footnote{Heads up: what we call
+  ``paths'' are commonly referred to in graph theory texts as ``walks,'' and simple
+  paths are referred to as just ``paths''.  Likewise, what we will call \emph{cycles}
+  and \emph{simple cycles} are commonly called ``closed walks'' and just ``cycles''.}
+  iff all the $v_i$'s are different, that is, if $i\neq j$ implies $v_i \neq v_j$.
+\end{definition}
+
+For example, the graph in Figure~\ref{dg} has a length~6 simple path
+A,B,C,D,E,F,G.  This is the longest simple path in the graph.
+\begin{figure}[htbp] 
+\mfigure{!}{1.75in}{figures/distance-graph.pdf}
+\caption{\em A graph with 3 simple cycles.}
+\label{dg}
+\end{figure}
+
+As in digraphs, the length of a path is the total number of times it traverses edges,
+which is \emph{one less} than its length as a sequence of vertices.  For example, the
+length~6 path A,B,C,D,E,F,G is actually a sequence of seven vertices.
+
+A \emph{\idx{cycle}} can be described by a path \iffalse of length two or
+more\fi that begins and ends with the same vertex.  For example,
+B,C,D,E,C,B is a cycle in the graph in Figure~\ref{dg}.  This path
+suggests that the cycle begins and ends at vertex B, but a cycle isn't
+intended to have a beginning and end, and can be described by \emph{any}
+of the paths that go around it.  For example, D,E,C,B,C,D describes this
+same cycle as though it started and ended at D, and D,C,B,C,E,D describes
+the same cycle as though it started and ended at D but went in the
+opposite direction.  (By convention, a single vertex is a length 0 cycle
+beginning and ending at the vertex.)
+
+All the paths that describe the same cycle have the same length which is defined to
+be the \term{length of the cycle}.  (Note that this implies that going around the
+same cycle twice is considered to be different than going around it once.)
+
+A \index{simple cycle}\emph{simple} cycle is a cycle that doesn't cross or
+backtrack on itself.  For example, the graph in Figure~\ref{dg} has three
+simple cycles B,H,E,C,B and C,D,E,C and B,C,D,E,H,B.  More precisely, a
+simple cycle is a cycle that can be described by a path of length at least
+three whose vertices are all different except for the beginning and end
+vertices.  So in contrast to simple \emph{paths}, the length of a simple
+\emph{cycle} is the \emph{same} as the number of distinct vertices that
+appear in it.
+
+From now on we'll stop being picky about distinguishing a cycle from a
+path that describes it, and we'll just refer to the path as a cycle.
+\footnote{Technically speaking, we haven't ever defined what a cycle
+\emph{is}, only how to describe it with paths.  But we won't need an
+abstract definition of cycle, since all that matters about a cycle is which
+paths describe it.}
+
+Simple cycles are especially important, so we will give a proper
+definition of them.  Namely, we'll define a simple cycle in $G$ to be a
+\emph{subgraph} of $G$ that looks like a cycle that doesn't cross itself.
+Formally:
+\begin{definition}
+A \term{subgraph}, $G'$, of a graph, $G$, is a graph whose vertices, $V'$,
+are a subset of the vertices of $G$ and whose edges are a subset
+of the edges of $G$.
+\end{definition}
+Notice that since a subgraph is itself a graph, the endpoints of every
+edge of $G'$ must be vertices in $V'$.
+\begin{definition}
+  For $n \ge 3$, let \term{$C_n$} be the graph with vertices $1,\dots, n$
+  and edges
+\[
+\edge{1}{2},\ \ \edge{2}{3},\ \ \dots,\ \ \edge{(n-1)}{n},\ \ \edge{n}{1}.
+\]
+
+A graph is a \term{simple cycle} of length $n$ iff it is isomorphic to $C_n$
+for some $n \ge 3$.  A \term{simple cycle of a graph}, $G$, is a subgraph
+of $G$ that is a simple cycle.
+\end{definition}
+This definition formally captures the idea that simple cycles don't
+have direction or beginnings or ends.
+
+
+\subsection{Connected Components}
+\begin{definition}
+  Two vertices in a graph are said to be \term{connected} when there is a
+  path that begins at one and ends at the other.  By convention, every
+  vertex is considered to be connected to itself by a path of length zero.
+\end{definition}
+
+\begin{staffnotes}
+
+Now if there is a path from vertex $u$ to vertex $v$, then $v$ is
+connected to $u$ by the reverse path, so connectedness is a symmetric
+relation.  Also, if there is a path from $u$ to $v$, and also a path from
+$v$ to $w$, then these two paths can be combined to form a path from $u$
+to $w$.  So the connectedness relation is transitive.  It is also
+reflexive, since every vertex is by definition connected to itself by a
+path of length zero.
+
+\end{staffnotes}
+
+The diagram in Figure~\ref{fig:3comp} looks like a picture of three
+graphs, but is intended to be a picture of \emph{one} graph.  This graph
+consists of three pieces (subgraphs).  Each piece by itself is connected,
+but there are no paths between vertices in different pieces.
+
+\begin{staffnotes}
+
+\begin{figure}[htbp]
+\mfigure{!}{1.5in}{figures/3comp.pdf}
+% \centerline{\psfig{figure=figures/3comp.eps,height=1.5in}}
+\caption{\em One graph with 3 connected components.}
+\label{fig:3comp}
+\end{figure}
+
+\end{staffnotes}
+
+\begin{figure}[htbp] 
+\mfigure{!}{1.5in}{figures/connectivity-graphs.pdf}
+\caption{\em One graph with 3 connected components.}
+\label{fig:3comp}
+\end{figure}
+
+\begin{definition}\label{def:connected-graph}
+A graph is said to be \term{connected} when every pair of vertices are
+connected.
+\end{definition}
+These connected pieces of a graph are called its \term{connected
+components}.  A rigorous definition is easy: a connected component is the
+set of all the vertices connected to some single vertex.  So a graph is
+connected iff it has exactly one connected component.  The empty graph on
+$n$ vertices has $n$ connected components.
+
+\subsection{How Well Connected?}
+If we think of a graph as modelling cables in a telephone network, or
+oil pipelines, or electrical power lines, then we not only want
+connectivity, but we want connectivity that survives component
+failure.  A graph is called \emph{$k$-edge connected} if it takes at
+least $k$ ``edge-failures'' to disconnect it.  More precisely:
+
+\begin{definition}
+  Two vertices in a graph are $k$-\term{edge connected} if they remain
+  connected in every subgraph obtained by deleting $k-1$ edges.  A graph
+  with at least two vertices is $k$-edge connected\footnote{The
+    corresponding definition of connectedness based on deleting vertices
+    rather than edges is common in Graph Theory texts and is usually
+    simply called ``$k$-connected'' rather than ``$k$-vertex connected.''}
+  if every two of its vertices are $k$-edge connected.
+\end{definition}
+
+So 1-edge connected is the same as connected for both vertices and graphs.
+Another way to say that a graph is $k$-edge connected is that every
+subgraph obtained from it by deleting at most $k-1$ edges is connected.
+For example, in the graph in Figure~\ref{dg}, vertices B and E are 2-edge
+connected, G and E are 1-edge connected, and no vertices are 3-edge
+connected.  The graph as a whole is only 1-edge connected.  More
+generally, any simple cycle is 2-edge connected, and the complete graph,
+$K_n$, is $(n-1)$-edge connected.
+
+If two vertices are connected by $k$ edge-disjoint paths (that is, no
+two paths traverse the same edge), then they are obviously $k$-edge
+connected.  A fundamental fact, whose ingenious proof we omit,
+is \idx{Menger}'s theorem which confirms that the converse is also
+true: if two vertices are $k$-edge connected, then there are $k$
+edge-disjoint paths connecting them.  It even takes some ingenuity to
+prove this for the case $k=2$.
+
+\subsection{Connection by Simple Path}
+
+Where there's a path, there's a simple path.  This is sort of obvious, but
+it's easy enough to prove rigorously using the \idx{Well Ordering Principle}.
+
+\begin{lemma}\label{simplepath}
+If vertex $u$ is connected to vertex $v$ in a graph, then there is a
+simple path from $u$ to $v$.
+\end{lemma}
+
+\begin{proof}
+Since there is a path from $u$ to $v$, there must, by the Well-ordering
+Principle, be a minimum length path from $u$ to $v$.  If the minimum
+length is zero or one, this minimum length path is itself a simple path
+from $u$ to $v$.
+Otherwise, there is a minimum length path
+\[
+v_0, v_1,\dots, v_k
+\]
+from $u = v_0$ to $v = v_k$ where $k \geq 2$.  We claim this path must be
+simple.
+To prove the claim, suppose to the contrary that the path is not simple,
+that is, some vertex on the path occurs twice.  This means that there are
+integers $i,j$ such that $0 \leq i < j \leq k$ with $v_i= v_j$.  Then
+deleting the subsequence
+\[
+v_{i+1}, \dots v_j
+\]
+yields a strictly shorter path
+\[
+v_0, v_1,\dots, v_i,v_{j+1},v_{j+2},\dots, v_k
+\]
+from $u$ to $v$, contradicting the minimality of the given path.
+\end{proof}
+
+Actually, we proved something stronger:
+\begin{corollary}\label{ss}
+For any path of length $k$ in a graph, there is a simple path of length
+\emph{at most} $k$ with the same endpoints.
+\end{corollary}
+
+\subsection{The Minimum Number of Edges in a Connected Graph}
+The following theorem says that a graph with few edges must have many
+connected components.
+\begin{theorem} \label{th:connectivity}
+Every graph with $v$ vertices and $e$ edges has at least $v - e$ connected
+components.
+\end{theorem}
+Of course for Theorem~\ref{th:connectivity} to be of any use, there must
+be fewer edges than vertices.
+
+\begin{proof}
+We use induction on the number of edges, $e$.  Let $P(e)$ be the
+proposition that
+\begin{quote}
+for every $v$, every graph with $v$ vertices and $e$ edges has at least
+$v-e$ connected components.
+\end{quote}
+
+\textbf{Base case:}($e=0$).  In a graph with 0 edges and $v$ vertices,
+each vertex is itself a connected component, and so there are exactly $v =
+v - 0$ connected components.  So $P(e)$ holds.
+
+\textbf{Inductive step:} Now we assume that the induction hypothesis holds
+for every $e$-edge graph in order to prove that it holds for every
+$(e+1)$-edge graph, where $e \geq 0$.
+Consider a graph, $G$, with $e + 1$ edges and $k$ vertices.  We want to
+prove that $G$ has at least $v - (e+1)$ connected components.
+To do this, remove an arbitrary edge $\edge{a}{b}$ and call the resulting
+graph $G'$.  By the induction assumption, $G'$ has at least $v - e$
+connected components.
+Now add back the edge $\edge{a}{b}$ to obtain the original graph $G$.  If
+$a$ and $b$ were in the same connected component of $G'$, then $G$ has the
+same connected components as $G'$, so $G$ has at least $v -e > v - (e+1)$
+components.  Otherwise, if $a$ and $b$ were in different connected
+components of $G'$, then these two components are merged into one in $G$,
+but all other components remain unchanged, reducing the number of
+components by 1.  Therefore, $G$ has at least $(v - e) - 1 = v - (e+1)$
+connected components.  So in either case, $P(e+1)$ holds.  This completes
+the Inductive step.
+The theorem now follows by induction.
+\end{proof}
+
+\begin{corollary}
+\label{cor:n-1}
+Every connected graph with $v$ vertices has at least $v - 1$ edges.
+\end{corollary}
+
+A couple of points about the proof of Theorem~\ref{th:connectivity} are
+worth noticing.  First, we used induction on the number of
+edges in the graph.  This is very common in proofs involving graphs, and
+so is induction on the number of vertices.  When you're presented with a
+graph problem, these two approaches should be among the first you
+consider.  The second point is more subtle.  Notice that in the inductive
+step, we took an arbitrary $(n+1)$-edge graph, threw out an edge so that
+we could apply the induction assumption, and then put the edge back.
+You'll see this shrink-down, grow-back process very often in the inductive
+steps of proofs related to graphs.  This might seem like needless effort;
+why not start with an $n$-edge graph and add one more to get an
+$(n+1)$-edge graph?  That would work fine in this case, but opens the door
+to a nasty logical error called \term{buildup error}, illustrated in
+Problems~\ref{PS_graph_two_ends} and~\ref{CP_pos_deg_but_not_connected}.
+Always use shrink-down, grow-back arguments, and you'll never fall into
+this trap.
+%S08, cp6m, S06 cp5f
+
+%S06 cp5f
+
+%% Connectedness Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_n_dim_hypercube}
+\pinput{CP_graph_maximal_connected}
+\pinput{CP_Kn_is_very_connected}
+\pinput{CP_pos_deg_but_not_connected}
+\homeworkproblems
+\pinput{PS_Euler_circuits}
+
+% S09.cp6m.2
+% S09.cp6t.1
+
+\homeworkproblems
+\pinput{PS_tangled_and_mangled_graphs}
+\pinput{PS_circuit_graph_with_crossbars}
+\end{problems}
+
+%% Trees %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Used to come after Coloring: proof read for switched references
+
+\section{Trees}\label{trees-sec}
+Trees are a fundamental data structure in computer science, and there are
+many kinds, such as rooted, ordered, and binary trees.  In this section
+we focus on the purest kind of tree.  Namely, we use the term \term{tree} to
+mean a connected graph without simple cycles.
+
+A graph with no simple cycles is called \term{acyclic}; so trees are
+acyclic connected graphs.
+
+\subsection{Tree Properties}
+
+Here is an example of a tree:
+
+\mfigure{!}{1.5in}{figures/tree-example.pdf}
+
+A vertex of degree at most one is called a \term{leaf}.  In this example, there are 5~leaves. Note 
+that the only case where a tree can have a vertex of degree zero is a graph with a single
+vertex.
+
+The graph shown above would no longer be a tree if any edge were removed,
+because it would no longer be connected.  The graph would also not remain
+a tree if any edge were added between two of its vertices, because then it
+would contain a simple cycle.  Furthermore, note that there is a unique
+path between every pair of vertices.  These features of the example tree
+are actually common to all trees.
+
+\begin{theorem}\label{th:treeprops}
+Every tree has the following properties:
+
+\begin{enumerate}
+\item Any connected subgraph is a tree.\label{asub}
+
+\item There is a unique simple path between every pair of vertices.
+\item Adding an edge between two vertices creates a cycle.
+\item Removing any edge disconnects the graph.
+\item If it has at least two vertices, then it has at least two leaves.
+\item The number of vertices is one larger than the number of edges.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+
+\item A simple cycle in a subgraph is also a simple cycle in
+the whole graph, so any subgraph of an acyclic graph must also be acyclic.
+If the subgraph is also connected, then by definition, it is a tree.
+
+\item There is at least one path, and hence one simple path, between every
+pair of vertices, because the graph is connected.  Suppose that there are
+two different simple paths between vertices $u$ and $v$.  Beginning at
+$u$, let $x$ be the first vertex where the paths diverge, and let $y$ be
+the next vertex they share.  Then there are two simple paths from $x$ to
+$y$ with no common edges, which defines a simple cycle.  This is a
+contradiction, since trees are acyclic.  Therefore, there is exactly one
+simple path between every pair of vertices.
+
+\mfigure{!}{1in}{figures/unique-path.pdf}
+
+\item An additional edge $\edge{u}{v}$ together with the unique path
+between $u$ and $v$ forms a simple cycle.
+
+\item Suppose that we remove edge $\edge{u}{v}$.  Since the tree
+contained a unique path between $u$ and $v$, that path must have been
+$\edge{u}{v}$.  Therefore, when that edge is removed, no path remains,
+and so the graph is not connected.
+
+\item Let $v_1, \dots, v_m$ be the sequence of vertices on a longest
+simple path in the tree.  Then $m \geq 2$, since a tree with two vertices
+must contain at least one edge.  There cannot be an edge $\edge{v_1}{v_i}$
+for $2 < i \leq m$; otherwise, vertices $v_1, \dots, v_i$ would from a
+simple cycle.  Furthermore, there cannot be an edge $\edge{u}{v_1}$ where
+$u$ is not on the path; otherwise, we could make the path longer.
+Therefore, the only edge incident to $v_1$ is $\edge{v_1}{v_2}$, which
+means that $v_1$ is a leaf.  By a symmetric argument, $v_m$ is a second
+leaf.
+
+\item We use induction on the number of vertices.  For a tree with a
+single vertex, the claim holds since it has no edges and $0 + 1 = 1$ vertex.
+Now suppose that the claim holds for all $n$-vertex trees and consider an
+$(n+1)$-vertex tree, $T$.  Let $v$ be a leaf of the tree.
+You can verify that deleting a vertex of degree 1 (and its incident edge)
+from any connected graph leaves a connected subgraph.  So by~\ref{asub}.,
+deleting $v$ and its incident edge gives a smaller tree, and this smaller
+tree has one more vertex than edge by induction.  If we re-attach the
+vertex, $v$, and its incident edge, then the equation still holds because
+the number of vertices and number of edges both increase by 1.  Thus, the
+claim holds for $T$ and, by induction, for all trees.
+\end{enumerate}
+\end{proof}
+Various subsets of these properties provide alternative characterizations
+of trees, though we won't prove this.  For example, a \emph{connected}
+graph with a number of vertices one larger than the number of edges is
+necessarily a tree.  Also, a graph with unique paths between every pair of
+vertices is necessarily a tree.
+
+\subsection{Spanning Trees}
+Trees are everywhere.  In fact, every connected graph contains a
+subgraph that is a tree with the same vertices as the graph.  This is a
+called a \term{spanning tree} for the graph.  For example, here is a
+connected graph with a spanning tree highlighted.
+\mfigure{!}{1.5in}{figures/spanning-tree.pdf}
+
+\begin{theorem}
+Every connected graph contains a spanning tree.
+\end{theorem}
+
+\begin{proof}
+Let $T$ be a connected subgraph of $G$, with the same vertices as $G$, and
+with the smallest number of edges possible for such a subgraph.  We show
+that $T$ is acyclic by contradiction.  So suppose that $T$ has a cycle
+with the following edges:
+\[
+\edge{v_0}{v_1}, \edge{v_1}{v_2}, \dots, \edge{v_n}{v_0}
+\]
+Suppose that we remove the last edge, $\edge{v_n}{v_0}$.  If a pair of
+vertices $x$ and $y$ was joined by a path not containing
+$\edge{v_n}{v_0}$, then they remain joined by that path.  On the other
+hand, if $x$ and $y$ were joined by a path containing $\edge{v_n}{v_0}$,
+then they remain joined by a path containing the remainder of the cycle.
+So all the vertices of $G$ are still connected after we remove an edge
+from $T$.  This is a contradiction, since $T$ was defined to be a minimum
+size connected subgraph with all the vertices of $G$.  So $T$ must be
+acyclic.
+\end{proof}
+
+\begin{staffnotes}
+
+\subsection{Tree Variations}
+Trees come up often in computer science.  For example, information is
+often stored in tree-like data structures and the execution of many
+recursive programs can be regarded as a traversal of a tree.
+There are many varieties of trees.  For example, a \term{rooted tree}
+is a tree with one vertex identified as the \term{root}.  Let
+$\edge{u}{v}$ be an edge in a rooted tree such that $u$ is closer to
+the root than $v$.  Then $u$ is the \term{parent} of $v$, and $v$ is
+a \term{child} of $u$.
+\mfigure{!}{1.5in}{figures/rooted-tree.pdf}
+In the tree above, suppose that we regard vertex $A$ as the
+root.  Then $E$ and $F$ are the children of $B$, and $A$ is the parent
+of $B$, $C$, and $D$.
+A \term{binary} tree is a rooted tree in which every vertex has at most
+two children.  Here is an example, where the topmost vertex is the
+root.
+\mfigure{!}{1.5in}{figures/binary-tree.pdf}
+In an \term{ordered, binary} tree, the children of a vertex $v$ are
+distinguished.  One is called the \term{left child} of $v$, and the
+other is called the \term{right child}.  For example, if we regard the
+two binary trees below as unordered, then they are equivalent.
+However, if we regard these trees as ordered, then they are different.
+\mfigure{!}{1.5in}{figures/ordered-trees.pdf}
+
+\end{staffnotes}
+
+\begin{staffnotes}
+
+\textcolor{red}{PS\_Euler\_circuits presents most of this as a homework problem}
+
+\section{Traversing a Graph}
+Can you walk every hallway in the Museum of Fine Arts {\em exactly
+once}?  If we represent hallways and intersections with edges and
+vertices, then this reduces to a question about graphs.  For example,
+could you visit every hallway exactly once in a museum with this
+floorplan?
+
+\mfigure{!}{1.5in}{figures/euler-tour.pdf}
+
+\subsection{Euler Tours and Hamiltonian Cycles}
+
+The entire field of graph theory began when Euler asked whether the seven
+bridges of K\"onigsberg could all be traversed exactly once--- essentially
+the same question we asked about the Museum of Fine Arts.  In his honor,
+an \term{Euler walk} is a defined to be a path that traverses every edge
+in a graph exactly once.  Similarly, an \term{Euler tour} is an Euler walk
+that starts and finishes at the same vertex, that is a cycle that
+traverses every edge exactly once.  Graphs with Euler tours and Euler
+walks both have simple characterizations.
+\begin{theorem}
+A graph has an Euler tour iff it is connected and every vertex has even
+degree.
+\end{theorem}
+\begin{proof}
+Suppose a graph has an Euler tour.  Every pair of vertices must appear in
+the tour, so the graph is connected.  Moreover, a vertex that appears $k$
+times in the tour must have degree $2k$, so every vertex of the graph has
+even degree.
+%Unconvincing
+
+Conversely, suppose every vertex in a graph, $G$, has even degree.  Let $W
+= (v_0,\dot,v_n)$ be the longest path in $G$ that traverses every edge
+\emph{at most} once.  Now $W$ must traverse every edge incident to
+$v_n$; otherwise, the path could be extended.  In particular, the $W$
+traverses two of these edges each time it passes through $v_n$, and it
+traverses $\edge{v_{n-1}}{v_n}$ at the end.  This accounts for an odd
+number of edges, but the degree of $v_n$ is even by assumption.
+Therefore, the $W$ must also begin at $v_n$; that is, $v_0 = v_n$.
+Suppose that $W$ is not an Euler tour.  Because $G$ is a connected
+graph, we can find an edge not in $W$ but incident to some vertex in
+$W$.  Call this edge $\edge{u}{v_i}$.  But then we can construct a
+longer walk:
+%
+\[
+u, \edge{u}{v_i}, v_i, \edge{v_i}{v_{i+1}}, 
+\dots, 
+\edge{v_{n-1}}{v_n}, v_n, \edge{v_0}{v_1}, 
+\dots, 
+\edge{v_{i-1}}{v_i}, v_i
+\]
+%
+This contradicts the definition of $W$, so $W$ must be an
+Euler tour after all.
+\end{proof}
+\begin{corollary}
+A connected graph has an Euler walk if and only if either 0 or 2
+vertices have odd degree.
+\end{corollary}
+Hamiltonian cycles are the unruly cousins of Euler tours.  A
+\term{Hamiltonian cycle} is walk that starts and ends at the same vertex
+and visits every \emph{vertex} in a graph exactly once.  There is no
+simple characterization of all graphs with a Hamiltonian cycle.  (In fact,
+determining whether a given graph has a Hamiltonian cycle is
+``NP-complete''.)
+
+\end{staffnotes}
+
+%% Trees Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_graph_edge_mark}
+\pinput{CP_spanning_tree_proc}
+\pinput{CP_tree_characterizations}
+%\pinput{CP_23_high_priority_servers}
+
+\homeworkproblems
+\pinput{PS_average_degree_of_tree_and_simple_path}
+% S09.cp6t.2
+% S09.cp6t.3
+\end{problems}
+
+%% Coloring Graphs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Used to come before Trees: proof read for switched references
+
+\hyperdef{graph}{coloring}{\section{Coloring Graphs}}
+
+In section~\ref{sexam},
+we used edges to indicate an affinity between two nodes, but having an
+edge represent a \emph{conflict} between two nodes also turns out to be
+really useful.
+
+\section{Modelling Scheduling Conflicts}
+
+Each term the MIT Schedules Office must assign a time slot for each final
+exam.  This is not easy, because some students are taking several classes
+with finals, and a student can take only one test during a particular time
+slot.  The Schedules Office wants to avoid all conflicts.  Of course, you
+can make such a schedule by having every exam in a different slot, but
+then you would need hundreds of slots for the hundreds of courses, and
+exam period would run all year!  So, the Schedules Office would also like
+to keep exam period short.  The Schedules Office's problem is easy to
+describe as a graph.  There will be a vertex for each course with a final
+exam, and two vertices will be adjacent exactly when some student is
+taking both courses.  For example, suppose we need to schedule exams for
+6.041, 6.042, 6.002, 6.003 and 6.170.  The scheduling graph might look
+like this:
+
+\mfigure{!}{1.5in}{figures/finals-subject-labels.pdf}
+
+6.002 and 6.042 cannot have an exam at the same time since there are
+students in both courses, so there is an edge between their nodes.  On the
+other hand, 6.042 and 6.170 can have an exam at the same time if they're
+taught at the same time (which they sometimes are), since no student can
+be enrolled in both (that is, no student \emph{should} be enrolled in both
+when they have a timing conflict).  Next, identify each time slot with a
+color.  For example, Monday morning is red, Monday afternoon is blue,
+Tuesday morning is green, etc.
+
+Assigning an exam to a time slot is now equivalent to coloring the
+corresponding vertex.  The main constraint is that \emph{adjacent vertices
+  must get different colors} ---otherwise, some student has two exams at
+the same time.  Furthermore, in order to keep the exam period short, we
+should try to color all the vertices using as \emph{few different colors
+  as possible}.  For our example graph, three colors suffice:
+
+\mfigure{!}{1.5in}{figures/finals-colored.pdf}
+
+This coloring corresponds to giving one final on Monday morning (red),
+two Monday afternoon (blue), and two Tuesday morning (green).
+Can we use fewer than three colors?  No! We can't use only two colors
+since there is a triangle in the graph, and three vertices in a triangle
+must all have different colors.
+
+This is an example of what is a called a \term{graph coloring problem}:
+given a graph $G$, assign colors to each node such that adjacent nodes
+have different colors.  A color assignment with this property is called a
+\term{valid coloring} of the graph ---a ``\term{coloring},'' for short.  A
+graph $G$ is $k$-\term{colorable} if it has a coloring that uses at most
+$k$ colors.
+\begin{definition}
+  The minimum value of $k$ for which a graph, $G$, has a valid coloring is
+  called its \term{chromatic number}, $\chi(G)$.
+\end{definition}
+
+In general, trying to figure out if you can color a graph with a fixed
+number of colors can take a long time.  It's a classic example of a
+problem for which no fast algorithms are known.  In fact, it is easy to
+check if a coloring works, but it seems really hard to find it (if you
+figure out how, then you can get a \$1 million Clay prize).
+
+
+\subsection{Degree-bounded Coloring}
+There are some simple graph properties that give useful upper bounds on
+colorings.  For example, if we have a bound on the degrees of all the
+vertices in a graph, then we can easily find a coloring with only one more
+color than the degree bound.
+
+\begin{theorem}\label{k+1-colorable}
+A graph with maximum degree at most $k$ is $(k+1)$-colorable.
+\end{theorem}
+
+Unfortunately, if you try induction on $k$, it will lead to disaster.  It
+is not that it is impossible, just that it is extremely painful and would
+ruin you if you tried it on an exam.  Another option, especially with
+graphs, is to change what you are inducting on.  In graphs, some good
+choices are $n$, the number of nodes, or $e$, the number of edges.
+
+\begin{proof}
+We use induction on the number of vertices in the graph, which we
+denote by $n$.  Let $P(n)$ be the proposition that an $n$-vertex graph
+with maximum degree at most $k$ is $(k+1)$-colorable.
+
+\textbf{Base case}: ($n=1$) A 1-vertex graph has maximum degree 0 and is
+1-colorable, so $P(1)$ is true.
+
+\textbf{Inductive step}: Now assume that $P(n)$ is true, and let $G$ be an
+$(n+1)$-vertex graph with maximum degree at most $k$.  Remove a vertex $v$
+(and all edges incident to it), leaving an $n$-vertex subgraph, $H$.  The
+maximum degree of $H$ is at most $k$, and so $H$ is $(k+1)$-colorable by
+our assumption $P(n)$.  Now add back vertex $v$.  We can assign $v$ a
+color different from all its adjacent vertices, since there are at
+most $k$ adjacent vertices and $k+1$ colors are available.  Therefore, $G$
+is $(k+1)$-colorable.  This completes the inductive step, and the theorem
+follows by induction.
+\end{proof}
+
+Sometimes $k+1$ colors is the best you can do.  For example, in the
+complete graph, $K_n$, every one of its $n$ vertices is adjacent to all
+the others, so all $n$ must be assigned different colors.  Of course $n$
+colors is also enough, so $\chi(K_n)=n$.  So $K_{k+1}$ is an example where
+Theorem~\ref{k+1-colorable} gives the best possible bound.  This means
+that Theorem~\ref{k+1-colorable} also gives the best possible bound for
+\emph{any} graph with degree bounded by $k$ that has $K_{k+1}$ as a
+subgraph.
+\begin{staffnotes}
+
+The complete graph, $K_n$, is also called a size $n$ \term{clique},
+just like a clique of friends, where nodes represent the people and an
+edge represents the friendship relationship.\footnote{ When speaking
+of friends, clique is usually pronounced similar to click.  However,
+for some reason, graph theorists think that the word clique rhymes
+with geek.}
+%\mfigure{!}{1.5in}{figures/complete-graph.pdf}
+
+\end{staffnotes}
+But sometimes $k+1$ colors is far from the best that you can do.  Here's
+an example of an $n$-node star graph for $n=7$:
+\mfigure{!}{1.5in}{figures/star-graph.pdf}
+In the $n$-node star graph, the maximum degree is $n-1$, but the star only
+needs $2$ colors!
+
+\subsection{Why coloring?}
+
+One reason coloring problems come all the time is because scheduling
+conflicts are so common.  For example, at Akamai, a new version of
+software is deployed over each of 20,000 servers every few days.  The
+updates cannot be done at the same time since the servers need to be taken
+down in order to deploy the software.  Also, the servers cannot be handled
+one at a time, since it would take forever to update them all (each one
+takes about an hour).  Moreover, certain pairs of servers cannot be taken
+down at the same time since they have common critical functions.  This
+problem was eventually solved by making a 20,000 node conflict graph and
+coloring it with 8 colors -- so only 8 waves of install are needed!
+Another example comes from the need to assign frequencies to radio
+stations.  If two stations have an overlap in their broadcast area, they
+can't be given the same frequency.  Frequencies are precious and
+expensive, so you want to minimize the number handed out.  This amounts to
+finding the minimum coloring for a graph whose vertices are the stations
+and whose edges are between stations with overlapping areas.
+
+Coloring also comes up in allocating registers for program variables.
+While a variable is in use, its value needs to be saved in a register, but
+registers can often be reused for different variables.  But two variables
+need different registers if they are referenced during overlapping
+intervals of program execution.  So register allocation is the coloring
+problem for a graph whose vertices are the variables; vertices are
+adjacent if their intervals overlap, and the colors are registers.
+
+Finally, there's the famous map coloring problem stated in
+Propostion~\ref{4colorprop}.  The question is how many colors are needed
+to color a map so that adjacent territories get different colors?  This is
+the same as the number of colors needed to color a graph that can be drawn
+in the plane without edges crossing.  A proof that four colors are enough
+for the \emph{planar} graphs was acclaimed when it was discovered about
+thirty years ago.  Implicit in that proof was a 4-coloring procedure that
+takes time proportional to the number of vertices in the graph (countries
+in the map).  On the other hand, it's another of those million dollar
+prize questions to find an efficient procedure to tell if a planar graph
+really \emph{needs} four colors or if three will actually do the job.  But
+it's always easy to tell if an \emph{arbitrary} graph is 2-colorable, as
+we show in Section~\ref{bipartitesec}.  Later in
+Chapter~\ref{planar-graphs-chapter}, we'll develop enough planar graph
+theory to present an easy proof at least that planar graphs are
+5-colorable.
+
+%% Coloring Graphs Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_chromatic_number}
+
+% S09.cp6r.1
+% S09.cp6r.2
+
+\homeworkproblems
+\pinput{PS_TA_recitation_graph_coloring}
+\pinput{PS_graph_colorable}
+%\pinput{PS_simple_triangle_free_graph_coloring}
+
+\examproblems
+\pinput{FP_coloring_false-proof}
+
+\end{problems}
+
+%% Bipartite Matchings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hyperdef{bipartite}{matching}{\section{Bipartite Matchings}}\label{bipartitesec}
+
+\subsection{Bipartite Graphs}\label{bipartitesubsec}
+There were two kinds of vertices in the ``Sex in America'' graph ---males
+and females, and edges only went between the two kinds.  Graphs like this
+come up so frequently they have earned a special name ---they are called
+\emph{bipartite graphs}.
+
+\begin{definition}
+A \term{bipartite graph} is a graph together with a partition of its
+vertices into two sets, $L$ and $R$, such that every edge is incident to a
+vertex in $L$ and to a vertex in $R$.
+\end{definition}
+
+So every bipartite graph looks something like this:
+
+\mfigure{!}{2in}{figures/bipartite.pdf}
+
+Now we can immediately see how to color a bipartite graph using only two
+colors: let all the $L$ vertices be black and all the $R$ vertices be
+white.  Conversely, if a graph is 2-colorable, then it is bipartite with
+$L$ being the vertices of one color and $R$ the vertices of the other
+color.  In other words,
+\begin{quote}
+``bipartite'' is a synonym for ``\term{2-colorable}.''
+\end{quote}
+The following Lemma gives another useful characterization of bipartite
+graphs.
+
+\hyperdef{odd}{cycle}
+{\begin{theorem}\label{odd-cycle}
+A graph is bipartite iff it has no odd-length cycle.
+\end{theorem}}
+The proof of Theorem~\ref{odd-cycle} is left to
+Problem~\ref{PS_no_odd_length_cycles}.
+
+\subsection{Bipartite Matchings}
+
+The \term{bipartite matching} problem resembles the stable Marriage
+Problem in that it concerns a set of girls and a set of at least as many
+boys.  There are no preference lists, but each girl does have some boys
+she likes and others she does not like.  In the bipartite matching
+problem, we ask whether every girl can be paired up with a boy that she
+likes.  Any particular matching problem can be specified by a
+\idx{bipartite graph} with a vertex for each girl, a vertex for each boy,
+and an edge between a boy and a girl iff the girl likes the boy.  For
+example, we might obtain the following graph:
+
+\mfigure{!}{2in}{figures/hall-graph.pdf}
+
+Now a \term{matching} will mean a way of assigning every girl to a boy so
+that different girls are assigned to different boys, and a girl is always
+assigned to a boy she likes.  For example, here is one possible matching
+for the girls:
+
+\mfigure{!}{2in}{figures/hall-graph-matched.pdf}
+
+\idx{Hall's Matching Theorem} states necessary and sufficient conditions
+for the existence of a matching in a bipartite graph.  It turns out to be
+a remarkably useful mathematical tool.
+
+\begin{solution}
+, a hammer that bashes
+many problems.  Moreover, it is the tip of a conceptual iceberg, a special
+case of the ``max-flow, min-cut theorem'' which is in turn a byproduct of
+``linear programming duality,'' one of the central ideas of algorithmic
+theory.
+\end{solution}
+
+\subsection{The Matching Condition}
+
+We'll state and prove Hall's Theorem using girl-likes-boy terminology.
+Define \emph{the set of boys liked by a given set of girls} to consist of
+all boys liked by at least one of those girls.  For example, the set of
+boys liked by Martha and Jane consists of Tom, Michael, and Mergatroid.
+For us to have any chance at all of matching up the girls, the following
+\term{matching condition} must hold:
+
+\bigskip
+\begin{center}
+\emph{Every subset of girls likes at least as large a set of boys.}
+\end{center}
+\bigskip
+
+For example, we can not find a matching if some 4~girls like only 3~boys.
+Hall's Theorem says that this necessary condition is actually sufficient;
+if the matching condition holds, then a matching exists.
+
+\begin{theorem}
+A matching for a set of girls $G$ with a set of boys $B$ can be found if
+and only if the matching condition holds.
+\end{theorem}
+
+\begin{proof}
+First, let's suppose that a matching exists and show that the matching condition
+holds.  Consider an arbitrary subset of girls.  Each girl likes at least the boy she
+is matched with.  Therefore, every subset of girls likes at least as large a set of
+boys.  Thus, the matching condition holds.
+
+Next, let's suppose that the matching condition holds and show that a matching
+exists.  We use strong induction on $\card{G}$, the number of girls.
+
+\textbf{Base Case}: ($\card{G}=1$) If $\card{G} = 1$, then the 
+matching condition implies that the lone girl likes at least one boy, and so a
+matching exists.
+
+\textbf{Inductive Step}: Now suppose that $\card{G} \geq 2$.  There are two cases:
+
+\begin{itemize}
+
+\item[Case 1:] Every proper subset of girls likes a \emph{strictly larger} set of
+  boys.  In this case, we have some latitude: we pair an arbitrary girl with a boy
+  she likes and send them both away.  The matching condition still holds for the
+  remaining boys and girls, so we can match the rest of the girls by induction.
+
+\item[Case 2:] Some proper subset of girls $X \subset G$ likes an \emph{equal-size}
+  set of boys $Y \subset B$.  We match the girls in $X$ with the boys in $Y$ by
+  induction and send them all away.  We can also match the rest of the girls by
+  induction if we show that the matching condition holds for the remaining boys and
+  girls.  To check the matching condition for the remaining people, consider an
+  arbitrary subset of the remaining girls $X' \subseteq (G - X)$, and let $Y'$ be the
+  set of remaining boys that they like.  We must show that
+  $\card{X'} \leq \card{Y'}$.  Originally, the combined set of girls $X \cup X'$
+  liked the set of boys $Y \cup Y'$.  So, by the matching condition, we know:
+%
+\[
+\card{X \cup X'}  \leq  \card{Y \cup Y'}
+\]
+%
+We sent away $\card{X}$ girls from the set on the left (leaving $X'$) and sent away
+an equal number of boys from the set on the right (leaving $Y'$).  Therefore, it must
+be that $\card{X'}
+\leq \card{Y'}$ as claimed.
+\end{itemize}
+
+So there is in any case a matching for the girls, which completes the proof of the
+Inductive step.   The theorem follows by induction.
+\end{proof}
+
+The proof of this theorem gives an algorithm for finding a matching in a bipartite
+graph, albeit not a very efficient one.  However, efficient algorithms for finding a
+matching in a bipartite graph do exist.  Thus, if a problem can be reduced to finding
+a matching, the problem is essentially solved from a computational perspective.
+
+\subsection{A Formal Statement}
+
+Let's restate \idx{Hall's Theorem} in abstract terms so that you'll not always be
+condemned to saying, ``Now this group of little girls likes at least as many little
+boys...''
+% A \emph{matching} in a graph is an injection on the set of vertices
+% that only maps a vertex to an adjacent vertex.  Albert: Do you mean
+% in the bipartite case?  Otherwise, wouldn't the injection
+% f(i)->i+1(mod n) on {1,..,n} determine the cycle C_n and an
+% injection?
+
+% Also, is it true that, in this class, an injection/function on $L$
+% need only have a domain that is a subset of $L$?  If not I'll need
+% to modify the next paragraph.
+%
+
+% % CLIFF: Thanks for your correction.  My def with injections (which indeed
+% % may be partial) was a failed attempt to be slick.  But given that it's
+% % wrong, there's no point in hanging onto injections, so I've revised as
+% % follows:
+
+A \term{matching} in a graph, $G$, is a set of edges such that no two edges in the
+set share a vertex.  A matching is said to \emph{cover} a set, $L$, of vertices iff
+each vertex in $L$ has an edge of the matching incident to it.  In any graph, the set
+$N(S)$, of \term{neighbors}\footnote{An equivalent definition of $N(S)$ uses
+relational notation: $N(S)$ is simply the image, $SR$, of $S$ under the adjacency
+relation, $R$, on vertices of the graph.} of some set, $S$, of vertices is the set of
+all vertices adjacent to some vertex in $S$.  That is,
+\[
+N(S) \eqdef \set{r \suchthat \edge{s}{r}\text{ is an edge for some }s \in S}.
+\]
+$S$ is called a \term{bottleneck} if
+\[
+\card{S} > \card{N(S)}.
+\]
+
+\begin{theorem}[\idx{Hall's Theorem}]
+  Let $G$ be a bipartite graph with vertex partition $L,R$.  There is matching in $G$
+  that covers $L$ iff no subset of $L$ is a bottleneck.
+\end{theorem}
+
+\subsubsection{An Easy Matching Condition}
+The bipartite matching condition requires that \emph{every} subset of girls has a
+certain property.  In general, verifying that every subset has some property, even if
+it's easy to check any particular subset for the property, quickly becomes
+overwhelming because the number of subsets of even relatively small sets is enormous
+---over a billion subsets for a set of size 30.  However, there is a simple property
+of vertex degrees in a bipartite graph that guarantees a match and is very easy to
+check.  Namely, call a bipartite graph \term*{degree-constrained} if vertex degrees
+on the left are at least as large as those on the right.  More precisely,
+\hyperdef{degree}{constrained}{
+\begin{definition}\label{degree-constrained_def}
+A bipartite graph $G$ with vertex partition $L,R$ is
+\term{degree-constrained} if $\degr{l} \geq \degr{r}$ for every $l \in L$
+and $r \in R$.
+\end{definition}}
+Now we can always find a matching in a degree-constrained bipartite graph.
+\begin{lemma}\label{degree-constrained_lemma}
+Every degree-constrained bipartite graph satisifies the matching condition.
+\end{lemma}
+
+\begin{proof}
+Let $S$ be any set of vertices in $L$.  The number of edges incident to vertices in
+$S$ is exactly the sum of the degrees of the vertices in $S$.  Each of these edges is
+incident to a vertex in $N(S)$ by definition of $N(S)$.  So the sum of the degrees of
+the vertices in $N(S)$ is at least as large as the sum for $S$.  But since the degree
+of every vertex in $N(S)$ is at most as large as the degree of every vertex in $S$,
+there would have to be at least as many terms in the sum for $N(S)$ as in the sum for
+$S$.  So there have to be at least as many vertices in $N(S)$ as in $S$, proving that
+$S$ is not a bottleneck.  So there are no bottlenecks, proving that the
+degree-constrained graph satisifies the matching condition.
+\end{proof}
+Of course being degree-constrained is a very strong property, and lots of graphs that
+aren't degree-constrained have matchings.  But we'll see examples of
+degree-constrained graphs come up naturally in some later applications.
+
+%% Bipartite Matchings Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% S09.cp6r.3
+% S09.cp6r.4
+
+\begin{problems}
+\classproblems
+\pinput{CP_student_clubs}
+\pinput{CP_latin_squares}
+
+\examproblems
+\pinput{MQ_bipartite-matching_recitations}
+
+\homeworkproblems
+\pinput{PS_no_odd_length_cycles}
+\pinput{PS_cards_in_4_rows_13_columns}
+\pinput{PS_bipartite_matching_virtues}
+\end{problems}
+
+%% Conclusion %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\TBA{Add conclusion here...}
+
+\endinput
