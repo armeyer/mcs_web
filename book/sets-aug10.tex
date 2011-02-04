@@ -1,0 +1,830 @@
+\chapter{Sets and Relations}\label{sets_chap}
+
+\section{Sets}
+\begin{editingnotes}
+We've been assuming that the concepts of sets, sequences, and functions are
+already familiar ones, and we've mentioned them repeatedly.  Now we'll do a
+quick review of the definitions.
+\end{editingnotes}
+
+Propositions of the sort we've considered so far are good for
+reasoning about individual statements, but not so good for reasoning
+about a collection of objects.  Let's first review a couple
+mathematical tools for grouping objects and then extend our logical
+language to cope with such collections.
+
+%%  \subsection{Does All This Really Work?}\label{setsreallywork}
+%%  
+%%  So this is where mainstream mathematics stands today: there is a handful
+%%  of ZFC axioms from which virtually everything else in mathematics can be
+%%  logically derived.  This sounds like a rosy situation, but there are
+%%  several dark clouds, suggesting that the essence of truth in mathematics
+%%  is not completely resolved.
+%%  
+%%  %
+%%  \begin{itemize}
+%%  
+%%  \item The \idx{ZFC axioms} weren't etched in stone by God.  Instead, they were
+%%    mostly made up by some guy named Zermelo.  Probably some days he
+%%    forgot his house keys.
+%%  
+%%    So maybe \idx{Zermelo}, just like \idx{Frege}, didn't get his axioms
+%%    right and will be shot down by some successor to \idx{Russell} who
+%%    will use Zermelo's axioms to prove a proposition $P$ and its
+%%    negation $\QNOT P$.  Then math would be broken.  This sounds crazy,
+%%    but after all, it has happened before.
+%%  
+%%    In fact, while there is broad agreement that the ZFC axioms are capable
+%%    of proving all of standard mathematics, the axioms have some further
+%%    consequences that sound paradoxical.  For example, the \idx{Banach-Tarski}
+%%    Theorem says that, as a consequence of the \idx{Axiom of Choice}, a solid ball
+%%    can be divided into six pieces and then the pieces can be rigidly
+%%    rearranged to give \emph{two} solid balls, each the same size as the
+%%    original!
+%%  
+%%  \item Georg \term{Cantor} was a contemporary of \idx{Frege} and
+%%    \idx{Russell} who first developed the theory of infinite sizes (because
+%%    he thought he needed it in his study of Fourier series).  Cantor raised
+%%    the question whether there is a set whose size is strictly between the
+%%    ``smallest\footnote{See Problem~\ref{CP_smallest_infinite_set}}''
+%%    infinite set, $\naturals$, and $\power(\naturals)$; he guessed not:
+%%  
+%%    \textbf{Cantor's \term{Continuum Hypothesis}}: There is no set, $A$,
+%%    such that $\power(\naturals)$ is \idx{strictly bigger} than $A$ and $A$
+%%    is strictly bigger than $\naturals$.
+%%  
+%%    The Continuum Hypothesis remains an open problem a century later.  Its
+%%    difficulty arises from one of the deepest results in modern Set Theory
+%%    ---discovered in part by \idx{G\"odel} in the 1930's and Paul
+%%    \idx{Cohen} in the 1960's ---namely, the ZFC axioms are not sufficient
+%%    to settle the Continuum Hypothesis: there are two collections of sets,
+%%    each obeying the laws of \idx{ZFC}, and in one collection the Continuum
+%%    Hypothesis is true, and in the other it is false.  So settling the
+%%    Continuum Hypothesis requires a new understanding of what Sets should be
+%%    to arrive at persuasive new axioms that extend ZFC and are strong enough
+%%    to determine the truth of the Continuum Hypothesis one way or the other.
+%%  
+%%  \item But even if we use more or different axioms about sets, there are
+%%    some unavoidable problems.  In the 1930's, \idx{G\"odel} proved that,
+%%    assuming that an axiom system like \idx{ZFC} is consistent ---meaning
+%%    you can't prove both $P$ and $\QNOT(P)$ for any proposition, $P$ ---then
+%%    the very proposition that the system is consistent (which is not too
+%%    hard to express as a logical formula) cannot be proved in the system.
+%%    In other words, no \idx{consistent} system is strong enough to verify
+%%    itself.
+%%    
+%%  \end{itemize}
+
+
+
+\subsection{Function Composition}\label{func_compose_subsec}
+
+Doing things step by step is a universal idea.  Taking a walk is a literal
+example, but so is cooking from a recipe, executing a computer program,
+evaluating a formula, and recovering from substance abuse.
+
+Abstractly, taking a step amounts to applying a function, and going step
+by step corresponds to applying functions one after the other.  This is
+captured by the operation of \term{composing} functions.  Composing the
+functions $f$ and $g$ means that first $f$ applied is to some argument,
+$x$, to produce $f(x)$, and then $g$ is applied to that result to produce
+$g(f(x))$.
+
+\begin{definition}\label{func_compose_def}
+  For functions $f:A \to B$ and $g:B \to C$, the \term{composition},
+  $g \compose f$, of $g$ with $f$ is defined to be the function
+  $h:A \to C$ defined by the rule:
+\begin{displaymath}
+h(x) \eqdef (g \compose f)(x) \eqdef g(f(x)),
+\end{displaymath}
+for all $x \in A$.
+\end{definition}
+
+Function composition is familiar as a basic concept from elementary
+calculus, and it plays an equally basic role in discrete mathematics.
+
+
+\section{Relations}\label{rel_sec}
+
+\term{Relations} are another fundamental mathematical data type.  Equality
+and ``less-than'' are very familiar examples of mathematical relations.
+These are called \term{binary relations} because they apply to a pair
+$(a,b)$ of objects; the equality relation holds for the pair when $a=b$,
+and less-than holds when $a$ and $b$ are real numbers and $a < b$.
+
+In this section we'll define some basic vocabulary and properties of binary
+relations.
+
+\subsection{Binary Relations and Functions}
+Binary relations are far more general than equality or less-than.
+Here's the official definition:
+\begin{definition}\label{reldef}
+A \term{binary relation}, $R$, consists of a set, $A$, called
+the \term{domain} of $R$, a set, $B$, called the \term{codomain} of $R$, and
+a subset of $A \cross B$ called the \term{graph of $R$}.
+\end{definition}
+
+Notice that Definition~\ref{reldef} is exactly the same as the definition
+in Section~\ref{funcsubsec} of a {\emph{function}}, except that it doesn't
+require the functional condition that, for each domain element, $a$, there
+is \emph{at most} one pair in the graph whose first coordinate is $a$.  So
+a function is a special case of a binary relation.
+
+A relation whose domain is $A$ and codomain is $B$ is said to be
+``between $A$ and $B$'', or ``from $A$ to $B$.''  When the domain and
+codomain are the same set, $A$, we simply say the \index{relation on a
+set} relation is ``on $A$.''  It's common to use \idx{infix notation}
+``$a \mrel{R} b$'' to mean that the pair $(a,b)$ is in the graph of
+$R$.
+
+For example, we can define an ``in-charge of'' relation, $T$, for MIT in
+Spring '10 to have domain equal to the set, $F$, of names of the faculty
+and codomain equal to all the set, $N$, of subject numbers in the current
+catalogue.  The graph of $T$ contains precisely the pairs of the form
+\[
+(\ang{\text{instructor-name}}, \ang{\text{subject-num}})
+\]
+such that the faculty member named $\ang{\text{instructor-name}}$ is
+in charge of the subject with number $\ang{\text{subject-num}}$ in Spring '10.
+So $\graph{T}$ contains pairs like
+\[\begin{array}{ll}
+(\texttt{A. R. Meyer}, & \texttt{6.042}),\\
+(\texttt{A. R. Meyer}, & \texttt{18.062}),\\
+(\texttt{A. R. Meyer}, & \texttt{6.844}),\\
+(\texttt{T. Leighton}, & \texttt{6.042}),\\
+(\texttt{T. Leighton}, & \texttt{18.062}),\\
+(\texttt{G, Freeman}, & \texttt{6.011}),\\
+(\texttt{G. Freeman}, & \texttt{6.881})\\
+(\texttt{G. Freeman}, & \texttt{6.882})\\
+(\texttt{G. Freeman}, & \texttt{6.UAT})\\
+(\texttt{T. Eng},      & \texttt{6.UAT})\\
+(\texttt{J. Guttag},  & \texttt{6.00})\\
+\qquad \vdots
+\end{array}\]
+
+This is a surprisingly complicated relation: Meyer is in charge of
+subjects with three numbers.  Leighton is also in charge of subjects with
+two of these three numbers ---because the same subject, Mathematics for
+Computer Science, has two numbers: 6.042 and 18.062, and Meyer and
+Leighton are co-in-charge of the subject.  Freeman is in-charge of even
+more subjects numbers (around 20), since as Department Education Officer,
+he is in charge of whole blocks of special subject numbers.  Some
+subjects, like 6.844 and 6.00 have only one person in-charge.  Some
+faculty, like Guttag, are in charge of only one subject number, and no one
+else is co-in-charge of his subject, 6.00.
+
+Some subjects in the codomain, $N$, do not appear in the list ---that is,
+they are not an element of any of the pairs in the graph of $T$; these are
+the Fall term only subjects.  Similarly, there are faculty in the domain,
+$F$, who do not appear in the list because all their in-charge subjects
+are Fall term only.
+
+\subsection{Relational Images}
+The idea of the image of a set under a function extends directly to
+relations.
+
+\begin{definition}
+The \term{image} of a set, $Y$, under a relation, $R$, written $R(Y)$, is the
+set of elements of the codomain, $B$, of $R$ that are related to some element in
+$Y$, namely,
+\[
+R(Y) \eqdef \set{b \in B \suchthat yRb \text{ for some } y \in Y}.
+\]
+\end{definition}
+
+For example, to find the subject numbers that Meyer is in
+charge of in Spring '09, we can look for all the pairs of the form
+\[
+(\text{A. Meyer}, \ang{\text{subject-number}})
+\]
+in the graph of the teaching relation, $T$, and then just list the
+right hand sides of these pairs.  These righthand sides are exactly the image
+$T(\text{A. Meyer})$, which happens to be $\set{6.042, 18.062, 6.844}$.
+Similarly, to find the subject numbers that either Freeman or Eng are
+in charge of, we can collect all the pairs in $T$ of the form
+\[
+(\text{G. Freeman}, \ang{\text{subject-number}})
+\]
+or
+\[
+(\text{T. Eng}, \ang{\text{subject-number}});
+\]
+and list their right hand sides.  These right hand sides are exactly the image
+$T(\set{\text{G. Freeman}, \text{T. Eng}}$.  So the partial list
+of pairs in $T$ given above implies that
+\[
+\set{\texttt{6.011, 6.881, 6.882, 6.UAT}} \subseteq T(\set{\text{G. Freeman}, \text{T. Eng}}.
+\]
+Finally, since the domain, $F$, is the set of all in-charge faculty,
+$T(F)$ is exactly the set of \emph{all} Spring '09 subjects being
+taught.
+
+\subsection{Inverse Relations and Images}
+
+\begin{definition}
+The \term{inverse}, $\inv{R}$ of a relation $R: A \to B$ is the
+relation from $B$ to $A$ defined by the rule
+\[
+b \inv{R} a \QIFF a \mrel{R} B.
+\]
+The image of a set under the relation, $\inv{R}$, is called
+the \term{inverse image} of the set.  That is, the inverse image of a
+set, $X$, under the relation, $R$, is $\inv{R}(X)$.
+\end{definition}
+
+Continuing with the in-charge example above, we can find the faculty
+in charge of 6.UAT in Spring '10 can be found by taking the pairs of
+the form
+\[
+(\ang{\text{instructor-name}}, 6.UAT)
+\]
+in the graph of the teaching relation, $T$, and then just listing the
+left hand sides of these pairs; these turn out to be just Eng and
+Freeman.  These left hand sides are exactly the inverse image of
+$\set{\text{6.UAT}}$ under $T$.
+
+Now let $D$ be the set of introductory course 6 subject numbers.
+These are the subject numbers that start with \emph{6.0}\,.  Now we
+can likewise find out all the instructors who were in-charge of
+introductory course 6 subjects in Spring '09, by taking all the pairs
+of the form $(\ang{\text{instructor-name}}, 6.0\dots)$ and list the
+left hand sides of these pairs.  These left hand sides are exactly the
+inverse image of of $D$ under $T$.  From the part of the
+graph of $T$ shown above, we can see that
+\[
+\set{\text{Meyer, Leighton, Freeman, Guttag}} \subseteq \inv{T}(D).
+\]
+That is, Meyer, Leighton, Freeman, and Guttag were among the
+instructors in charge of introductory subjects in Spring '10.
+Finally, the inverse image under $T$ of the set, $N$, of all subject
+numbers is the set of all instructors who were in charge of a Spring
+'09 subject.
+
+It gets interesting when we write composite expressions mixing images,
+inverse images and set operations.  For example, $T(\inv{T}(D))$ is
+the set of Spring '09 subjects that have an instructor in charge who
+also is in in charge of an introductory subject.  So $T(\inv{T}(D)) -
+D$ are the advanced subjects with someone in-charge who is also
+in-charge of an introductory subject.  Similarly, $\inv{T}(D) \intersect
+\inv{T}(N-D)$ is the set of faculty in charge of both an introductory \emph{and}
+an advanced subject in Spring '09.
+
+\subsection{Surjective and Injective Relations}\label{surj_sec}
+
+There are a few properties of relations that will be useful when we take
+up the topic of counting because they imply certain relations between the
+\emph{sizes} of domains and codomains.  We say a binary relation $R : A
+\to B$ is:
+
+\begin{itemize}
+
+\item \term{surjective} when every element of $B$ is mapped to \textit{at
+least once}; more concisely, $R$ is surjective iff $R(A)=B$.
+
+\item \term{total} when every element of $A$ is assigned to some element of
+  $B$; more concisely, $R$ is total iff $A=\inv{R}(B)$.
+
+\item \term{injective} if every element of $B$ is mapped to \textit{at
+most once}, and
+
+\item \term{bijective} if $R$ is total, surjective, and injective
+  \emph{function}.\footnote{These words ``surjective,''
+``injective,'' and ``bijective'' are not very memorable.
+Some authors use the possibly more memorable phrases \term{onto} for surjective,
+\emph{one-to-one} for injective, and \emph{exact correspondence} for bijective.}
+
+\end{itemize}
+
+Note that this definition of $R$ being total agrees with the
+definition in Section~\ref{funcsubsec} when $R$ is a function.
+
+If $R$ is a binary relation from $A$ to $B$, we define $R(A)$ to to be the
+\emph{range} of $R$.  So a relation is surjective iff its range equals its
+codomain.  Again, in the case that $R$ is a function, these definitions of
+``range'' and ``total'' agree with the definitions in
+Section~\ref{funcsubsec}.
+
+\subsection{Relation Diagrams}
+We can explain all these properties of a relation $R:A \to B$ in terms of
+a diagram where all the elements of the domain, $A$, appear in one column
+(a very long one if $A$ is infinite) and all the elements of the codomain,
+$B$, appear in another column, and we draw an arrow from a point $a$ in
+the first column to a point $b$ in the second column when $a$ is related
+to $b$ by $R$.  For example, here are diagrams for two functions:
+
+\begin{center}
+\begin{tabular}{ccc}
+
+\unitlength = 2pt
+\begin{picture}(50,60)(-10,-5)
+\thinlines
+\put(-5,50){\makebox(0,0){$A$}}
+  \put(35,50){\makebox(0,0){$B$}}
+\put(-5,40){\makebox(0,0){a}}
+  \put(0,40){\vector(1,0){28}}
+  \put(35,40){\makebox(0,0){1}}
+\put(-5,30){\makebox(0,0){b}}
+  \put(0,30){\vector(3,-1){28}}
+  \put(35,30){\makebox(0,0){2}}
+\put(-5,20){\makebox(0,0){c}}
+  \put(0,20){\vector(3,-1){28}}
+  \put(35,20){\makebox(0,0){3}}
+\put(-5,10){\makebox(0,0){d}}
+  \put(0,10){\vector(3,2){28}}
+  \put(35,10){\makebox(0,0){4}}
+\put(-5,0){\makebox(0,0){e}}
+  \put(0,0){\vector(3,2){28}}
+\end{picture}
+
+& \hspace{0.5in} &
+
+\unitlength = 2pt
+\begin{picture}(50,60)(-10,-5)
+\thinlines
+\put(-5,50){\makebox(0,0){$A$}}
+  \put(35,50){\makebox(0,0){$B$}}
+\put(-5,40){\makebox(0,0){a}}
+  \put(0,40){\vector(1,0){28}}
+  \put(35,40){\makebox(0,0){1}}
+\put(-5,30){\makebox(0,0){b}}
+  \put(0,30){\vector(3,-1){28}}
+  \put(35,30){\makebox(0,0){2}}
+\put(-5,20){\makebox(0,0){c}}
+  \put(0,20){\vector(3,-2){28}}
+  \put(35,20){\makebox(0,0){3}}
+\put(-5,10){\makebox(0,0){d}}
+  \put(0,10){\vector(3,2){28}}
+  \put(35,10){\makebox(0,0){4}}
+\put(35,0){\makebox(0,0){5}}
+\end{picture}
+
+\end{tabular}
+\end{center}
+
+Here is what the definitions say about such pictures:
+\begin{itemize}
+
+\item ``$R$ is a function'' means that every point in the domain column,
+  $A$, has \emph{at most one arrow out of it}.
+
+\item ``$R$ is total'' means that \emph{every} point in the $A$ column has
+  \emph{at least one arrow out of it}.  So if $R$ is a function, being
+  total really means every point in the $A$ column has
+  \emph{exactly one arrow out of it}.
+
+\item ``$R$ is surjective'' means that \emph{every} point in the codomain
+  column, $B$, has \emph{at least one arrow into it}.
+
+\item ``$R$ is injective'' means that every point in the codomain column,
+  $B$, has \emph{at most one arrow into it}.
+
+\item ``$R$ is bijective'' means that \emph{every} point in the $A$ column
+      has exactly one arrow out of it, and \emph{every} point in the $B$ column
+      has exactly one arrow into it.
+
+\end{itemize}
+
+So in the diagrams above, the relation on the left is a total, surjective
+function (every element in the $A$ column has exactly one arrow out, and
+every element in the $B$ column has at least one arrow in), but not
+injective (element 3 has two arrows going into it).  The relation on the
+right is a total, injective function (every element in the $A$ column has
+exactly one arrow out, and every element in the $B$ column has at most one
+arrow in), but not surjective (element 4 has no arrow going into it).
+
+%Define $\inv{R}$ and explain with reversed arrows.  Deduce that that
+%$R$ is total iff $\inv{R} is surjective, $R$ is function iff
+%$\inv{R}$ is injective.
+
+Notice that the arrows in a diagram for $R$ precisely correspond to the
+pairs in the graph of $R$.  But $\graph{R}$ does not determine by itself
+whether $R$ is total or surjective; we also need to know what the domain
+is to determine if $R$ is total, and we need to know the codomain to tell
+if it's surjective.
+\begin{example}
+  The function defined by the formula $1/x^2$ is total if its domain is
+  $\reals^+$ but partial if its domain is some set of real numbers
+  including 0.  It is bijective if its domain and codomain are both
+  $\reals^+$, but neither injective nor surjective if its domain and
+  codomain are both $\reals$.
+\end{example}
+
+
+\section{Cardinality}\label{mappingrule_sec}
+
+\subsection{Mappings and Cardinality}
+The relational properties in Section~\ref{rel_sec} are useful in
+figuring out the relative sizes of domains and codomains.
+
+If $A$ is a finite set, we let $\card{A}$ be the number of elements in
+$A$.  A finite set may have no elements (the empty set), or one
+element, or two elements,\dots or any nonnegative integer number of
+elements.
+
+Now suppose $R:A \to B$ is a function.  Then every arrow in the diagram
+for $R$ comes from exactly one element of $A$, so the number of arrows is
+at most the number of elements in $A$.  That is, if $R$ is a function,
+then
+\[
+\card{A} \geq \#\text{arrows}.
+\]
+Similarly, if $R$ is surjective, then every element of $B$ has an arrow
+into it, so there must be at least as many arrows in the diagram as the
+size of $B$.  That is,
+\[
+\#\text{arrows} \geq \card{B}.
+\]
+Combining these inequalities implies that if $R$ is a surjective
+function, then $\card{A} \geq \card{B}$.  In short, if we write
+$A \surj B$ to mean that there is a surjective function from $A$ to
+$B$, then we've just proved a lemma: if $A \surj B$, then
+$\card{A} \geq \card{B}$.  The following definition and lemma lists
+this statement and three similar rules relating domain and codomain
+size to relational properties.
+
+\begin{definition}\label{bigger}
+  Let $A,B$ be (not necessarily finite) sets.  Then
+  \begin{enumerate}
+  \item $A$ \term{$\surj$} $B$ iff there is a surjective \emph{function} from $A$ to $B$.  
+
+  \item $A$ \term{$\inj$} $B$ iff there is a total injective \emph{relation} from $A$ to $B$.
+
+  \item $A$ \term{$\bij$} $B$ iff there is a bijection from $A$ to $B$.  
+
+  \item $A$ \term{$\strict$} $B$ iff $A \surj B$, but not $B \surj A$.  
+
+  \end{enumerate}
+\end{definition}
+
+
+\begin{lemma}\label{mapruldef}
+[Mapping Rules] \mbox{}
+Let $A$ and $B$ be finite sets.
+
+\begin{enumerate}
+
+\item\label{mapping-sur} If $A \surj B$, then $\card{A} \geq \card{B}$.
+
+\item\label{mapping-inj} If $A \inj B$, then $\card{A} \leq \card{B}$.
+
+\item\label{mapping-bij} If $R \bij B$, then $\card{A} = \card{B}$.
+
+\item\label{mapping-strict} If $R \strict B$, then $\card{A} > \card{B}$.
+
+\end{enumerate}
+
+\end{lemma}
+
+Mapping rule~\ref{mapping-inj}.\ can be explained by the same kind of
+``arrow reasoning'' we used for rule~\ref{mapping-sur}.
+Rules~\ref{mapping-bij}.\ and ~\ref{mapping-strict}.\ are immediate
+consequences of these first two mapping rules.
+
+\subsection{The sizes of infinite sets}
+
+Mapping Rule~\ref{mapping-sur} has a converse:
+if the size of a finite set, $A$, is greater than or equal to the size of
+another finite set, $B$, then it's always possible to define a
+surjective function from $A$ to $B$.  In fact, the surjection can be a
+total function.  To see how this works, suppose for example that
+\begin{align*}
+A & =\set{a_0,a_1,a_2,a_3,a_4,a_5}\\
+B & =\set{b_0,b_1,b_2,b_3}.
+\end{align*}
+Then define a total function $f:A\to B$ by the rules
+\[
+f(a_0) \eqdef b_0,\  f(a_1) \eqdef b_1,\  f(a_2) \eqdef b_2,\  f(a_3)=
+f(a_4)=f(a_5) \eqdef b_3.
+\]
+
+\begin{editingnotes}
+
+\[
+f(a_i) \eqdef b_{\min(i,3)},
+\]
+for $i=0, \dots, 5$.  Since $5 \geq 3$, this $f$ is a surjection.
+\end{editingnotes}
+
+In fact, if $A$ and $B$ are finite sets of the same size, then we could also
+define a bijection from $A$ to $B$ by this method.
+
+In short, we have figured out if $A$ and $B$ are finite sets, then
+$\card{A} \geq \card{B}$ \emph{if and only if} $A \surj B$, and similar
+iff's hold for all the other Mapping Rules:
+\begin{lemma}\label{finbig}
+For \emph{finite} sets, $A,B$,
+\begin{align*}
+\card{A} \geq \card{B} & \qiff A \surj B,\\
+\card{A} \leq \card{B} & \qiff A \inj B,\\
+\card{A} = \card{B} & \qiff A \bij B,\\
+\card{A} > \card{B} & \qiff A \strict B.
+\end{align*}
+\end{lemma}
+
+This lemma suggests a way to generalize size comparisons to infinite sets,
+namely, we can think of the relation $\surj$ as an ``\emph{at least as big
+  as}'' relation between sets, even if they are infinite.  Similarly, the
+relation $\bij$ can be regarded as a ``\term{same size}'' relation between
+(possibly infinite) sets, and $\strict$ can be thought of as a
+``\term{strictly bigger} than'' relation between sets.
+
+\textcolor{red}{\textbf{Warning}}: We haven't, and won't, define what the
+``size'' of an infinite is.  The definition of infinite ``sizes'' is
+cumbersome and technical, and we can get by just fine without it.  All we
+need are the ``as big as'' and ``same size'' relations, $\surj$ and
+$\bij$, between sets.
+
+But there's something else to \textcolor{red}{watch out for}.  We've
+referred to $\surj$ as an ``as big as'' relation and $\bij$ as a ``same
+size'' relation on sets.  Of course most of the ``as big as'' and ``same
+size'' properties of $\surj$ and $\bij$ on finite sets do carry over to
+infinite sets, but \emph{some important ones don't} ---as we're about to
+show.  So you have to be careful: don't assume that $\surj$ has any
+particular ``as big as'' property on \emph{infinite} sets until it's been
+proved.
+
+Let's begin with some familiar properties of the ``as big as'' and ``same
+size'' relations on finite sets that do carry over exactly to infinite
+sets:
+\begin{lemma}\label{translem}
+For any sets, $A,B,C$,
+\begin{enumerate}
+
+\item \label{bigtrans}
+$A \surj  B \text{ and } B \surj C, \qimplies  A \surj C$.
+
+\item \label{sametrans} $A \bij B \text{ and } B \bij C, \qimplies A \bij C$.
+
+\item\label{sameABA}
+$A \bij B \qimplies B \bij A$.
+\end{enumerate}
+\end{lemma}
+
+Lemma~\ref{translem}.\ref{bigtrans} and~\ref{translem}.\ref{sametrans}
+follow immediately from the fact that compositions of surjections are
+surjections, and likewise for bijections, and
+Lemma~\ref{translem}.\ref{sameABA} follows from the fact that the
+inverse of a bijection is a bijection.  We'll leave a proof of these
+facts to Problem~\ref{CP_surj_relation}.
+
+Another familiar property of finite sets carries over to infinite sets,
+but this time it's not so obvious:
+\begin{theorem} [\idx{Schr\"oder-Bernstein}] For any sets $A,B$, if $A \surj B$
+  and $B \surj A$, then $A \bij B$.
+\end{theorem}
+
+That is, the Schr\"oder-Bernstein Theorem says that if $A$ is at least as
+big as $B$ and conversely, $B$ is at least as big as $A$, then $A$ is the
+same size as $B$.  Phrased this way, you might be tempted to take this
+theorem for granted, but that would be a mistake.  For infinite sets $A$
+and $B$, the Schr\"oder-Bernstein Theorem is actually pretty technical.
+Just because there is a surjective function $f:A\to B$ ---which need not
+be a bijection ---and a surjective function $g:B \to A$ ---which also need
+not be a bijection ---it's not at all clear that there must be a bijection
+$e:A \to B$.  The idea is to construct $e$ from parts of both $f$ and $g$.
+We'll leave the actual construction to
+Problem~\ref{CP_Cantor_Schroeder_Bernstein_theorem}.
+
+\subsection{Infinity is different}
+
+A basic property of finite sets that does \emph{not} carry over to
+infinite sets is that adding something new makes a set bigger.  That is,
+if $A$ is a finite set and $b \notin A$, then $\card{A \union \set{b}} =
+\card{A}+1$, and so $A$ and $A \union \set{b}$ are not the same size.  But
+if $A$ is infinite, then these two sets \emph{are} the same size!
+
+\begin{lemma}\label{AUb}
+  Let $A$ be a set and $b \notin A$.  Then $A$ is infinite iff $A \bij A
+  \union \set{b}$.
+\end{lemma}
+\begin{proof}
+  Since $A$ is \emph{not} the same size as $A \union \set{b}$ when $A$ is
+  finite, we only have to show that $A \union \set{b}$ \emph{is} the same
+  size as $A$ when $A$ is infinite.
+
+That is, we have to find a bijection between $A \union \set{b}$ and $A$
+when $A$ is infinite.  Here's how: since $A$ is infinite, it certainly has
+at least one element; call it $a_0$.  But since $A$ is infinite, it has at
+least two elements, and one of them must not be equal to $a_0$; call this
+new element $a_1$.  But since $A$ is infinite, it has at least three
+elements, one of which must not equal $a_0$ or $a_1$; call this new
+element $a_2$.  Continuing in the way, we conclude that there is an
+infinite sequence $a_0,a_1,a_2,\dots,a_n,\dots$ of different elements of
+$A$.  Now it's easy to define a bijection $e: A \union \set{b} \to A$:
+\begin{align*}
+e(b) & \eqdef a_0,\\
+e(a_n) & \eqdef a_{n+1}  &\text{ for } n \in \naturals,\\
+e(a) & \eqdef a & \text{ for } a \in A - \set{b,a_0,a_1,\dots}.
+\end{align*}
+\end{proof}
+
+A set, $C$, is \term{countable} iff its elements can be listed in order,
+that is, the distinct elements is $A$ are precisely
+\[
+c_0, c_1, \dots, c_n, \dots.
+\]
+This means that if we defined a function, $f$, on the nonnegative integers
+by the rule that $f(i) \eqdef c_i$, then $f$ would be a bijection from
+$\naturals$ to $C$.  More formally,
+
+\begin{definition}
+  A set, $C$, is \term{countably infinite} iff $\naturals \bij C$.  A set
+  is \term{countable} iff it is finite or countably infinite.
+\end{definition}
+
+A small modification\footnote{See Problem~\ref{CP_smallest_infinite_set}}
+of the proof of Lemma~\ref{AUb} shows that countably infinite sets are
+the ``smallest'' infinite sets, namely, if $A$ is a countably infinite
+set, then $A \surj \naturals$.
+
+Since adding one new element to an infinite set doesn't change its
+size, it's obvious that neither will adding any \emph{finite} number
+of elements.  It's a common mistake to think that this proves that you
+can throw in countably infinitely many new elements.  But just because
+it's ok to do something any finite number of times doesn't make it OK
+to do an infinite number of times.  For example, starting from 3, you
+can add 1 any finite number of times and the result will be some
+integer greater than or equal to 3.  But if you add add 1 a countably
+infinite number of times, you don't get an integer at all.
+
+It turns out you really can add a countably infinite number of new
+elements to a countable set and still wind up with just a countably
+infinite set, but another argument is needed to prove this:
+
+\begin{lemma}\label{countable-union}
+If $A$ and $B$ are countable sets, then so is $A \union B$.
+\end{lemma}
+
+\begin{proof}
+Suppose the list of distinct elements of $A$ is $a_0,a_1,\dots$ and the
+list of $B$ is $b_0,b_1, \dots$.  Then a list of all the elements in $A
+\union B$ is just
+\begin{equation}\label{a0b0list}
+a_0,b_0,a_1,b_1, \dots a_n,b_n, \dots.
+\end{equation}
+Of course this list will contain duplicates if $A$ and $B$ have elements
+in common, but then deleting all but the first occurrences of each element in
+list~\eqref{a0b0list} leaves a list of all the distinct elements of $A$
+and $B$.
+\end{proof}
+
+\subsection{\idx{Power sets} are \idx{strictly bigger}}
+
+It turns out that the ideas behind \idx{Russell's Paradox}, which
+caused so much trouble for the early efforts to formulate Set Theory,
+also lead to a correct and astonishing fact discovered by Georg Cantor
+in the late nineteenth century: infinite sets are \emph{not all the
+same size}.
+
+In particular,
+\begin{theorem}\label{powbig}
+For any set, $A$, the \idx{power set}, $\power(A)$, is \idx{strictly bigger} than $A$.
+\end{theorem}
+\begin{proof}
+  First of all, $\power(A)$ is as big as $A$: for example, the partial
+  function $f:\power(A) \to A$, where $f(\set{a}) \eqdef a$ for $a \in A$
+  and $f$ is only defined on one-element sets, is a surjection.
+
+  To show that $\power(A)$ is strictly bigger than $A$, we have to show
+  that if $g$ is a function from $A$ to $\power(A)$, then $g$ is not a
+  surjection.  So, mimicking Russell's Paradox, define
+  \[
+  A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
+  \]
+  Now $A_g$ is a well-defined subset of $A$, which means it is a member of
+  $\power(A)$.  But $A_g$ can't be in the range of $g$, because if it
+  were, we would have
+\[
+A_g = g(a_0)
+\]
+for some $a_0 \in A$, so by definition of $A_g$,
+\[
+a \in g(a_0) \qiff a \in A_g \qiff a \notin g(a)
+\]
+for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
+\[
+a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
+\]
+So $g$ is not a surjection, because there is an element in the power set
+of $A$, namely the set $A_g$, that is not in the range of $g$.
+\end{proof}
+
+\subsubsection{Larger Infinities}
+
+There are lots of different sizes of infinite sets.  For example, starting
+with the infinite set, $\naturals$, of nonnegative integers, we can build
+the infinite sequence of sets
+\[
+\naturals,\ \power(\naturals),\ \power(\power(\naturals)),\
+\power(\power(\power(\naturals))),\ \dots.
+\]
+By Theorem~\ref{powbig}, each of these sets is strictly bigger than all
+the preceding ones.  But that's not all: the union of all the sets in the
+sequence is strictly bigger than each set in the sequence
+(see Problem~\ref{CP_power_set_tower}).  In this way you can keep going,
+building still bigger infinities.
+
+So there is an endless variety of different size infinities.
+
+\section{Infinities in Computer Science}
+
+We've run into a lot of computer science students who wonder why they
+should care about infinite sets.  They point out that any data set in
+a computer memory is limited by the size of memory, and there is a
+finite limit on the possible size of computer memory for the simple
+reason that the universe is (or at least appears to be) finite.
+
+\iffalse need to learn all this abstract theory of infinite sets, and this
+is a good question.  \fi
+
+The problem with this argument is that universe-size bounds on data
+items are so big and uncertain (the universe seems to be getting
+bigger all the time), that it's simply not helpful to make use of such
+bounds.  For example, by this argument the physical sciences shouldn't
+assume that measurements might yield arbitrary real numbers, because
+there can only be a finite number of finite measurements in a universe
+with a finite lifetime.  What do you think scientific theories would
+look like without using the infinite set of real numbers?
+
+Similarly, in computer science it simply isn't plausible that writing
+a program to add nonnegative integers with up to as many digits as,
+say, the stars in the sky (billions of galaxies each with billions of
+stars), would be any different than writing a program that would add
+any two integers no matter how many digits they had.
+
+That's why basic programming data types like integers or strings, for
+example, can be defined without imposing any bound on the sizes of
+data items.  Each datum of type \idx{\texttt{string}} has only a
+finite number of letters, but there are an infinite number of data items
+of type \texttt{string}.  When we then consider string procedures of
+type \idx{\texttt{string-->string}}, not only are there
+an infinite number of such procedures, but each procedure generally
+behaves differently on different inputs, so that a single
+\texttt{string-->string} procedure may embody an infinite number of
+behaviors.  In short, an educated computer scientist can't get around having to
+cope with infinite sets.
+
+On the other hand, the more exotic theory of different size infinities
+and continuum hypotheses rarely comes up in mainstream mathematics,
+and it hardly comes up at all in computer science, where the focus is
+mainly on finite sets, and occasionallly on \idx{countable} sets.  In
+practice, only logicians and set theorists have to worry about
+collections that are too big to be sets.  In fact, at the end of the
+19th century, the general mathematical community doubted the relevance
+of what they called ``\idx{Cantor's paradise}'' of unfamiliar sets of
+arbitrary infinite size.  So if the romance of really big infinities
+doesn't appeal to you, be assured that not knowing about them won't
+lower your professional abilities as a computer scientist.
+
+Yet the idea behind Russell's paradox and Cantor's proof embodies the
+simplest form of what is known as a ``\idx{diagonal argument}.''
+Diagonal arguments are used to prove many fundamental results about
+the limitations of computation, such as the undecidability of
+the \idx{Halting Problem} for programs (see
+Problem~\ref{CP_recognizable_sets}) and the inherent, unavoidable,
+\idx{inefficiency} (\idx{exponential time} or worse) of procedures for
+other computational problems.  So computer scientists do need to study
+diagonal arguments in order to understand the logical limits of
+computation.
+
+\begin{problems}
+\practiceproblems
+%\pinput[title={Images and Inverse Images}]{TP_Images_and_Inverse_Images}
+%\pinput[title = {Inverse Relations}]{TP_Inverse_Relations}
+\pinput[title = {Power Sets}]{TP_Power_Sets}
+
+\classproblems
+\pinput{CP_surj_relation}
+
+\pinput{CP_smallest_infinite_set}
+
+\pinput{CP_mapping_rule}
+
+\pinput{CP_set_product_bijection}
+
+\pinput{CP_rationals_are_countable}
+
+\pinput{CP_Cantor_Schroeder_Bernstein_theorem}
+
+\pinput{CP_power_set_tower}
+\pinput{CP_recognizable_sets}
+
+\begin{editingnotes}
+Add problem that the $4^n$ time-bounded halting problem requires time
+$2^n$.
+\end{editingnotes}
+
+\pinput{CP_undescribable_language}
+
+\homeworkproblems
+
+\pinput{PS_composition-of-jections}
+\pinput{PS_unit_interval}
+\pinput{PS_uncountable_infinite_sequences}
+\pinput{PS_N_to_A_diagonal_argument}
+
+\end{problems}
+
+\problemsection
+
+\endinput
