@@ -1,4 +1,5 @@
-\hyperdef{propform}{english}{\chapter{Propositional Formulas}}\label{propform_chap}
+%\hyperdef{propform}{english}
+\chapter{Propositional Formulas}\label{propform_chap}
 
 It is amazing that people manage to cope with all the ambiguities in the
 English language.  Here are some sentences that illustrate the issue:
@@ -22,17 +23,6 @@ house---or might different Americans may \arm{flesh out dreams} have
 different dreams---say, Eric dreams of designing a ``killer'' software
 application, Tom of being a tennis champion, Albert of being able to sing?
 
-What \emph{precisely} do these sentences mean?  Can you have both cake and
-ice cream or must you choose just one dessert?  If the second sentence is
-true, then is the Chebyshev bound incomprehensible?  If you can solve some
-problems we come up with but not all, then do you get an \emph{A} for the
-course?  And can you still get an \emph{A} even if you can't solve any of
-the problems?  Does the last sentence Finally, does the last sentence mean
-that all Americans have the same dream---say of owning a house---or might
-different Americans may have different dreams---say, Eric dreams of
-designing a ``killer'' software application, Tom of being a tennis
-champion, Albert of being able to sing?
-
 Some uncertainty is tolerable in normal conversation.  But when we need to
 formulate ideas precisely---as in mathematics and programming---the
 ambiguities inherent in everyday language can be a real problem.  We can't
@@ -51,6 +41,7 @@ ordinary but isn't.\fi
 Surprisingly, in the midst of learning the language of logic, we'll come
 across the most important open problem in computer science---a problem
 whose solution could change the world.
+
 
 \section{Propositions from Propositions}
 
@@ -209,7 +200,7 @@ then-part is true.
 This sentence is worth remembering; a large fraction of all
 mathematical statements are of the if-then form!
 
-\subsection{If And Only If}
+\subsection{If and Only If}
 
 Mathematicians commonly join propositions in one additional way that
 doesn't arise in ordinary speech.  The proposition ``$P$ if and only
@@ -237,29 +228,140 @@ other values of $x$, \textit{neither} inequality is true .  In every
 case, however, the \QIFF\ proposition as a whole is true.
 
 \begin{problems}
-\begin{problems}
 \practiceproblems
-%\pinput{TP_Basic_Propositions}
+\pinput{TP_Basic_Propositions}
 
 \classproblems
 \pinput{CP_differentiable_implies_continuous}
-\pinput{CP_truth_table_for_distributive_law}
 
 \homeworkproblems
 \pinput{PS_printout_binary_strings}
 \end{problems}
 
 
-\subsection{Cryptic Notation}
+\section{Propositional Logic in Computer Programs}\label{propositions_in_programs_sec}
 
+Propositions and logical connectives arise all the time in computer
+programs.  For example, consider the following snippet, which could be
+either C, C++, or Java:
+%
+\begin{tabbing}
+\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
+\> \texttt{if ( x > 0 || (x <= 0 \&\& y > 100) )} \\
+\> \> \vdots\\
+\> \textit{(further instructions)}
+\end{tabbing}
+%
+Java uses The symbol \texttt{||} for ``\QOR,'' and the
+symbol \texttt{\&\&} for ``\QAND.''  The \textit{further instructions}
+are carried out only if the proposition following the word \texttt{if}
+is true.  On closer inspection, this big expression is built from two
+simpler propositions.  Let $A$ be the proposition that \texttt{x > 0},
+and let $B$ be the proposition that \texttt{y > 100}.  Then we can
+rewrite the condition as
+\begin{equation}\label{ANAB}
+A \QOR (\QNOT(A) \QAND B).
+\end{equation}
+
+\subsection{Truth Table Calculation}
+A truth table calculation reveals that the more complicated
+expression~\ref{ANAB} always has the same truth value as
+\begin{equation}\label{AOB}
+A \QOR B.
+\end{equation}
+Namely, we begin with a table with just the truth values of $A$ and $B$:
+\[
+\begin{array}{cc|ccccc|c}
+A      & B      & A  & \QOR  & (\QNOT(A)& \QAND & B) & A \QOR  B \\ \hline
+\true  & \true \\
+\true  & \false\\
+\false & \true \\
+\false & \false                       
+\end{array}
+\]
+These values are enough to fill in two more columns:
+\[
+\begin{array}{cc|ccccc|c}
+A      & B      & A & \QOR  & (\QNOT(A) & \QAND & B) & A \QOR  B \\ \hline
+\true  & \true  &   &       & \ \false   &       &    & \lgtrue \\
+\true  & \false &   &       & \ \false   &       &    & \lgtrue \\
+\false & \true  &   &       & \ \true    &       &    & \lgtrue \\
+\false & \false &   &       & \ \true    &       &    & \lgfalse\\
+\end{array}
+\]
+Now we have the values needed to fill in the \QAND\ column:
+\[
+\begin{array}{cc|ccccc|c}
+A      & B      & A & \QOR  & (\QNOT(A) & \QAND   & B) & A \QOR  B \\ \hline
+\true  & \true  &   &       & \ \false   &  \false &    & \lgtrue \\
+\true  & \false &   &       & \ \false   &  \false &    & \lgtrue \\
+\false & \true  &   &       & \ \true    &  \true  &    & \lgtrue \\
+\false & \false &   &       & \ \true    &  \false &    & \lgfalse\\
+\end{array}
+\]
+and this provides the values needed to fill in the remaining column for the first \QOR:
+\[
+\begin{array}{cc|ccccc|c}
+A      & B      & A & \QOR     &(\QNOT(A) & \QAND   & B) & A \QOR  B \\ \hline
+\true  & \true  &   & \lgtrue  & \false &    \false &    & \lgtrue \\
+\true  & \false &   & \lgtrue  & \false &    \false &    & \lgtrue \\
+\false & \true  &   & \lgtrue  & \true  &    \true  &    & \lgtrue \\
+\false & \false &   & \lgfalse & \true  &    \false &    & \lgfalse\\
+\end{array}
+\]
+Expression whose truth values always match are called \term{equivalent}.
+Since the (highlighted) columns of truth values of the two expressions are
+the same, they are equivalent.  So we can simplify the code snippet
+without changing the program's behavior by replacing the complicated
+expression with an equivalent simpler one:
+%
+\begin{tabbing}
+\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
+\> \texttt{if ( x > 0 || y > 100 )} \\
+\> \> \vdots\\
+\> \emph{(further instructions)}
+\end{tabbing}
+
+The equivalence of~\eqref{ANAB} and~\eqref{AOB} can also be confirmed
+reasoning by cases:
+\begin{itemize}
+\item[$A$ is \true.]  An expression of the form $(\true \QOR
+  \text{anything})$ is equivalent to \true.  Since $A$ is \true\
+  both~\eqref{ANAB} and~\eqref{AOB} in this case are of this form, so they
+  have the same truth value, namely, \true.
+
+\item[$A$ is \false.]  Then an expression of the form $(A \QOR
+  \textit{anything})$ will have same truth value as \emph{anything}.
+   So~\eqref{AOB} has the same truth value as $B$.
+
+   Now any expression of the form $(\true \QAND \textit{anything})$ is
+   equivalent to \emph{anything}, as is any expression of the form $\false
+   \QOR \emph{anything}$. 
+   So in this case $A \QOR (\QNOT(A) \QAND B)$ is equivalent to
+   $(\QNOT(A) \QAND B)$, which in turn is equivalent to $B$.
+
+   Therefore both~\eqref{ANAB} and~\eqref{AOB} will have the same truth
+   value in this case, namely, the value of $B$.
+\end{itemize}
+
+Simplifying logical expressions has real practical importance in
+computer science.  Expression simplification in programs like the one
+above can make a program easier to read and understand, and can also
+make it faster since fewer operations are needed.  In hardware,
+simplifying expressions can decrease the number of logic gates on a
+chip.  That's because digital circuits can be described by logical
+formulas (see Problems~\ref{CP_binary_adder_logic}
+and~\ref{PS_faster_adder_logic}), and minimizing the logical formulas
+corresponds to reducing the number of gates in the circuit.  The
+payoff of gate minimization is potentially enormous: a chip with fewer
+gates is smaller, consumes less power, has a lower defect rate, and is
+cheaper to manufacture.
+
+\subsection{Cryptic Notation}
 Java uses symbols like ``$\&\&$'' and ``$||$'' in place of \QAND\ and
 \QOR.  Circuit designers use ``$\cdot$'' and ``$+$,'' and actually refer
 to \QAND\ as a product and \QOR\ as a sum.  Mathematicians use still
-another notation for the propositional operators given in the table below.
-This notation is concise but cryptic, and words such as ``$\QAND$'' and
-``$\QOR$'' are easier to remember and won't get confused with operations
-on numbers, so we will mostly stick to the words and save the concise
-notation for formulas that would otherwise run off the page.
+other symbols given in the table below.
 %
 \begin{center}
 \begin{tabular}{ll}
@@ -269,7 +371,8 @@ $P \QAND Q$ & $P \land Q$ \\
 $P \QOR Q$ & $P \lor Q$ \\
 $P \QIMP Q$ & $P \implies Q$ \\
 if $P$ then $Q$ & $P \implies Q$ \\
-$P \QIFF Q$ & $P \iff Q$
+$P \QIFF Q$ & $P \iff Q$\\
+$P \QXOR Q$ & $P \oplus Q$
 \end{tabular}
 \end{center}
 %
@@ -280,8 +383,23 @@ would be written:
     (P \land \bar{Q}) \implies R.
 \]
 
-\subsection{Logically Equivalent Implications}\label{sec:logical_equivalence}
+The mathematical notation is concise but cryptic.  Words such as
+``$\QAND$'' and ``$\QOR$'' are easier to remember and won't get
+confused with operations on numbers.  We will mostly stick to the
+words except when formulas would otherwise run off the page.
 
+\begin{problems}
+\classproblems
+\pinput{CP_binary_adder_logic}
+
+\homeworkproblems
+\pinput{PS_faster_adder_logic}
+\end{problems}
+
+\section{Equivalence and Validity}\label{equiv_valid_sec}
+%\label{sec:logical_equivalence}
+
+\subsection{Implications and Contrapositives}\label{implication_sec}
 Do these two sentences say the same thing?
 %
 \begin{center}
@@ -308,9 +426,9 @@ these two statements in a truth table:
 Sure enough, the highlighted columns showing the truth values of these two
 statements are the same.  A statement of the form ``($\QNOT Q) \QIMPLIES
 (\QNOT P)$'' is called the \term{contrapositive} of the implication ``$P
-\QIMPLIES Q$.''  We've just shown that an implication and its
-contrapositive are equivalent---they are just different ways of saying the
-same thing.
+\QIMPLIES Q$.''  The truth table shows that an implication and its
+contrapositive are equivalent---they are just different ways of saying
+the same thing.
 
 In contrast, the \term{converse} of ``$P \QIMPLIES Q$'' is the statement
 ``$Q \QIMPLIES P$.''  In terms of our example, the converse is:
@@ -351,9 +469,10 @@ are equivalent to the single statement:
 I am grumpy iff I am hungry.
 \end{center}
 %
-Once again, we can verify this with a truth table:
-Once again, we can verify this with a truth table.  We begin with a table
-with just the truth values of $P$ and $Q$:
+Once again, we can verify this with a truth table.  
+
+\iffalse
+We begin with a table with just the truth values of $P$ and $Q$:
 %
 \[
 \begin{array}{c|c|ccc|c}
@@ -378,6 +497,8 @@ P & Q & (P \QIMP Q) &\QAND & (Q  \QIMP  P) & P \QIFF Q \\
 \]
 Finally, now using the first two of the filled in columns, we can fill in
 the fourth column:
+\fi
+
 \[
 \begin{array}{c|c|ccc|c}
 P & Q & (P \QIMP Q) &\QAND & (Q  \QIMP  P) & P \QIFF Q \\
@@ -388,140 +509,142 @@ P & Q & (P \QIMP Q) &\QAND & (Q  \QIMP  P) & P \QIFF Q \\
 \false &  \false &\true  &\lgtrue &\true & \lgtrue
 \end{array}
 \]
-So the fourth column giving the truth values of 
+The fourth column giving the truth values of 
 \[
 (P \QIMP Q) \QAND (Q \QIMP P)
 \]
 is the same as the sixth column giving the truth values of $P \QIFF
-Q$, which confirms that the \QAND\ of the implications is logically
-equivalent to the \QIFF\ statement.
+Q$, which confirms that the \QAND\ of the implications is equivalent
+to the \QIFF\ statement.
 
-\section{Propositional Logic in Computer Programs}
+\subsection{Validity and Satisfiability}
+A \term{valid} formula is one which is always true.  The simplest example is
+\[
+P \QOR \QNOT(P).
+\]
 
-Propositions and logical connectives arise all the time in computer
-programs.  For example, consider the following snippet, which could be
-either C, C++, or Java:
-%
-\begin{tabbing}
-\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
-\> \texttt{if ( x > 0 || (x <= 0 \&\& y > 100) )} \\
-\> \> \vdots\\
-\> \textit{(further instructions)}
-\end{tabbing}
-%
-The symbol \texttt{||} denotes ``\QOR,'' and the symbol \texttt{\&\&}
-denotes ``\QAND.''  The \textit{further instructions} are carried out
-only if the proposition following the word \texttt{if} is true.  On
-closer inspection, this big expression is built from two simpler
-propositions.  Let $A$ be the proposition that \texttt{x > 0}, and let
-$B$ be the proposition that \texttt{y > 100}.  Then we can rewrite the
-condition as 
-\begin{equation}\label{ANAB}
-A \QOR (\QNOT(A) \QAND B).
+You can think about valid formulas as capturing fundamental logical
+truths.  For example, a property of implication that we take for
+granted is the if one statement implies a second one, and the second
+one imlplies a third, then the first implies the third.  The following
+valid formula comfirms the truth of this property of implication.
+\[
+[(P \QIMP Q) \QAND (Q \QIMP R)] \QIMP (P \QIMP R).
+\]
+
+Equivalence of formulas is really a special case of validity.  Namely,
+statements $F$ and $G$ and equivalent iff the statement $F \QIFF G$ is
+valid.  For example, the equivalence of the expressions~\ref{AOB}
+and~\ref{ANAB} means that
+\[
+(A \QOR B) \QIFF (A \QOR (\QNOT(A) \QAND B))
+\]
+is valid.  Of course validity can also be viewed as as aspect of
+equivalence.  Namely, a formula is valid iff it is equivalent
+to \true.
+
+A \term{satisfiable} formula is one which can sometimes be true.  One
+way satisfiability comes up is when there are a collection of system
+specifications.  The job of the system designer is to come up with a
+system that follows all the specs.  This means that the \QAND\ of all
+the specs had better be satisfiable or the system will be impossible
+(see Problem~\ref{CP_file_system_functioning_normally}).
+
+There is also a close relationship between validity and
+satisfiability, namely, a statement $P$ is valid iff its negation
+$\QNOT(P)$ is \emph{not} satisfiable.
+
+\begin{problems}
+
+\classproblems
+\pinput{CP_validity}
+\pinput{CP_file_system_functioning_normally}
+\end{problems}
+
+
+\section{The Algebra of Propositions}
+
+\subsection{Propositions in Normal Form}
+You can read off a simple expression for any propositional formula
+right from its truth table.  Let's use
+\begin{equation}\label{ANBRC}
+A \QAND (B \QOR C)
 \end{equation}
-%
-A truth table calculation reveals that the more complicated
-expression~\ref{ANAB} always has the same truth value as
-\begin{equation}\label{AOB}
-A \QOR B.
+as an example.  Here is its truth table.
+\[\begin{array}{c|c|c|cc}
+A      & B      & C       & A \QAND (B \QOR C)\\
+\true  & \true  & \true   &     \true\\
+\true  & \true  & \false  &     \true\\
+\true  & \false & \true   &     \true\\
+\true  & \false & \false  &     \false\\
+\false & \true  & \true   &     \false\\
+\false & \true  & \false  &     \false\\
+\false & \false & \true   &     \false\\
+\false & \false & \false  &     \false
+\end{array}\]
+So~\eqref{ANBRC} is true in the first row when $A$, $B$, and $C$ are all
+true, that is, where $A \QAND B \QAND C$ is true.  It's also true in
+the second row where $A \QAND B \QAND \bar{C}$ is true, and in the
+third row when $A \QAND \bar{B} \QAND C$ is true, and that's all.
+So~\eqref{ANBRC} is true exactly when
+\begin{equation}\label{ABCDNF}
+(A \QAND B \QAND C) \QOR (A \QAND B \QAND \bar{C}) \QOR
+  (A \QAND \bar{B} \QAND C)
 \end{equation}
-Namely, we begin with a table with just the truth values of $A$ and $B$:
-\[
-\begin{array}{cc|ccccc|c}
-A      & B      & A  & \QOR  & (\QNOT(A)& \QAND & B) & A \QOR  B \\ \hline
-\true  & \true \\
-\true  & \false\\
-\false & \true \\
-\false & \false                       
-\end{array}
-\]
-This is enough to fill in two more columns
-\[
-\begin{array}{cc|ccccc|c}
-A      & B      & A & \QOR  & (\QNOT(A) & \QAND & B) & A \QOR  B \\ \hline
-\true  & \true  &   &       &  \false   &       &    & \lgtrue \\
-\true  & \false &   &       &  \false   &       &    & \lgtrue \\
-\false & \true  &   &       &  \true    &       &    & \lgtrue \\
-\false & \false &   &       &  \true    &       &    & \lgfalse\\
-\end{array}
-\]
-Now we can fill in the \QAND\ column:
-\[
-\begin{array}{cc|ccccc|c}
-A      & B      & A & \QOR  & (\QNOT(A) & \QAND   & B) & A \QOR  B \\ \hline
-\true  & \true  &   &       &  \false   &  \false &    & \lgtrue \\
-\true  & \false &   &       &  \false   &  \false &    & \lgtrue \\
-\false & \true  &   &       &  \true    &  \true  &    & \lgtrue \\
-\false & \false &   &       &  \true    &  \false &    & \lgfalse\\
-\end{array}
-\]
-and then fill in the remaining column of values for the first \QOR\
-expression:
-\[
-\begin{array}{cc|ccccc|c}
-A      & B      & A & \QOR     &(\QNOT(A) & \QAND   & B) & A \QOR  B \\ \hline
-\true  & \true  &   & \lgtrue  & \false &    \false &    & \lgtrue \\
-\true  & \false &   & \lgtrue  & \false &    \false &    & \lgtrue \\
-\false & \true  &   & \lgtrue  & \true  &    \true  &    & \lgtrue \\
-\false & \false &   & \lgfalse & \true  &    \false &    & \lgfalse\\
-\end{array}
-\]
-Expression whose truth values always match are called \term{equivalent}.
-Since the (highlighted) columns of truth values of the two expressions are
-the same, they are equivalent.  Now we can simplify the code snippet
-without changing the program's behavior by replacing the complicated
-expression with an equivalent simpler one:
-%
-\begin{tabbing}
-\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
-\> \texttt{if ( x > 0 || y > 100 )} \\
-\> \> \vdots\\
-\> \emph{(further instructions)}
-\end{tabbing}
+is true.  So~\eqref{ANBRC} and~\eqref{ABCDNF} are equivalent.
 
-The equivalence of~\eqref{ANAB} and~\eqref{AOB} can also be confirmed
-reasoning by cases:
-\begin{itemize}
-\item[$A$ is \true.]  An expression of the form $(\true \QOR
-  \text{anything})$ is equivalent to \true.  Since $A$ is \true\
-  both~\eqref{ANAB} and~\eqref{AOB} in this case are of this form, so they
-  have the same truth value, namely, \true.
+Notice that the expression~\eqref{ABCDNF} is simply an \QOR\ of \QAND-terms, where each
+\QAND-term is an \QAND\ in turn of each of the variables or their negations.
+An expression of this form is called a \term{disjunctive normal form}.
 
-\item[$A$ is \false.]  Then an expression of the form $(A \QOR
-  \textit{anything})$ will have same truth value as \emph{anything}.
-   So~\eqref{AOB} has the same truth value as $B$.
+\subsection{Proving Equivalences}
+A check of equivalence or validity by truth table runs out of steam
+apretty quickly: a proposition with $n$ variables has a truth table
+with $2^n$ lines, so the effort required to check a proposition
+grows \idx{exponentially} with the number of variables.  For a
+proposition with just 30 variables, that's already over a billion
+lines to check!
 
-   Now any expression of the form $(\true \QAND \textit{anything})$ is
-   equivalent to \emph{anything}, as is any expression of the form $\false
-   \QOR \emph{anything}$. 
-   So in this case $A \QOR (\QNOT(A) \QAND B)$ is equivalent to
-   $(\QNOT(A) \QAND B)$, which in turn is equivalent to $B$.
+An alternative approach that sometimes helps is to use algebra to
+prove equivalence.  We list below a bunch of equivalence axioms with
+the symbol ``$\equivalence$'' between equivalent formulas.  These
+axioms are important because they are all that's needed to prove every
+possible equivalence.  We'll start with some equivalences for \QAND's
+that look like the familiar ones for multiplication of numbers:
+\begin{align}
+A \QAND B           &\eqv B \QAND A
+         & \text{commutativity of \QAND}\\
+(A \QAND B)\QAND C  & \eqv A \QAND (B \QAND C)
+         & \text{associativity of \QAND}\\
+\true \QAND A           &\eqv A
+         & \text{identity for \QAND}\\
+\false \QAND A           &\eqv \false
+         & \text{zero for \QAND}
+\end{align}
+An axiom that doesn't correspond to a number property is
+\begin{align}
+A \QAND A           &\eqv A
+         & \text{idempotence for \QAND}\\
+\end{align}
+There are a corresponding set of equivalences for $\QOR$ which we
+won't bother to list.
 
-   Therefore both~\eqref{ANAB} and~\eqref{AOB} will have the same truth
-   value in this case, namely, the value of $B$.
-\end{itemize}
+There is also a familiar rule connecting \QAND\ and \QOR:
+\begin{align}
+A \QAND (B \QOR C) & \eqv (A \QAND B) \QOR (A \QAND C)
+       & \text{distributivity of \QAND\ over \QOR}
+\end{align}
 
-Simplifying logical expressions has real practical importance in computer
-science.  Expression simplification in programs like the one above can
-make a program easier to read and understand, and can also make it faster
-since fewer operations are needed.  In hardware, simplifying expressions
-can decrease the number of logic gates on a chip.  That's because digital
-circuits can be described by logical formulas (see
-Problems~\ref{CP_binary_adder_logic} and~\ref{PS_faster_adder_logic}), and
-minimizing the logical formulas corresponds to reducing the number of
-gates in the circuit.  The payoff of gate minimization is potentially
-enormous: a chip with fewer gates is smaller, consumes less power, has a
-lower defect rate, and is cheaper to manufacture.
 
-\section{Standard forms for propositional formulas}
+
+
 \begin{editingnotes}
 DNF from True entries in truth table; CNF from false entries.   DNF from
 algebra: distributivity, De Morgan, sort alphabetically.
 \end{editingnotes}
 
 
-
-\section{Satisfiability}\label{SAT_sec}
+\section{The SAT Problem}\label{SAT_sec}
 
 A proposition is \textbf{satisfiable} if some setting of the variables
 makes the proposition true.  For example, $P \QAND \bar{Q}$ is
@@ -539,12 +662,17 @@ is not so easy.  How about this one?
 
 The general problem of deciding whether a proposition is satisfiable
 is called \term{SAT}.  One approach to SAT is to construct a truth
-table and check whether or not a $\true$ ever appears.  But this
-approach runs out of steam pretty quickly: a proposition with $n$
-variables has a truth table with $2^n$ lines, so the effort required
-to decide about a proposition grows \idx{exponentially} with the
-number of variables.  For a proposition with just 30 variables, that's
-already over a billion lines to check!
+table and check whether or not a $\true$ ever appears.  
+
+\iffalse
+%inserted above
+
+But this approach runs out of steam pretty quickly: a proposition with
+$n$ variables has a truth table with $2^n$ lines, so the effort
+required to decide about a proposition grows \idx{exponentially} with
+the number of variables.  For a proposition with just 30 variables,
+that's already over a billion lines to check!\fi
+
 
 Is there a more \index{efficient solution} efficient solution
 to SAT?  In particular, is there some, presumably very ingenious,
@@ -585,15 +713,10 @@ Problem~\ref{CP_valid_vs_satisfiable}).  It follows that there is polynomial tim
 procedure for SAT iff there is there is polynomial time
 procedure for validity.
 
-\begin{problems}
-\classproblems
-\pinput{CP_file_system_functioning_normally}
-\pinput{CP_binary_adder_logic}
-\pinput{CP_valid_vs_satisfiable}
+Now we can see why simplification of formulas in programs or for
+circuits which came up in Section~\ref{propositions_in_programs_sec}
+would be hard---validity testing is a special case of simplification:
+a formula is valid iff it simplies to \true.
 
-\homeworkproblems
-\pinput{PS_faster_adder_logic}
-
-\end{problems}
 
 \endinput
