@@ -1194,6 +1194,7 @@
 \newcommand{\QIMP}{\QIMPLIES}
 \newcommand{\QIFF}{\mbint{\textsc{iff}}}
 \newcommand{\QNOT}{\mopt{\textsc{not}}}
+\newcommand{\QNAND}{\mopt{\textsc{nand}}}
 
 \newcommand{\nand}{\mathbin{\mid}}
 
