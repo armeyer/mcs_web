@@ -1,7 +1,6 @@
 \hyperdef{sets}{informal}{\chapter{Mathematical Data Types}}\label{sets_chap}
 
 \section{Sets}
-
 We've been assuming that the concepts of sets, sequences, and functions are
 already familiar ones, and we've mentioned them repeatedly.  Now we'll do a
 quick review of the definitions.
@@ -395,9 +394,9 @@ $g(f(x))$.
 \begin{definition}\label{func_compose_def}
   For functions $f:A \to B$ and $g:B \to C$, the \term{composition},
   $g \compose f$, of $g$ with $f$ is defined to be the function
-  $h:A \to C$ defined by the rule:
+  from $A$ to $C$ defined by the rule:
 \begin{displaymath}
-(g \compose f)(x) = h(x) \eqdef g(f(x)),
+(g \compose f)(x) \eqdef g(f(x)),
 \end{displaymath}
 for all $x \in A$.
 \end{definition}
@@ -409,14 +408,16 @@ calculus, and it plays an equally basic role in discrete mathematics.
 
 \term{Relations} are another fundamental mathematical data type.  Equality
 and ``less-than'' are very familiar examples of mathematical relations.
-These are called \term{binary relations} because they apply to a pair
-$(a,b)$ of objects; the equality relation holds for the pair when $a=b$,
-and less-than holds when $a$ and $b$ are real numbers and $a < b$.
+These are called \term{binary relations} because they define a relation
+between two objects; the equality relation on numbers relates every number
+to itself, and that's all.  The and less-than on $\reals$ relates each $a
+\in \reals$ to a $b \in \reals$ exactly when $a < b$.
 
-In this chapter we'll define some basic vocabulary and properties of binary
+In this section we'll define some basic vocabulary and properties of binary
 relations.
 
-\hyperdef{func}{rel}{\section{Binary Relations and Functions}}
+%\hyperdef{func}{rel}
+\section{Binary Relations and Functions}
 Binary relations are far more general than equality or less-than.
 Here's the official definition:
 \begin{definition}\label{reldef}
@@ -481,68 +482,235 @@ the Fall term only subjects.  Similarly, there are faculty in the domain,
 $F$, who do not appear in the list because all their in-charge subjects
 are Fall term only.
 
-\section{Images and Inverse Images}
+\subsection{Relational Images}
+The idea of the image of a set under a function extends directly to
+relations.
 
-%explain $R(D)$: take the endpoints of all the arrows that come from $D$.
-
-If $R$ is a binary relation from $A$ to $B$, and $X$ is any set,
-define the image, $R(X)$, of $X$ under $R$ to be the set elements of
-$B$ that are related to something in $X$, namely,
+\begin{definition}
+The \term{image} of a set, $Y$, under a relation, $R$, written $R(Y)$, is the
+set of elements of the codomain, $B$, of $R$ that are related to some element in
+$Y$, namely,
 \[
-R(X) \eqdef \set{b \in B \suchthat xRb \text{ for some } x \in X}.
+R(Y) \eqdef \set{b \in B \suchthat yRb \text{ for some } y \in Y}.
 \]
-In terms of arrows, $R(X)$ is simply the set of endpoints of arrows that
-start at points in $X$.
+\end{definition}
 
-So, $T(\set{\text{A. Meyer}})$ gives the subject numbers that Meyer is
-in charge of in Spring '10.  In fact, $T(\set{\text{A. Meyer}})
-= \set{6.042, 18.062, 6.844}$.  Since the domain, $F$, is the set of
-all in-charge faculty, $T(F)$ is exactly the set of \emph{all} Spring
-'10 subjects being taught.  Similarly, $\inv{T}(N)$ is the set of people
-in-charge of a Spring '10 subject.
+For example, to find the subject numbers that Meyer is in
+charge of in Spring '09, we can look for all the pairs of the form
+\[
+(\text{A. Meyer}, \ang{\text{subject-number}})
+\]
+in the graph of the teaching relation, $T$, and then just list the
+right hand sides of these pairs.  These righthand sides are exactly the image
+$T(\text{A. Meyer})$, which happens to be $\set{6.042, 18.062, 6.844}$.
+Similarly, to find the subject numbers that either Freeman or Eng are
+in charge of, we can collect all the pairs in $T$ of the form
+\[
+(\text{G. Freeman}, \ang{\text{subject-number}})
+\]
+or
+\[
+(\text{T. Eng}, \ang{\text{subject-number}});
+\]
+and list their right hand sides.  These right hand sides are exactly the image
+$T(\set{\text{G. Freeman}, \text{T. Eng}}$.  So the partial list
+of pairs in $T$ given above implies that
+\[
+\set{\texttt{6.011, 6.881, 6.882, 6.UAT}} \subseteq T(\set{\text{G. Freeman}, \text{T. Eng}}.
+\]
+Finally, since the domain, $F$, is the set of all in-charge faculty,
+$T(F)$ is exactly the set of \emph{all} Spring '09 subjects being
+taught.
 
-The faculty in charge of 6.UAT in Spring '10 can be found by taking the
-pairs of the form
+\subsection{Surjective and Injective Relations}\label{surj_sec}
+
+There are a few properties of relations that will be useful when we take
+up the topic of counting because they imply certain relations between the
+\emph{sizes} of domains and codomains.  We say a binary relation $R : A
+\to B$ is:
+
+\begin{itemize}
+
+\item \term{surjective} when every element of $B$ is mapped to \textit{at
+least once}; more concisely, $R$ is surjective iff $R(A)=B$.
+
+\item \term{total} when every element of $A$ is assigned to some element of
+  $B$; more concisely, $R$ is total iff $A=\inv{R}(B)$.
+
+\item \term{injective} if every element of $B$ is mapped to \textit{at
+most once}, and
+
+\item \term{bijective} if $R$ is total, surjective, and injective
+  \emph{function}.\footnote{These words ``surjective,''
+``injective,'' and ``bijective'' are not very memorable.
+Some authors use the possibly more memorable phrases \term{onto} for surjective,
+\emph{one-to-one} for injective, and \emph{exact correspondence} for bijective.}
+
+\end{itemize}
+
+Note that this definition of $R$ being total agrees with the
+definition in Section~\ref{funcsubsec} when $R$ is a function.
+
+If $R$ is a binary relation from $A$ to $B$, we define $R(A)$ to to be the
+\emph{range} of $R$.  So a relation is surjective iff its range equals its
+codomain.  Again, in the case that $R$ is a function, these definitions of
+``range'' and ``total'' agree with the definitions in
+Section~\ref{funcsubsec}.
+
+\subsection{Relation Diagrams}
+We can explain all these properties of a relation $R:A \to B$ in terms of
+a diagram where all the elements of the domain, $A$, appear in one column
+(a very long one if $A$ is infinite) and all the elements of the codomain,
+$B$, appear in another column, and we draw an arrow from a point $a$ in
+the first column to a point $b$ in the second column when $a$ is related
+to $b$ by $R$.  For example, here are diagrams for two functions:
+
+\begin{center}
+\begin{tabular}{ccc}
+
+\unitlength = 2pt
+\begin{picture}(50,60)(-10,-5)
+\thinlines
+\put(-5,50){\makebox(0,0){$A$}}
+  \put(35,50){\makebox(0,0){$B$}}
+\put(-5,40){\makebox(0,0){a}}
+  \put(0,40){\vector(1,0){28}}
+  \put(35,40){\makebox(0,0){1}}
+\put(-5,30){\makebox(0,0){b}}
+  \put(0,30){\vector(3,-1){28}}
+  \put(35,30){\makebox(0,0){2}}
+\put(-5,20){\makebox(0,0){c}}
+  \put(0,20){\vector(3,-1){28}}
+  \put(35,20){\makebox(0,0){3}}
+\put(-5,10){\makebox(0,0){d}}
+  \put(0,10){\vector(3,2){28}}
+  \put(35,10){\makebox(0,0){4}}
+\put(-5,0){\makebox(0,0){e}}
+  \put(0,0){\vector(3,2){28}}
+\end{picture}
+
+& \hspace{0.5in} &
+
+\unitlength = 2pt
+\begin{picture}(50,60)(-10,-5)
+\thinlines
+\put(-5,50){\makebox(0,0){$A$}}
+  \put(35,50){\makebox(0,0){$B$}}
+\put(-5,40){\makebox(0,0){a}}
+  \put(0,40){\vector(1,0){28}}
+  \put(35,40){\makebox(0,0){1}}
+\put(-5,30){\makebox(0,0){b}}
+  \put(0,30){\vector(3,-1){28}}
+  \put(35,30){\makebox(0,0){2}}
+\put(-5,20){\makebox(0,0){c}}
+  \put(0,20){\vector(3,-2){28}}
+  \put(35,20){\makebox(0,0){3}}
+\put(-5,10){\makebox(0,0){d}}
+  \put(0,10){\vector(3,2){28}}
+  \put(35,10){\makebox(0,0){4}}
+\put(35,0){\makebox(0,0){5}}
+\end{picture}
+
+\end{tabular}
+\end{center}
+
+Here is what the definitions say about such pictures:
+\begin{itemize}
+
+\item ``$R$ is a function'' means that every point in the domain column,
+  $A$, has \emph{at most one arrow out of it}.
+
+\item ``$R$ is total'' means that \emph{every} point in the $A$ column has
+  \emph{at least one arrow out of it}.  So if $R$ is a function, being
+  total really means every point in the $A$ column has
+  \emph{exactly one arrow out of it}.
+
+\item ``$R$ is surjective'' means that \emph{every} point in the codomain
+  column, $B$, has \emph{at least one arrow into it}.
+
+\item ``$R$ is injective'' means that every point in the codomain column,
+  $B$, has \emph{at most one arrow into it}.
+
+\item ``$R$ is bijective'' means that \emph{every} point in the $A$ column
+      has exactly one arrow out of it, and \emph{every} point in the $B$ column
+      has exactly one arrow into it.
+
+\end{itemize}
+
+So in the diagrams above, the relation on the left is a total, surjective
+function (every element in the $A$ column has exactly one arrow out, and
+every element in the $B$ column has at least one arrow in), but not
+injective (element 3 has two arrows going into it).  The relation on the
+right is a total, injective function (every element in the $A$ column has
+exactly one arrow out, and every element in the $B$ column has at most one
+arrow in), but not surjective (element 4 has no arrow going into it).
+
+%Define $\inv{R}$ and explain with reversed arrows.  Deduce that that
+%$R$ is total iff $\inv{R} is surjective, $R$ is function iff
+%$\inv{R}$ is injective.
+
+Notice that the arrows in a diagram for $R$ precisely correspond to the
+pairs in the graph of $R$.  But $\graph{R}$ does not determine by itself
+whether $R$ is total or surjective; we also need to know what the domain
+is to determine if $R$ is total, and we need to know the codomain to tell
+if it's surjective.
+\begin{example}
+  The function defined by the formula $1/x^2$ is total if its domain is
+  $\reals^+$ but partial if its domain is some set of real numbers
+  including 0.  It is bijective if its domain and codomain are both
+  $\reals^+$, but neither injective nor surjective if its domain and
+  codomain are both $\reals$.
+\end{example}
+
+\subsection{Inverse Relations and Images}
+
+\begin{definition}
+The \term{inverse}, $\inv{R}$ of a relation $R: A \to B$ is the
+relation from $B$ to $A$ defined by the rule
+\[
+b \inv{R} a \QIFF a \mrel{R} B.
+\]
+The image of a set under the relation, $\inv{R}$, is called
+the \term{inverse image} of the set.  That is, the inverse image of a
+set, $X$, under the relation, $R$, is $\inv{R}(X)$.
+\end{definition}
+
+Continuing with the in-charge example above, we can find the faculty
+in charge of 6.UAT in Spring '10 can be found by taking the pairs of
+the form
 \[
 (\ang{\text{instructor-name}}, 6.UAT)
 \]
-in the graph of the teaching relation, $T$, and then just listing the left
-hand sides of these pairs; these turn out to be just Eng and Freeman.
+in the graph of the teaching relation, $T$, and then just listing the
+left hand sides of these pairs; these turn out to be just Eng and
+Freeman.  These left hand sides are exactly the inverse image of
+$\set{\text{6.UAT}}$ under $T$.
 
-The introductory course 6 subjects have numbers that start with
-\emph{6.0}\,.  So we can likewise find out all the instructors in-charge
-of introductory course 6 subjects this term, by taking all the pairs of
-the form $(\ang{\text{instructor-name}}, 6.0\dots)$ and list the left hand
-sides of these pairs.  For example, from the part of the graph of $T$
-shown above, we can see that Meyer, Leighton, Freeman, and Guttag are
-in-charge of introductory subjects this term.
-
-These are examples of taking an \term{inverse image} of a set
-under a relation.  If $R$ is a binary relation from $A$ to $B$, the
-inverse, $\inv{R}$, of $R$, is the binary relation from $B$ to $A$
-defined by reversing relation between elements.  Namely,
+Now let $D$ be the set of introductory course 6 subject numbers.
+These are the subject numbers that start with \emph{6.0}\,.  Now we
+can likewise find out all the instructors who were in-charge of
+introductory course 6 subjects in Spring '09, by taking all the pairs
+of the form $(\ang{\text{instructor-name}}, 6.0\dots)$ and list the
+left hand sides of these pairs.  These left hand sides are exactly the
+inverse image of of $D$ under $T$.  From the part of the
+graph of $T$ shown above, we can see that
 \[
-b\mrel{\inv{R}}a \qiff a\mrel{R}b,
+\set{\text{Meyer, Leighton, Freeman, Guttag}} \subseteq \inv{T}(D).
 \]
-for all $a \in A$ and $b \in B$.  In terms of arrows, $\inv{R}$ is the
-relation obtained by reversing the direction of the arrows of $R$.
-
-The \term{inverse image} of any set $X$ under $R$, is simply the image,
-$\inv{R}(X)$, of $X$ under $\inv{R}$.
-
-For example, let $D$ be the set of introductory course 6 subject
-numbers.  So $\inv{T}(D)$, the inverse image of the set $D$ under the
-relation, $T$, is the set of all faculty members in-charge of
-introductory course 6 subjects in Spring '10.
+That is, Meyer, Leighton, Freeman, and Guttag were among the
+instructors in charge of introductory subjects in Spring '10.
+Finally, the inverse image under $T$ of the set, $N$, of all subject
+numbers is the set of all instructors who were in charge of a Spring
+'09 subject.
 
 It gets interesting when we write composite expressions mixing images,
 inverse images and set operations.  For example, $T(\inv{T}(D))$ is
-the set of Spring '10 subjects that have people in-charge who also are
-in-charge of introductory subjects.  So $T(\inv{T}(D)) - D$ are the
-advanced subjects with someone in-charge who is also in-charge of an
-introductory subject.  Similarly, $\inv{T}(D) \intersect \inv{T}(N-D)$
-is the set of faculty teaching both an introductory \emph{and} an
-advanced subject in Spring '10.
+the set of Spring '09 subjects that have an instructor in charge who
+also is in in charge of an introductory subject.  So $T(\inv{T}(D)) -
+D$ are the advanced subjects with someone in-charge who is also
+in-charge of an introductory subject.  Similarly, $\inv{T}(D) \intersect
+\inv{T}(N-D)$ is the set of faculty in charge of both an introductory \emph{and}
+an advanced subject in Spring '09.
 
 \newpage
 \section{Glossary of Symbols}
@@ -579,7 +747,10 @@ $\integers^-$ & negative integers\\
 $\rationals$ & rational numbers\\
 $\reals$ & real numbers\\
 $\complexes$ & complex numbers\\
-$\emptystring$ & the empty string/list
+$\emptystring$ & the empty string/list\\
+$R(X)$  & image of set, $X$, under binary relation, $R$\\
+$\inv{R}$  & inverse of binary relation, $R$
+
 \end{tabular}
 \end{center}
 
