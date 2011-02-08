@@ -1,0 +1,835 @@
+\Chapter{Infinite Sets}
+
+This chapter is about \idx{infinite} sets and some challenges in proving
+things about them.
+
+Wait a minute!  Why bring up infinity in a Mathematics for \emph{Computer
+  Science} text?  \iffalse We've run into a lot of computer science
+students who wonder why they should care about infinite sets.  They point
+out that \fi
+%
+After all, any data set in a computer memory is limited by the size of
+memory, and there is a bound on the possible size of computer memory for
+the simple reason that the universe is (or at least appears to be)
+bounded.  So why not stick with \emph{finite} sets of some (maybe pretty
+big) bounded size?
+%
+\iffalse need to learn all this abstract theory of infinite sets, and this
+is a good question.  \fi
+%
+This is a good question, but let's see if we can persuade you that dealing
+with infinite sets is inevitable.
+
+Since you've read this far, you should realize that you've already
+accepted the routine use of the integers, the rationals and irrationals,
+and sequences of these---infinite sets all.  Further, do you really want
+Physics or the other sciences to give up the real numbers on the grounds
+that only a bounded number of bounded measurements can be made in a
+bounded size universe?  It's pretty convincing and a lot simpler to ignore
+such big and uncertain (the universe seems to be getting bigger all the
+time) bounds and accept theories using real numbers.
+
+Likewise in computer science, it simply isn't plausible that writing a
+program to add nonnegative integers with up to as many digits as, say, the
+stars in the sky (billions of galaxies each with billions of stars), would
+be any different than writing a program that would add \emph{any} two
+integers no matter how many digits they had.  The same is true in
+designing a compiler: it's neither useful nor sensible to make use of the
+fact that in a bounded universe, only a bounded number of programs will
+ever be compiled.
+
+\iffalse
+That's why basic programming data types like integers or strings, for
+example, are defined without imposing any bound on the sizes of data
+items.  For example, each datum of type \idx{\texttt{string}} consists of
+characters from a finite alphabet and has a finite length, but the data
+type definition does not require that there be bound on the sizes of these
+finite numbers.  So we accept the fact that conceptually there are an
+infinite number of item of data type \texttt{string}---even though in any
+given implementation, storage limits would impose overflow bounds.
+
+When we then consider string procedures of
+type \idx{\texttt{string-->string}}, not only are there an infinite number
+of such procedures, but each procedure generally behaves differently on
+different inputs, so that a single \texttt{string-->string} procedure may
+embody an infinite number of behaviors.  In short, an educated computer
+scientist can't get around having to cope with infinite sets.
+\fi
+
+So let's role up our sleeves and learn to cope with infinity.
+
+\section{Finite Cardinality}\label{mappingrule_sec}
+
+The relational properties in Section~\ref{rel_sec} are useful in figuring
+out the relative sizes of domains and codomains.
+\begin{definition}\label{fin_card_def}
+If $A$ is a finite set, the \term{cardinality} of $A$, written $\card{A}$,
+is the number of elements in $A$.
+\end{definition}
+A finite set may have no elements (the empty set), or one element, or two
+elements,\dots so the cardinality of finite sets is always a nonnegative
+integer.
+
+Now suppose $R:A \to B$ is a function.  This means every arrow in the diagram
+for $R$ comes from exactly one element of $A$, so the number of arrows is
+at most the number of elements in $A$.  That is, if $R$ is a function,
+then
+\[
+\card{A} \geq \#\text{arrows}.
+\]
+If $R$ is also surjective, then every element of $B$ has an arrow
+into it, so there must be at least as many arrows in the diagram as the
+size of $B$.  That is,
+\[
+\#\text{arrows} \geq \card{B}.
+\]
+Combining these inequalities implies that if $R$ is a surjective
+function, then $\card{A} \geq \card{B}$.
+
+In short, if we write $A \surj B$ to mean that there is a surjective
+function from $A$ to $B$, then we've just proved a lemma: if $A \surj B$,
+then $\card{A} \geq \card{B}$.  The following definition and lemma lists
+this statement and three similar rules relating domain and codomain size
+to relational properties.
+
+\begin{definition}\label{bigger}
+  Let $A,B$ be (not necessarily finite) sets.  Then
+  \begin{enumerate}
+  \item $A$ \term{$\surj$} $B$ iff there is a surjective \emph{function} from $A$ to $B$.  
+
+  \item $A$ \term{$\inj$} $B$ iff there is a total, injective \emph{relation} from $A$ to $B$.
+
+  \item $A$ \term{$\bij$} $B$ iff there is a bijection from $A$ to $B$.  
+
+  \item $A$ \term{$\strict$} $B$ iff $A \surj B$, but not $B \surj A$.
+
+  \end{enumerate}
+\end{definition}
+
+\begin{lemma}\label{maprule_implies}
+%[Mapping Rules] \mbox{}
+Let $A$ and $B$ be finite sets.
+
+\begin{enumerate}
+
+\item\label{mapping-sur} If $A \surj B$, then $\card{A} \geq \card{B}$.
+
+\item\label{mapping-inj} If $A \inj B$, then $\card{A} \leq \card{B}$.
+
+\item\label{mapping-bij} If $R \bij B$, then $\card{A} = \card{B}$.
+\end{enumerate}
+
+\end{lemma}
+
+\begin{proof}
+  We've already given an ``arrow'' proof of implication~\ref{mapping-sur}.
+  Implication~\ref{mapping-inj}.\ follows immediately from the fact that
+  if $R$ has the $[\le 1\ \text{out}]$ function property, and the $[\ge 1\
+  \text{in}]$ surjective property, the $\inv{R}$ is total and injective,
+  so $A \surj B$ iff $B \inj A$.  Since a bijection is both a surjective
+  function and a total injective relation, implication~\ref{mapping-bij}.\
+  is an immediate consequence of the first two.
+\end{proof}
+
+Lemma~\ref{maprule_implies}.\ref{mapping-sur}.\ has a converse:
+if the size of a finite set, $A$, is greater than or equal to the size of
+another finite set, $B$, then it's always possible to define a
+surjective function from $A$ to $B$.  In fact, the surjection can be a
+total function.  To see how this works, suppose for example that
+\begin{align*}
+A & =\set{a_0,a_1,a_2,a_3,a_4,a_5}\\
+B & =\set{b_0,b_1,b_2,b_3}.
+\end{align*}
+Then define a total function $f:A\to B$ by the rules
+\[
+f(a_0) \eqdef b_0,\  f(a_1) \eqdef b_1,\  f(a_2) \eqdef b_2,\  f(a_3)=
+f(a_4)=f(a_5) \eqdef b_3.
+\]
+More concisely,
+\[
+f(a_i) \eqdef b_{\min(i,3)},
+\]
+for $0 \le i \le 5$.  Since $5 \geq 3$, this $f$ is a surjection.
+
+In fact, if $A$ and $B$ are finite sets of the same size, then we could also
+define a bijection from $A$ to $B$ by this method.
+
+In short, we have figured out if $A$ and $B$ are finite sets, then
+$\card{A} \geq \card{B}$ \emph{if and only if} $A \surj B$.  So it follows
+that $A \strict B$ iff $\card{A} > \card{B}$.  We have now proved the
+Theorem that wraps up the whole finite cardinality story:
+
+\begin{theorem}\label{maprul_thm}
+[Mapping Rules] \mbox{}
+For \emph{finite} sets, $A,B$,
+\begin{align}
+\card{A} \geq \card{B} & \qiff A \surj B,\\
+\card{A} \leq \card{B} & \qiff A \inj B,\\
+\card{A} = \card{B} & \qiff A \bij B,\label{bij_same_fincard}\\
+\card{A} < \card{B} & \qiff A \strict B.
+\end{align}
+\end{theorem}
+
+\subsection{How Many Subsets of a Finite Set?}
+As an application of the bijection mapping rule, we can give an easy proof
+of:
+\begin{theorem}\label{powset_fincard}
+There are $2^n$ subsets of an $n$-element set.  That is,
+\[
+\card{A} = n \qimplies \card{\power(A)} = 2^n.
+\]
+\end{theorem}
+
+For example, the set $A \eqdef \set{a_1, a_2, a_3}$ has eight different subsets:
+%
+\[
+\begin{array}{cccc}
+\emptyset & \set{a_1} & \set{a_2} & \set{a_1, a_2} \\
+\set{a_3} & \set{a_1, a_3} & \set{a_2, a_3} & \set{a_1, a_2, a_3}
+\end{array}
+\]
+
+Theorem~\ref{powset_fincard} follows from the fact that there is a simple
+bijection from subsets of $A$ to $\set{0,1}^n$, the $n$-bit sequences.
+Namely, let $a_1, a_2, \dots, a_n$ be the elements of $A$.  Map each
+subset of $S \subbset A$ to the bit sequence $(b_1, \dots, b_n)$ defined by
+the rule that
+\[
+b_i = 1 \qiff a_i \in S.
+\]
+For example, if $n = 10$, then the subset $\set{a_2, a_3, a_5, a_7,
+  a_{10}}$ maps to a 10-bit sequence as follows:
+%
+\[
+\begin{array}{rrrrrrrrrrrrr}
+\text{subset:} &
+\{ &    & a_2, & a_3, &    & a_5, &   & a_7, &    &    & a_{10} & \} \\
+\text{sequence:} &
+(  & 0, &   1, &   1, & 0, &   1, & 0, &   1, & 0, & 0, &        1 & )
+\end{array}
+\]
+%
+Now by Theorem~\ref{powset_fincard}.\ref{bij_same_fincard},
+\[
+\card{\power(A)} = \set{0,1}^n.
+\]
+But every computer scientist knows that there are $2^n$ $n$-bit sequences!
+So we've proved Theorem~\ref{powset_fincard}!\footnote{In case you're
+  someone who doesn't know how many $n$-bit sequence there are, you'll get
+  an explanation where $2^$ comes from in Chapter~\ref{counting__chap}.}
+
+\section{ Infinite Cardinality}
+
+In the late nineteenth century, the mathematician Georg Cantor was
+studying the convergence of Fourier series and found he needed to compare
+the size of infinite sets.  To get a grip on this, he argued that
+Theorem~\ref{maprul_thm} suggested that two infinite sets to be regarded
+as having the ``same size'' iff there was a bijection between them.
+Further, an infinite set $A$ is ``as big as'' a set $B$ iff $A \surj B$,
+and ``strictly smaller'' than $B$ iff $A \strict B$.  Then he diverted his
+study from Fourier series to the development of a theory of infinite size
+comparisons with profound consquences for the foundations of mathematics.
+In fact he made a lot of enemies: the general mathematical community at
+the time doubted the relevance of what they called ``\idx{Cantor's
+  paradise}'' of ``arbitrary'' infinite sizes.
+
+Notice that a nice technical feature of Cantor's idea is that it avoids
+the need for a definition of what the ``size'' of an infinite set might
+be---all it does is compare ``sizes.''
+
+\textcolor{red}{\textbf{Warning}}: We haven't, and won't, define what the
+``size'' of an infinite is.  The definition of infinite ``sizes'' is
+cumbersome and technical, and we can get by just fine without it.  All we
+need are the ``as big as'' and ``same size'' relations, $\surj$ and
+$\bij$, between sets.
+
+But there's something else to \textcolor{red}{watch out for}.  We've
+referred to $\surj$ as an ``as big as'' relation and $\bij$ as a ``same
+size'' relation on sets.  Of course most of the ``as big as'' and ``same
+size'' properties of $\surj$ and $\bij$ on finite sets do carry over to
+infinite sets, but \emph{some important ones don't} ---as we're about to
+show.  So you have to be careful: don't assume that $\surj$ has any
+particular ``as big as'' property on \emph{infinite} sets until it's been
+proved.
+
+Let's begin with some familiar properties of the ``as big as'' and ``same
+size'' relations on finite sets that do carry over exactly to infinite
+sets:
+\begin{lemma}\label{translem}
+For any sets, $A,B,C$,
+\begin{enumerate}
+
+\item \label{bigtrans}
+$A \surj  B \text{ and } B \surj C, \qimplies  A \surj C$.
+
+\item \label{sametrans} $A \bij B \text{ and } B \bij C, \qimplies A \bij C$.
+
+\item\label{sameABA}
+$A \bij B \qimplies B \bij A$.
+\end{enumerate}
+\end{lemma}
+
+Lemma~\ref{translem}.\ref{bigtrans} and~\ref{translem}.\ref{sametrans}
+follow immediately from the fact that compositions of surjections are
+surjections, and likewise for bijections, and
+Lemma~\ref{translem}.\ref{sameABA} follows from the fact that the
+inverse of a bijection is a bijection.  We'll leave a proof of these
+facts to Problem~\ref{CP_surj_relation}.
+
+Another familiar property of finite sets carries over to infinite sets,
+but this time it's not so obvious:
+\begin{theorem} [\idx{Schr\"oder-Bernstein}] For any sets $A,B$, if $A \surj B$
+  and $B \surj A$, then $A \bij B$.
+\end{theorem}
+
+That is, the Schr\"oder-Bernstein Theorem says that if $A$ is at least as
+big as $B$ and conversely, $B$ is at least as big as $A$, then $A$ is the
+same size as $B$.  Phrased this way, you might be tempted to take this
+theorem for granted, but that would be a mistake.  For infinite sets $A$
+and $B$, the Schr\"oder-Bernstein Theorem is actually pretty technical.
+Just because there is a surjective function $f:A\to B$ ---which need not
+be a bijection ---and a surjective function $g:B \to A$ ---which also need
+not be a bijection ---it's not at all clear that there must be a bijection
+$e:A \to B$.  The idea is to construct $e$ from parts of both $f$ and $g$.
+We'll leave the actual construction to
+Problem~\ref{CP_Cantor_Schroeder_Bernstein_theorem}.
+
+\subsection{Infinity is different}
+
+A basic property of finite sets that does \emph{not} carry over to
+infinite sets is that adding something new makes a set bigger.  That is,
+if $A$ is a finite set and $b \notin A$, then $\card{A \union \set{b}} =
+\card{A}+1$, and so $A$ and $A \union \set{b}$ are not the same size.  But
+if $A$ is infinite, then these two sets \emph{are} the same size!
+
+\begin{lemma}\label{AUb}
+  Let $A$ be a set and $b \notin A$.  Then $A$ is infinite iff $A \bij A
+  \union \set{b}$.
+\end{lemma}
+\begin{proof}
+  Since $A$ is \emph{not} the same size as $A \union \set{b}$ when $A$ is
+  finite, we only have to show that $A \union \set{b}$ \emph{is} the same
+  size as $A$ when $A$ is infinite.
+
+That is, we have to find a bijection between $A \union \set{b}$ and $A$
+when $A$ is infinite.  Here's how: since $A$ is infinite, it certainly has
+at least one element; call it $a_0$.  But since $A$ is infinite, it has at
+least two elements, and one of them must not be equal to $a_0$; call this
+new element $a_1$.  But since $A$ is infinite, it has at least three
+elements, one of which must not equal $a_0$ or $a_1$; call this new
+element $a_2$.  Continuing in the way, we conclude that there is an
+infinite sequence $a_0,a_1,a_2,\dots,a_n,\dots$ of different elements of
+$A$.  Now it's easy to define a bijection $e: A \union \set{b} \to A$:
+\begin{align*}
+e(b) & \eqdef a_0,\\
+e(a_n) & \eqdef a_{n+1}  &\text{ for } n \in \naturals,\\
+e(a) & \eqdef a & \text{ for } a \in A - \set{b,a_0,a_1,\dots}.
+\end{align*}
+\end{proof}
+
+A set, $C$, is \term{countable} iff its elements can be listed in order,
+that is, the distinct elements is $A$ are precisely
+\[
+c_0, c_1, \dots, c_n, \dots.
+\]
+This means that if we defined a function, $f$, on the nonnegative integers
+by the rule that $f(i) \eqdef c_i$, then $f$ would be a bijection from
+$\naturals$ to $C$.  More formally,
+
+\begin{definition}
+  A set, $C$, is \term{countably infinite} iff $\naturals \bij C$.  A set
+  is \term{countable} iff it is finite or countably infinite.
+\end{definition}
+
+A small modification\footnote{See Problem~\ref{CP_smallest_infinite_set}}
+of the proof of Lemma~\ref{AUb} shows that countably infinite sets are
+the ``smallest'' infinite sets, namely, if $A$ is a countably infinite
+set, then $A \surj \naturals$.
+
+Since adding one new element to an infinite set doesn't change its
+size, it's obvious that neither will adding any \emph{finite} number
+of elements.  It's a common mistake to think that this proves that you
+can throw in countably infinitely many new elements.  But just because
+it's ok to do something any finite number of times doesn't make it OK
+to do an infinite number of times.  For example, starting from 3, you
+can add 1 any finite number of times and the result will be some
+integer greater than or equal to 3.  But if you add add 1 a countably
+infinite number of times, you don't get an integer at all.
+
+It turns out you really can add a countably infinite number of new
+elements to a countable set and still wind up with just a countably
+infinite set, but another argument is needed to prove this:
+
+\begin{lemma}\label{countable-union}
+If $A$ and $B$ are countable sets, then so is $A \union B$.
+\end{lemma}
+
+\begin{proof}
+Suppose the list of distinct elements of $A$ is $a_0,a_1,\dots$ and the
+list of $B$ is $b_0,b_1, \dots$.  Then a list of all the elements in $A
+\union B$ is just
+\begin{equation}\label{a0b0list}
+a_0,b_0,a_1,b_1, \dots a_n,b_n, \dots.
+\end{equation}
+Of course this list will contain duplicates if $A$ and $B$ have elements
+in common, but then deleting all but the first occurrences of each element in
+list~\eqref{a0b0list} leaves a list of all the distinct elements of $A$
+and $B$.
+\end{proof}
+
+\subsection{\idx{Power sets} are \idx{strictly bigger}}
+
+\iffalse It turns out that the ideas behind \idx{Russell's Paradox}, which
+caused so much trouble for the early efforts to formulate Set Theory,\fi
+Cantor's astonishing discovery was that \emph{not all infinite sets are
+  the same size}.  In particular, he proved that for any set, $A$, the
+\idx{power set}, $\power(A)$, is ``\idx{strictly bigger}'' than $A$.  That is
+
+In particular,
+\begin{theorem}\label{powbig}
+For any set, $A$,
+\[
+A \strict \power(A).
+\]
+\end{theorem}
+\begin{proof}
+  First of all, $\power(A)$ is as big as $A$: for example, the partial
+  function $f:\power(A) \to A$, where $f(\set{a}) \eqdef a$ for $a \in A$
+  and $f$ is only defined on one-element sets, is a surjection.
+
+  To show that $\power(A)$ is strictly bigger than $A$, we have to show
+  that if $g$ is a function from $A$ to $\power(A)$, then $g$ is not a
+  surjection.  So, mimicking Russell's Paradox, define
+  \[
+  A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
+  \]
+  Now $A_g$ is a well-defined subset of $A$, which means it is a member of
+  $\power(A)$.  But $A_g$ can't be in the range of $g$, because if it
+  were, we would have
+\[
+A_g = g(a_0)
+\]
+for some $a_0 \in A$, so by definition of $A_g$,
+\[
+a \in g(a_0) \qiff a \in A_g \qiff a \notin g(a)
+\]
+for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
+\[
+a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
+\]
+So $g$ is not a surjection, because there is an element in the power set
+of $A$, namely the set $A_g$, that is not in the range of $g$.
+\end{proof}
+
+\subsubsection{Larger Infinities}
+
+There are lots of different sizes of infinite sets.  For example, starting
+with the infinite set, $\naturals$, of nonnegative integers, we can build
+the infinite sequence of sets
+\[
+\naturals,\ \power(\naturals),\ \power(\power(\naturals)),\
+\power(\power(\power(\naturals))),\ \dots.
+\]
+By Theorem~\ref{powbig}, each of these sets is strictly bigger than all
+the preceding ones.  But that's not all: the union of all the sets in the
+sequence is strictly bigger than each set in the sequence
+(see Problem~\ref{CP_power_set_tower}).  In this way you can keep going,
+building still bigger infinities.
+
+So there is an endless variety of different size infinities.
+
+\subsection{Infinities in Computer Science}
+
+%%%%%%%%REVISE
+
+Cantor's proof embodies the simplest form of what is known as a
+``\idx{diagonal argument}.''  Diagonal arguments are used to prove many
+fundamental results about the limitations of computation, such as the
+undecidability of the \idx{Halting Problem} for programs (see
+Problem~\ref{CP_recognizable_sets}) and the inherent, unavoidable,
+\idx{inefficiency} (\idx{exponential time} or worse) of procedures for
+other computational problems.  So computer scientists do need to study
+diagonal arguments in order to understand the logical limits of
+computation.
+
+
+
+\begin{problems}
+\practiceproblems
+%\pinput[title={Images and Inverse Images}]{TP_Images_and_Inverse_Images}
+%\pinput[title = {Inverse Relations}]{TP_Inverse_Relations}
+\pinput[title = {Power Sets}]{TP_Power_Sets}
+
+\classproblems
+\pinput{CP_surj_relation}
+
+\pinput{CP_smallest_infinite_set}
+
+\pinput{CP_mapping_rule}
+
+\pinput{CP_set_product_bijection}
+
+\pinput{CP_rationals_are_countable}
+
+\pinput{CP_Cantor_Schroeder_Bernstein_theorem}
+
+\pinput{CP_power_set_tower}
+\pinput{CP_recognizable_sets}
+
+\begin{editingnotes}
+Add problem that the $4^n$ time-bounded halting problem requires time
+$2^n$.
+\end{editingnotes}
+
+\pinput{CP_undescribable_language}
+
+\homeworkproblems
+
+\pinput{PS_composition-of-jections}
+\pinput{PS_unit_interval}
+\pinput{PS_uncountable_infinite_sequences}
+\pinput{PS_N_to_A_diagonal_argument}
+
+\end{problems}
+
+\endinput
+
+
+
+\hyperdef{logic}{sets}{\section{The Logic of Sets}}
+
+
+
+\subsection{\idx{Russell's Paradox}}
+
+Reasoning naively about sets turns out to be risky.  In fact, one of the
+earliest attempts to come up with precise axioms for sets by a late
+nineteenth century logican named Gotlob \term{Frege} was shot down by a three
+line argument known as \emph{Russell's Paradox}:\footnote{Bertrand \term{Russell}
+  was a mathematician/logician at Cambridge University at the turn of the
+  Twentieth Century.  He reported that when he felt too old to do
+  mathematics, he began to study and write about philosophy, and when he
+  was no longer smart enough to do philosophy, he began writing about
+  politics.  He was jailed as a conscientious objector during World War I.
+  For his extensive philosophical and political writing, he won a Nobel
+  Prize for Literature.}  This was an astonishing blow to efforts to
+provide an axiomatic foundation for mathematics.
+
+\textbox{
+\begin{quote}
+Let $S$ be a variable ranging over all sets, and define
+\[W \eqdef \set{S \suchthat S \not\in S}.\]
+So by definition,
+\[S \in W  \mbox{  iff  } S \not\in S,\]
+for every set $S$.  In particular, we can let $S$ be $W$, and obtain
+the contradictory result that
+\[W \in W  \mbox{  iff  } W \not\in W.\]
+\end{quote}}
+
+A way out of the paradox was clear to Russell and others at the time:
+\emph{it's unjustified to assume that $W$ is a set}.  So the step in the
+proof where we let $S$ be $W$ has no justification, because $S$ ranges
+over sets, and $W$ may not be a set.  In fact, the paradox implies that
+$W$ had better not be a set!
+
+But denying that $W$ is a set means we must \emph{reject} the very natural
+axiom that every mathematically well-defined collection of elements is
+actually a set.  So the problem faced by Frege, Russell and their
+colleagues was how to specify \emph{which} well-defined collections are
+sets.  Russell and his fellow Cambridge University colleague Whitehead
+immediately went to work on this problem.  They spent a dozen years
+developing a huge new axiom system in an even huger monograph called
+\emph{Principia Mathematica}.
+
+
+\subsection{The ZFC Axioms for Sets}
+It's generally agreed that, using some simple logical deduction rules,
+essentially all of mathematics can be derived from some axioms about sets
+called the Axioms of \idx{Zermelo-Frankel Set Theory} with Choice (\idx{ZFC}).
+
+We're \emph{not} going to be working with these axioms in this course,
+but we thought you might like to see them --and while you're at it, get
+some practice reading quantified formulas:
+%
+
+\begin{description}
+
+\item[\term{Extensionality}.] Two sets are equal if they have the same members.
+In formal logical notation, this would be stated as:
+\[
+(\forall z.\; (z \in x \QIFF z \in y)) \QIMPLIES x = y.
+\]
+
+\item[\term{Pairing}.] For any two sets $x$ and $y$, there is a set,
+     $\set{x,y}$, with $x$ and $y$ as its only elements:
+\[
+\forall x,y.\; \exists u.\; \forall z.\;
+[z \in u \QIFF (z = x \QOR z = y)]
+\]
+
+\item[\index{Union axiom}Union.] The union, $u$, of a collection, $z$, of sets is also a set:
+\[
+\forall z.\, \exists u \forall x.\; (\exists y.\; x \in y \QAND y \in z) \QIFF x \in u.
+\]
+
+\item[\index{Infinity axiom}Infinity.]  There is an infinite set.
+  Specifically, there is a nonempty set, $x$, such that for any set $y \in
+  x$, the set $\set{y}$ is also a member of $x$.
+
+\begin{editingnotes}
+
+\item[Subset.] Given any set, $x$, and any proposition $P(y)$, there is a
+  set containing precisely those elements $y \in x$ for which $P(y)$ holds.
+
+\end{editingnotes}
+
+\item[\index{Power Set axiom}Power Set.]  All the subsets of a set form another set:
+\[
+\forall x.\; \exists p.\; \forall u.\: u \subseteq x \QIFF u \in p.
+\]
+
+\item[\index{Replacement axiom}Replacement.]  Suppose a formula, $\phi$,
+  of set theory defines the graph of a function, that is,
+\[
+\forall x, y, z.\, [\phi(x,y) \QAND \phi(x,z)] \QIMPLIES y = z.
+\]
+Then the image of any set, $s$, under that function is also a set, $t$.  Namely,
+\[
+\forall s\, \exists t\, \forall y.\, [\exists x.\, \phi(x,y) \QIFF y \in t].
+\]
+
+
+\item[\term{Foundation}.] 
+There cannot be an infinite sequence
+\[
+\cdots \in a_n \in \cdots \in x_1 \in x_0
+\]
+of sets each of which is a member of the previous one.  This is equivalent
+to saying every nonempty set has a ``member-minimal'' element.  Namely, define
+\[
+\text{member-minimal}(m, x) \eqdef [m \in x \QAND \forall y \in x.\, y \notin m].
+\]
+Then the Foundation axiom is
+\[
+\forall x.\ x \neq \emptyset\ \QIMPLIES\ \exists m.\, \text{member-minimal}(m, x).
+\]
+
+\iffalse  %USE FOR WELL-FOUNDED POSETS
+For every non-empty set, $x$, there is a set $y \in x$
+  such that $x$ and $y$ have no elements in common.  
+\fi
+
+\item[\index{Choice axiom}Choice.]  Given a set, $s$, whose members are nonempty sets no two
+  of which have any element in common, then there is a set, $c$,
+  consisting of exactly one element from each set in $s$.
+
+\iffalse
+
+\begin{tabbing}
+$\exists y \, \forall z \, \forall w \,
+ \biggl( ($\=$z \in w \,\QAND\, w \in x) \; \QIMPLIES $\\
+\> $\exists v \, \exists u \, \Bigl(\exists t \, \bigr((u \in w \, \QAND \, w \in t)$\=$\;\QAND\; (u \in t \,\QAND\, t \in y)\bigl) $\\
+\> \> $\QIFF\; u = v\Bigr) \biggr)$
+\end{tabbing}
+\fi
+
+\begin{editingnotes}
+
+\[\begin{array}{rlll}
+\exists y \forall z \forall w & ( (z \in w \QAND w \in x) \QIMPLIES\\
+                              &\quad \exists v \exists u (\exists t
+                                           ((u \in w \QAND & w \in t)
+                                                              & \QAND (u \in t \QAND t \in y))\\
+                                                            &&& \QIFF u = v))
+\end{array}\]
+
+\end{editingnotes}
+
+\end{description}
+
+
+\subsection{Avoiding \idx{Russell's Paradox}}
+
+These modern ZFC axioms for set theory are much simpler than the system
+Russell and Whitehead first came up with to avoid paradox.  In fact, the
+ZFC axioms are as simple and intuitive as Frege's original axioms, with
+one technical addition: the Foundation axiom.  Foundation captures the
+intuitive idea that sets must be built up from ``simpler'' sets in certain
+standard ways.  And in particular, Foundation implies that no set is ever
+a member of itself.  So the modern resolution of Russell's paradox goes as
+follows: since $S \not \in S$ for all sets $S$, it follows that $W$,
+defined above, contains every set.  This means $W$ can't be a set ---or it
+would be a member of itself.
+
+\subsection{\idx{Power sets} are \idx{strictly bigger}}
+
+It turns out that the ideas behind \idx{Russell's Paradox}, which caused
+so much trouble for the early efforts to formulate Set Theory, lead to a
+correct and astonishing fact about infinite sets: they are \emph{not all
+  the same size}.
+
+In particular,
+\begin{theorem}\label{powbig}
+For any set, $A$, the \idx{power set}, $\power(A)$, is \idx{strictly bigger} than $A$.
+\end{theorem}
+\begin{proof}
+  First of all, $\power(A)$ is as big as $A$: for example, the partial
+  function $f:\power(A) \to A$, where $f(\set{a}) \eqdef a$ for $a \in A$
+  and $f$ is only defined on one-element sets, is a surjection.
+
+  To show that $\power(A)$ is strictly bigger than $A$, we have to show
+  that if $g$ is a function from $A$ to $\power(A)$, then $g$ is not a
+  surjection.  So, mimicking Russell's Paradox, define
+  \[
+  A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
+  \]
+  Now $A_g$ is a well-defined subset of $A$, which means it is a member of
+  $\power(A)$.  But $A_g$ can't be in the range of $g$, because if it
+  were, we would have
+\[
+A_g = g(a_0)
+\]
+for some $a_0 \in A$, so by definition of $A_g$,
+\[
+a \in g(a_0) \qiff a \in A_g \qiff a \notin g(a)
+\]
+for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
+\[
+a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
+\]
+So $g$ is not a surjection, because there is an element in the power set
+of $A$, namely the set $A_g$, that is not in the range of $g$.
+\end{proof}
+
+\subsubsection{Larger Infinities}
+
+There are lots of different sizes of infinite sets.  For example, starting
+with the infinite set, $\naturals$, of nonnegative integers, we can build
+the infinite sequence of sets
+\[
+\naturals,\ \power(\naturals),\ \power(\power(\naturals)),\
+\power(\power(\power(\naturals))),\ \dots.
+\]
+By Theorem~\ref{powbig}, each of these sets is strictly bigger than all
+the preceding ones.  But that's not all: the union of all the sets in the
+sequence is strictly bigger than each set in the sequence
+(see Problem~\ref{CP_power_set_tower}).  In this way you can keep going,
+building still bigger infinities.
+
+So there is an endless variety of different size infinities.
+
+\subsection{Does All This Really Work?}\label{setsreallywork}
+
+So this is where mainstream mathematics stands today: there is a handful
+of ZFC axioms from which virtually everything else in mathematics can be
+logically derived.  This sounds like a rosy situation, but there are
+several dark clouds, suggesting that the essence of truth in mathematics
+is not completely resolved.
+
+%
+\begin{itemize}
+
+\item The \idx{ZFC axioms} weren't etched in stone by God.  Instead, they were
+  mostly made up by some guy named Zermelo.  Probably some days he forgot
+  his house keys.
+
+  So maybe \idx{Zermelo}, just like \idx{Frege}, didn't get his axioms right and will
+  be shot down by some successor to \idx{Russell} who will use his axioms to
+  prove a proposition $P$ and its negation $\QNOT P$.  Then math would be
+  broken.  This sounds crazy, but after all, it has happened before.
+
+  In fact, while there is broad agreement that the ZFC axioms are capable
+  of proving all of standard mathematics, the axioms have some further
+  consequences that sound paradoxical.  For example, the \idx{Banach-Tarski}
+  Theorem says that, as a consequence of the \idx{Axiom of Choice}, a solid ball
+  can be divided into six pieces and then the pieces can be rigidly
+  rearranged to give \emph{two} solid balls, each the same size as the
+  original!
+
+\item Georg \term{Cantor} was a contemporary of \idx{Frege} and
+  \idx{Russell} who first developed the theory of infinite sizes (because
+  he thought he needed it in his study of Fourier series).  Cantor raised
+  the question whether there is a set whose size is strictly between the
+  ``smallest\footnote{See Problem~\ref{CP_smallest_infinite_set}}''
+  infinite set, $\naturals$, and $\power(\naturals)$; he guessed not:
+
+  \textbf{Cantor's \term{Continuum Hypothesis}}: There is no set, $A$,
+  such that $\power(\naturals)$ is \idx{strictly bigger} than $A$ and $A$
+  is strictly bigger than $\naturals$.
+
+  The Continuum Hypothesis remains an open problem a century later.  Its
+  difficulty arises from one of the deepest results in modern Set Theory
+  ---discovered in part by \idx{G\"odel} in the 1930's and Paul
+  \idx{Cohen} in the 1960's ---namely, the ZFC axioms are not sufficient
+  to settle the Continuum Hypothesis: there are two collections of sets,
+  each obeying the laws of \idx{ZFC}, and in one collection the Continuum
+  Hypothesis is true, and in the other it is false.  So settling the
+  Continuum Hypothesis requires a new understanding of what Sets should be
+  to arrive at persuasive new axioms that extend ZFC and are strong enough
+  to determine the truth of the Continuum Hypothesis one way or the other.
+
+\item But even if we use more or different axioms about sets, there are
+  some unavoidable problems.  In the 1930's, \idx{G\"odel} proved that,
+  assuming that an axiom system like \idx{ZFC} is consistent ---meaning
+  you can't prove both $P$ and $\QNOT P$ for any proposition, $P$ ---then
+  the very proposition that the system is consistent (which is not too
+  hard to express as a logical formula) cannot be proved in the system.
+  In other words, no \idx{consistent} system is strong enough to verify
+  itself.
+  
+\end{itemize}
+
+\subsection{Large Infinities in Computer Science}
+
+If the romance of different size infinities and continuum hypotheses
+doesn't appeal to you, not knowing about them is not going to lower your
+professional abilities as a computer scientist.  These abstract issues
+about infinite sets rarely come up in mainstream mathematics, and they
+don't come up at all in computer science, where the focus is generally on
+``\idx{countable},'' and often just finite, sets.  In practice, only
+logicians and set theorists have to worry about collections that are too
+big to be sets.  In fact, at the end of the 19th century, the general
+mathematical community doubted the relevance of what they called
+``\idx{Cantor's paradise}'' of unfamiliar sets of arbitrary infinite size.
+
+But the proof that power sets are bigger gives the simplest form of what
+is known as a ``\idx{diagonal argument}.''  Diagonal arguments are used to
+prove many fundamental results about the limitations of computation, such
+as the undecidability of the \idx{Halting Problem} for programs (see
+Problem~\ref{CP_recognizable_sets}) and the inherent, unavoidable,
+\idx{inefficiency} (\idx{exponential time} or worse) of procedures for
+other computational problems.  So computer scientists do need to study
+diagonal arguments in order to understand the logical limits of
+computation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+On the other hand, the more exotic theory of different size infinities
+and continuum hypotheses rarely comes up in mainstream mathematics,
+and it hardly comes up at all in computer science, where the focus is
+mainly on finite sets, and occasionallly on \idx{countable} sets.  In
+practice, only logicians and set theorists have to worry about
+collections that are too big to be sets.  In fact, at the end of the
+19th century, the general mathematical community doubted the relevance
+of what they called ``\idx{Cantor's paradise}'' of unfamiliar sets of
+arbitrary infinite size.  So if the romance of really big infinities
+doesn't appeal to you, be assured that not knowing about them won't
+lower your professional abilities as a computer scientist.
+
+
+
+\begin{problems}
+%\practiceproblems
+%\pinput{}
+\classproblems
+\pinput{CP_power_set_tower}
+\pinput{CP_recognizable_sets}
+\pinput{CP_undescribable_language}
+
+\homeworkproblems
+\pinput{PS_uncountable_infinite_sequences}
+\pinput{PS_N_to_A_diagonal_argument}
+\end{problems}
+
+\end{center}
+
+
