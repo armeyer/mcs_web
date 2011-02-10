@@ -1062,7 +1062,7 @@
 
 \newcommand{\TBA}[1]{\fbox{\textcolor{red}{\bf TBA - #1}}}
 
-\newcommand{\term}{%
+\DeclareRobustCommand{\term}{%
     \@ifstar\emph\idx@term
 }
 
