@@ -1,3 +1,6 @@
+\newcommand{\nsl}{\text{\small{NSL}}}
+\newcommand{\asciistr}{\text{$\mathcal{S}$}}
+
 \chapter{Infinite Sets}\label{infinite_chap}
 
 This chapter is about \idx{infinite} sets and some challenges in proving
@@ -56,8 +59,18 @@ embody an infinite number of behaviors.  In short, an educated computer
 scientist can't get around having to cope with infinite sets.
 \fi
 
-So we'll role up our sleeves and learn to cope with infinity.  But as
-a warmup, we'll first examine the sizes of \emph{finite} sets.
+Infinite sets also provide a nice setting to practice proof methods,
+because it's harder to sneak in unjustified steps under the guise of
+intuition.  And there has been a truly astonishing outcome of studying
+infinite sets.  It led to the discovery of widespread logical limits
+on what computers can possibly do.  For example, in
+section~\ref{halting_sec}, we'll use reasoning developed for infinite
+sets to prove that it's impossible to have a perfect type-checker for
+a programing language.
+
+So in this chapter we ask you to bite the bullet and start learning to
+cope with infinity.  But as a warmup, we'll first examine some basic
+properties of \emph{finite} sets.
 
 \section{Finite Cardinality}\label{mappingrule_sec}
 
@@ -124,14 +137,12 @@ Let $A$ and $B$ be finite sets.
 
 \begin{proof}
   We've already given an ``arrow'' proof of implication~\ref{mapping-sur}.
-  Implication~\ref{mapping-inj}.\ follows immediately from the fact that
-  if $R$ has the $[\le 1\ \text{out}]$, function, property, and the $[\ge 1\
-  \text{in}]$, surjective, property, then $\inv{R}$ is total and injective,
-\[  
-A \surj B \qiff B \inj A.
-\]
-  Since a bijection is both a surjective function and a total
-  injective relation, implication~\ref{mapping-bij}.\ is an immediate
+  Implication~\ref{mapping-inj}.\ follows immediately from the fact
+  that if $R$ has the $[\le 1\ \text{out}]$, function property, and
+  the $[\ge 1\ \text{in}]$, surjective property, then $\inv{R}$ is
+  total and injective, so $A \surj B$ iff $B \inj A$.  Finally, since
+  a bijection is both a surjective function and a total injective
+  relation, implication~\ref{mapping-bij}.\ is an immediate
   consequence of the first two.
 \end{proof}
 
@@ -158,7 +169,7 @@ for $0 \le i \le 5$.  Since $5 \geq 3$, this $f$ is a surjection.
 then we could also define a bijection from $A$ to $B$ by this method.
 \fi So we have figured out that if $A$ and $B$ are finite sets, then
 $\card{A} \geq \card{B}$ \emph{if and only if} $A \surj B$.  So it
-follows that $A \strict B$ iff $\card{A} < \card{B}$.  All told, this
+afollows that $A \strict B$ iff $\card{A} < \card{B}$.  All told, this
 argument wraps up the proof of the Theorem that summarizes the whole
 finite cardinality story:
 \begin{theorem}\label{maprul_thm}
@@ -167,8 +178,8 @@ For \emph{finite} sets, $A,B$,
 \begin{align}
 \card{A} \geq \card{B} & \qiff A \surj B,\\
 \card{A} \leq \card{B} & \qiff A \inj B,\\
-\card{A} = \card{B} & \qiff A \bij B,\label{bij_same_fincard}\\
-\card{A} < \card{B} & \qiff A \strict B.
+\card{A} = \card{B}    & \qiff A \bij B,\label{bij_same_fincard}\\
+\card{A} < \card{B}    & \qiff A \strict B.
 \end{align}
 \end{theorem}
 
@@ -265,22 +276,24 @@ sets:
 For any sets, $A,B,C$,
 \begin{enumerate}
 
-\item \label{bigtrans}
-$A \surj  B \text{ and } B \surj C, \qimplies  A \surj C$.
+\item \label{surjvsinj} $A \surj B$ iff $B \inj A$.
 
-\item \label{sametrans} $A \bij B \text{ and } B \bij C, \qimplies A \bij C$.
+\item \label{bigtrans} If $A \surj B$ and $B \surj C$, then $A \surj C$.
 
-\item\label{sameABA}
-$A \bij B \qimplies B \bij A$.
+\item \label{sametrans} If $A \bij B$ and $B \bij C$, then $A \bij C$.
+
+\item\label{sameABA} $A \bij B$ iff $B \bij A$.
 \end{enumerate}
 \end{lemma}
 
-Lemma~\ref{translem}.\ref{bigtrans} and~\ref{translem}.\ref{sametrans}
-follow immediately from the fact that compositions of surjections are
-surjections, and likewise for bijections, and
-Lemma~\ref{translem}.\ref{sameABA} follows from the fact that the
-inverse of a bijection is a bijection.  We'll leave a proof of these
-facts to Problem~\ref{CP_surj_relation}.
+Part~\ref{surjvsinj}.\ follows from the fact that $R$ is a surjective
+function iff $\inv{R}$ is a total, injective relation.
+Parts~\ref{bigtrans}.\ follows from the fact that compositions of
+surjections are surjections.
+Parts~\ref{sametrans}.\ and~\ref{sameABA}.\ follow from the first two
+parts because $R$ is a bijection iff $R$ and $\inv{R}$ are surjective
+functions.  We'll leave verification of these facts to
+Problem~\ref{CP_surj_relation}.
 
 Another familiar property of finite sets carries over to infinite sets,
 but this time it's not so obvious:
@@ -506,20 +519,194 @@ building still bigger infinities.
 
 So there is an endless variety of different size infinities.
 
-\subsubsection{Diagonal Arguments}
+\section{The Halting Problem}\label{halting_sec}
 
-Granted that towers of larger and larger infinite sets is at best a
-romantic concern to a computer scientist, the \emph{reasoning} that
-leads these conclusions plays a central role in the theory of
+Granted that towers of larger and larger infinite sets is at best of
+only romantic concern to a computer scientist, the \emph{reasoning}
+that leads these conclusions plays a central role in the theory of
 computation.  Cantor's proof embodies the simplest form of what is
 known as a ``\idx{diagonal argument}.''  Diagonal arguments are used
-to prove many fundamental results about the limitations of
-computation, such as the undecidability of the \idx{Halting Problem}
-for programs (see Problem~\ref{CP_recognizable_sets}) and the
-inherent, unavoidable, \idx{inefficiency} (\idx{exponential time} or
-worse) of procedures for other computational problems.  So computer
-science theorists do study diagonal arguments in order to understand
-the logical limits of computation.
+to eatablish lots that things logically just can't be done by
+computation, and there is no getting around it.
+
+This story begins with a reminder that having procedures operate on
+programs is a basic part of computer science technology.  For example,
+\emph{\idx{compilation}} refers to taking any given program text
+written in some ``high level'' programming language like Java, C++,
+Python, \dots, and then generating a program of low-level instructions
+that does the same thing but is targeted to run well on available
+hardware.  Similarly, \emph{\idx{interpreters}} or \emph{\idx{virtual
+    machines}} are procedures that take a program text designed to be
+run on one kind of computer and simulate it on another kind of
+computer.  Routine features of compilers involve
+``\idx{type-checking}'' programs to ensure that certain kinds of
+run-time errors won't happen and ``optimizing'' the generated programs
+so they run faster or use less memory.
+
+Now the fundamental thing that computation logically just can't do is
+a \emph{perfect} job of type-checking, optimizing, or any kind of
+analysis of the complete run time behavior of programs.  In this
+section we'll illustrate this with a basic example known as the
+``\idx{Halting Problem}.''  The general ''Halting Problem'' for some
+programming language is to recognize, given any program text in that
+language that defines a procedure and some values,
+whether or not the procedure will finish its computation ---halt
+---when it is applied to those values.  We claim there is no program
+to do this, and this is a basic example of what programs can't do.
+
+To be precise about this, let's call a programming procedure
+---written in your favorite programming language such C++, or Java, or
+Python ---a \term{string procedure} when it is applicable to strings
+over a standard alphabet ---say the 256 character ASCII alphabet.
+When a string procedure, $P$, applied to an ASCII, $s$, returns the
+boolean value \True, we'll say that $P$ \term{recognizes} $s$.  $P$
+could fail to recognize $s$ by returning some value other than \True,
+or not returning any value ---say because it aborts with an error or
+runs forever.
+
+As a simple example, you might think about how to write a string
+procedure that recognized precisely those ``double letter'' strings
+where every character occurs twice in a row.  For example,
+\texttt{aaCC33}, and \texttt{zz++ccBB} are double letter strings, but
+texttt{aa;bb}, \texttt{b33}, and \texttt{AAAAA} are not.  Even better,
+how about actually writing a recognizer for the double letter ASCII
+strings in your favorite programming language?
+
+We'll call a set of strings \term{recognizable} if there is a
+procedure that recognizes precisely that set of strings.  So your
+program would demonstrate that the set of double letter strings is
+recognizable.
+
+When you actually program a procedure, you have to type the program
+text into a computer system, which a can be done using only the ASCII
+characters.  This means that every procedure is described by some
+string of ASCII characters.  If a string, $s$, is actually the ASCII
+description of some string procedure, let's refer to that procedure as
+$P_s$.  You can think of $P_s$ as the result of compiling
+$s$.\footnote{The string, $s$, and the procedure, $P_s$, have to be
+  distinguished to avoid a type error: you can't apply a string to
+  string.  For example, let $s$ be the string that you wrote as your
+  program to recognize the double letter strings.  Applying $s$ to a
+  string argument, say \texttt{aabbccdd}, should throw a type
+  exception; what you need to do is compile $s$ to the procedure $P_s$
+  and then apply $P_s$ to \texttt{aabbccdd}.  \iffalse This should
+  result in a returned value \True, since \texttt{aabbccdd} is a
+  double letter string.\fi }
+
+It's technically helpful to treat \emph{every} string as a program for
+a string procedure.  So when a string, $s$, doesn't type-check as a
+string procedure ---or doesn't type-check at all ---we'll define $P_s$
+to be some default string procedure ---say one that always returns
+\False.  \iffalse So $s$ is an ill-formed string, $P_S$ will be a
+recognizer for the empty set of strings.  \fi
+
+Now let's look at the following precise set of ``non-self-halting'' strings.
+
+\begin{definition}\label{notselfhalt_def}
+The following set, \nsl, of strings is called the \term{Non-Self-Halting
+  problem}.
+\begin{equation}\label{notselfhalt_eqdef}
+\nsl \eqdef \set{s \suchthat s
+         \text{ is an ASCII string and } P_s
+         \text{ does not recognize } s}.
+\end{equation}
+\end{definition}
+Recognizing \nsl\ is essentially a special case of the general Halting
+Problem.  We'll blow way any chance of having a program solve the
+general problem by showing that no program can solve this special case.
+In particular, we're going to prove
+\begin{theorem}\label{nsl_thm}
+\nsl is not recognizable.
+\end{theorem}
+
+\begin{proof}
+We'll use an argument just like Cantor's in the proof of
+Theorem~\ref{powbig}.  Namely, let \asciistr\ be the set of ASCII
+strings, and define $f: \asciistr \to \power(\asciistr)$ to be the
+set of strings recognized by $P_s$:
+\[
+f(s) \eqdef \set{t \in \asciistr \suchthat P_s recognizes t}.
+\]
+By convention, a string procedure, $P_s$, is defined for every string,
+$s \in asciistr$, which makes $f$ a total function.  So by
+definition,
+\begin{equation}\label{snslsnfs}
+s \in \nsl \qiff s \notin f(s),
+\end{equation}
+for all strings, $s \in \asciistr$.
+
+Now suppose to the contrary that \nsl\ was recognizable.  This means
+there is some procedure $P_{s_0}$ that recognizes \nsl, which is the
+same as saying that
+\[
+\nsl = f(s_0).
+\]
+Combined with~\eqref{snslsnfs}, we get
+\begin{equation}\label{sfs0iff}
+s \in f(s_0) \qiff s \notin f(s)
+\end{equation}
+for all $s \in \asciistr$.  Now letting $s = s_0$ in~\eqref{sfs0iff}
+yields the immediate contradiction
+\[
+s_0 \in f(s_0) \qiff s_0 \notin f(s_0).
+\]
+
+\end{proof}
+
+So that does it: it's logically impossible for programs in any
+particular language just to solve this special case of the general
+Halting Problem for programs in that language.  And having proved that
+it's impossible to have a procedure that figures out whether a
+arbitraary program returns the value \True, it's easy to show that
+it's impossible to have a procedure that is a perfect recognizer for any
+complete run time property of programs.
+
+For example, most compilers do ``static'' type-checking at compile
+time to ensure that programs won't make run-time type errors.  Running
+any program that type-checks is guaranteed not to cause a type-error.
+But since it's impossibe to recognize perfectly when programs won't
+cause type-errors, it follows that the compilers type-checker must be
+rejecting programs that really wouldn't cause a type-error. So there
+is no perfect type-checker ---you can always do better!
+
+  It's a different story if we think about the \emph{practical}
+  possibility of writing programming analyzers.  The fact that it's
+  logically impossible to perfectly analyze completely general programs
+  does not mean that you can't do a very good job analyzing interesting
+  programs that come up in practice.  In fact these ``interesting''
+  programs are commonly \emph{intended} to be analyzable in order to
+  confirm that they do what they're supposed to do.
+
+  So it's not clear how much of a hurdle this theoretical limitation
+  implies in practice.  What the theory does provide is some perspective
+  on claims about general analysis methods for programs.  The theory tells
+  us that people who make such claims either
+
+\begin{itemize}
+\item are exaggerating the power (if any) of their methods---say to get a
+  grant or make a sale, or
+
+\item are trying to keep things simple by not going into technical
+  limitations they're aware of, or
+
+\item perhaps most commonly, are so excited about some useful practical
+    successes of their methods, that they haven't bothered to think about
+    their limitations.
+\end{itemize}
+
+So from now on, if you hear people making claims about general program
+analysis/verification/optimization methods, you'll know they can't be
+telling the whole story.
+
+One more important point: there's no hope of getting around this by
+switching programming languages.  We've only proved that no Java
+procedure, for example, can perfectly analyze all Java programs.  You
+might wonder if a language like C++, which allows more intimate
+manipulation of computer memory than Java, might have a procedure that
+could handle Java programs.  But there is no loophole here: since it's
+possible to write a virtual machine for C++ in Java, if there were a
+C++ procedure that analyzed Java programs, so could the Java virtual
+machine, and we know that's impossible.
 
 \begin{problems}
 \practiceproblems
@@ -540,7 +727,7 @@ the logical limits of computation.
 
 \pinput{CP_power_set_tower}
 
-\pinput{CP_recognizable_sets}
+%\pinput{CP_recognizable_sets}
 
 \begin{editingnotes}
 Add problem that the $4^n$ time-bounded halting problem requires time
@@ -828,25 +1015,10 @@ at all in computer science, where the focus is generally on
 logicians and set theorists have to worry about collections that are
 ``too big'' to be sets.  That's part of the reason that the 19th
 century mathematical community made jokes about ``\idx{Cantor's
-  paradise}'' of obscure infinite sets.
-
-On the other hand, infinite sets provide a nice setting to teach proof
-methods, because it's harder to slip in unjustified steps unde the
-guise of intuition.  Also, the proof methods used, in particular
-diagonal arguments, are important for computer science.
-
-
-\begin{problems}
-%\practiceproblems
-%\pinput{}
-\classproblems
-\pinput{CP_power_set_tower}
-\pinput{CP_recognizable_sets}
-\pinput{CP_undescribable_language}
-
-\homeworkproblems
-\pinput{PS_uncountable_infinite_sequences}
-\pinput{PS_N_to_A_diagonal_argument}
-\end{problems}
+  paradise}'' of obscure infinite sets.  But the challenge of
+reasoning correctly about this far out stuff led directly to the
+profound discoveries about the logical limits of computation described
+in Section~\ref{halting_sec}, and that really is something every
+computer scientist should understand.
 
 \endinput
