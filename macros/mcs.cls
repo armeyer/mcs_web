@@ -1271,6 +1271,7 @@
 %% Math -- Languages
 
 \newcommand{\emptystring}{\lambda}
+\newcommand{\bins}{\ensuremath{\set{0,1}^*}}
 
 %% Math -- Famous sets
 
@@ -1367,7 +1368,6 @@
 \iffalse
 \newcommand{\ms}[1]{\text{#1}}
 \newcommand{\tg}{\text{2PTG}}
-\newcommand{\bins}{\set{0,1}*}
 \newcommand{\fstlist}{\text{list-first}}
 \newcommand{\rstlist}{\text{list-rest}}
 \newcommand{\nillist}{\text{()}}
