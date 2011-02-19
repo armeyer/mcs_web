@@ -1,0 +1,145 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_beaver_flu_using_invariant}
+  \pcomment{revised from CP_beaver_flu by ARM 2/18/11}
+  \pcomment{from: S09.cp5r; F06.ps2}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  unreachable_states
+  increasing_decreasing_variables
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  A classroom is designed so students sit in a square arrangement.  An
+  outbreak of beaver flu sometimes infects students in the class;
+  beaver flu is a rare variant of bird flu that lasts forever, with
+  symptoms including a yearning for more quizzes and the thrill of
+  late night problem set sessions.
+
+  Here is an illustration of a $6 \times 6$-seat classroom with seats
+  represented by squares.  The locations of infected students are
+  marked with an asterisk.
+
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\ast& & & &\ast& \\ \hline
+ &\ast& & & & \\ \hline
+& &\ast&\ast& & \\ \hline
+& & & & & \\ \hline
+& &\ast& & & \\ \hline
+& & &\ast& &\ast \\ \hline
+\end{array}
+\]
+
+Outbreaks of infection spread rapidly step by step.  A student is infected
+after a step if either
+
+\begin{itemize}
+\item the student was infected at the previous step (since beaver flu
+  lasts forever), or
+
+\item the student was adjacent to \emph{at least two} already-infected
+  students at the previous step.
+
+\end{itemize}
+Here \emph{adjacent} means the students' individual squares share an
+edge (front, back, left or right); they are not adjacent if they only
+share a corner point.  So each student is adjacent to 2, 3 or 4
+others.
+
+In the example, the infection spreads as shown below.
+%
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\ast& & & &\ast& \\ \hline
+ &\ast& & & & \\ \hline
+& &\ast&\ast& & \\ \hline
+& & & & & \\ \hline
+& &\ast& & & \\ \hline
+& & &\ast& &\ast \\ \hline
+\end{array}
+\Rightarrow
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\ast&\ast& & &\ast& \\ \hline
+\ast&\ast&\ast& & & \\ \hline
+&\ast&\ast&\ast& & \\ \hline
+& &\ast& & & \\ \hline
+& &\ast&\ast& & \\ \hline
+& &\ast&\ast&\ast&\ast \\ \hline
+\end{array}
+\Rightarrow
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\ast&\ast&\ast& &\ast& \\ \hline
+\ast&\ast&\ast&\ast& & \\ \hline
+\ast&\ast&\ast&\ast& & \\ \hline
+&\ast&\ast&\ast& & \\ \hline
+& &\ast&\ast&\ast& \\ \hline
+& &\ast&\ast&\ast&\ast \\ \hline
+\end{array}
+\]
+%
+In this example, over the next few time-steps, all the students in class
+become infected.
+
+\begin{theorem*}
+  If fewer than $n$ students among those in an $n \times n$ arrangment are
+  initially infected in a flu outbreak, then there will be at least one
+  student who never gets infected in this outbreak, even if students
+  attend all the lectures.
+\end{theorem*}
+
+Prove this theorem.
+
+\hint Think of the state of an outbreak as an $n \times n$ square
+above, with asterisks indicating infection.  The rules for the spread
+of infection then define the transitions of a state machine.  Show
+that
+\begin{align*}
+R(q) \eqdef & \text{The ``perimeter'''of the ``infected region''}\\
+            & \text{of state $q$ is at most $k$},
+\end{align*}
+is a preserved invariant.
+
+\begin{solution}
+\begin{proof}
+  Define the \term{perimeter} of an infected set of students to be the
+  number of edges with infection on exactly one side.  Let $\nu$ be size
+  (number of edges) in the perimeter.
+
+  We claim that $\nu$ is never gets bigger.  This follows because the
+  perimeter changes after a transition only because some squares
+  became newly infected.  By the rules above, each newly-infected
+  square is adjacent to at least two previously-infected squares.
+  Thus, for each newly-infected square, at least two edges are removed
+  from the perimeter of the infected region, and at most two edges are
+  added to the perimeter.  Therefore, the perimeter of the infected
+  region cannot increase, so if it is at $\l k$ in some state, it
+  stays that way.
+
+  Now if an $n \times n$ grid is completely infected, then the perimeter
+  of the infected region is $4n$.  Thus, the whole grid can become
+  infected only if the perimeter is initially at least $4n$.  Since each
+  square has perimeter 4, at least $n$ squares must be infected initially
+  for the whole grid to become infected.
+\end{proof}
+
+\end{solution}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
