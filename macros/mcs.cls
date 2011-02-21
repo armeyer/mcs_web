@@ -1309,7 +1309,7 @@
 
 \newcommand{\corresp}{\ \longleftrightarrow\ }
 \newcommand{\prq}{\rightarrow}  %prerequisite
-\newcommand{\movesto}{\mathrel{\longrightarrow}}  %state machine transition
+%\newcommand{\movesto}{\mathrel{\longrightarrow}}  %state machine transition
 %\newcommand{\prns}{\set{\, \mtt{)},\, \mtt{(}\,}^*}
 
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
@@ -1460,7 +1460,7 @@
 
 %% State machines
 
-\def\movesto{\mathrel{\longrightarrow}}
+\def\movesto{\longrightarrow}
 \newcommand{\while}{\text{\textbf{while}}}
 \newcommand{\docomm}{\text{\textbf{do}}}
 \newcommand{\odcomm}{\text{\textbf{od}}}
