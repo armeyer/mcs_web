@@ -1,0 +1,121 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_state_machine_multiply}
+  \pcomment{S07.miniquiz-3-07}
+  \pcomment{CP version of MQ_state_machine_multiply}
+  \pcomment{adapted by ARM 2/21/11}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  algorithm
+  multiply
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+%Tests state machine understanding, invariant method, termination arguments.
+
+Multiplying and dividing an integer $n$ by 2 only requires a one digit
+left or right shift of the binary representation of $n$, which are
+hardware-supported fast operations on most computers.  Here is a state
+machine, $R$, that computes the product of two nonnegative integers
+$x$ and $y$ using just these shift operations, along with integer
+addition:
+
+\begin{align*}
+\text{states} & \eqdef \naturals^3 & \text{(triples of nonnegative integers)}\\
+\text{start state} & \eqdef (x,y,0)\\
+\text{transitions} & \eqdef
+\set{(r,s,a)\movesto
+        \begin{cases}
+        (2r,s/2,a) &  \text{for even $s>0$},\\
+        (2r,(s-1)/2,a+r) &\text{for odd $s>0$}.
+       \end{cases}}
+\end{align*}
+
+\bparts
+
+\ppart\label{rsa} Verify that
+\begin{equation}\label{inv}
+P((r,s,a)) \eqdef\quad [rs+a = xy]
+\end{equation}
+is an invariant of $R$.  How about $Q((r,s,a)) \eqdef \quad [r=r+1]$? :-)
+
+\begin{solution}
+Q is a trivial invariant since it is always false.  
+
+To prove that $P$ is invariant, assume that $P((r,s,a))$ and
+$(r,s,a) \movesto (r',s',a')$.  We must prove that $P((r',s',a'))$ holds,
+that is
+\begin{equation}\label{inv'}
+r's'+a' = xy.
+\end{equation}
+
+There are two cases corresponding to the transition cases:
+
+If $s>0$ is even, then we have that $r' = 2r, s' = s/2, a'=a$.
+Therefore,
+\begin{align*}
+  r's' + a' = & 2r \cdot \frac{s}{2} + a\\
+            = & rs+a\\
+            = & xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+If $s>0$ is odd, we have $r' = 2r, s' = (s-1)/2, a = a+r$.  So:
+\begin{align*}
+  r's' + a'  = & 2r \cdot \frac{s-1}{2} + a+r\\
+   = & r\cdot(s-1) + a + r\\
+   = & rs+a\\
+   = & xy & \text{(by~\eqref{inv})}.
+\end{align*}
+So in both cases,~\eqref{inv'} holds, proving that $P$ is indeed an
+invariant.
+\end{solution}
+
+\ppart Prove that $R$ is partially correct: if $R$ reachs a final
+state, ---a state from which no transition is possible ---then $a =
+xy$.
+
+\begin{solution}
+Clearly, $P$ holds for the start state because
+\[
+P((x,y,0)) \qiff [xy+0 = xy].
+\]
+The final states are those of the form $(r,0,a)$.  By the Invariant
+Principle, if $(r,0,a)$ is reachable, then $P((r,0,a))$ holds, that
+is,
+\[
+a = r\cdot 0 + a = xy.
+\]
+\end{solution}
+
+%\instatements{\newpage}
+
+\ppart Briefly explain why this state machine will terminate after a
+number of transitions bouned by a small constant time the
+\emph{length} of the binary representation of $y$.
+
+%for all $x,y \in \naturals$.
+
+\begin{solution}
+  We claim that the termination condition, $s=0$, will occur after at
+  most $1+\log_2 y$ transitions.  But each transition reduces the
+  value of $s$ to $\le s/2$.  Hence, after at most $1+ \log_2 y$
+  transitions, the final value of $s$ is at most $1/2^{1+ \log_2 y} =
+  1/2y$ times its initial value, $y$.  This means the value of $s$
+  will be less than 1 and so must be 0 at this point if it wasn't 0
+  earlier.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
