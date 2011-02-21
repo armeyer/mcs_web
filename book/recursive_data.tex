@@ -1,9 +1,10 @@
 %\hyperdef{recursive}{data}
 \chapter{Recursive Data Types}\label{recursive_data_chapter}
 
-\term{Recursive data types} play a central role in programming.  From a
-mathematical point of view, recursive data types are what induction is
-about.  Recursive data types are specified by \term{recursive definitions}
+
+\term{Recursive data types} play a central role in programming, and
+induction is really all about them.
+ Recursive data types are specified by \term{recursive definitions}
 that say how to build something from its parts.  These definitions have
 two parts:
 \begin{itemize}
@@ -11,7 +12,22 @@ two parts:
 \item \textbf{Constructor case(s)} that depend on previous cases.
 \end{itemize}
 
-\hyperdef{paren}{string}{\section{Strings of Brackets}}
+Along with each recursive data type there is a \term{structural induction}
+method for proving that all data of the given type have some property.
+There is also a way to give recursive definitions of properties or
+functions on the data type.
+
+This chapter examines three main examples of recursive data types and
+recursively defined functions on them:
+\begin{itemize}
+\item the ``balanced'' strings of brackets,
+\item arithmetic expressions, and
+\item two-player games with information.
+\end{itemize}
+
+
+%\hyperdef{paren}{string}
+\section{Strings of Brackets}
 
 Let $\brkts$ be the set of all strings of square brackets.  For example,
 the following two strings are in $\brkts$:
@@ -605,14 +621,16 @@ For example, $f_4(3)=1$ because
 f_4(3)\eqdef f_4(10)\eqdef f_4(5)\eqdef f_4(16)\eqdef f_4(8)\eqdef
 f_4(4)\eqdef f_4(2)\eqdef f_4(1)\eqdef 1.
 \]
-The constant function equal to 1 will satisfy~\eqref{f5}, but it's not
+The constant function equal to 1 will satisfy~\eqref{f5} (why?), but it's not
 known if another function does too.  The problem is that the third case
 specifies $f_4(n)$ in terms of $f_4$ at arguments larger than $n$, and so
 cannot be justified by induction on $\naturals$.  It's known that any
 $f_4$ satisfying~\eqref{f5} equals 1 for all $n$ up to over a billion.
 
+\iffalse
 \textbf{Quick exercise:} Why does the constant function 1
 satisfy~\eqref{f5}?
+\fi
 
 \begin{staffnotes}
 
@@ -1538,9 +1556,9 @@ won more games.\fi
 
 The idea behind the definition of $\tg$'s as a recursive data type is that
 making a move in a $\tg$ leads to the start of a subgame, as illustrated
-by Tic-Tac-Toe and Tournament-Tic-Tac-Toe examples, and every game ends
-with a score.  So given any set of games, we can make a new game whose
-first move is to pick a game to play from the set.
+by Tic-Tac-Toe and Tournament-Tic-Tac-Toe examples.  So given any set of
+games, we can make a new game whose first move is to pick a game to play
+from the set.  At the end of play there is a score.
 
 So what defines a game?  For Tic-Tac-Toe, we used the patterns and the
 rules of Tic-Tac-Toe to determine the next patterns.  But once we have
@@ -1561,7 +1579,7 @@ definition.
 
 \item \textbf{Base case:}
 \[
-\ang{\texttt{leaf}, s} \in \tg,
+\ang{\textbf{leaf}, s} \in \tg,
 \]
 for all $s \in S$.
 
@@ -1569,15 +1587,12 @@ for all $s \in S$.
 If $\mathcal{G}$ is a nonempty set of
 $\tg$'s, then $G$ is a $\tg$, where
 \[
-G \eqdef \ang{\texttt{tree},\mathcal{G}}.
+G \eqdef \ang{\textbf{tree},\mathcal{G}}.
 \]
 The game trees in $\mathcal{G}$ are called the possible \emph{next moves}
 from $G$.
 \end{itemize}
 
-\end{definition}
-
-\begin{definition}
 A \emph{play} of a $\tg$, $G$, is a (potentially infinite) sequence of
 $\tg$'s starting with $G$ and such that if $G_1$ and $G_2$ are consecutive
 $\tg$'s in the play, then $G_2$ is a possible next move of $G_1$.
@@ -1585,7 +1600,7 @@ $\tg$'s in the play, then $G_2$ is a possible next move of $G_1$.
 If a $\tg$ has no infinite play, it is called a \emph{terminating} game.
 \end{definition}
 
-We already observed that even though a $T^4$ Tic-Tac-Toe tournament is has
+We already observed that even though the $T^4$ Tic-Tac-Toe tournament has
 an infinite game tree, every play of $T^4$ must terminate.  We'll show
 that this is true in general after we give a precise definition of
 ``play'':
@@ -1601,15 +1616,15 @@ hypothesis
 G \text{ is terminating}.
 \]
 
-\textbf{Base case}: If $G = \ang{\texttt{leaf}, \texttt{win}}$ or $G =
-\ang{\texttt{leaf}, \texttt{lose}}$ then the only possible play of $G$ is
-the length one sequence consisting of $G$.  Hence $G$ terminates.
+\textbf{Base case}: If $G = \ang{\textbf{leaf}, s}$, then the only
+possible play of $G$ is the length one sequence consisting of $G$ itself.
+Hence $G$ terminates.
 
-\textbf{Constructor case}: For $G = \ang{\texttt{tree},\mathcal{G}}$, we
-must show that $G$ is terminating, given the Induction Hypothesis that
-\emph{every} $G' \in \mathcal{G}$ is terminating.
+\textbf{Constructor case}: For $G = \ang{\textbf{tree},\mathcal{G}}$, we
+must show that $G$ is terminating, given the structural induction
+hypothesis that \emph{every} $G' \in \mathcal{G}$ is terminating.
 
-But any play of $G$ is, by definition, a sequence starting with $G$ and
+Any play of $G$ is, by definition, a sequence starting with $G$ and
 followed by a play starting with some $G_0 \in \mathcal{G}$.  But $G_0$ is
 terminating, so the play starting at $G_0$ is finite, and hence so is the
 play starting at $G$.
@@ -1621,26 +1636,148 @@ terminating.
 
 \subsection{Game Strategies}
 
-A key question about a game is whether a player has a winning strategy.  A
-\emph{strategy} for a player in a game specifies which move the player
-should make at any point in the game.  A \emph{winning} strategy ensures
-that the player will win no matter what moves the other player makes.
+A key question about a game is what strategy will give a player the best
+score.  A \emph{strategy} for a player in a game specifies which move the
+player should make at any point in the game.
 
 In Tic-Tac-Toe for example, most elementary school children figure out
-strategies for both players that each ensure that the game ends with no
-tic-tac-toes, that is, it ends in a tie.  Of course the first player can
-win if his opponent plays childishly, but not if the second player follows
-the proper strategy.  In more complicated games like Checkers or Chess,
-it's not immediately clear that anyone has a winning strategy, even if we
-agreed to count ties as wins for the second player.
-
+strategies for both players that each guarantees a score of 0, that is, a
+draw.  Of course the first player can win if his opponent plays
+childishly, but not if the second player follows the proper strategy.  In
+more complicated games like Checkers or Chess, it's not clear what
+strategy, if any, is guaranteed to yield the best score.
 But structural induction makes it easy to prove that in any $\tg$,
-\emph{somebody} has the winning strategy!
+both players have strategies that guarantee the best possible score.
+
+In particular, there are two players called the \term{max-player} and the
+\term{min-player} who alternate making moves.  The score measures what the
+max-player wins (it might be negative, indicating that the min-player came
+out ahead).  The objective of the max-player is to have play end with as
+high a score as possible, while the min-player aims to end with as low a
+score as possible.
+
+%%%%%%%%%%%%%%
+Given which of the players moves first in a game, a strategy for the
+max-player is said to \emph{ensure} the payoff, $s$, if play ends with a
+score $ \ge k$, no matter what moves the min-player makes.  Likewise, a
+strategy for the min-player is said to \emph{hold down} the score to $s$,
+if play ends with a payoff of $\le s$, no matter what moves the max-player
+makes.
+
+A $\tg$ there are two values, a \term{max value} and a \term{min
+  value}.   is said to have \emph{max value}, $s$, if the max-player has a
+strategy that ensures payoff $k$, and the min-player has a strategy that
+holds down the payoff to $k$, when the \emph{max-player moves first}.
+Likewise, the $\tg$ has \emph{min value}, $k$, if the max-player has a
+strategy that ensures $k$, and the min-player has a strategy that holds
+down the payoff to $k$, when the \emph{min-player moves first}.
+
+The \emph{Fundamental Theorem} for 2-person 50-point games of perfect
+information is that is that every game has both a max value and a min
+value.  (Note: the two values are usually different.)
+
+What this means is that there's no point in playing a game: if the max
+player gets the first move, the min-player should just pay the max-player
+the max value of the game without bothering to play (a negative payment
+means the max-player is paying the min-player).  Likewise, if the
+min-player gets the first move, the min-player should just pay the
+max-player the min value of the game.
+
+
+
+PPART\label{finpg} Prove this Fundamental Theorem for 50-valued
+$\tg$'s by structural induction.
+
+SOLUTION
+
+The proof is by structural induction on the definition of a
+  $\tg$, $G$.  The induction hypothesis is that there is that
+\begin{quote}
+  $G$ has a max value and a min value.
+\end{quote}
+
+\textbf{Base case}: [$G$ is the terminated game with payoff $k$].  The only
+possible play is $k$.  So the max value and the min value are both $k$.
+
+\textbf{Constructor case}: [$G = (G_0,\dots, G_n)$].  By structural
+induction we may assume that each of the games $G_i$ have both max values
+and min values.
+
+We first show that $G$ has max value, $k$, where $k$ is the largest min
+value among the games $G_0,\dots,G_n$.
+
+To prove the max value of $G$ is $k$, we must show how the max-player,
+moving first in $G$, can ensure $k$, and how the min-player, moving second
+in $G$, can hold down the payoff to $k$.
+
+To ensure $k$, the max-player simply chooses $i$ as her first move where
+game $G_i$ has this largest min value, $k$.  The min-player then has the
+first move in $G_i$, so by definition of min value, the max-player has a
+strategy in $G_i$ that ensures $k$, which she can now follow.  So this
+first move, combined with the ensuring strategy in $G_i$, defines a
+strategy for the max-player in $G$ that ensures $k$.
+
+Likewise, there is a simple strategy for the min-player, moving second in
+$G$, to hold down the payoff to $k$.  Namely, suppose the max-player's
+first move is $i$.  Then $G_i$ has a min value of $m \leq k$, since $k$ is
+the largest min value.  So by definition of min value, there is a strategy
+in $G_i$ for the min-player to hold down the payoff to $m$, which he can
+now follow, thereby holding down the payoff of play on $G$ to $m \leq k$.
+
+The existence of these ensuring and holding down strategies for $G$
+implies that the max value of $G$ is $k$.
+
+Second, to show that $G$ has a min value, we can repeat the previous
+argument with min and max exchanged.
+
+Therefore, by structural induction, we can conclude that all $\tg$'s have
+min and max values.
+
+SOLUTION
+
+PPART A meta-$\tg$ game has as possible first moves the choice of
+\emph{any} $\tg$ to play.  Meta-$\tg$ games aren't any harder to
+understand than $\tg$'s, but there is one notable difference, they
+have an infinite number of possible first moves.  We could also define
+meta-meta-$\tg$'s in which the first move was a choice of any
+$\tg$ \emph{or} the meta-$\tg$ game to play.  In
+meta-meta-$\tg$'s there are an infinite number of possible first
+\emph{and} second moves.  And then there's $\text{meta}^3-\tg$ \dots.
+
+\iffalse
+The 2D-origin game in a Week 4 class problem is a game in which there are
+an infinite number of possible first moves, an infinite number of possible
+second moves, \dots.  \iffalse (with two values, ``win'' or ``lose''
+instead of values from -50 to 50)\fi
+\fi
+
+To model such infinite games, we could have modified the recursive
+definition of $\tg$'s to allow first moves that choose any one of an
+infinite sequence
+\[
+G_0,G_1,\dots,G_n,G_{n+1}, \dots
+\]
+of $\tg$'s.  Now a $\tg$ can be a mind-bendingly infinite datum
+instead of a finite one.
+
+Do these infinite $\tg$'s still have max and min values?  In
+particular, do you think it would be correct to use structural induction
+as in part~\eqref{finpg} to prove a Fundamental Theorem for such infinite
+$\tg$'s?  Offer an answer to this question, and briefly indicate why
+you believe in it.
+
+SOLUTION
+
+It may not be obvious, but structural induction is a perfectly sound proof
+technique even for infinite recursively defined data, and the proof of the
+Fundamental Theorem for $\tg$'s applies without change to infinite ones.
+
+SOLUTION
 
 \begin{theorem}\label{fund}
-\textbf{Fundamental Theorem for Two-Person Games:} For every two-person
-terminating game of perfect information, there is a winning strategy for
-one of the players.
+  \textbf{Fundamental Theorem for Two-Person Games:} For every two-person
+  terminating game of perfect information, has a max-value and a
+  min-value.
 \end{theorem}
 
 \begin{proof}
@@ -1650,14 +1787,14 @@ The induction hypothesis is that there is a winning strategy for $G$.
 \textbf{Base cases:}
 \begin{enumerate}
 
-\item $G=\ang{\texttt{leaf}, \texttt{win}}$.  Then the first player has the
+\item $G=\ang{\textbf{leaf}, \textbf{win}}$.  Then the first player has the
  winning strategy: ``make the winning move.''
 
-\item $G=\ang{\texttt{leaf}, \texttt{lose}}$.  Then the second player has a
+\item $G=\ang{\textbf{leaf}, \textbf{lose}}$.  Then the second player has a
  winning strategy: ``Let the first player make the losing move.''
 \end{enumerate}
 
-\textbf{Constructor case}: Suppose $G = \ang{\texttt{tree},\mathcal{G}}$.
+\textbf{Constructor case}: Suppose $G = \ang{\textbf{tree},\mathcal{G}}$.
 By structural induction, we may assume that some player has a winning
 strategy for each $G' \in \mathcal{G}$.  There are two cases to consider:
 \begin{itemize}
@@ -1679,15 +1816,12 @@ every $\tg$, $G$.
 \end{proof}
 
 Notice that although Theorem~\ref{fund} guarantees a winning strategy, its
-proof gives no clue which player has it.  For
-\iffalse the Subset Takeaway Game
-(\href{http://courses.csail.mit.edu/6.042/fall07/rec3t.pdf} {Recitation
-Problem, Tuesday, Week 3}), and
-\fi
-most familiar $\tg$'s like Chess, Go, \dots, no one knows
-which player has a winning strategy.\footnote{Checkers used to be in this
-  list, but there has been a recent announcement that each player has a
-  strategy that forces a tie. (reference TBA)}
+proof gives no clue which player has it.  For the Subset Takeaway Game of
+Problem~\ref{CP_subset_take_away} and most familiar $\tg$'s like Chess,
+Go, \dots, no one knows which player has a winning
+strategy.\footnote{Checkers used to be in this list, but there has been a
+  recent announcement that each player has a strategy that forces a tie.
+  (reference TBA)}
 
 %% Games as a Recursive Data Type Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\startclassproblems
@@ -1695,7 +1829,7 @@ which player has a winning strategy.\footnote{Checkers used to be in this
 \begin{problems}
 %\classproblems
 \homeworkproblems
-\pinput{PS_50_point_games}
+%\pinput{PS_50_point_games}
 \end{problems}
 
 %% Induction in Computer Science %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
