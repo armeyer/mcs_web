@@ -7,84 +7,104 @@
 \term{Recursive data types} play a central role in programming, and
 induction is really all about them.
 
-Recursive data types are specified by \term{recursive definitions}
-that say how to build something from its parts.  These definitions have
-two parts:
-\begin{itemize}
-\item \textbf{Base case(s)} that don't depend on anything else.
-\item \textbf{Constructor case(s)} that depend on previous cases.
-\end{itemize}
-
-Along with each recursive data type there is a \term{structural induction}
-method for proving that all data of the given type have some property.
-There is also a way to give recursive definitions of properties or
-functions on the data type.
+Recursive data types are specified by \term{recursive definitions} that
+say how to contruct new data elements from previous ones.  Along with each
+recursive data type there are recursive definitions of properties or
+functions on the data type.  Most importantly, based on a recursive
+definition, there is a \term{structural induction} method for proving that
+all data of the given type have some property.
 
 This chapter examines three main examples of recursive data types and
 recursively defined functions on them:
 \begin{itemize}
 \item the ``balanced'' strings of brackets,
 \item arithmetic expressions, and
-\item two-player games with perfect information.
+\item two-player zero-sum games with perfect information.
 \end{itemize}
-
 
 %\hyperdef{paren}{string}
 \section{Recursive Definitions and Structural Induction}
 
+We'll start off illustrating recursive definitions and proofs using the
+example of character strings.  Normally we'd take strings of characters
+for granted, we'll treat them as a recursive data type.  Strings make a
+nice first example because we're giving recursive definitions of things
+that are easy to understand or you already know, so you can focus on how
+the definitions work without having to figure out what they are for.
 
+Definition of recursive data types have two parts:
+\begin{itemize}
+\item \textbf{Base case(s)} specifying that some known mathematical elements are
+  in the data type, and
+\item \textbf{Constructor case(s)} that specify how to construct new data
+  elements from previously contructed element of form base elements.
+\end{itemize}
 
-
-\subsection{Strings}
-We've taken strings of characters for granted as familiar mathematical
-objects but defining them as a recursive data type actually can be
-helpful.  They make a good first example because we're just giving
-recursive definitions of things you already know or are easy to
-understand.
+The definition of strings over a given character set, $A$, follows this
+pattern:
 
 \begin{definition}\label{recstring_def}
-Let $A$ be a nonempty set called an \term{alphabet}, whose elements
-are referred to as \term{symbols}, \term{letters}, or
-\term{characters}.  The recursive data type, $\strings{A}$, of strings
-over alphabet, $A$, are defined as follows:
+  Let $A$ be a nonempty set called an \term{alphabet}, whose elements are
+  referred to as \term{characters}, \term{letters}, or \term{symbols}.
+  The recursive data type, $\strings{A}$, of strings over alphabet, $A$,
+  are defined as follows:
 \begin{itemize}
 \item \textbf{base case}: the empty string, $\emptystring$, is in $\strings{A}$.
 
-\item \textbf{constructor case:} If $s \in \strings{A}$ and $a \in A$, then the pair
+\item \textbf{constructor case:} If $a \in A$ and $s \in \strings{A}$, then the pair
        $\ang{a,s} \in \strings{A}$.
 \end{itemize}
 \end{definition}
-If strings were represented in a programming language like Scheme or
-Python as \emph{lists} of characters, then $\ang{a,s}$ would be the
-list $\text{cons}(a ,s)$.
+So $\strings{\set{0,1}}$ are supposed to be the binary strings.
 
-Continuing the recursive approach, let's define the length of a string
-recursively.
+The usual way to treat binary strings is as sequences of 0's and 1's.  For
+example, the usual definition of the length-4 binary string that is the
+binary representation of eleven is the sequence $(1,0,1,1)$ which we would
+usually write as ``1011.''  But according to recursive Definition~\ref{recstring_def}
+this string would be represented by nested pairs, namely
+\[
+\ang{1,\ang{0,\ang{1,\ang{1,\emptystring}}}}.
+\]
+These nested pairs are definitely cumbersome, and may also seem bizarre,
+but they actually reflect the way lists of characters would be represented
+programming languages like Scheme or Python, where $\ang{a,s}$ would be
+the list $\text{cons}(a ,s)$.
 
+We haven't said exactly how the empty string is represented because it
+doesn't matter: we just need to be able to recognize it and not confuse it
+with any nonempty string.
+
+Continuing the recursive approach, let's define the length of a string.
 \begin{definition}
 The function $\lnth:\strings{A} \to \naturals$ is defined recursively
 based on the definition of $s \in \strings{A}$:
 
 \item \textbf{base case}:  $\lnth{\emptystring} \eqdef 0$.
 
-\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef 1+ \lnth{s}$.
+\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef 1 + \lnth{s}$.
 
 \end{definition}
 
-The \term{concatenation} $s\cdot t$ of the strings $s$ and $t$ is the
-string consisting of the letters of $s$ followed by the letters of
-$t$.  This is a perfectly clear and precise mathematical definition of
-concatenation (except maybe for what to do with the empty string).  In
-terms of Scheme/Python lists, $s\cdot t$ would be the list
+This definition of length follows a standard pattern: functions on
+recursive data types can be defined recursively using the same cases as
+the data type definition.  Namely, to define a function, $f$, on a
+recursive data type, define the value of $f$ for the base cases of the
+data type definition, and then define the value of $f$ in each constructor
+case in terms of the values of $f$ on the component data items.
+
+Let's do another example: the \term{concatenation} $s\cdot t$ of the
+strings $s$ and $t$ is the string consisting of the letters of $s$
+followed by the letters of $t$.  This is a perfectly clear mathematical
+definition of concatenation (except maybe for what to do with the empty
+string), and in terms of Scheme/Python lists, $s\cdot t$ would be the list
 $\text{append}(s, t)$.  Here's a recursive definition of concatenation.
 
-\begin{definition}
+\begin{definition}\label{concat_def}
 The \term{concatenation} $s\cdot t$ of the strings $s,t \in
 \strings{A}$ is defined recursively based on the definition of $s \in
 \strings{A}$:
 
 \item \textbf{base case}:     % ($s=\emptystring$):
-
 \[
 \emptystring \cdot t \eqdef t.
 \]
@@ -95,44 +115,101 @@ The \term{concatenation} $s\cdot t$ of the strings $s,t \in
 \]
 \end{definition}
 
-
-\hyperdef{struct}{induction}{Structural} induction is a method for proving
-some property, $P$, of all the elements of a recursively-defined data
-type.  The proof consists of two steps:
+\term{Structural induction} is a method for proving that all the elements
+of a recursively defined data type have some property.  A structural
+induction proof has two parts corresponding to the recursive definition:
 \begin{itemize}
-\item Prove $P$ for the base cases of the definition. 
-\item Prove $P$ for the constructor cases of the definition, assuming that it
-  is true for the component data items.  
+\item Prove that each base case element has the property.
+\item Prove that each constructor case element has the property, when
+  the constructor is applied to elements that have the property.
 \end{itemize}
 
+For example, we can verify the familiar fact that the length of the
+concatenation of two strings is the sum of their lengths using structural
+induction:
 
-\subsection{Strings of Matched Brackets}
+\begin{theorem}\label{stAl+}
+For all $s,t \in \strings{A}$,
+\[
+\lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+\]
+\begin{proof}
+By structural induction on the definition of $s \in \strings{A}$.   The
+induction hypothesis is
+\[
+P(s) \eqdef \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+\]
+
+\textbf{base case} ($s = \emptystring$):
+\begin{align*}
+\lnth{\emptystring \cdot t}
+   & = \lnth{t}
+         & \text{(def $\cdot$, base case)}\\
+   & = 0 + \lnth{t}\\
+   & = \lnth{s} + \lnth{t}
+         & \text{(def length, base case)}
+\end{align*}
+\end{proof}
+
+\textbf{constructor case}: Assume the induction hypothesis, $P(s)$, and
+let $r = \ang{a,s} \cdot t$.  We must show that $P(r)$ holds:
+\begin{align*}
+\lnth{r \cdot t}
+    & = \lnth{\ang{a, s} \cdot t}\\
+    & = \lnth{\ang{a,s \cdot t}
+        &  \text{(def $\cdot$, constructor case)}\\
+    & = 1 + \lnth{s \cdot t}
+        &  \text{(def length, constructor case)}\\
+    & = 1 +  (\lnth{s} + \lnth{t})
+        & \text{since $P(s)$ holds}\\
+    & = (1 +  \lnth{s}) + \lnth{t})\\
+    & = \lnth{\ang{a,s}} + \lnth{t}
+        & \text{(def length, constructor case)}\\
+    & = \lnth{r} + \lnth{t}.
+\end{align*}
+This completes the proof of the constructor case, so by structural
+induction we conclude that $P(s)$ holds for all strings $s \in
+\strings{A}$.
+
+\end{theorem}
+
+This proof illustrates the general principle:
+
+\textbox{ 
+\textboxheader{The Principle of Structural Induction.}
+
+Let $P$ be a predicate on a recursively defined data type $R$.  If
+%
+\noindent \begin{itemize}
+\item $P(b)$ is true for each base case element, $b \in R$, and
+
+\item for all two argument constructors, \mathbf{c},
+\[
+[P(r)\QAND P(s)] \QIMPLIES P(\mathbf{c}(r, s))
+\]
+for all $r,s \in R$,\\
+and likewise for all constructors taking other numbers of arguments,
+\end{itemize}
+then
+\begin{itemize}
+\item $P(r)$ is true for all $r \in R$.
+\end{itemize}
+}
+\begin{problems}
+\classproblems
+\pinput{CP_string_associativity}
+\pinput{CP_string_reversal}
+
+\end{problems}
+
+
+\section{Strings of Matched Brackets}
 
 Let $\brkts$ be the set of all strings of square brackets.  For example,
 the following two strings are in $\brkts$:
 \begin{equation}\label{2strings}
 \lefbrk\rhtbrk\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\quad \text{and}\quad \lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
 \end{equation}
-
-\iffalse
-Since we're just starting to study recursive data, just for practice we'll
-formulate $\brkts$ as a recursive data type,
-
-\begin{definition}\label{prns-def}
-The data type, $\brkts$, of strings of brackets is defined recursively:
-
-\begin{itemize}
-
-\item \textbf{Base case}: The \term{empty string}, $\emptystring$, is in
-  $\brkts$.
-
-\item \textbf{Constructor case}: If $s \in \brkts$, then
-$s\rhtbrk$ and $s\lefbrk$ are in $\brkts$.
-
-\end{itemize}
-
-\end{definition}
-\fi
 
 A string, $s \in \brkts$, is called a \term{matched string} if its
 brackets ``match up'' in the usual way.  For example, the left hand
@@ -141,11 +218,11 @@ have a matching left bracket.  The string on the right is matched.
 
 We're going to examine several different ways to define and prove
 properties of matched strings using recursively defined sets and
-functions.  These properties are pretty straighforward, and you might
+functions.  These properties are pretty straightforward, and you might
 wonder whether they have any particular relevance in computer scientist.
 The honest answer is ``not much relevance, \emph{any more}.''  The reason
 for this is one of the great successes of computer science as explained in
-the Expression Parsing text box below.
+the text box below.
 
 \textbox{
 \begin{center}
@@ -218,17 +295,18 @@ Recursively define the set, $\RM$, of strings as follows:
 
 \item \textbf{Constructor case:} If $s,t \in\RM$, then
 \[
-\lefbrk s\, \rhtbrk t \in\RM.
+\lefbrk s\, \rhtbrk t \in \RM.
 \]
-
 \end{itemize}
 
 \end{definition}
 
-Here we're writing $\lefbrk s\, \rhtbrk t$ to indicate the string that
-starts with a left bracket, followed by the sequence of brackets
-(if any) in the string $s$, followed by a right bracket, and ending
-with the sequence of brackets in the string $t$.
+Here $\lefbrk s\, \rhtbrk t$ refers to the concatenation of
+strings which would be written in full as
+\[
+\lefbrk \cdot (s \cdot (\rhtbrk \cdot t)).
+\]
+From now on, we'll usually omit the ``$\cdot$'s.'' 
 
 Using this definition, we can see that $\emptystring \in\RM$ by the Base
 case, so
@@ -255,109 +333,6 @@ Given the way this section is set up, you might guess that $\RM = \GC$,
 and you'd be right, but it's not completely obvious.  The proof is worked
 out in Problem~\ref{PS_bracket_good_count}.
 \fi
-
-\section{Arithmetic Expressions}
-Expression evaluation is a key feature of programming languages, and
-recognition of expressions as a recursive data type is a key to
-understanding how they can be processed.
-
-To illustrate this approach we'll work with a toy example: arithmetic
-expressions like $3x^2 + 2x + 1$ involving only one variable, ``$x$.''
-We'll refer to the data type of such expressions as $\aexp$.  Here is its
-definition:
-
-\begin{definition}
-
-\begin{itemize}
-\item \textbf{Base cases:}
-
-\begin{enumerate}
-
-\item The variable, $x$, is in $\aexp$.
-
-\item The arabic numeral, $\mtt{k}$, for any nonnegative integer, $k$, is
-  in $\aexp$.
-
-\end{enumerate}
-
-\item \textbf{Constructor cases:} If $e,f \in \aexp$, then
-\begin{enumerate}
-\setcounter{enumi}{2}
-
-\item $(e \sumsym f) \in \aexp$.  The expression $(e \sumsym f)$ is called a
-  \emph{sum}.  The \aexp's $e$ and $f$ are called the \emph{components} of
-  the sum; they're also called the \emph{summands}.
-
-\item $(e \prodsym f) \in \aexp$.  The expression $(e \prodsym f)$ is called a
-  \emph{product}.  The \aexp's $e$ and $f$ are called the
-  \emph{components} of the product; they're also called the
-  \emph{multiplier} and \emph{multiplicand}.
-
-\item $\minussym(e) \in \aexp$.  The expression $\minussym(e)$ is called a
-  \emph{negative}.
-\end{enumerate}
-\end{itemize}
-\end{definition}
-
-Notice that \aexp's are fully parenthesized, and exponents aren't allowed.
-So the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
-officially be written as
-\begin{equation}\label{fullparens}
-((\mtt{3} \prodsym (x \prodsym x)) \sumsym ((\mtt{2} \prodsym x) \sumsym \mtt{1})).
-\end{equation}
-These parentheses and $\ast$'s clutter up examples, so we'll often use
-simpler expressions like ``$3x^2 + 2x + 1$'' instead
-of~\eqref{fullparens}.  But it's important to recognize that $3x^2 +
-2x + 1$ is not an \aexp; it's an \emph{abbreviation} for an $\aexp$.
-
-\iffalse
-
-being represented as
-a tagged datum.  To start, we might represent 0 as a length one sequence
-consisting of the tag \texttt{zero}:
-\begin{definition}
-The nonnegative integers can be defined recursively as follows:
-
-\begin{definition}\label{tagn}
-\begin{itemize}
-\item \textbf{Base case}  $\ang{\texttt{zero}}\in \naturals$.
-\item \textbf{Constructor case} if $n \in \naturals$, then
-      $\ang{\texttt{successor},n}\in \naturals$.
-\end{itemize}
-
-\end{definition}
-\fi
-
-
-\begin{staffnotes}
-
-\begin{example}
-The set, List, of \emph{pure lists} is defined recursively by:
-\begin{enumerate}
-\item The 0-tuple is in List.
-\item If $\ell_1$ and $\ell_2$ are in List, then the pair $(\ell_1,
-\ell_2)$ is in List.
-\end{enumerate}
-
-In Lisp-like programming languages, the pairing operation is called
-\texttt{cons} and the 0-tuple is called \texttt{nil}.
-
-\end{example}
-
-\end{staffnotes}
-
-
-%% Structural Induction on Recursive Data Types %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Structural Induction on Recursive Data Types}
-
-\hyperdef{struct}{induction}{Structural} induction is a method for proving
-some property, $P$, of all the elements of a recursively-defined data
-type.  The proof consists of two steps:
-\begin{itemize}
-\item Prove $P$ for the base cases of the definition. 
-\item Prove $P$ for the constructor cases of the definition, assuming that it
-  is true for the component data items.  
-\end{itemize}
 
 A very simple application of structural induction proves that the
 recursively defined matched strings always have an equal number of left
@@ -388,61 +363,8 @@ This proves $P(r)$.  We conclude by structural induction that $P(s)$ holds
 for all $s \in\RM$.
 \end{proof}
 
-\subsection{Functions on Recursively-defined Data Types}
 
-Functions on recursively-defined data types can be defined recursively
-using the same cases as the data type definition.  Namely, to define a
-function, $f$, on a recursive data type, define the value of $f$ for the
-base cases of the data type definition, and then define the value of $f$
-in each constructor case in terms of the values of $f$ on the component
-data items.
-
-\iffalse
-
-For example, some basic functions on strings have simple recursive
-definitions based on a recursive definition of strings as a tagged datum:
-
-\begin{definition}\label{A*}
-The set, $A^*$, of strings over a set, $A$, called the \emph{alphabet},
-is defined recursively as follows:
-\begin{itemize}
-\item \textbf{Base case:} $\ang{\texttt{emptystring}} \in A^*$.
-
-\item \textbf{Constructor case:} if $s \in A^*$ and $a \in A$, then
-$\ang{\texttt{successor-string},s,a}\in A^*$.
-
-\end{itemize}
-\end{definition}
-Here, of course, $\ang{\texttt{emptystring}}$ is a tagged representation
-of the emptystring, $\emptystring$, and
-\[
-\ang{\texttt{successor-string}, s, a}
-\]
-is a tagged representation of the string, $sa$, equal to the string $s$,
-followed by the character, $a$.
-
-Now we give a recursive definition of the \emph{length} of a string.
-\begin{definition}
-The \emph{length}, $\lnth{s}$, of a string, $s$, is defined recursively by
-the rules:
-\begin{itemize}
-\item $\lnth{\emptystring} \eqdef 0$
-\item $\lnth{sa} \eqdef 1+\lnth{s}$.
-\end{itemize}
-\end{definition}
-
-\begin{definition}
-The \emph{concatenation}, $st$, of strings $s$ and $t$ over an alphabet,
-$A$, is defined recursively on $t$ by the rules:
-\begin{itemize}
-\item $s\emptystring \eqdef s$.
-\item $s(ta) \eqdef (st)a$ for $a \in A$.
-\end{itemize}
-\end{definition}
-\fi
-
-For example, from the recursive definition of the set, $\RM$, of strings of
-matched brackets, we define:
+The \term{depth} of a matched string is defined recursively as follows
 \begin{definition}
 The \emph{depth}, $d(s)$, of a string, $s \in\RM$, is defined
 recursively by the rules:
@@ -481,11 +403,15 @@ to be unambiguous.
 \end{itemize}
 \end{example}
 
+\iffalse
 \begin{notesproblem}
 Give an easy proof by structural induction that $M =\RM$.
 \end{notesproblem}
+\fi
 
-Since $M = \RM$, and the definition of $M$ seems more straightforward, why
+It's pretty easy to see that the definition of $M$ is just another way to
+define $\RM$, that is $M = \RM$ (see Problem~\ref{M=RM}),
+and the definition of $M$ seems more straightforward, why
 didn't we use it?  Because the definition of $M$ is ambiguous, while the
 trickier definition of $\RM$ is unambiguous.  Does this ambiguity matter?
 Yes it does.  For suppose we defined
@@ -495,6 +421,8 @@ Yes it does.  For suppose we defined
   f(st)                  & \eqdef (f(s)+1) \cdot (f(t)+1)
                             & \text{for } st\neq \emptystring.
 \end{align*}
+
+%%FIND SIMPLER EXAMPLE
 
 Let $a$ be the string $\lefbrk\lefbrk\rhtbrk\rhtbrk \in M$ built by two successive
 applications of the first $M$ constructor starting with $\emptystring$.  Next
@@ -518,7 +446,7 @@ On the other hand, structural induction remains a sound proof method even
 for ambiguous recursive definitions, which is why it was easy to prove
 that $M=\RM$.
 
-\subsection{Recursive Functions on Nonnegative Integers}
+\section{Recursive Functions on Nonnegative Integers}
 
 The nonnegative integers can be understood as a recursive data type.
 \begin{definition}\label{0succ}
@@ -594,7 +522,7 @@ starts out $0, 1, 1, 2, 3, 5, 8, 13, 21,\dots$.
 
 \begin{staffnotes}
 
-\subsubsection{Induction on Fibonacci Numbers}
+\subsection{Induction on Fibonacci Numbers}
 
 We can use the recursive definition of a function to establish its
 properties by structural induction.
@@ -642,7 +570,7 @@ disguise: to see this, divide by $F_{n+1}$.
 
 \end{staffnotes}
 
-\subsubsection{Ill-formed Function Definitions}
+\subsection{Ill-formed Function Definitions}
 
 There are some \hyperdef{ill}{formed}{blunders} to watch out for when
 defining functions recursively.  Below are some function specifications
@@ -685,7 +613,7 @@ f_3(n) \eqdef \begin{cases}
 This ``definition'' is inconsistent: it requires $f_3(6) = 0$ and $f_3(6)
 =1$, so~(\ref{f3}) doesn't define anything.
 
-\subsubsection{A Mysterious Function}
+%\subsubsection{A Mysterious Function}
 Mathematicians have been wondering about this function specification for a
 while:
 \begin{eqnarray}\label{f5}
@@ -783,6 +711,77 @@ processing computer programs.
 
 \end{staffnotes}
 
+\section{Arithmetic Expressions}
+Expression evaluation is a key feature of programming languages, and
+recognition of expressions as a recursive data type is a key to
+understanding how they can be processed.
+
+To illustrate this approach we'll work with a toy example: arithmetic
+expressions like $3x^2 + 2x + 1$ involving only one variable, ``$x$.''
+We'll refer to the data type of such expressions as $\aexp$.  Here is its
+definition:
+
+\begin{definition}
+
+\begin{itemize}
+\item \textbf{Base cases:}
+
+\begin{enumerate}
+
+\item The variable, $x$, is in $\aexp$.
+
+\item The arabic numeral, $\mtt{k}$, for any nonnegative integer, $k$, is
+  in $\aexp$.
+
+\end{enumerate}
+
+\item \textbf{Constructor cases:} If $e,f \in \aexp$, then
+\begin{enumerate}
+\setcounter{enumi}{2}
+
+\item $\lefbrk e \sumsym f \rhtbrk \in \aexp$.  The expression $(e \sumsym
+  f)$ is called a \emph{sum}.  The \aexp's $e$ and $f$ are called the
+  \emph{components} of the sum; they're also called the \emph{summands}.
+
+\item $(e \prodsym f) \in \aexp$.  The expression $(e \prodsym f)$ is called a
+  \emph{product}.  The \aexp's $e$ and $f$ are called the
+  \emph{components} of the product; they're also called the
+  \emph{multiplier} and \emph{multiplicand}.
+
+\item $\minussym(e) \in \aexp$.  The expression $\minussym(e)$ is called a
+  \emph{negative}.
+\end{enumerate}
+\end{itemize}
+\end{definition}
+
+Notice that \aexp's are fully parenthesized, and exponents aren't allowed.
+So the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
+officially be written as
+\begin{equation}\label{fullparens}
+((\mtt{3} \prodsym (x \prodsym x)) \sumsym ((\mtt{2} \prodsym x) \sumsym \mtt{1})).
+\end{equation}
+These parentheses and $\ast$'s clutter up examples, so we'll often use
+simpler expressions like ``$3x^2 + 2x + 1$'' instead
+of~\eqref{fullparens}.  But it's important to recognize that $3x^2 +
+2x + 1$ is not an \aexp; it's an \emph{abbreviation} for an $\aexp$.
+
+\iffalse
+
+being represented as
+a tagged datum.  To start, we might represent 0 as a length one sequence
+consisting of the tag \texttt{zero}:
+\begin{definition}
+The nonnegative integers can be defined recursively as follows:
+
+\begin{definition}\label{tagn}
+\begin{itemize}
+\item \textbf{Base case}  $\ang{\texttt{zero}}\in \naturals$.
+\item \textbf{Constructor case} if $n \in \naturals$, then
+      $\ang{\texttt{successor},n}\in \naturals$.
+\end{itemize}
+
+\end{definition}
+\fi
 
 \subsection{Evaluation and Substitution with Aexp's}
 

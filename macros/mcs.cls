@@ -1314,7 +1314,7 @@
 
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
 
-\newcommand{\brkts}{\text{brkts}}
+\newcommand{\brkts}{\strings{\set{\rhtbrk, \lefbrk}}}    %{\text{brkts}}
 
 \if@usecolor@
     \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
