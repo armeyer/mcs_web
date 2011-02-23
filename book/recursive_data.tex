@@ -1,10 +1,13 @@
 %\hyperdef{recursive}{data}
-\chapter{Recursive Data Types}\label{recursive_data_chapter}
 
+\newcommand{\strings}[1]{(#1)^*}
+
+\chapter{Recursive Data Types}\label{recursive_data_chapter}
 
 \term{Recursive data types} play a central role in programming, and
 induction is really all about them.
- Recursive data types are specified by \term{recursive definitions}
+
+Recursive data types are specified by \term{recursive definitions}
 that say how to build something from its parts.  These definitions have
 two parts:
 \begin{itemize}
@@ -22,12 +25,88 @@ recursively defined functions on them:
 \begin{itemize}
 \item the ``balanced'' strings of brackets,
 \item arithmetic expressions, and
-\item two-player games with information.
+\item two-player games with perfect information.
 \end{itemize}
 
 
 %\hyperdef{paren}{string}
-\section{Strings of Brackets}
+\section{Recursive Definitions and Structural Induction}
+
+
+
+
+\subsection{Strings}
+We've taken strings of characters for granted as familiar mathematical
+objects but defining them as a recursive data type actually can be
+helpful.  They make a good first example because we're just giving
+recursive definitions of things you already know or are easy to
+understand.
+
+\begin{definition}\label{recstring_def}
+Let $A$ be a nonempty set called an \term{alphabet}, whose elements
+are referred to as \term{symbols}, \term{letters}, or
+\term{characters}.  The recursive data type, $\strings{A}$, of strings
+over alphabet, $A$, are defined as follows:
+\begin{itemize}
+\item \textbf{base case}: the empty string, $\emptystring$, is in $\strings{A}$.
+
+\item \textbf{constructor case:} If $s \in \strings{A}$ and $a \in A$, then the pair
+       $\ang{a,s} \in \strings{A}$.
+\end{itemize}
+\end{definition}
+If strings were represented in a programming language like Scheme or
+Python as \emph{lists} of characters, then $\ang{a,s}$ would be the
+list $\text{cons}(a ,s)$.
+
+Continuing the recursive approach, let's define the length of a string
+recursively.
+
+\begin{definition}
+The function $\lnth:\strings{A} \to \naturals$ is defined recursively
+based on the definition of $s \in \strings{A}$:
+
+\item \textbf{base case}:  $\lnth{\emptystring} \eqdef 0$.
+
+\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef 1+ \lnth{s}$.
+
+\end{definition}
+
+The \term{concatenation} $s\cdot t$ of the strings $s$ and $t$ is the
+string consisting of the letters of $s$ followed by the letters of
+$t$.  This is a perfectly clear and precise mathematical definition of
+concatenation (except maybe for what to do with the empty string).  In
+terms of Scheme/Python lists, $s\cdot t$ would be the list
+$\text{append}(s, t)$.  Here's a recursive definition of concatenation.
+
+\begin{definition}
+The \term{concatenation} $s\cdot t$ of the strings $s,t \in
+\strings{A}$ is defined recursively based on the definition of $s \in
+\strings{A}$:
+
+\item \textbf{base case}:     % ($s=\emptystring$):
+
+\[
+\emptystring \cdot t \eqdef t.
+\]
+
+\item \textbf{constructor case}: %($s = \ang{a,r}$ for $r \in \strings{A}$):
+\[
+\ang{a,s} \cdot t \eqdef \ang{a, s \cdot t}.
+\]
+\end{definition}
+
+
+\hyperdef{struct}{induction}{Structural} induction is a method for proving
+some property, $P$, of all the elements of a recursively-defined data
+type.  The proof consists of two steps:
+\begin{itemize}
+\item Prove $P$ for the base cases of the definition. 
+\item Prove $P$ for the constructor cases of the definition, assuming that it
+  is true for the component data items.  
+\end{itemize}
+
+
+\subsection{Strings of Matched Brackets}
 
 Let $\brkts$ be the set of all strings of square brackets.  For example,
 the following two strings are in $\brkts$:
@@ -44,10 +123,10 @@ The data type, $\brkts$, of strings of brackets is defined recursively:
 
 \begin{itemize}
 
-\item \textbf{Base case:} The \term{empty string}, $\emptystring$, is in
+\item \textbf{Base case}: The \term{empty string}, $\emptystring$, is in
   $\brkts$.
 
-\item \textbf{Constructor case:} If $s \in \brkts$, then
+\item \textbf{Constructor case}: If $s \in \brkts$, then
 $s\rhtbrk$ and $s\lefbrk$ are in $\brkts$.
 
 \end{itemize}
