@@ -1337,7 +1337,7 @@
 
 \newcommand{\aexp}{\text{Aexp}}
 
-\newcommand{\meval}{\mopt{eval}}
+\newcommand{\meval}[2]{\mopt{eval}(#1,#2)}
 \newcommand{\msubst}[2]{\mopt{subst}(#1,#2)}  %#2[x \leftarrow #1]}
 
 \newcommand{\prodsym}{\ast}

@@ -19,7 +19,7 @@ recursively defined functions on them:
 \item the ``balanced'' strings of brackets,
 \item the nonnegative integers, and
 \item arithmetic expressions.
-\item two-player zero-sum games with perfect information.
+%\item two-player zero-sum games with perfect information.
 \end{itemize}
 
 %\hyperdef{paren}{string}
@@ -75,6 +75,11 @@ $\ang{a,s}$ would be correspond to $\text{cons}(a, s)$.
 Notice that we haven't said exactly how the empty string is
 represented.  It really doesn't matter as long as we can recognize the
 empty string and not confuse it with any nonempty string.
+
+\begin{editingnotes}
+EVEN before func def, define binary relation def, say ``t a proper suffix of s'' or
+``t is a subsequence of s'' and then set up func def as special case
+\end{editingnotes}
 
 Continuing the recursive approach, let's define the length of a string.
 \begin{definition}
@@ -202,7 +207,7 @@ P(r) \text{ is true for all } r \in R.
 The number, $\cnt{c}{s}$, of occurrences of the character $c \in A$ in
 the string $s$ has a simple recursive definition based on the
 definition of $s \in \strings{A}$:
-\begin{definition}\label{countas_def}
+\begin{definition}\label{countas_def} \mbox{}
 
 \textbf{Base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
 
@@ -477,7 +482,7 @@ This definition may seem ok, but it isn't:
 $f(\emptystring)$ winds up with two values, and consequently:
 \begin{align*}
 0 & = f(\emptystring) & \text{($f$ base case))}\\
-  & = f(\emptystring \cdot \emptystring) & ((concat def, base case) \\
+  & = f(\emptystring \cdot \emptystring) & \text{(concat def, base case)} \\
                 & = 1 + f(\emptystring) + f(\emptystring)
                       &  \text{($f$ concat case)},\\
                 & = 1 + 0 + 0 = 1
@@ -725,14 +730,14 @@ satisfy~\eqref{f5}?
 \fi
 
 A final example is Ackermann's function, which is an extremely
-fast-growing function of two nonegative arguments.  It's inverse is
+fast-growing function of two nonnegative arguments.  Its inverse is
 correspondingly slow-growing ---it grows slower than $\log n$, $\log \log
 n$, $\log \log \log n$, \dots, but it does grow unboundly.  This inverse
 actually comes up analyzing a useful, highly efficient procedure known as
 the \emph{Union-Find algorithm}.  This algorithm was conjectured to run in
 a number of steps that grew linearly in the size of its input, but turned
 out to be ``linear'' but with a slow growing coefficient nearly equal to
-the inverse Ackerman function.  This means that pragmatically
+the inverse Ackermann function.  This means that pragmatically
 \emph{Union-Find} is linear since the theoretically growing coefficient is
 less than 5 for any input that could conceivably come up.
 
@@ -749,13 +754,18 @@ A(m,n) &=  2n, &&\text{if $m=0$ or $n \le 1$},\label{Am0}\\
 A(m,n) &=  A(m-1,A(m,n-1)), &&\text{otherwise}.\label{AA}
 \end{align}
 
-Now these rules are unusual because the definition of $A(m,n)$ involves an
-evaluation of $F$ at arguments that may be a lot bigger than $m$ and $n$.
-The definitions of $f_4$ above showed definitions of function values at
-small argument values in terms of larger one can
-easily lead to nonterminating evaluations.   The definition of Ackermann's
-function is ok, but proving this tgakes some ingeniuty (see Problem~\ref{PS_Ackermann_def}).
-
+Now these rules are unusual because the definition of $A(m,n)$
+involves an evaluation of $A$ at arguments that may be a lot bigger
+than $m$ and $n$.  The definitions of $f_2$ above showed how
+definitions of function values at small argument values in terms of
+larger one can easily lead to nonterminating evaluations.  The
+definition of Ackermann's function is actually ok, but proving this
+takes some ingenuity (see Problem~\ref{PS_Ackermann_def}).
+                            
+\begin{problems}
+\homeworkproblems
+\pinput{PS_Ackermann_def}
+\end{problems}
 
 \section{Arithmetic Expressions}
 Expression evaluation is a key feature of programming languages, and
@@ -837,7 +847,7 @@ Since the only variable in an \aexp\ is $x$, the value of an \aexp\ is
 determined by the value of $x$.  For example, if the value of $x$ is 3,
 then the value of $3x^2 + 2x + 1$ is obviously 34.  In general, given any
 $\aexp$, $e$, and an integer value, $n$, for the variable, $x$, we can
-evaluate $e$ to finds its value, $\meval(e,n)$.  It's easy, and useful, to
+evaluate $e$ to finds its value, $\meval{e}{n}$.  It's easy, and useful, to
 specify this evaluation process with a recursive definition.
 
 \begin{definition}\label{meval-def}
@@ -847,24 +857,24 @@ specify this evaluation process with a recursive definition.
 
 \begin{itemize}
 \item \textbf{Base cases:}
-\begin{align*}
-\meval(x, n) & \eqdef n,
-    & \text{(value of variable $x$ is $n$.)}\label{eval-var}
-\meval(\mtt{k}, n) & \eqdef k, 
+\begin{align}
+\meval{x}{ n} & \eqdef n,
+    & \text{(value of variable $x$ is $n$.)}\label{eval-var}\\
+\meval{\mtt{k}}{ n} & \eqdef k, 
    & \text{(value of numeral $\mtt{k}$ is $k$, regardless of $x$.)}\label{eval-const}
-\end{align*}
+\end{align}
 
 \item \textbf{Constructor cases:}
 
-\begin{align*}
+\begin{align}
 %\setcounter{enumi}{2}
-\meval(\lefbrk e_1 \sumsym e_2 \rhtbrk,n)
-   & \eqdef \meval(e_1,n)+\meval(e_2,n),\label{eval-sum}\\
-\meval(\lefbrk e_1 \prodsym e_2 \rhtbrk,n)
-  & \eqdef \meval(e_1,n) \cdot \meval(e_2,n), \label{eval-prod}
-\meval(\minussym\lefbrk e_1 \rhtbrk,n) 
-  &  \eqdef - \meval(e_1,n). \label{eval-minus}
-\end{align*}
+\meval{\lefbrk e_1 \sumsym e_2 \rhtbrk}{n}
+   & \eqdef \meval{e_1}{n}+\meval{e_2}{n},\label{eval-sum}\\
+\meval{\lefbrk e_1 \prodsym e_2 \rhtbrk}{n}
+  & \eqdef \meval{e_1}{n} \cdot \meval{e_2}{n}, \label{eval-prod}\\
+\meval{\minussym\lefbrk e_1 \rhtbrk}{n} 
+  &  \eqdef - \meval{e_1}{n}. \label{eval-minus}
+\end{align}
 \end{itemize}
 
 \end{definition}
@@ -872,11 +882,11 @@ specify this evaluation process with a recursive definition.
 For example, here's how the recursive definition of $\meval$ would arrive at
 the value of $3+x^2$ when $x$ is 2:
 \begin{align*}
-\meval(\lefbrk \mtt{3} \sumsym \lefbrk x \prodsym x\rhtbrk \rhtbrk,2)
- & = \meval(\mtt{3},2) + \meval(\lefbrk x \prodsym x \rhtbrk,2)
+\meval{\lefbrk \mtt{3} \sumsym \lefbrk x \prodsym x\rhtbrk \rhtbrk}{2}
+ & = \meval{\mtt{3}}{2} + \meval{\lefbrk x \prodsym x \rhtbrk}{2}
                   & \text{(by~Def~\ref{meval-def}.\ref{eval-sum})}\\
- & = 3 + \meval(\lefbrk x \prodsym x \rhtbrk,2) & \text{(by~Def~\ref{meval-def}.\ref{eval-const})}\\
- & = 3 + (\meval(x,2) \cdot \meval(x,2)) & \text{(by~Def~\ref{meval-def}.\ref{eval-prod})}\\
+ & = 3 + \meval{\lefbrk x \prodsym x \rhtbrk}{2} & \text{(by~Def~\ref{meval-def}.\ref{eval-const})}\\
+ & = 3 + (\meval{x}{2} \cdot \meval{x}{2}) & \text{(by~Def~\ref{meval-def}.\ref{eval-prod})}\\
  & = 3 + (2 \cdot 2) & \text{(by~Def~\ref{meval-def}.\ref{eval-var})}\\
  & = 3 + 4 = 7.
 \end{align*}
@@ -902,28 +912,26 @@ This substitution function has a simple recursive definition:
 \begin{itemize}
 \item \textbf{Base cases:}
 
-\begin{align*}
+\begin{align}
 \msubst{f}{x} & \eqdef f, \label{subst-var} 
     & \text{(subbing $f$ for variable, $x$, just gives $f$)}\\
 \msubst{f}{\mtt{k}} & \eqdef \mtt{k}
     & (subbing into a numeral does nothing.)\label{subst-const}
-\end{align*}
+\end{align}
 
 
 \item \textbf{Constructor cases:}
 
 
 %\setcounter{enumi}{2}
-\begin{align*}
-\label{subst-sum}
+\begin{align}
 \msubst{f}{\lefbrk e_1 \sumsym e_2\rhtbrk} & \eqdef  \lefbrk \msubst{f}{e_1} \sumsym
-\msubst{f}{e_2}\rhtbrk\\
-\label{subst-prod} 
+\msubst{f}{e_2}\rhtbrk\label{subst-sum}\\
 \msubst{f}{\lefbrk e_1 \prodsym e_2\rhtbrk}) & \eqdef  \lefbrk \msubst{f}{e_1} \prodsym
-\msubst{f}{e_2}\rhtbrk\\
-\label{subst-minus} 
-\msubst{f}{\minussym\lefbrk e_1\rhtbrk} & \eqdef \minussym \lefbrk \msubst{f}{e_1}\rhtbrk.
-\end{align*}
+\msubst{f}{e_2}\rhtbrk\label{subst-prod} \\
+\msubst{f}{\minussym\lefbrk e_1\rhtbrk} & \eqdef \minussym \lefbrk
+       \msubst{f}{e_1}\rhtbrk.\label{subst-minus} 
+\end{align}
 \end{itemize}
 \end{definition}
 
@@ -952,7 +960,7 @@ Now suppose we have to find the value of $\msubst{3x}{x(x-1)}$ when $x =
 
 First, we could actually do the substitution above to get $3x(3x-1)$, and
 then we could evaluate $3x(3x-1)$ when $x =2$, that is, we
-could recursively calculate $\meval(3x(3x-1),2)$ to get the
+could recursively calculate $\meval{3x(3x-1)}{2}$ to get the
 final value 30.  In programming jargon, this would be called evaluation
 using the \emph{Substitution Model}.  Because the formula $3x$ appears
 twice after substitution, it the multiplication $3 \cdot 2$ to computes
@@ -961,7 +969,7 @@ its value gets performed twice.
 The other approach is called evaluation using the \emph{Environment
   Model}.  Namely, to compute
 \begin{equation}\label{em3xsub}
-\eval{\msubst{3x}{x(x-1)}}{2}
+\meval{\msubst{3x}{x(x-1)}}{2}
 \end{equation}
 we evaluate $3x$ when $x = 2$ using just 1 multiplication to get the value
 6.  Then we evaluate $x(x-1)$ when $x$ has this value 6 to arrive at the
@@ -975,7 +983,7 @@ More precisely, what we want to prove is
 \begin{theorem}\label{environments}
 For all expressions $e,f \in \aexp$ and $n \in \integers$,
 \begin{equation}\label{eval-subst}
-\meval(\msubst{f}{e},n) = \meval(e, \meval(f,n)).
+\meval{\msubst{f}{e}}{n} = \meval{e}{\meval{f}{n}}.
 \end{equation}
 \end{theorem}
 
@@ -989,9 +997,9 @@ The proof is by structural induction on $e$.\footnote{This is an
 
 \item Case[$x$]
 
-  The left hand side of equation~\eqref{eval-subst} equals $\meval(f,n)$
+  The left hand side of equation~\eqref{eval-subst} equals $\meval{f}{n}$
   by this base case in Definition~\ref{subst-def} of the substitution
-  function, and the right hand side also equals $\meval(f,n)$ by this base
+  function, and the right hand side also equals $\meval{f}{n}$ by this base
   case in Definition~\ref{meval-def} of $\meval$.
 
 \item Case[$\mtt{k}$].
@@ -1013,25 +1021,25 @@ The proof is by structural induction on $e$.\footnote{This is an
   that for all $f \in \aexp$ and $n \in \integers$,
 
 \begin{equation}\label{ln4.hyp}
-\meval(\msubst{f}{e_i},n)  =  \meval(e_i, \meval(f,n))
+\meval{\msubst{f}{e_i}}{n}  =  \meval{e_i}{\meval{f}{n}}
 \end{equation}
 for $i= 1,2$.  We wish to prove that
 \begin{equation}\label{s+}
-\meval(\msubst{f}{\lefbrk e_1\sumsym e_2 \rhtbrk},n)  =  \meval(\lefbrk e_1 \sumsym e_2 \rhtbrk, \meval(f,n))
+\meval{\msubst{f}{\lefbrk e_1\sumsym e_2 \rhtbrk}}{n}  =  \meval{\lefbrk e_1 \sumsym e_2 \rhtbrk}{ \meval{f}{n}}
 \end{equation}
 But the left hand side of~\eqref{s+} equals
 \[
-\meval(\lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk, n)
+\meval{\lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk}{ n}
 \]
 by Definition~\ref{subst-def}.\ref{subst-sum} of substitution into a sum
 expression.  But this equals
 \[
-\meval(\msubst{f}{e_1},n) + \meval(\msubst{f}{e_2},n)
+\meval{\msubst{f}{e_1}}{n} + \meval{\msubst{f}{e_2}}{n}
 \]
 by Definition~\ref{meval-def}.\eqref{eval-sum} of $\meval$ for a sum expression.  By
 induction hypothesis~\eqref{ln4.hyp}, this in turn equals
 \[
-\meval(e_1,\meval(f,n)) + \meval(e_2,\meval(f,n)).
+\meval{e_1}{\meval{f}{n}} + \meval{e_2}{\meval(f,n}).
 \]
 Finally, this last expression equals the right hand side of~\eqref{s+} by
 Definition~\ref{meval-def}.\eqref{eval-sum} of $\meval$ for a sum
@@ -1048,6 +1056,13 @@ structural induction.
 
 \end{proof}
 
+\begin{problems}
+\practiceproblems
+\pinput{TP_eval_subst}
+
+\homeworkproblems
+\pinput{PS_erase_aexps}
+\end{problems}
 
 \begin{staffnotes}
 
@@ -1695,11 +1710,6 @@ strategy.\footnote{Checkers used to be in this list, but there has been a
 %% Games as a Recursive Data Type Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\startclassproblems
 
-\begin{problems}
-%\classproblems
-\homeworkproblems
-%\pinput{PS_50_point_games}
-\end{problems}
 \fi
 
 %% Induction in Computer Science %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1711,10 +1721,10 @@ its special case of ordinary induction are applicable to any kind of
 thing with nonnegative integer sizes --which is a awful lot of things,
 including all step-by-step computational processes.
 
-Structural induction then goes beyond natural number counting by offering a
-simple, natural approach to proving things about recursive computation
-and recursive data types.  This makes it a technique every computer
-scientist should embrace.
+Structural induction then goes beyond natural number counting by
+offering a simple, natural approach to proving things about recursive
+data types and recursive computation.  This makes it a technique every
+computer scientist should embrace.
 
 \begin{staffnotes}
 
