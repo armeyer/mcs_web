@@ -1,7 +1,5 @@
 %\hyperdef{recursive}{data}
 
-\newcommand{\strings}[1]{(#1)^*}
-
 \chapter{Recursive Data Types}\label{recursive_data_chapter}
 
 \term{Recursive data types} play a central role in programming, and
@@ -14,12 +12,14 @@ functions on the data type.  Most importantly, based on a recursive
 definition, there is a \term{structural induction} method for proving that
 all data of the given type have some property.
 
-This chapter examines three main examples of recursive data types and
+This chapter examines a few examples of recursive data types and
 recursively defined functions on them:
 \begin{itemize}
+\item strings of characters,
 \item the ``balanced'' strings of brackets,
-\item arithmetic expressions, and
-\item two-player zero-sum games with perfect information.
+\item the nonnegative integers, and
+\item arithmetic expressions.
+%\item two-player zero-sum games with perfect information.
 \end{itemize}
 
 %\hyperdef{paren}{string}
@@ -36,6 +36,7 @@ Definition of recursive data types have two parts:
 \begin{itemize}
 \item \textbf{Base case(s)} specifying that some known mathematical elements are
   in the data type, and
+
 \item \textbf{Constructor case(s)} that specify how to construct new data
   elements from previously contructed element of form base elements.
 \end{itemize}
@@ -57,31 +58,31 @@ pattern:
 \end{definition}
 So $\strings{\set{0,1}}$ are supposed to be the binary strings.
 
-The usual way to treat binary strings is as sequences of 0's and 1's.  For
-example, the usual definition of the length-4 binary string that is the
-binary representation of eleven is the sequence $(1,0,1,1)$ which we would
-usually write as ``1011.''  But according to recursive Definition~\ref{recstring_def}
-this string would be represented by nested pairs, namely
+The usual way to treat binary strings is as sequences of 0's and 1's.
+For example, we have identified the length-4 binary string 1011 as a
+sequence of bits, of a 4-tuple, namely, $(1,0,1,1)$.  But according to
+the recursive Definition~\ref{recstring_def}, this string would be
+represented by nested pairs, namely
 \[
 \ang{1,\ang{0,\ang{1,\ang{1,\emptystring}}}}.
 \]
-These nested pairs are definitely cumbersome, and may also seem bizarre,
-but they actually reflect the way lists of characters would be represented
-programming languages like Scheme or Python, where $\ang{a,s}$ would be
-the list $\text{cons}(a ,s)$.
+These nested pairs are definitely cumbersome, and may also seem
+bizarre, but they actually reflect the way lists of characters would
+be represented in programming languages like Scheme or Python, where
+$\ang{a,s}$ would be correspond to $\text{cons}(a, s)$.
 
-We haven't said exactly how the empty string is represented because it
-doesn't matter: we just need to be able to recognize it and not confuse it
-with any nonempty string.
+Notice that we haven't said exactly how the empty string is
+represented.  It really doesn't matter as long as we can recognize the
+empty string and not confuse it with any nonempty string.
 
 Continuing the recursive approach, let's define the length of a string.
 \begin{definition}
-The function $\lnth:\strings{A} \to \naturals$ is defined recursively
+The length, $\lnth{s}$, of a string, $s$, is defined recursively
 based on the definition of $s \in \strings{A}$:
 
-\item \textbf{base case}:  $\lnth{\emptystring} \eqdef 0$.
+\item \textbf{base case}:  $\lnth{\emptystring} \eqdef\ 0$.
 
-\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef 1 + \lnth{s}$.
+\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef\ 1 + \lnth{s}$.
 
 \end{definition}
 
@@ -106,12 +107,12 @@ The \term{concatenation} $s\cdot t$ of the strings $s,t \in
 
 \item \textbf{base case}:     % ($s=\emptystring$):
 \[
-\emptystring \cdot t \eqdef t.
+\emptystring \cdot t \eqdef\ t.
 \]
 
 \item \textbf{constructor case}: %($s = \ang{a,r}$ for $r \in \strings{A}$):
 \[
-\ang{a,s} \cdot t \eqdef \ang{a, s \cdot t}.
+\ang{a,s} \cdot t \eqdef\ \ang{a, s \cdot t}.
 \]
 \end{definition}
 
@@ -137,12 +138,13 @@ For all $s,t \in \strings{A}$,
 By structural induction on the definition of $s \in \strings{A}$.   The
 induction hypothesis is
 \[
-P(s) \eqdef \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+P(s) \eqdef\ \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
 \]
 
 \textbf{base case} ($s = \emptystring$):
 \begin{align*}
-\lnth{\emptystring \cdot t}
+\lnth{s \cdot t}
+   &= \lnth{\emptystring \cdot t}\\
    & = \lnth{t}
          & \text{(def $\cdot$, base case)}\\
    & = 0 + \lnth{t}\\
@@ -156,13 +158,13 @@ let $r = \ang{a,s} \cdot t$.  We must show that $P(r)$ holds:
 \begin{align*}
 \lnth{r \cdot t}
     & = \lnth{\ang{a, s} \cdot t}\\
-    & = \lnth{\ang{a,s \cdot t}
+    & = \lnth{\ang{a,s \cdot t}}
         &  \text{(def $\cdot$, constructor case)}\\
     & = 1 + \lnth{s \cdot t}
         &  \text{(def length, constructor case)}\\
     & = 1 +  (\lnth{s} + \lnth{t})
         & \text{since $P(s)$ holds}\\
-    & = (1 +  \lnth{s}) + \lnth{t})\\
+    & = (1 +  \lnth{s}) + \lnth{t}\\
     & = \lnth{\ang{a,s}} + \lnth{t}
         & \text{(def length, constructor case)}\\
     & = \lnth{r} + \lnth{t}.
@@ -183,7 +185,7 @@ Let $P$ be a predicate on a recursively defined data type $R$.  If
 \noindent \begin{itemize}
 \item $P(b)$ is true for each base case element, $b \in R$, and
 
-\item for all two argument constructors, \mathbf{c},
+\item for all two argument constructors, $\mathbf{c}$,
 \[
 [P(r)\QAND P(s)] \QIMPLIES P(\mathbf{c}(r, s))
 \]
@@ -191,17 +193,49 @@ for all $r,s \in R$,\\
 and likewise for all constructors taking other numbers of arguments,
 \end{itemize}
 then
-\begin{itemize}
-\item $P(r)$ is true for all $r \in R$.
-\end{itemize}
+\[
+P(r) \text{ is true for all } r \in R.
+\]
 }
+
+The number, $\cnt{c}{s}$, of occurrences of the character $c \in A$ in
+the string $s$ has a simple recursive definition based on the
+definition of $s \in \strings{A}$:
+\begin{definition}\label{countas_def}
+
+\textbf{base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
+
+\textbf{constructor case}:
+\[
+\cnt{c}{\ang{a,s}} \eqdef \begin{cases}
+                           \cnt{c}{s}  &\text{ if } a \neq c,\\
+                           1 + \cnt{c}{s} &\text{ if } a = c.
+                           \end{cases}
+\]
+
+\end{definition}
+
+We'll need the following lemma in the next section:
+\begin{lemma}\label{countas_lem}
+\[
+\cnt{c}{s cdot t} = \cnt{c}{s} + \cnt{c}{t}.
+\]
+\end{lemma}
+The proof, which is very similar to the proof of Theorem~\ref{stAl+},
+is a simple exercise (see Problem~\ref{PS_count_a_s_lem}).
+
 \begin{problems}
 \classproblems
 \pinput{CP_string_associativity}
 \pinput{CP_string_reversal}
+\pinput{CP_F18_functions}
+\pinput{CP_recursively_defined_sets}
+\pinput{CP_binary_trees}
 
+\homeworkproblems
+\pinput{PS_count_a_s_lem}
+\pinput{PS_koch_snowflake}
 \end{problems}
-
 
 \section{Strings of Matched Brackets}
 
@@ -278,7 +312,7 @@ the first one does not because its count went negative at the third step.
 \begin{definition}\label{gc-def}
 Let
 \[
-\GC \eqdef \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
+\GC \eqdef\  \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
 \]
 \end{definition}
 The matched strings can now be characterized precisely as this set of
@@ -334,100 +368,130 @@ and you'd be right, but it's not completely obvious.  The proof is worked
 out in Problem~\ref{PS_bracket_good_count}.
 \fi
 
-A very simple application of structural induction proves that the
-recursively defined matched strings always have an equal number of left
-and right brackets.  To do this, define a predicate, $P$, on strings $s
-\in \brkts$:
-\[
-P(s) \eqdef\ \ s \text{ has an equal number of left and right brackets}.
-\]
+With another simple appeal to structural induction we can prove
+
+\begin{lemma*}%label{}
+Every string in $\RM$ has an equal number of left and right brackets.
+
 \begin{proof}
+The proof is by structural induction with induction hypothesis
+\[
+P(s) \eqdef\  \cnt{\lefbrk}{s} = \cnt{\rhtbrk}{s}.
+\]
 
-  We'll prove that $P(s)$ holds for all $s \in\RM$ by structural induction
-  on the definition that $s \in\RM$, using $P(s)$ as the induction
-  hypothesis.
+\textbf{Base case:} $P(\emptystring)$ holds because
+\[
+\cnt{\lefbrk}{\emptystring} = 0 = \cnt{\rhtbrk}{\emptystring}
+\]
+by the base of the definition of count~\ref{countas_def}.
 
-\textbf{Base case:} $P(\emptystring)$ holds because the empty string has zero
-left and zero right brackets.
-
-\textbf{Constructor case:} For $r = \lefbrk s\,\rhtbrk t$, we must show
-that $P(r)$ holds, given that $P(s)$ and $P(t)$ holds.  So let $n_s$,
-$n_t$ be, respectively, the number of left brackets in $s$ and $t$.  So
-the number of left brackets in $r$ is $1+n_s+n_t$.
-
-Now from the respective hypotheses $P(s)$ and $P(t)$, we know that the
-number of right brackets in $s$ is $n_s$, and likewise, the number of
-right brackets in $t$ is $n_t$.  So the number of right brackets in
-$r$ is $1+n_s+n_t$, which is the same as the number of left brackets.
-This proves $P(r)$.  We conclude by structural induction that $P(s)$ holds
-for all $s \in\RM$.
+\textbf{constructor case}: By structural induction hypothesis assume
+$P(s)$ and $P(t)$ and must show $P(\lefbrk s\,\rhtbrk t)$:
+\begin{align*}
+\cnt{\lefbrk}{\lefbrk s\,\rhtbrk t}
+    & = \cnt{\lefbrk}{\lefbrk} + \cnt{\lefbrk}{s}
+        +\cnt{\lefbrk}{\rhtbrk}+ \cnt{\lefbrk}{t}
+         & \text{(by Lemma~\ref{countas_lem})}\\
+    & = 1 + \cnt{\lefbrk}{s} + 0 + \cnt{\lefbrk}{t}
+         & \text{(by def~\ref{countas_def} of $\cnt{\lefbrk}{}$)}\\
+    & = 1 + \cnt{\rhtbrk}{s} + 0 + \cnt{\rhtbrk}{t}
+         & \text{(by $P(s)$ and $P(t)$)}\\
+    & = 0 + \cnt{\rhtbrk}{s} + 1 + \cnt{\rhtbrk}{t}\\
+    & = \cnt{\rhtbrk}{\lefbrk} + \cnt{\rhtbrk}{s}
+        +\cnt{\rhtbrk}{\rhtbrk}+ \cnt{\rhtbrk}{t}
+         & \text{(by def~\ref{countas_def} of $\cnt{\rhtbrk}{}$)}\\
+    & = \cnt{\rhtbrk}{\lefbrk s\,\rhtbrk t}
+            & \text{(by Lemma~\ref{countas_lem})}
+\end{align*}
+This completes the proof of the constructor case.  We conclude by
+structural induction that $P(s)$ holds for all $s \in\RM$.
 \end{proof}
+\end{lemma*}
 
+
+\iffalse
 
 The \term{depth} of a matched string is defined recursively as follows
 \begin{definition}
 The \emph{depth}, $d(s)$, of a string, $s \in\RM$, is defined
 recursively by the rules:
 \begin{itemize}
-\item $d(\emptystring) \eqdef 0.$
+\item $d(\emptystring) \eqdef\  0.$
 \item $d(\lefbrk s\,\rhtbrk t)
-    \eqdef \max \set{d(s) + 1, d(t)}$
+    \eqdef\ \max \set{d(s) + 1, d(t)}$
 \end{itemize}
 \end{definition}
+\fi
 
-\textbox{\textbf{Warning:} When a recursive definition of a data type
-allows the same element to be constructed in more than one way, the
-definition is said to be \emph{ambiguous}.  A function defined recursively
-from an ambiguous definition of a data type will not be well-defined
-unless the values specified for the different ways of constructing the
-element agree.}
-
-We were careful to choose an \emph{un}ambiguous definition of $\RM$ to
-ensure that functions defined recursively on the definition would always
-be well-defined.  As an example of the trouble an ambiguous definition can
-cause, let's consider yet another definition of the matched strings.
+\textbf{Warning:} When a recursive definition of a data type allows
+the same element to be constructed in more than one way, the
+definition is said to be \emph{ambiguous}.  We were careful to choose
+an \emph{un}ambiguous definition of $\RM$ to ensure that functions
+defined recursively on its definition would always be well-defined.
+Recursively defining a function on an ambiguous of a data type
+definition usually will not work.  To illustrate the problem, here's
+yet another definition of the matched strings.
 
 \iffalse Recursive definitions of tagged data types, where the tag
 uniquely determines the rule used to construct an element, are guaranteed
-to be unambiguous.
+to be unambiguous.r
 \fi
 
-\begin{example}\label{M}
-  Define the set, $M \subseteq \brkts$ recursively as follows:
+\begin{definition}
+\label{M}
+Define the set, $\AM \subseteq \brkts$ recursively as follows:
 \begin{itemize}
 
-\item \textbf{Base case:} $\emptystring \in M$,
+\item \textbf{Base case:} $\emptystring \in \AM$,
 
-\item \textbf{Constructor cases:} if $s,t \in M$, then
-  the strings $\lefbrk s\, \rhtbrk$ and $st$ are also in $M$.
+\item \textbf{Constructor cases:} if $s,t \in \AM$, then
+  the strings $\lefbrk s\, \rhtbrk$ and $st$ are also in $\AM$.
 \end{itemize}
-\end{example}
+\end{definition}
 
 \iffalse
 \begin{notesproblem}
-Give an easy proof by structural induction that $M =\RM$.
+Give an easy proof by structural induction that $\AM =\RM$.
 \end{notesproblem}
 \fi
 
-It's pretty easy to see that the definition of $M$ is just another way to
-define $\RM$, that is $M = \RM$ (see Problem~\ref{M=RM}),
-and the definition of $M$ seems more straightforward, why
-didn't we use it?  Because the definition of $M$ is ambiguous, while the
-trickier definition of $\RM$ is unambiguous.  Does this ambiguity matter?
-Yes it does.  For suppose we defined
+It's pretty easy to see that the definition of $\AM$ is just another
+way to define $\RM$, that is $\AM = \RM$, see
+Problem~\ref{PS_M_equal_RM}.  The definition of $\AM$ is arguably
+easier to understand, but we didn't use it becaused it's ambiguous,
+while the trickier definition of $\RM$ is unambiguous.  Here's why
+this matters.  Define the number of operations, $f(s)$, to construct a matched string $s$
+recursively on the definition of  $s \in \AM$:
 \begin{align*}
-  f(\emptystring)        & \eqdef 1,\\
-  f(\ \lefbrk s\,\rhtbrk\ ) & \eqdef 1+ f(s),\\
-  f(st)                  & \eqdef (f(s)+1) \cdot (f(t)+1)
-                            & \text{for } st\neq \emptystring.
+  f(\emptystring)        & \eqdef\ 0, \tag{(base case)}\\
+  f(\lefbrk s\,\rhtbrk\ ) & \eqdef\ 1+ f(s), \\
+  f(st)                  & \eqdef\ 1+ f(s) +f(t).\tag{concat case}
 \end{align*}
+This definition may seem ok, but it isn't: it implies that
+$f(\emptystring)$ is equal to both 0 and 1!  Namely,
+\begin{align*}
+f(\emptystring) & = 0 & \text{(by (base case))},
+\end{align*}
+but also,
+\begin{align*}
+f(\emptystring) & = f(\emptystring \emptystring)\\
+                & = 1 + f(\emptystring) + f(\emptystring)
+                      &  \text{(by (concat case))},\\
+                & = 1 + 0 + 0 = 1
+                      & \text{(by (base case))}
+\end{align*}
+
+\iffalse
+
+Now suppose $s = \lefbrk\rhtbrk\lefbrk\rhtbrk\lefbrk\rhtbrk\lefbrk\rhtbrk$.
+
 
 %%FIND SIMPLER EXAMPLE
 
 Let $a$ be the string $\lefbrk\lefbrk\rhtbrk\rhtbrk \in M$ built by two successive
 applications of the first $M$ constructor starting with $\emptystring$.  Next
 let $b \eqdef aa$ and $c \eqdef bb$, each built by successive applications
-of the second $M$ constructor starting with $a$.
+of the second $M$ constructor.
 
 Alternatively, we can build $ba$ from the second constructor with $s=b$
 and $t=a$, and then get to $c$ using the second constructor with $s=ba$
@@ -443,8 +507,22 @@ The outcome is that $f(c)$ is defined to be both 100 and 84, which shows
 that the rules defining $f$ are inconsistent.
 
 On the other hand, structural induction remains a sound proof method even
-for ambiguous recursive definitions, which is why it was easy to prove
+for ambiguous recursive definitions, which is why it is easy to prove
 that $M=\RM$.
+\fi
+
+\begin{problems}
+
+\practiceproblems
+\pinput{MQ_ambiguous_recursive-def}
+
+\classproblems
+\pinput{CP_erasable_strings}
+\pinput{PS_M_equal_RM}
+\pinput{PS_bracket_good_count}
+
+\end{problems}
+
 
 \section{Recursive Functions on Nonnegative Integers}
 
@@ -461,7 +539,7 @@ $\naturals$.
 
 This of course makes it clear that ordinary induction is simply the
 special case of structural induction on the recursive
-Definition~\ref{0succ}, This also justifies the familiar recursive
+Definition~\ref{0succ}.  This also justifies the familiar recursive
 definitions of functions on the nonnegative integers.  Here are some
 examples.
 
@@ -572,9 +650,10 @@ disguise: to see this, divide by $F_{n+1}$.
 
 \subsection{Ill-formed Function Definitions}
 
-There are some \hyperdef{ill}{formed}{blunders} to watch out for when
-defining functions recursively.  Below are some function specifications
-that resemble good definitions of functions on the nonnegative integers,
+Besides ambiguous definitions, there are some other
+\hyperdef{ill}{formed}{blunders} to watch out for when defining
+functions recursively.  Below are some function specifications that
+resemble good definitions of functions on the nonnegative integers,
 but they aren't.
 
 \begin{eqnarray}\label{f1}
@@ -639,77 +718,6 @@ $f_4$ satisfying~\eqref{f5} equals 1 for all $n$ up to over a billion.
 satisfy~\eqref{f5}?
 \fi
 
-\begin{staffnotes}
-
-\section{Tagged data}
-
-Labelling a recursively defined data item with a tag that uniquely
-determines the rule used to construct it is a standard approach to
-avoiding ambiguous recursive definitions in programming.  This
-amounts to working with data items that are already \term{parsed}, that
-is, represented as \term{parse trees}.
-
-For example, the parse tree for the arithmetic expression
-\begin{equation}\label{ax}
--(a(x\cdot x)+ bx) + 1
-\end{equation}
-is shown in Figure~\ref{fig:parse}.
-
-\begin{figure}
-%\graphic{parsetree}
-\inclludegraphics[width=5in]{parsetree}
-\caption{Parse tree for $-(a(x\cdot x)+ bx) + 1$.}
-\label{fig:parse}
-\end{figure}
-
-In a computer, such a tree would be represented by pairs or triples
-that begin with a
-\emph{tag} equal to the label of the top node of the parse tree.  
-The general definition of parse trees for $\aexp$'s would be:
-
-\newcommand{\paexp}{\text{Aexp-parse-tree}}
-
-\begin{definition}\label{arithparse}
-The set, $\paexp$, of \emph{parse trees for arithmetic expressions} 
-over a set of
-\emph{variables}, $V$, is defined recursively as follows:
-\begin{itemize}
-\item \textbf{Base cases:}
-\begin{enumerate}
-\item If $n \in \integers$, then $\ang{\texttt{int}, n} \in \paexp$.
-\item If $v \in V$, then $\ang{\texttt{var}, v} \in \paexp$.
-\end{enumerate}
-\item \textbf{Constructor cases:} if $e,e' \in \paexp$, then
-\begin{enumerate}
-\item $\ang{\texttt{sum}, e, e'} \in \paexp$,
-\item $\ang{\texttt{prod}, e, e'} \in \paexp$, and
-\item $\ang{\texttt{minus}, e} \in \paexp$.
-\end{enumerate}
-\end{itemize}
-\end{definition}
-
-So the $\paexp$ corresponding to formula~\ref{ax} would be:
-\begin{equation}\label{axtag}
-\begin{array}{rll}
-\left< \right. \texttt{sum}, 
-         & \left< \right. \texttt{minus},\ \ \left< \right. \texttt{sum},
-               & \ang{\texttt{prod},\ \ \ang{\texttt{var},\ a},
-                                     \ang{\texttt{prod},\ \
-                                            \ang{\texttt{var},\ x},\
-                                            \ang{\texttt{var},\ x}}},\\
-                               && \left. \left. \ang{\texttt{prod},\ \
-                                       \ang{\texttt{var},\ b},\
-                                       \ang{\texttt{var},\ x}}
-                                   \right> \right>,\\
-         & \left. \left. \ang{\texttt{int},\ 1} \right> \right>
-\end{array}
-\end{equation}
-Now the expression~\ref{ax} is certainly a lot more humanly
-intelligible than~\ref{axtag}, but~\ref{axtag} is in the
-representation best suited and commonly used in compiling and
-processing computer programs.
-
-\end{staffnotes}
 
 \section{Arithmetic Expressions}
 Expression evaluation is a key feature of programming languages, and
@@ -739,16 +747,16 @@ definition:
 \begin{enumerate}
 \setcounter{enumi}{2}
 
-\item $\lefbrk e \sumsym f \rhtbrk \in \aexp$.  The expression $(e \sumsym
-  f)$ is called a \emph{sum}.  The \aexp's $e$ and $f$ are called the
+\item $\lefbrk e \sumsym f \rhtbrk \in \aexp$.  The expression $\lefbrk e \sumsym
+  f \rhtbrk$ is called a \emph{sum}.  The \aexp's $e$ and $f$ are called the
   \emph{components} of the sum; they're also called the \emph{summands}.
 
-\item $(e \prodsym f) \in \aexp$.  The expression $(e \prodsym f)$ is called a
+\item $\lefbrk e \prodsym f\rhtbrk \in \aexp$.  The expression $\lefbrk e \prodsym f\rhtbrk$ is called a
   \emph{product}.  The \aexp's $e$ and $f$ are called the
   \emph{components} of the product; they're also called the
   \emph{multiplier} and \emph{multiplicand}.
 
-\item $\minussym(e) \in \aexp$.  The expression $\minussym(e)$ is called a
+\item $\minussym\lefbrk e\rhtbrk \in \aexp$.  The expression $\minussym\lefbrk e\rhtbrk$ is called a
   \emph{negative}.
 \end{enumerate}
 \end{itemize}
@@ -758,9 +766,9 @@ Notice that \aexp's are fully parenthesized, and exponents aren't allowed.
 So the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
 officially be written as
 \begin{equation}\label{fullparens}
-((\mtt{3} \prodsym (x \prodsym x)) \sumsym ((\mtt{2} \prodsym x) \sumsym \mtt{1})).
+\lefbrk \lefbrk \mtt{3} \prodsym \lefbrk x \prodsym x\rhtbrk\rhtbrk \sumsym \lefbrk \lefbrk \mtt{2} \prodsym x\rhtbrk \sumsym \mtt{1}\rhtbrk\rhtbrk.
 \end{equation}
-These parentheses and $\ast$'s clutter up examples, so we'll often use
+These brackets and $\ast$'s clutter up examples, so we'll often use
 simpler expressions like ``$3x^2 + 2x + 1$'' instead
 of~\eqref{fullparens}.  But it's important to recognize that $3x^2 +
 2x + 1$ is not an \aexp; it's an \emph{abbreviation} for an $\aexp$.
@@ -824,20 +832,20 @@ value $x$ has.)
 \begin{enumerate}
 \setcounter{enumi}{2}
 
-\item\label{eval-sum} Case[$e$ is $(e_1 \sumsym e_2)$]
+\item\label{eval-sum} Case[$e$ is $\lefbrk e_1 \sumsym e_2 \rhtbrk$]
 \[
-\meval((e_1 \sumsym e_2),n) \eqdef
+\meval(\lefbrk e_1 \sumsym e_2 \rhtbrk,n) \eqdef
   \meval(e_1,n)+\meval(e_2,n).
 \]
 
-\item\label{eval-prod} Case[$e$ is $(e_1 \prodsym e_2)$]
+\item\label{eval-prod} Case[$e$ is $\lefbrk e_1 \prodsym e_2 \rhtbrk$]
 \[
-\meval((e_1 \prodsym e_2),n) \eqdef \meval(e_1,n) \cdot \meval(e_2,n).
+\meval(\lefbrk e_1 \prodsym e_2 \rhtbrk,n) \eqdef \meval(e_1,n) \cdot \meval(e_2,n).
 \]
 
-\item\label{eval-minus} Case[$e$ is $\minussym(e_1)$]
+\item\label{eval-minus} Case[$e$ is $\minussym\lefbrk e_1 \rhtbrk$]
 \[
-\meval(\minussym(e_1),n) \eqdef - \meval(e_1,n).
+\meval(\minussym\lefbrk e_1 \rhtbrk,n) \eqdef - \meval(e_1,n).
 \]
 \end{enumerate}
 
@@ -848,10 +856,10 @@ value $x$ has.)
 For example, here's how the recursive definition of $\meval$ would arrive at
 the value of $3+x^2$ when $x$ is 2:
 \begin{align*}
-\meval((\mtt{3} \sumsym (x \prodsym x)),2)
- & = \meval(\mtt{3},2) + \meval((x \prodsym x),2)
+\meval(\lefbrk \mtt{3} \sumsym \lefbrk x \prodsym x\rhtbrk \rhtbrk,2)
+ & = \meval(\mtt{3},2) + \meval(\lefbrk x \prodsym x \rhtbrk,2)
                   & \text{(by~Def~\ref{meval-def}.\ref{eval-sum})}\\
- & = 3 + \meval((x \prodsym x),2) & \text{(by~Def~\ref{meval-def}.\ref{eval-const})}\\
+ & = 3 + \meval(\lefbrk x \prodsym x \rhtbrk,2) & \text{(by~Def~\ref{meval-def}.\ref{eval-const})}\\
  & = 3 + (\meval(x,2) \cdot \meval(x,2)) & \text{(by~Def~\ref{meval-def}.\ref{eval-prod})}\\
  & = 3 + (2 \cdot 2) & \text{(by~Def~\ref{meval-def}.\ref{eval-var})}\\
  & = 3 + 4 = 7.
@@ -859,12 +867,13 @@ the value of $3+x^2$ when $x$ is 2:
 
 \subsubsection{Substituting into Aexp's}
 Substituting expressions for variables is a standard, important
-operation.  For example the result of substituting the expression $3x$ for $x$
-in the $(x(x-1))$ would be $(3x(3x-1)$.  We'll use the general
-notation $\msubst{f}{e}$ for the result of substituting an $\aexp$, $f$,
-for each of the $x$'s in an $\aexp$, $e$.  For instance,
+operation.  For example the result of substituting the expression $3x$
+for $x$ in the expression $\lefbrk x\lefbrk x-1 \rhtbrk \rhtbrk$ would
+be $\lefbrk 3x\lefbrk 3x-1 \rhtbrk \rhtbrk$.  We'll use the general
+notation $\msubst{f}{e}$ for the result of substituting an $\aexp$,
+$f$, for each of the $x$'s in an $\aexp$, $e$.  So as we just explained,
 \[
-\msubst{3x}{x(x-1)} = 3x(3x-1).
+\msubst{3x}{x\lefbrk x-1\rhtbrk} = 3x\lefbrk 3x-1\rhtbrk.
 \]
 
 This substitution function has a simple recursive definition:
@@ -899,19 +908,19 @@ This substitution function has a simple recursive definition:
 \setcounter{enumi}{2}
 \item\label{subst-sum} Case[$e$ is $(e_1 \sumsym e_2)$]
 \[
-\msubst{f}{(e_1 \sumsym e_2)}) \eqdef  (\msubst{f}{e_1} \sumsym
-\msubst{f}{e_2}).
+\msubst{f}{\lefbrk e_1 \sumsym e_2\rhtbrk} \eqdef  \lefbrk \msubst{f}{e_1} \sumsym
+\msubst{f}{e_2}\rhtbrk.
 \]
 
 \item\label{subst-prod} Case[$e$ is $(e_1 \prodsym e_2)$]
 \[
-\msubst{f}{(e_1 \prodsym e_2)}) \eqdef  (\msubst{f}{e_1} \prodsym
-\msubst{f}{e_2}).
+\msubst{f}{\lefbrk e_1 \prodsym e_2\rhtbrk}) \eqdef  \lefbrk \msubst{f}{e_1} \prodsym
+\msubst{f}{e_2}\rhtbrk.
 \]
 
-\item\label{subst-minus} Case[$e$ is $\minussym(e_1)$]
+\item\label{subst-minus} Case[$e$ is $\minussym\lefbrk e_1\rhtbrk$]
 \[
-\msubst{f}{\minussym(e_1)} \eqdef \minussym (\msubst{f}{e_1}).
+\msubst{f}{\minussym\lefbrk e_1\rhtbrk} \eqdef \minussym \lefbrk \msubst{f}{e_1}\rhtbrk.
 \]
 
 \end{enumerate}
@@ -921,51 +930,54 @@ This substitution function has a simple recursive definition:
 Here's how the recursive definition of the substitution function would find
 the result of substituting $3x$ for $x$ in the $x(x-1)$:
 \begin{align*}
-\msubst{3x}{(x(x-1))} & =
-\msubst{3x}{(x \prodsym (x \sumsym \minussym(1)))} & \text{(unabbreviating)}\\
- & = (\msubst{3x}{x} \prodsym \msubst{3x}{(x \sumsym \minussym(1))})
+\lefteqn{\msubst{3x}{\lefbrk x\lefbrk x-1\rhtbrk\rhtbrk}}\\
+ & =
+\msubst{3x}{\lefbrk x \prodsym \lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk \rhtbrk} & \text{(unabbreviating)}\\
+ & =\lefbrk \msubst{3x}{x} \prodsym \msubst{3x}{\lefbrk x \sumsym \minussym
+\lefbrk 1 \lefbrk rhtbrk \rhtbrk}
          & \text{(by~Def~\ref{subst-def}~\ref{subst-prod})}\\
- & = (3x \prodsym \msubst{3x}{(x \sumsym \minussym(1))})
+ & = \lefbrk 3x \prodsym \msubst{3x}{\lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk} \rhtbrk
          & \text{(by~Def~\ref{subst-def}~\ref{subst-var})}\\
- & = (3x \prodsym (\msubst{3x}{x} \sumsym \msubst{3x}{\minussym(1)}))
+ & = (3x \prodsym \lefbrk \msubst{3x}{x} \sumsym \msubst{3x}{\minussym\lefbrk 1 \rhtbrk} \rhtbrk \rhtbrk
          & \text{(by~Def~\ref{subst-def}~\ref{subst-sum})}\\
- & = (3x \prodsym (3x \sumsym \minussym (\msubst{3x}{1})))
+ & = \lefbrk 3x \prodsym \lefbrk 3x \sumsym \minussym \lefbrk \msubst{3x}{1} \rhtbrk \rhtbrk \rhtbrk
          & \text{(by~Def~\ref{subst-def}~\ref{subst-var} \&~\ref{subst-minus})}\\
- & = (3x \prodsym (3x \sumsym \minussym (1)))
+ & = \lefbrk 3x \prodsym \lefbrk 3x \sumsym \minussym \lefbrk 1\rhtbrk \rhtbrk
          & \text{(by~Def~\ref{subst-def}~\ref{subst-const})}\\
- & = 3x(3x-1) & \text{(abbreviation)}
+ & = 3x\lefbrk 3x-1 \rhtbrk & \text{(abbreviation)}
 \end{align*}
 
-Now suppose we have to find the value of $\msubst{3x}{(x(x-1))}$ when $x =
-2$.  There are two approaches.
+Now suppose we have to find the value of $\msubst{3x}{\lefbrk x\lefbrk
+  x-1 \rhtbrk \rhtbrk}$ when $x = 2$.  There are two approaches.
 
-First, we could actually do the substitution above to get $3x(3x-1)$, and
-then we could evaluate $3x(3x-1)$ when $x =2$, that is, we could
-recursively calculate $\meval(3x(3x-1),2)$ to get the final value 30.  In
-programming jargon, this would be called evaluation using the
-\emph{Substitution Model}.  Tracing through the steps in the evaluation,
-we find that the Substitution Model requires two substitutions for
-occurrences of $x$ and 5 integer operations: 3 integer multiplications, 1
-integer addition, and 1 integer negative operation.  Note that in this
-Substitution Model the multiplication $3 \cdot 2$ was performed twice to
-get the value of 6 for each of the two occurrences of $3x$.
+First, we could actually do the substitution above to get $3x(3x-1)$,
+and then we could evaluate $3x\lefbrk 3x-1 \rhtbrk$ when $x =2$, that
+is, we could recursively calculate $\meval(3x\lefbrk 3x-1 \rhtbrk,2)$
+to get the final value 30.  In programming jargon, this would be
+called evaluation using the \emph{Substitution Model}.  Tracing
+through the steps in the evaluation, it turns out that the Substitution
+Model requires two substitutions for occurrences of $x$ and 5 integer
+operations: 3 integer multiplications, 1 integer addition, and 1
+integer negative operation.  In this Substitution Model, the
+multiplication $3 \cdot 2$ was performed twice to get the value of 6
+for each of the two occurrences of $3x$.
 
 The other approach is called evaluation using the \emph{Environment
   Model}.  Namely, we evaluate $3x$ when $x = 2$ using just 1
-multiplication to get the value 6.  Then we evaluate $x(x-1)$ when $x$ has
-this value 6 to arrive at the value $6\cdot 5=30$.  So the Environment
-Model requires 2 variable lookups and only 4 integer operations: 1
-multiplication to find the value of $3x$, another multiplication to find
-the value $6 \cdot 5$, along with 1 integer addition and 1 integer
-negative operation.
+multiplication to get the value 6.  Then we evaluate $x\lefbrk x-1
+\rhtbrk$ when $x$ has this value 6 to arrive at the value $6\cdot
+5=30$.  So the Environment Model requires 2 variable lookups and only
+4 integer operations: 1 multiplication to find the value of $3x$,
+another multiplication to find the value $6 \cdot 5$, along with 1
+integer addition and 1 integer negative operation.
 
 So the Environment Model approach of calculating
 \[
-\meval(x(x-1), \meval(3x,2))
+\meval(x\lefbrk x-1 \rhtbrk, \meval(3x,2))
 \]
 instead of the Substitution Model approach of calculating
 \[
-\meval(\msubst{3x}{x(x-1)},2)
+\meval(\msubst{3x}{x\lefbrk x-1 \rhtbrk},2)
 \]
 is faster.  But how do we know that these final values reached by these
 two approaches always agree?  We can prove this easily by structural
@@ -980,8 +992,9 @@ For all expressions $e,f \in \aexp$ and $n \in \integers$,
 \end{theorem}
 
 \begin{proof}
-The proof is by structural induction on $e$.\footnote{This is an example
-of why it's useful to notify the reader what the induction variable is---in this case it isn't $n$.}
+The proof is by structural induction on $e$.\footnote{This is an
+  example of why it's useful to notify the reader what the induction
+  variable is---in this case it isn't $n$.}
 
 \textbf{Base cases:}
 \begin{itemize}
@@ -1007,7 +1020,7 @@ of why it's useful to notify the reader what the induction variable is---in this
 \textbf{Constructor cases}:
 \begin{itemize}
 
-\item Case[$e$ is $(e_1 \sumsym e_2)$]
+\item Case[$e$ is $\lefbrk e_1 \sumsym e_2 \rhtbrk$]
 
   By the structural induction hypothesis~\eqref{eval-subst}, we may assume
   that for all $f \in \aexp$ and $n \in \integers$,
@@ -1018,12 +1031,12 @@ of why it's useful to notify the reader what the induction variable is---in this
 for $i= 1,2$.  We wish to prove that
 
 \begin{equation}\label{s+}
-\meval(\msubst{f}{(e_1\sumsym e_2)},n)  =  \meval((e_1 \sumsym e_2), \meval(f,n))
+\meval(\msubst{f}{\lefbrk e_1\sumsym e_2 \rhtbrk},n)  =  \meval(\lefbrk e_1 \sumsym e_2 \rhtbrk, \meval(f,n))
 \end{equation}
 
-But the left hand side of~(\ref{s+}) equals
+But the left hand side of~\eqref{s+} equals
 \[
-\meval(\, (\msubst{f}{e_1} \sumsym \msubst{f}{e_2}),\ n)
+\meval(\, \lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk,\ n)
 \]
 by Definition~\ref{subst-def}.\ref{subst-sum} of substitution into a sum
 expression.  But this equals
@@ -1039,9 +1052,9 @@ Finally, this last expression equals the right hand side of~(\ref{s+}) by
 Definition~\ref{meval-def}.\ref{eval-sum} of $\meval$ for a sum
 expression.  This proves~(\ref{s+}) in this case.
 
-\item $e$ is $(e_1 \prodsym e_2)$.  Similar.
+\item $e$ is $\lefbrk e_1 \prodsym e_2 \rhtbrk$.  Similar.
 
-\item $e$ is $-(e_1)$.  Even easier.
+\item $e$ is $-\lefbrk e_1 \rhtbrk$.  Even easier.
 
 \end{itemize}
 
@@ -1049,199 +1062,6 @@ This covers all the constructor cases, and so completes the proof by
 structural induction.
 
 \end{proof}
-
-\begin{staffnotes}
-
-\subsection{A String Theorem}
-
-Here is a more complex proof, illustrating a combination of structural
-induction and strengthening the hypothesis.
-
-\begin{theorem}
-  In a string of $0$s and $1$s, the number of occurrences of the pattern
-  $01$ is less than or equal to the number of occurrences of $10$, plus
-  one.
-\end{theorem}
-
-Let's try to prove this by structural induction.  First we must
-define $P(s)$.  Let's write $\ms{num}(pat,s)$ as the number of
-occurrences of the pattern string pat in s.  Now our inductive
-hypothesis is
-\[
-P(s): \ms{num}(01,s) \leq \ms{num}(10,s) + 1. 
-\]
-If you try to prove this by structural induction, you will get
-stuck.
-Why? 
-Consider what happens when you add $1$ at the end.  
-This could increase the number of $01$s without increasing the number of
-$10$s. 
-
-So, to prove by structural induction on strings, let's strengthen the
-hypothesis by adding another clause.  If a string ends in $0$ then
-the number of $01$s is less than or equal to the number of $10$s.
-That solves the problem by weakening what we have to show when the
-string ends in $1$.  But maybe it causes another problem somewhere
-else.  Let's give it a try:
-
-Redefine $P(s) \eqdef$
-\begin{eqnarray*}
-\ms{num}(01,s) & \leq & \ms{num}(10,s) + 1, \text{ and}\\
-\lefteqn{\text{If $s$ ends in $0$ then}}\\
-\ms{num}(01,s) & \leq  &\ms{num}(10,s).
-\end{eqnarray*} 
- 
-This means that, for each inductive step have two things to show.
-\iffalse
-
-\structuredproof{
-
-  Prove: $\forall s \in S \; (P(s))$ \\
-  1. (Base) $P(\emptystring)$ 
-  \reason{No patterns of either kind.} \\
-  2. (Inductive step) $\forall s \in S \; (P(s) \implies P(s 0))$ \\
-  1. Fix $s$. \\
-  2. Assume $P(s)$. \\
-  3. $P(s 0)$ \\
-  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0) + 1$. 
-  \reason{???} \\
-  2. If $s 0$ ends in $0$ then $\ms{num}(01,s0) \leq
-  \ms{num}(10,s0)$. \noreason \\
-  \reason{???} \\
-  3. QED
-  \reason{Conjunction} \\
-  4. QED 
-  \reason{Implication, UG} \\
-  3. (Inductive step) $\forall s \in S \; (P(s) \implies P(s 1))$ \\
-  1. Fix $s$. \\
-  2. Assume $P(s)$. \\
-  3. $P(s 1)$ \\
-  1. $\ms{num}(01,s1) \leq \ms{num}(10,s1) + 1$. 
-  \reason{???} \\
-  2. If $s 1$ ends in $0$ then $\ms{num}(01,s1) \leq
-  \ms{num}(10,s1)$.\noreason \\
-  \reason{???} \\
-  3. QED
-  \reason{Conjunction} \\
-  4. QED 
-  \reason{Implication, UG} \\
-  4. QED
-  \reason{Structural induction on strings.}\\
-}\fi
-
-\textcolor{blue}{Structured proof display commented out here}
-
-First let's consider $s1$. This is the case that looks dangerous,
-because it might increase the number of $01$s.  We have to prove two
-statements.  The second is easy, because the new string doesn't end in
-$0$.  We say it's ``vacuously true''.
-
-The first statement now takes some work. 
-We might be adding to the number of $01$s.  
-However, if we do, the previous string must have ended with $0$. 
-Then the inductive hypothesis says that the previous string had to
-satisfy the stronger inequality in the second statement. 
-Adding one to the LHS of the stronger inequality yields the weaker
-inequality we want.
-
-The following proof fragment considers cases based on whether $s$ ends
-in $0$ or not.  If not, it might end in $1$, or might be empty (don't
-forget this possibility).
-
-\textcolor{blue}{Structured proof display commented out here}
-\iffalse
-
-\begin{proof}
-  3. $P(s 1)$ \\
-  1. $\ms{num}(01,s1) \leq \ms{num}(10,s1) + 1$. \\
-  1. If $s$ ends in $0$ then $\ms{num}(01,s1) \leq\ms{num}(10,s1) + 1$. \\
-  1. Assume $s$ ends in $0$. \\
-  2. $\ms{num}(01,s) \leq \ms{num}(10,s)$ 
-  Inductive hypothesis (3.2), part 2. \\
-  3. $\ms{num}(01,s1) = \ms{num}(01,s) + 1$ 
-  Adding one more $01$. \\
-  4. $\ms{num}(10,s1) = \ms{num}(10,s)$ \\
-  5. $\ms{num}(01,s1) \leq\ms{num}(10,s1) + 1$. 
-  Algebra (combining 3.3.1.1.2, ...3, and ...4) \\
-  QED 
-  Implication \\
-  2. If $s$ ends in $1$ then $\ms{num}(01,s1)\leq\ms{num}(10,s1) + 1$. \\
-  Inductive hypothesis, part 1; no new $01$s. \\
-  3. If $s = \emptystring$ then $\ms{num}(01,s1) \leq\ms{num}(10,s1)+ 1$. \\
-  $s1$ is just $1$, which has no $01$s. \\
-  4. QED 
-  Cases \\
-  2. If $s 1$ ends in $0$ then $\ms{num}(01,s1) \leq \ms{num}(10,s1)$. \\
-  Vacuously true, because $s1$ doesn't end in $0$. \\
-  3. QED
-  Conjunction \\
-\end{proof}
-\fi
-
-Of course, you could also expand the step for $s$ ending in $1$ into a
-careful series of inequalities.
-
-Now consider $s0$.  We hope that what we did to make the $s1$ case
-work doesn't mess up the $s0$ case.  But we have to check.
-
-The first statement is easy.  It follows from the first statement of
-the inductive hypothesis for $s$, because we are not increasing the
-number of $01$s.  But now the second statement takes more work.  The
-difficulty is that the new string ends in $0$, which means that we
-have to show the stronger inequality in the second statement.  But to
-do this, we might only have the weaker inequality for the previous
-string.  The argument again depends on what the previous string $s$
-ended with.  So again, we consider cases, based on whether $s$ ends in
-$0$ or $1$, or is empty.  If $s$ ends in $0$ we rely on the second
-statement of the inductive hypothesis for $s$ (with the stronger
-inequality), whereas if $s$ ends in $1$ we rely on the first statement
-(with the weaker inequality).  In this case, we have to ``turn the
-weaker inequality into the stronger inequality''.
-
-\iffalse
-\structuredproof[38ex]{
-  3. $P(s 0)$ \\
-  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0) + 1$.
-  \reason{Induct. hypothesis, part 1; no new $01$s.} \\
-  2. If $s 0$ ends in $0$ then $\ms{num}(01,s0) \leq\ms{num}(10,s0)$. \\
-  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0)$. \\
-  1. If $s$ ends in $0$ then $\ms{num}(01,s0)
-  \leq\ms{num}(10,s0)$. \noreason \\
-  \reason{Induct. hypothesis, part 2; no new $01$s} \\
-  2. If $s$ ends in $1$ then $\ms{num}(01,s0)
-  \leq\ms{num}(10,s0)$. \noreason \\ 
-  1. Assume $s$ ends in $1$. \\
-  2. $\ms{num}(01,s) \leq \ms{num}(10,s) + 1$. 
-  \reason{Inductive hypothesis, part 1} \\
-  3. $\ms{num}(01,s0) = \ms{num}(01,s)$ \\
-  4. $\ms{num}(10,s0) = \ms{num}(10,s) + 1$ 
-  \reason{Exactly one new occurrence of $10$.} \\
-  5. $\ms{num}(01,s0) \leq \ms{num}(10,s0)$ 
-  \reason{Algebra} \\
-  6. QED
-  \reason{Implication} \\
-  3. If $s = \emptystring$ then $\ms{num}(01,s0) \leq
-  \ms{num}(10,s0)$. \noreason \\ 
-  
-\reason{$s0$ is just $1$, which has no $01$s or $10$s.} \\
-  4. QED 
-  \reason{Cases} \\
-  2. QED
-  \reason{Propositional reasoning (truth table)} \\
-  3. QED 
-  \reason{Conjunction}\\
-}
-\fi
-
-\textcolor{blue}{Structured proof display commented out here}
-
-If you actually write out all these cases in the proof, you will
-notice that some facts are stated repeatedly, e.g., that when you add
-a $0$ to the end of a string you are not increasing the number of
-$01$s.  To avoid having to state these facts several times, you can
-move them earlier in the proof.
-
-\end{staffnotes}
 
 
 \begin{staffnotes}
@@ -1353,24 +1173,7 @@ unambiguous Definition~\ref{E} of $E$.
 \end{staffnotes}
 
 
-%% Structural Induction on Recursive Data Types
-%% Problems %%%%%%%%%%%%%%%%%%%%%%
-\begin{problems}
-
-\practiceproblems
-\pinput{MQ_ambiguous_recursive-def}
-
-\classproblems
-\pinput{CP_F18_functions}
-\pinput{CP_recursively_defined_sets}
-\pinput{CP_erasable_strings}
-\pinput{CP_binary_trees}
-
-\homeworkproblems
-\pinput{PS_bracket_good_count}
-\pinput{PS_koch_snowflake}
-
-\end{problems}
+\iffalse
 
 %% Games as a Recursive Data Type %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Games as a Recursive Data Type}
@@ -1912,6 +1715,7 @@ strategy.\footnote{Checkers used to be in this list, but there has been a
 \homeworkproblems
 %\pinput{PS_50_point_games}
 \end{problems}
+\fi
 
 %% Induction in Computer Science %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Induction in Computer Science}
@@ -1945,3 +1749,270 @@ natural approach.
 \end{staffnotes}
 
 \endinput
+
+
+\begin{staffnotes}
+
+\section{Tagged data}
+
+Labelling a recursively defined data item with a tag that uniquely
+determines the rule used to construct it is a standard approach to
+avoiding ambiguous recursive definitions in programming.  This
+amounts to working with data items that are already \term{parsed}, that
+is, represented as \term{parse trees}.
+
+For example, the parse tree for the arithmetic expression
+\begin{equation}\label{ax}
+-(a(x\cdot x)+ bx) + 1
+\end{equation}
+is shown in Figure~\ref{fig:parse}.
+
+\begin{figure}
+%\graphic{parsetree}
+\inclludegraphics[width=5in]{parsetree}
+\caption{Parse tree for $-(a(x\cdot x)+ bx) + 1$.}
+\label{fig:parse}
+\end{figure}
+
+In a computer, such a tree would be represented by pairs or triples
+that begin with a
+\emph{tag} equal to the label of the top node of the parse tree.  
+The general definition of parse trees for $\aexp$'s would be:
+
+\newcommand{\paexp}{\text{Aexp-parse-tree}}
+
+\begin{definition}\label{arithparse}
+The set, $\paexp$, of \emph{parse trees for arithmetic expressions} 
+over a set of
+\emph{variables}, $V$, is defined recursively as follows:
+\begin{itemize}
+\item \textbf{Base cases:}
+\begin{enumerate}
+\item If $n \in \integers$, then $\ang{\texttt{int}, n} \in \paexp$.
+\item If $v \in V$, then $\ang{\texttt{var}, v} \in \paexp$.
+\end{enumerate}
+\item \textbf{Constructor cases:} if $e,e' \in \paexp$, then
+\begin{enumerate}
+\item $\ang{\texttt{sum}, e, e'} \in \paexp$,
+\item $\ang{\texttt{prod}, e, e'} \in \paexp$, and
+\item $\ang{\texttt{minus}, e} \in \paexp$.
+\end{enumerate}
+\end{itemize}
+\end{definition}
+
+So the $\paexp$ corresponding to formula~\ref{ax} would be:
+\begin{equation}\label{axtag}
+\begin{array}{rll}
+\left< \right. \texttt{sum}, 
+         & \left< \right. \texttt{minus},\ \ \left< \right. \texttt{sum},
+               & \ang{\texttt{prod},\ \ \ang{\texttt{var},\ a},
+                                     \ang{\texttt{prod},\ \
+                                            \ang{\texttt{var},\ x},\
+                                            \ang{\texttt{var},\ x}}},\\
+                               && \left. \left. \ang{\texttt{prod},\ \
+                                       \ang{\texttt{var},\ b},\
+                                       \ang{\texttt{var},\ x}}
+                                   \right> \right>,\\
+         & \left. \left. \ang{\texttt{int},\ 1} \right> \right>
+\end{array}
+\end{equation}
+Now the expression~\ref{ax} is certainly a lot more humanly
+intelligible than~\ref{axtag}, but~\ref{axtag} is in the
+representation best suited and commonly used in compiling and
+processing computer programs.
+
+\end{staffnotes}
+
+
+\begin{staffnotes}
+
+\subsection{A String Theorem}
+
+Here is a more complex proof, illustrating a combination of structural
+induction and strengthening the hypothesis.
+
+\begin{theorem}
+  In a string of $0$s and $1$s, the number of occurrences of the pattern
+  $01$ is less than or equal to the number of occurrences of $10$, plus
+  one.
+\end{theorem}
+
+Let's try to prove this by structural induction.  First we must
+define $P(s)$.  Let's write $\ms{num}(pat,s)$ as the number of
+occurrences of the pattern string pat in s.  Now our inductive
+hypothesis is
+\[
+P(s): \ms{num}(01,s) \leq \ms{num}(10,s) + 1. 
+\]
+If you try to prove this by structural induction, you will get
+stuck.
+Why? 
+Consider what happens when you add $1$ at the end.  
+This could increase the number of $01$s without increasing the number of
+$10$s. 
+
+So, to prove by structural induction on strings, let's strengthen the
+hypothesis by adding another clause.  If a string ends in $0$ then
+the number of $01$s is less than or equal to the number of $10$s.
+That solves the problem by weakening what we have to show when the
+string ends in $1$.  But maybe it causes another problem somewhere
+else.  Let's give it a try:
+
+Redefine $P(s) \eqdef$
+\begin{eqnarray*}
+\ms{num}(01,s) & \leq & \ms{num}(10,s) + 1, \text{ and}\\
+\lefteqn{\text{If $s$ ends in $0$ then}}\\
+\ms{num}(01,s) & \leq  &\ms{num}(10,s).
+\end{eqnarray*} 
+ 
+This means that, for each inductive step have two things to show.
+\iffalse
+
+\structuredproof{
+
+  Prove: $\forall s \in S \; (P(s))$ \\
+  1. (Base) $P(\emptystring)$ 
+  \reason{No patterns of either kind.} \\
+  2. (Inductive step) $\forall s \in S \; (P(s) \implies P(s 0))$ \\
+  1. Fix $s$. \\
+  2. Assume $P(s)$. \\
+  3. $P(s 0)$ \\
+  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0) + 1$. 
+  \reason{???} \\
+  2. If $s 0$ ends in $0$ then $\ms{num}(01,s0) \leq
+  \ms{num}(10,s0)$. \noreason \\
+  \reason{???} \\
+  3. QED
+  \reason{Conjunction} \\
+  4. QED 
+  \reason{Implication, UG} \\
+  3. (Inductive step) $\forall s \in S \; (P(s) \implies P(s 1))$ \\
+  1. Fix $s$. \\
+  2. Assume $P(s)$. \\
+  3. $P(s 1)$ \\
+  1. $\ms{num}(01,s1) \leq \ms{num}(10,s1) + 1$. 
+  \reason{???} \\
+  2. If $s 1$ ends in $0$ then $\ms{num}(01,s1) \leq
+  \ms{num}(10,s1)$.\noreason \\
+  \reason{???} \\
+  3. QED
+  \reason{Conjunction} \\
+  4. QED 
+  \reason{Implication, UG} \\
+  4. QED
+  \reason{Structural induction on strings.}\\
+}\fi
+
+\textcolor{blue}{Structured proof display commented out here}
+
+First let's consider $s1$. This is the case that looks dangerous,
+because it might increase the number of $01$s.  We have to prove two
+statements.  The second is easy, because the new string doesn't end in
+$0$.  We say it's ``vacuously true''.
+
+The first statement now takes some work. 
+We might be adding to the number of $01$s.  
+However, if we do, the previous string must have ended with $0$. 
+Then the inductive hypothesis says that the previous string had to
+satisfy the stronger inequality in the second statement. 
+Adding one to the LHS of the stronger inequality yields the weaker
+inequality we want.
+
+The following proof fragment considers cases based on whether $s$ ends
+in $0$ or not.  If not, it might end in $1$, or might be empty (don't
+forget this possibility).
+
+\textcolor{blue}{Structured proof display commented out here}
+\iffalse
+
+\begin{proof}
+  3. $P(s 1)$ \\
+  1. $\ms{num}(01,s1) \leq \ms{num}(10,s1) + 1$. \\
+  1. If $s$ ends in $0$ then $\ms{num}(01,s1) \leq\ms{num}(10,s1) + 1$. \\
+  1. Assume $s$ ends in $0$. \\
+  2. $\ms{num}(01,s) \leq \ms{num}(10,s)$ 
+  Inductive hypothesis (3.2), part 2. \\
+  3. $\ms{num}(01,s1) = \ms{num}(01,s) + 1$ 
+  Adding one more $01$. \\
+  4. $\ms{num}(10,s1) = \ms{num}(10,s)$ \\
+  5. $\ms{num}(01,s1) \leq\ms{num}(10,s1) + 1$. 
+  Algebra (combining 3.3.1.1.2, ...3, and ...4) \\
+  QED 
+  Implication \\
+  2. If $s$ ends in $1$ then $\ms{num}(01,s1)\leq\ms{num}(10,s1) + 1$. \\
+  Inductive hypothesis, part 1; no new $01$s. \\
+  3. If $s = \emptystring$ then $\ms{num}(01,s1) \leq\ms{num}(10,s1)+ 1$. \\
+  $s1$ is just $1$, which has no $01$s. \\
+  4. QED 
+  Cases \\
+  2. If $s 1$ ends in $0$ then $\ms{num}(01,s1) \leq \ms{num}(10,s1)$. \\
+  Vacuously true, because $s1$ doesn't end in $0$. \\
+  3. QED
+  Conjunction \\
+\end{proof}
+\fi
+
+Of course, you could also expand the step for $s$ ending in $1$ into a
+careful series of inequalities.
+
+Now consider $s0$.  We hope that what we did to make the $s1$ case
+work doesn't mess up the $s0$ case.  But we have to check.
+
+The first statement is easy.  It follows from the first statement of
+the inductive hypothesis for $s$, because we are not increasing the
+number of $01$s.  But now the second statement takes more work.  The
+difficulty is that the new string ends in $0$, which means that we
+have to show the stronger inequality in the second statement.  But to
+do this, we might only have the weaker inequality for the previous
+string.  The argument again depends on what the previous string $s$
+ended with.  So again, we consider cases, based on whether $s$ ends in
+$0$ or $1$, or is empty.  If $s$ ends in $0$ we rely on the second
+statement of the inductive hypothesis for $s$ (with the stronger
+inequality), whereas if $s$ ends in $1$ we rely on the first statement
+(with the weaker inequality).  In this case, we have to ``turn the
+weaker inequality into the stronger inequality''.
+
+\iffalse
+\structuredproof[38ex]{
+  3. $P(s 0)$ \\
+  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0) + 1$.
+  \reason{Induct. hypothesis, part 1; no new $01$s.} \\
+  2. If $s 0$ ends in $0$ then $\ms{num}(01,s0) \leq\ms{num}(10,s0)$. \\
+  1. $\ms{num}(01,s0) \leq \ms{num}(10,s0)$. \\
+  1. If $s$ ends in $0$ then $\ms{num}(01,s0)
+  \leq\ms{num}(10,s0)$. \noreason \\
+  \reason{Induct. hypothesis, part 2; no new $01$s} \\
+  2. If $s$ ends in $1$ then $\ms{num}(01,s0)
+  \leq\ms{num}(10,s0)$. \noreason \\ 
+  1. Assume $s$ ends in $1$. \\
+  2. $\ms{num}(01,s) \leq \ms{num}(10,s) + 1$. 
+  \reason{Inductive hypothesis, part 1} \\
+  3. $\ms{num}(01,s0) = \ms{num}(01,s)$ \\
+  4. $\ms{num}(10,s0) = \ms{num}(10,s) + 1$ 
+  \reason{Exactly one new occurrence of $10$.} \\
+  5. $\ms{num}(01,s0) \leq \ms{num}(10,s0)$ 
+  \reason{Algebra} \\
+  6. QED
+  \reason{Implication} \\
+  3. If $s = \emptystring$ then $\ms{num}(01,s0) \leq
+  \ms{num}(10,s0)$. \noreason \\ 
+  
+\reason{$s0$ is just $1$, which has no $01$s or $10$s.} \\
+  4. QED 
+  \reason{Cases} \\
+  2. QED
+  \reason{Propositional reasoning (truth table)} \\
+  3. QED 
+  \reason{Conjunction}\\
+}
+\fi
+
+\textcolor{blue}{Structured proof display commented out here}
+
+If you actually write out all these cases in the proof, you will
+notice that some facts are stated repeatedly, e.g., that when you add
+a $0$ to the end of a string you are not increasing the number of
+$01$s.  To avoid having to state these facts several times, you can
+move them earlier in the proof.
+
+\end{staffnotes}
