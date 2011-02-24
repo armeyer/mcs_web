@@ -19,7 +19,7 @@ recursively defined functions on them:
 \item the ``balanced'' strings of brackets,
 \item the nonnegative integers, and
 \item arithmetic expressions.
-%\item two-player zero-sum games with perfect information.
+\item two-player zero-sum games with perfect information.
 \end{itemize}
 
 %\hyperdef{paren}{string}
@@ -27,18 +27,19 @@ recursively defined functions on them:
 
 We'll start off illustrating recursive definitions and proofs using the
 example of character strings.  Normally we'd take strings of characters
-for granted, we'll treat them as a recursive data type.  Strings make a
-nice first example because we're giving recursive definitions of things
-that are easy to understand or you already know, so you can focus on how
-the definitions work without having to figure out what they are for.
+for granted, but it's informative to treat them as a recursive data type.
+In particular, strings are a nice first example because you will see
+recursive definitions of things that are easy to understand or you already
+know, so you can focus on how the definitions work without having to
+figure out what they are for.
 
-Definition of recursive data types have two parts:
+Definitions of recursive data types have two parts:
 \begin{itemize}
 \item \textbf{Base case(s)} specifying that some known mathematical elements are
   in the data type, and
 
 \item \textbf{Constructor case(s)} that specify how to construct new data
-  elements from previously contructed element of form base elements.
+  elements from previously contructed element or from base elements.
 \end{itemize}
 
 The definition of strings over a given character set, $A$, follows this
@@ -50,9 +51,9 @@ pattern:
   The recursive data type, $\strings{A}$, of strings over alphabet, $A$,
   are defined as follows:
 \begin{itemize}
-\item \textbf{base case}: the empty string, $\emptystring$, is in $\strings{A}$.
+\item \textbf{Base case}: the empty string, $\emptystring$, is in $\strings{A}$.
 
-\item \textbf{constructor case:} If $a \in A$ and $s \in \strings{A}$, then the pair
+\item \textbf{Constructor case:} If $a \in A$ and $s \in \strings{A}$, then the pair
        $\ang{a,s} \in \strings{A}$.
 \end{itemize}
 \end{definition}
@@ -80,9 +81,9 @@ Continuing the recursive approach, let's define the length of a string.
 The length, $\lnth{s}$, of a string, $s$, is defined recursively
 based on the definition of $s \in \strings{A}$:
 
-\item \textbf{base case}:  $\lnth{\emptystring} \eqdef\ 0$.
+\item \textbf{Base case}:  $\lnth{\emptystring} \eqdef\ 0$.
 
-\item \textbf{constructor case}: $\lnth{\ang{a,s}} \eqdef\ 1 + \lnth{s}$.
+\item \textbf{Constructor case}: $\lnth{\ang{a,s}} \eqdef\ 1 + \lnth{s}$.
 
 \end{definition}
 
@@ -105,12 +106,12 @@ The \term{concatenation} $s\cdot t$ of the strings $s,t \in
 \strings{A}$ is defined recursively based on the definition of $s \in
 \strings{A}$:
 
-\item \textbf{base case}:     % ($s=\emptystring$):
+\item \textbf{Base case}:     % ($s=\emptystring$):
 \[
 \emptystring \cdot t \eqdef\ t.
 \]
 
-\item \textbf{constructor case}: %($s = \ang{a,r}$ for $r \in \strings{A}$):
+\item \textbf{Constructor case}: %($s = \ang{a,r}$ for $r \in \strings{A}$):
 \[
 \ang{a,s} \cdot t \eqdef\ \ang{a, s \cdot t}.
 \]
@@ -141,7 +142,7 @@ induction hypothesis is
 P(s) \eqdef\ \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
 \]
 
-\textbf{base case} ($s = \emptystring$):
+\textbf{Base case} ($s = \emptystring$):
 \begin{align*}
 \lnth{s \cdot t}
    &= \lnth{\emptystring \cdot t}\\
@@ -151,27 +152,27 @@ P(s) \eqdef\ \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
    & = \lnth{s} + \lnth{t}
          & \text{(def length, base case)}
 \end{align*}
-\end{proof}
 
-\textbf{constructor case}: Assume the induction hypothesis, $P(s)$, and
+\textbf{Constructor case}: Assume the induction hypothesis, $P(s)$, and
 let $r = \ang{a,s} \cdot t$.  We must show that $P(r)$ holds:
 \begin{align*}
 \lnth{r \cdot t}
     & = \lnth{\ang{a, s} \cdot t}\\
     & = \lnth{\ang{a,s \cdot t}}
-        &  \text{(def $\cdot$, constructor case)}\\
+        &  \text{(concat def, constructor case)}\\
     & = 1 + \lnth{s \cdot t}
-        &  \text{(def length, constructor case)}\\
+        &  \text{(length def, constructor case)}\\
     & = 1 +  (\lnth{s} + \lnth{t})
         & \text{since $P(s)$ holds}\\
     & = (1 +  \lnth{s}) + \lnth{t}\\
     & = \lnth{\ang{a,s}} + \lnth{t}
-        & \text{(def length, constructor case)}\\
+        & \text{(length def, constructor case)}\\
     & = \lnth{r} + \lnth{t}.
 \end{align*}
 This completes the proof of the constructor case, so by structural
 induction we conclude that $P(s)$ holds for all strings $s \in
 \strings{A}$.
+\end{proof}
 
 \end{theorem}
 
@@ -203,9 +204,9 @@ the string $s$ has a simple recursive definition based on the
 definition of $s \in \strings{A}$:
 \begin{definition}\label{countas_def}
 
-\textbf{base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
+\textbf{Base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
 
-\textbf{constructor case}:
+\textbf{Constructor case}:
 \[
 \cnt{c}{\ang{a,s}} \eqdef \begin{cases}
                            \cnt{c}{s}  &\text{ if } a \neq c,\\
@@ -218,11 +219,11 @@ definition of $s \in \strings{A}$:
 We'll need the following lemma in the next section:
 \begin{lemma}\label{countas_lem}
 \[
-\cnt{c}{s cdot t} = \cnt{c}{s} + \cnt{c}{t}.
+\cnt{c}{s \cdot t} = \cnt{c}{s} + \cnt{c}{t}.
 \]
 \end{lemma}
-The proof, which is very similar to the proof of Theorem~\ref{stAl+},
-is a simple exercise (see Problem~\ref{PS_count_a_s_lem}).
+The easy proof by structural induction is an exercise
+(Problem~\ref{PS_count_a_s_lem}).
 
 \begin{problems}
 \classproblems
@@ -259,16 +260,15 @@ for this is one of the great successes of computer science as explained in
 the text box below.
 
 \textbox{
-\begin{center}
-\textbf{\large Expression Parsing}
-\end{center}
+\textboxheader{Expression Parsing}
 
 %Flesh this out and get references
 
 During the early development of computer science in the 1950's and 60's,
 creation of effective programming language compilers was a central
 concern.  A key aspect in processing a program for compilation was
-expression parsing.  The problem was to take in an expression like
+expression parsing.  One significant problem was to take an expression
+like
 \[
 x + y * z^2 \div y + 7
 \]
@@ -277,19 +277,18 @@ should be evaluated ---should it be
 \begin{align*}
 [[x + y] * z^2 \div y] + 7,\text{ or}, \\
 x + [y * z^2 \div [y + 7]], \text{ or},\\
-[x + [y * z^2 ]] \div [y + 7],
+[x + [y * z^2 ]] \div [y + 7], \text{ or}\dots?
 \end{align*}
-or \dots?
 
 The Turing award (the ``Nobel Prize'' of computer science) was ultimately
-bestowed on Robert Floyd, for, among other things, being discoverer of a
+bestowed on Robert W Floyd, for, among other things, being discoverer of a
 simple program that would insert the brackets properly.
 
 In the 70's and 80's, this parsing technology was packaged into high-level
 compiler-compilers that automatically generated parsers from expression
-grammars.  This automation of parsing was so effective that the subject
-needed no longer demanded attention.  It largely disappeared from the
-computer science curriculum by the 1990's.}
+grammars.  This automation of parsing was so effective that the subject no
+longer demanded attention.  It largely disappeared from the computer
+science curriculum by the 1990's.}
 
 \iffalse
 One precise way to determine if a string is matched is to start with 0 and
@@ -342,12 +341,12 @@ strings which would be written in full as
 \]
 From now on, we'll usually omit the ``$\cdot$'s.'' 
 
-Using this definition, we can see that $\emptystring \in\RM$ by the Base
-case, so
+Using this definition, $\emptystring \in\RM$ by the Base
+case, so letting $s=t =\emptystring$ in the constructor case implies
 \[
-\lefbrk\emptystring\rhtbrk\emptystring=\lefbrk\rhtbrk\in\RM
+\lefbrk\emptystring\rhtbrk\emptystring=\lefbrk\rhtbrk\in\RM.
 \]
-by the Constructor case.  So now,
+Now,
 \begin{align*}
 \lefbrk\emptystring\rhtbrk\lefbrk\rhtbrk &= \lefbrk\rhtbrk\lefbrk\rhtbrk \in \RM
     & \text{(letting $s = \emptystring, t = \lefbrk\rhtbrk$)}\\
@@ -357,18 +356,25 @@ by the Constructor case.  So now,
     & \text{(letting $s = \lefbrk\rhtbrk, t = \lefbrk\rhtbrk$)}
 \end{align*}
 are also strings in $\RM$ by repeated applications of the Constructor
-case.  If you haven't seen this kind of definition before, you should try
-continuing this example to verify that
-$\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
-\in \RM$
+case; and so on.
 
 \iffalse
-Given the way this section is set up, you might guess that $\RM = \GC$,
+If you haven't seen this kind of definition before, you should
+try continuing this example to verify that
+$\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
+\in \RM$.
+\fi
+
+
+\iffalse
+Given the way this section is set up you might guess that $\RM = \GC$,
 and you'd be right, but it's not completely obvious.  The proof is worked
 out in Problem~\ref{PS_bracket_good_count}.
 \fi
 
-With another simple appeal to structural induction we can prove
+It's pretty obvious that in order for brackets to match, there better be
+an equal number of left and right ones.  For further practice, let's
+carefully prove this from the recursive definitions.
 
 \begin{lemma*}%label{}
 Every string in $\RM$ has an equal number of left and right brackets.
@@ -383,25 +389,25 @@ P(s) \eqdef\  \cnt{\lefbrk}{s} = \cnt{\rhtbrk}{s}.
 \[
 \cnt{\lefbrk}{\emptystring} = 0 = \cnt{\rhtbrk}{\emptystring}
 \]
-by the base of the definition of count~\ref{countas_def}.
+by the base case of Definition~\ref{countas_def} of $\cnt{c}{}$.
 
-\textbf{constructor case}: By structural induction hypothesis assume
+\textbf{Constructor case}: By structural induction hypothesis assume
 $P(s)$ and $P(t)$ and must show $P(\lefbrk s\,\rhtbrk t)$:
 \begin{align*}
 \cnt{\lefbrk}{\lefbrk s\,\rhtbrk t}
     & = \cnt{\lefbrk}{\lefbrk} + \cnt{\lefbrk}{s}
         +\cnt{\lefbrk}{\rhtbrk}+ \cnt{\lefbrk}{t}
-         & \text{(by Lemma~\ref{countas_lem})}\\
+         & \text{(Lemma~\ref{countas_lem})}\\
     & = 1 + \cnt{\lefbrk}{s} + 0 + \cnt{\lefbrk}{t}
-         & \text{(by def~\ref{countas_def} of $\cnt{\lefbrk}{}$)}\\
+         & \text{(def $\cnt{\lefbrk}{}$)}\\
     & = 1 + \cnt{\rhtbrk}{s} + 0 + \cnt{\rhtbrk}{t}
          & \text{(by $P(s)$ and $P(t)$)}\\
     & = 0 + \cnt{\rhtbrk}{s} + 1 + \cnt{\rhtbrk}{t}\\
     & = \cnt{\rhtbrk}{\lefbrk} + \cnt{\rhtbrk}{s}
         +\cnt{\rhtbrk}{\rhtbrk}+ \cnt{\rhtbrk}{t}
-         & \text{(by def~\ref{countas_def} of $\cnt{\rhtbrk}{}$)}\\
+         & \text{(def $\cnt{\rhtbrk}{}$)}\\
     & = \cnt{\rhtbrk}{\lefbrk s\,\rhtbrk t}
-            & \text{(by Lemma~\ref{countas_lem})}
+            & \text{(Lemma~\ref{countas_lem})}
 \end{align*}
 This completes the proof of the constructor case.  We conclude by
 structural induction that $P(s)$ holds for all $s \in\RM$.
@@ -430,7 +436,7 @@ an \emph{un}ambiguous definition of $\RM$ to ensure that functions
 defined recursively on its definition would always be well-defined.
 Recursively defining a function on an ambiguous of a data type
 definition usually will not work.  To illustrate the problem, here's
-yet another definition of the matched strings.
+another definition of the matched strings.
 
 \iffalse Recursive definitions of tagged data types, where the tag
 uniquely determines the rule used to construct an element, are guaranteed
@@ -455,31 +461,30 @@ Give an easy proof by structural induction that $\AM =\RM$.
 \end{notesproblem}
 \fi
 
-It's pretty easy to see that the definition of $\AM$ is just another
-way to define $\RM$, that is $\AM = \RM$, see
-Problem~\ref{PS_M_equal_RM}.  The definition of $\AM$ is arguably
-easier to understand, but we didn't use it becaused it's ambiguous,
-while the trickier definition of $\RM$ is unambiguous.  Here's why
-this matters.  Define the number of operations, $f(s)$, to construct a matched string $s$
-recursively on the definition of  $s \in \AM$:
+It's pretty easy to see that the definition of $\AM$ is just another way
+to define $\RM$, that is $\AM = \RM$ (see Problem~\ref{PS_M_equal_RM}).
+The definition of $\AM$ is arguably easier to understand, but we didn't
+use it becaused it's ambiguous, while the trickier definition of $\RM$ is
+unambiguous.  Here's why this matters.  Let's define the number of
+operations, $f(s)$, to construct a matched string $s$ recursively on the
+definition of $s \in \AM$:
 \begin{align*}
-  f(\emptystring)        & \eqdef\ 0, \tag{(base case)}\\
+  f(\emptystring)        & \eqdef\ 0, \tag{$f$ base case}\\
   f(\lefbrk s\,\rhtbrk\ ) & \eqdef\ 1+ f(s), \\
-  f(st)                  & \eqdef\ 1+ f(s) +f(t).\tag{concat case}
+  f(st)                  & \eqdef\ 1+ f(s) +f(t).\tag{$f$ concat case}
 \end{align*}
-This definition may seem ok, but it isn't: it implies that
-$f(\emptystring)$ is equal to both 0 and 1!  Namely,
+This definition may seem ok, but it isn't:
+$f(\emptystring)$ winds up with two values, and consequently:
 \begin{align*}
-f(\emptystring) & = 0 & \text{(by (base case))},
-\end{align*}
-but also,
-\begin{align*}
-f(\emptystring) & = f(\emptystring \emptystring)\\
+0 & = f(\emptystring) & \text{($f$ base case))}\\
+  & = f(\emptystring \cdot \emptystring) & ((concat def, base case) \\
                 & = 1 + f(\emptystring) + f(\emptystring)
-                      &  \text{(by (concat case))},\\
+                      &  \text{($f$ concat case)},\\
                 & = 1 + 0 + 0 = 1
-                      & \text{(by (base case))}
+                      & \text{($f$ base case)}.
 \end{align*}
+This is definitely not a situation we want to be in!
+
 
 \iffalse
 
@@ -540,13 +545,14 @@ $\naturals$.
 This of course makes it clear that ordinary induction is simply the
 special case of structural induction on the recursive
 Definition~\ref{0succ}.  This also justifies the familiar recursive
-definitions of functions on the nonnegative integers.  Here are some
-examples.
+definitions of functions on the nonnegative integers.
+
+\subsection{Some Standard Recursive Functions on  $\naturals$}
 
 \begin{description}
 \item[The Factorial function.] This function is often written ``$n!$.''
-You will see a lot of it later in the term.  Here we'll use the notation
-$\text{fac}(n)$:
+  You will see a lot of it in later cahpters.  Here we'll use the notation
+  $\text{fac}(n)$:
 \begin{itemize}
 \item $\text{fac}(0) \eqdef 1$.
 \item $\text{fac}(n+1) \eqdef (n+1)\cdot \text{fac}(n)$ for $n \ge 0$.
@@ -557,16 +563,15 @@ $\text{fac}(n)$:
   people captivated by their extraordinary properties.  The $n$th Fibonacci
   number, $\text{fib}$, can be defined recursively by:
 \begin{align*}
-\text{fib}(0) &\eqdef 0,\\ 
-\text{fib}(1) &\eqdef 1,\\ 
-\text{fib}(n) &\eqdef \text{fib}(n-1) + \text{fib}(n-2) &\mbox{for $n \geq 2$.} 
+F(0) &\eqdef 0,\\
+F(1) &\eqdef 1,\\ 
+F(n) &\eqdef F(n-1) + F(n-2) &\mbox{for $n \geq 2$.} 
 \end{align*}
 Here the recursive step starts at $n=2$ with base cases for 0 and 1.  This
 is needed since the recursion relies on two previous values.
 
-What is $\text{fib}(4)$?  Well, $\text{fib}(2) =
-\text{fib}(1)+\text{fib}(0) = 1$, $\text{fib}(3) =
-\text{fib}(2)+\text{fib}(1) = 2$, so $\text{fib}(4) = 3$.  The sequence
+What is $F(4)$?  Well, $F(2) = F(1)+F(0) = 1$, $F(3) =
+F(2)+F(1) = 2$, so $F(4) = 3$.  The sequence
 starts out $0, 1, 1, 2, 3, 5, 8, 13, 21,\dots$.
 
 
@@ -649,12 +654,13 @@ disguise: to see this, divide by $F_{n+1}$.
 \end{staffnotes}
 
 \subsection{Ill-formed Function Definitions}
+%\hyperdef{ill}{formed}
 
-Besides ambiguous definitions, there are some other
-\hyperdef{ill}{formed}{blunders} to watch out for when defining
-functions recursively.  Below are some function specifications that
-resemble good definitions of functions on the nonnegative integers,
-but they aren't.
+There are some other blunders to watch out for when defining functions
+recursively.  The main problems come when recursive definitions don't
+follow the recursive definition of the underlying data type.  Below are
+some function specifications that resemble good definitions of functions
+on the nonnegative integers, but they aren't.
 
 \begin{eqnarray}\label{f1}
 f_1(n)\eqdef 2+f_1(n-1).
@@ -718,6 +724,38 @@ $f_4$ satisfying~\eqref{f5} equals 1 for all $n$ up to over a billion.
 satisfy~\eqref{f5}?
 \fi
 
+A final example is Ackermann's function, which is an extremely
+fast-growing function of two nonegative arguments.  It's inverse is
+correspondingly slow-growing ---it grows slower than $\log n$, $\log \log
+n$, $\log \log \log n$, \dots, but it does grow unboundly.  This inverse
+actually comes up analyzing a useful, highly efficient procedure known as
+the \emph{Union-Find algorithm}.  This algorithm was conjectured to run in
+a number of steps that grew linearly in the size of its input, but turned
+out to be ``linear'' but with a slow growing coefficient nearly equal to
+the inverse Ackerman function.  This means that pragmatically
+\emph{Union-Find} is linear since the theoretically growing coefficient is
+less than 5 for any input that could conceivably come up.
+
+\iffalse
+You will learn about Union-Find if you take the Algorithms course, 6.046.
+We're mentioning this story to motivate an examination of the somewhat
+unusual recursive definition of Ackermann's function, $A(m,n)$.
+\fi
+
+Ackermann's function can be defined recursively as the function, $A$,
+given by the following rules:
+\begin{align}
+A(m,n) &=  2n, &&\text{if $m=0$ or $n \le 1$},\label{Am0}\\ 
+A(m,n) &=  A(m-1,A(m,n-1)), &&\text{otherwise}.\label{AA}
+\end{align}
+
+Now these rules are unusual because the definition of $A(m,n)$ involves an
+evaluation of $F$ at arguments that may be a lot bigger than $m$ and $n$.
+The definitions of $f_4$ above showed definitions of function values at
+small argument values in terms of larger one can
+easily lead to nonterminating evaluations.   The definition of Ackermann's
+function is ok, but proving this tgakes some ingeniuty (see Problem~\ref{PS_Ackermann_def}).
+
 
 \section{Arithmetic Expressions}
 Expression evaluation is a key feature of programming languages, and
@@ -732,19 +770,19 @@ definition:
 \begin{definition}
 
 \begin{itemize}
-\item \textbf{Base cases:}
+\item \textbf{Base cases:} \mbox{}
 
-\begin{enumerate}
+\begin{itemize}
 
 \item The variable, $x$, is in $\aexp$.
 
 \item The arabic numeral, $\mtt{k}$, for any nonnegative integer, $k$, is
   in $\aexp$.
 
-\end{enumerate}
+\end{itemize}
 
 \item \textbf{Constructor cases:} If $e,f \in \aexp$, then
-\begin{enumerate}
+\begin{itemize}
 \setcounter{enumi}{2}
 
 \item $\lefbrk e \sumsym f \rhtbrk \in \aexp$.  The expression $\lefbrk e \sumsym
@@ -758,12 +796,12 @@ definition:
 
 \item $\minussym\lefbrk e\rhtbrk \in \aexp$.  The expression $\minussym\lefbrk e\rhtbrk$ is called a
   \emph{negative}.
-\end{enumerate}
+\end{itemize}
 \end{itemize}
 \end{definition}
 
-Notice that \aexp's are fully parenthesized, and exponents aren't allowed.
-So the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
+Notice that \aexp's are fully bracketed, and exponents aren't allowed.  So
+the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
 officially be written as
 \begin{equation}\label{fullparens}
 \lefbrk \lefbrk \mtt{3} \prodsym \lefbrk x \prodsym x\rhtbrk\rhtbrk \sumsym \lefbrk \lefbrk \mtt{2} \prodsym x\rhtbrk \sumsym \mtt{1}\rhtbrk\rhtbrk.
@@ -809,46 +847,24 @@ specify this evaluation process with a recursive definition.
 
 \begin{itemize}
 \item \textbf{Base cases:}
-
-\begin{enumerate}
-
-\item\label{eval-var} Case[$e$ is $x$]
-\[
-\meval(x, n) \eqdef n.
-\]
-(The value of the variable, $x$, is given to be $n$.)
-
-\item\label{eval-const} Case[$e$ is $k$]
-\[
-\meval(\mtt{k}, n) \eqdef k.
-\]
-(The value of the numeral $\mtt{k}$ is the integer $k$, no matter what
-value $x$ has.)
-
-\end{enumerate}
+\begin{align*}
+\meval(x, n) & \eqdef n,
+    & \text{(value of variable $x$ is $n$.)}\label{eval-var}
+\meval(\mtt{k}, n) & \eqdef k, 
+   & \text{(value of numeral $\mtt{k}$ is $k$, regardless of $x$.)}\label{eval-const}
+\end{align*}
 
 \item \textbf{Constructor cases:}
 
-\begin{enumerate}
-\setcounter{enumi}{2}
-
-\item\label{eval-sum} Case[$e$ is $\lefbrk e_1 \sumsym e_2 \rhtbrk$]
-\[
-\meval(\lefbrk e_1 \sumsym e_2 \rhtbrk,n) \eqdef
-  \meval(e_1,n)+\meval(e_2,n).
-\]
-
-\item\label{eval-prod} Case[$e$ is $\lefbrk e_1 \prodsym e_2 \rhtbrk$]
-\[
-\meval(\lefbrk e_1 \prodsym e_2 \rhtbrk,n) \eqdef \meval(e_1,n) \cdot \meval(e_2,n).
-\]
-
-\item\label{eval-minus} Case[$e$ is $\minussym\lefbrk e_1 \rhtbrk$]
-\[
-\meval(\minussym\lefbrk e_1 \rhtbrk,n) \eqdef - \meval(e_1,n).
-\]
-\end{enumerate}
-
+\begin{align*}
+%\setcounter{enumi}{2}
+\meval(\lefbrk e_1 \sumsym e_2 \rhtbrk,n)
+   & \eqdef \meval(e_1,n)+\meval(e_2,n),\label{eval-sum}\\
+\meval(\lefbrk e_1 \prodsym e_2 \rhtbrk,n)
+  & \eqdef \meval(e_1,n) \cdot \meval(e_2,n), \label{eval-prod}
+\meval(\minussym\lefbrk e_1 \rhtbrk,n) 
+  &  \eqdef - \meval(e_1,n). \label{eval-minus}
+\end{align*}
 \end{itemize}
 
 \end{definition}
@@ -866,14 +882,14 @@ the value of $3+x^2$ when $x$ is 2:
 \end{align*}
 
 \subsubsection{Substituting into Aexp's}
-Substituting expressions for variables is a standard, important
-operation.  For example the result of substituting the expression $3x$
-for $x$ in the expression $\lefbrk x\lefbrk x-1 \rhtbrk \rhtbrk$ would
-be $\lefbrk 3x\lefbrk 3x-1 \rhtbrk \rhtbrk$.  We'll use the general
-notation $\msubst{f}{e}$ for the result of substituting an $\aexp$,
-$f$, for each of the $x$'s in an $\aexp$, $e$.  So as we just explained,
+Substituting expressions for variables is a standard operation used by
+compilers and algebra systems.  For example, the result of substituting
+the expression $3x$ for $x$ in the expression $x(x-1)$ would be
+$3x(3x-1)$.  We'll use the general notation $\msubst{f}{e}$ for the result
+of substituting an $\aexp$, $f$, for each of the $x$'s in an $\aexp$, $e$.
+So as we just explained,
 \[
-\msubst{3x}{x\lefbrk x-1\rhtbrk} = 3x\lefbrk 3x-1\rhtbrk.
+\msubst{3x}{x(x-1)} = 3x(3x-1).
 \]
 
 This substitution function has a simple recursive definition:
@@ -886,44 +902,28 @@ This substitution function has a simple recursive definition:
 \begin{itemize}
 \item \textbf{Base cases:}
 
-\begin{enumerate}
+\begin{align*}
+\msubst{f}{x} & \eqdef f, \label{subst-var} 
+    & \text{(subbing $f$ for variable, $x$, just gives $f$)}\\
+\msubst{f}{\mtt{k}} & \eqdef \mtt{k}
+    & (subbing into a numeral does nothing.)\label{subst-const}
+\end{align*}
 
-\item\label{subst-var} Case[$e$ is $x$]
-\[
-\msubst{f}{x} \eqdef f.
-\]
-(The result of substituting $f$ for the variable, $x$, is just $f$.)
-
-\item\label{subst-const} Case[$e$ is $\mtt{k}$]
-\[
-\msubst{f}{\mtt{k}} \eqdef \mtt{k}.
-\]
-(The numeral, $\mtt{k}$, has no $x$'s in it to substitute for.)
-
-\end{enumerate}
 
 \item \textbf{Constructor cases:}
 
-\begin{enumerate}
-\setcounter{enumi}{2}
-\item\label{subst-sum} Case[$e$ is $(e_1 \sumsym e_2)$]
-\[
-\msubst{f}{\lefbrk e_1 \sumsym e_2\rhtbrk} \eqdef  \lefbrk \msubst{f}{e_1} \sumsym
-\msubst{f}{e_2}\rhtbrk.
-\]
 
-\item\label{subst-prod} Case[$e$ is $(e_1 \prodsym e_2)$]
-\[
-\msubst{f}{\lefbrk e_1 \prodsym e_2\rhtbrk}) \eqdef  \lefbrk \msubst{f}{e_1} \prodsym
-\msubst{f}{e_2}\rhtbrk.
-\]
-
-\item\label{subst-minus} Case[$e$ is $\minussym\lefbrk e_1\rhtbrk$]
-\[
-\msubst{f}{\minussym\lefbrk e_1\rhtbrk} \eqdef \minussym \lefbrk \msubst{f}{e_1}\rhtbrk.
-\]
-
-\end{enumerate}
+%\setcounter{enumi}{2}
+\begin{align*}
+\label{subst-sum}
+\msubst{f}{\lefbrk e_1 \sumsym e_2\rhtbrk} & \eqdef  \lefbrk \msubst{f}{e_1} \sumsym
+\msubst{f}{e_2}\rhtbrk\\
+\label{subst-prod} 
+\msubst{f}{\lefbrk e_1 \prodsym e_2\rhtbrk}) & \eqdef  \lefbrk \msubst{f}{e_1} \prodsym
+\msubst{f}{e_2}\rhtbrk\\
+\label{subst-minus} 
+\msubst{f}{\minussym\lefbrk e_1\rhtbrk} & \eqdef \minussym \lefbrk \msubst{f}{e_1}\rhtbrk.
+\end{align*}
 \end{itemize}
 \end{definition}
 
@@ -934,7 +934,7 @@ the result of substituting $3x$ for $x$ in the $x(x-1)$:
  & =
 \msubst{3x}{\lefbrk x \prodsym \lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk \rhtbrk} & \text{(unabbreviating)}\\
  & =\lefbrk \msubst{3x}{x} \prodsym \msubst{3x}{\lefbrk x \sumsym \minussym
-\lefbrk 1 \lefbrk rhtbrk \rhtbrk}
+\lefbrk 1 \lefbrk \rhtbrk \rhtbrk}
          & \text{(by~Def~\ref{subst-def}~\ref{subst-prod})}\\
  & = \lefbrk 3x \prodsym \msubst{3x}{\lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk} \rhtbrk
          & \text{(by~Def~\ref{subst-def}~\ref{subst-var})}\\
@@ -947,42 +947,30 @@ the result of substituting $3x$ for $x$ in the $x(x-1)$:
  & = 3x\lefbrk 3x-1 \rhtbrk & \text{(abbreviation)}
 \end{align*}
 
-Now suppose we have to find the value of $\msubst{3x}{\lefbrk x\lefbrk
-  x-1 \rhtbrk \rhtbrk}$ when $x = 2$.  There are two approaches.
+Now suppose we have to find the value of $\msubst{3x}{x(x-1)}$ when $x =
+2$.  There are two approaches.
 
-First, we could actually do the substitution above to get $3x(3x-1)$,
-and then we could evaluate $3x\lefbrk 3x-1 \rhtbrk$ when $x =2$, that
-is, we could recursively calculate $\meval(3x\lefbrk 3x-1 \rhtbrk,2)$
-to get the final value 30.  In programming jargon, this would be
-called evaluation using the \emph{Substitution Model}.  Tracing
-through the steps in the evaluation, it turns out that the Substitution
-Model requires two substitutions for occurrences of $x$ and 5 integer
-operations: 3 integer multiplications, 1 integer addition, and 1
-integer negative operation.  In this Substitution Model, the
-multiplication $3 \cdot 2$ was performed twice to get the value of 6
-for each of the two occurrences of $3x$.
+First, we could actually do the substitution above to get $3x(3x-1)$, and
+then we could evaluate $3x(3x-1)$ when $x =2$, that is, we
+could recursively calculate $\meval(3x(3x-1),2)$ to get the
+final value 30.  In programming jargon, this would be called evaluation
+using the \emph{Substitution Model}.  Because the formula $3x$ appears
+twice after substitution, it the multiplication $3 \cdot 2$ to computes
+its value gets performed twice.
 
 The other approach is called evaluation using the \emph{Environment
-  Model}.  Namely, we evaluate $3x$ when $x = 2$ using just 1
-multiplication to get the value 6.  Then we evaluate $x\lefbrk x-1
-\rhtbrk$ when $x$ has this value 6 to arrive at the value $6\cdot
-5=30$.  So the Environment Model requires 2 variable lookups and only
-4 integer operations: 1 multiplication to find the value of $3x$,
-another multiplication to find the value $6 \cdot 5$, along with 1
-integer addition and 1 integer negative operation.
-
-So the Environment Model approach of calculating
-\[
-\meval(x\lefbrk x-1 \rhtbrk, \meval(3x,2))
-\]
-instead of the Substitution Model approach of calculating
-\[
-\meval(\msubst{3x}{x\lefbrk x-1 \rhtbrk},2)
-\]
-is faster.  But how do we know that these final values reached by these
-two approaches always agree?  We can prove this easily by structural
-induction on the definitions of the two approaches.  More precisely, what
-we want to prove is
+  Model}.  Namely, to compute
+\begin{equation}\label{em3xsub}
+\eval{\msubst{3x}{x(x-1)}}{2}
+\end{equation}
+we evaluate $3x$ when $x = 2$ using just 1 multiplication to get the value
+6.  Then we evaluate $x(x-1)$ when $x$ has this value 6 to arrive at the
+value $6\cdot 5=30$.  So the Environment Model only computes the value of
+$3x$ once and so requires one fewer multiplication than the Substitution
+model to compute~\eqref{em3xsub}.  But how do we know that these final
+values reached by these two approaches always agree?  We can prove this
+easily by structural induction on the definitions of the two approaches.
+More precisely, what we want to prove is
 
 \begin{theorem}\label{environments}
 For all expressions $e,f \in \aexp$ and $n \in \integers$,
@@ -999,15 +987,14 @@ The proof is by structural induction on $e$.\footnote{This is an
 \textbf{Base cases:}
 \begin{itemize}
 
-\item Case[$e$ is $x$]
+\item Case[$x$]
 
   The left hand side of equation~\eqref{eval-subst} equals $\meval(f,n)$
   by this base case in Definition~\ref{subst-def} of the substitution
   function, and the right hand side also equals $\meval(f,n)$ by this base
   case in Definition~\ref{meval-def} of $\meval$.
 
-
-\item Case[$e$ is $\mtt{k}$].
+\item Case[$\mtt{k}$].
 
   The left hand side of equation~\eqref{eval-subst} equals $\mtt{k}$ by
   this base case in Definitions~\ref{subst-def} and~\ref{meval-def} of
@@ -1020,7 +1007,7 @@ The proof is by structural induction on $e$.\footnote{This is an
 \textbf{Constructor cases}:
 \begin{itemize}
 
-\item Case[$e$ is $\lefbrk e_1 \sumsym e_2 \rhtbrk$]
+\item Case[$\lefbrk e_1 \sumsym e_2 \rhtbrk$]
 
   By the structural induction hypothesis~\eqref{eval-subst}, we may assume
   that for all $f \in \aexp$ and $n \in \integers$,
@@ -1029,32 +1016,30 @@ The proof is by structural induction on $e$.\footnote{This is an
 \meval(\msubst{f}{e_i},n)  =  \meval(e_i, \meval(f,n))
 \end{equation}
 for $i= 1,2$.  We wish to prove that
-
 \begin{equation}\label{s+}
 \meval(\msubst{f}{\lefbrk e_1\sumsym e_2 \rhtbrk},n)  =  \meval(\lefbrk e_1 \sumsym e_2 \rhtbrk, \meval(f,n))
 \end{equation}
-
 But the left hand side of~\eqref{s+} equals
 \[
-\meval(\, \lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk,\ n)
+\meval(\lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk, n)
 \]
 by Definition~\ref{subst-def}.\ref{subst-sum} of substitution into a sum
 expression.  But this equals
 \[
 \meval(\msubst{f}{e_1},n) + \meval(\msubst{f}{e_2},n)
 \]
-by Definition~\ref{meval-def}.\ref{eval-sum} of $\meval$ for a sum expression.  By
+by Definition~\ref{meval-def}.\eqref{eval-sum} of $\meval$ for a sum expression.  By
 induction hypothesis~\eqref{ln4.hyp}, this in turn equals
 \[
 \meval(e_1,\meval(f,n)) + \meval(e_2,\meval(f,n)).
 \]
-Finally, this last expression equals the right hand side of~(\ref{s+}) by
-Definition~\ref{meval-def}.\ref{eval-sum} of $\meval$ for a sum
-expression.  This proves~(\ref{s+}) in this case.
+Finally, this last expression equals the right hand side of~\eqref{s+} by
+Definition~\ref{meval-def}.\eqref{eval-sum} of $\meval$ for a sum
+expression.  This proves~\eqref{s+} in this case.
 
-\item $e$ is $\lefbrk e_1 \prodsym e_2 \rhtbrk$.  Similar.
+\item Case[$\lefbrk e_1 \prodsym e_2 \rhtbrk$]  Similar.
 
-\item $e$ is $-\lefbrk e_1 \rhtbrk$.  Even easier.
+\item Case[$-\lefbrk e_1 \rhtbrk$]  Even easier.
 
 \end{itemize}
 
@@ -1072,10 +1057,10 @@ Define a set, $E$, recursively as follows:
 \begin{itemize}
 \item \textbf{Base case:} $0 \in E$,\label{0E}
 \item \textbf{Constructor cases:} if $n \in E$, then
-\begin{enumerate}
+\begin{itemize}
 \item $n+2 \in E$, when $n\geq 0$;\label{+2E}
 \item $-n \in E$, when $n > 0$.\label{-E}
-\end{enumerate}
+\end{itemize}
 \end{itemize}
 
 \end{definition}
@@ -1136,7 +1121,7 @@ Define a set, $E'$, recursively as follows:
 \begin{itemize}
 \item \textbf{Base case:} $0 \in E'$,\label{0Eamb}
 \item \textbf{Constructor cases:} if $n \in E'$, then
-\begin{enumerate}
+\begin{itemize}
 \item $n+2 \in E'$, \label{+2Eamb}
 \item $-n \in E'$.\label{-Eamb}
 \end{enumerate}
