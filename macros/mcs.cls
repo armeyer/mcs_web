@@ -1314,7 +1314,11 @@
 
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
 
+\newcommand{\strings}[1]{#1^*}
 \newcommand{\brkts}{\strings{\set{\rhtbrk, \lefbrk}}}    %{\text{brkts}}
+\newcommand{\cnt}[2]{\#_{#1}(#2)}
+\newcommand{\rev}[1]{\operatorname{rev}(#1)}
+
 
 \if@usecolor@
     \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
@@ -1326,6 +1330,7 @@
 
 \def\GC{\text{GoodCount}}
 \def\RM{\text{RecMatch}}
+\def\AM{\text{AmbRecMatch}}
 \def\ES{\text{Erasable}}
 
 \newcommand{\prns}{\text{prns}}
