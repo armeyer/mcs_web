@@ -1,0 +1,103 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_pulverizer_machine}
+  \pcomment{by ARM 2/26/11}
+\end{pcomments}
+
+\pkeywords{
+  pulverizer
+  Euclidean
+  algorithm
+  state_machine
+  correctness
+  termination
+  extended_Euclidean
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Define the Pulverizer State machine to have:
+\begin{align*}
+\text{states} & \eqdef \naturals^7\\
+\text{start state} & \eqdef (a, b, 0, 1, 1, 0) 
+             & \text{(where $a \ge b >0$)}\\
+\text{transitions} & \eqdef (x,  y,  s,  t,  u,  v) \movesto\\
+     & (y, \rem{x}{y}, u - s\qcnt{x}{y}, v - t\qcnt{x}{y}, s, t)
+             & \text{(for $y>0$)}
+\end{align*}
+
+Note that ${x,y}$ follows the transition rules of the Euclidean
+algorithm given in equation~(\bref{euclid_transition}), except that
+this machine stops one step sooner, ensuring that $y \gcd(a,b)$ at the
+end.  So for all inputs $x,y$, this procedure terminates after at most
+the same of transitions as the Euclidean algorithm.
+
+\bparts
+
+\ppart Show that the following properties are preserved invariants of
+the Pulverizer machine:
+\begin{align}
+\gcd(x,y) & =  \gcd(a,b), \label{XY}\\
+sa+tb & =  y,\text{ and }\label{SaTb}\\
+ua+vb & =  x. \label{uaVb}
+\end{align}
+
+\begin{solution}
+To verify that these are preserved invariants, suppose
+\[
+(x,  y,  s,  t,  u,  v) \movesto (x',  y',  s',  t',  u',  v').
+\]
+Note that~\eqref{XY} is the same one we observed for the Euclidean
+algorithm.  This leaves proving that~\eqref{SaTb} and~\eqref{uaVb}
+hold for the new state $x',y',s',t',u',v'$.
+
+Now according to the procedure, $u'=s,v'=t,x'=y$, so~\eqref{uaVb} holds
+for $u',v',x'$ because of~\eqref{SaTb} for $s,t,y$.  Also, 
+\[
+s'= u - qs,\quad t'= v - qt,\quad y' = x - qy
+\]
+where $q = \qcnt(x,y)$,
+so
+\[
+s'a+t'b = (u-qs)a + (v-qt)b =ua+vb - q(sa+tb) = x - qy = y',
+\]
+and therefore~\eqref{SaTb} holds for $s',t',y'$.
+\end{solution}
+
+\ppart Conclude that the Pulverizer machine is partially correct.
+
+\begin{solution}
+It's easy to check that all three preserved invariants are true just
+before the first time around the loop.  Namely, at the start:
+\begin{align*}
+x      =a, y=b,s=0, t& =1 & \mbox{so}\\
+sa+tb = 0a+1b=b& =y & \mbox{confirming~\eqref{SaTb}.}
+\end{align*}
+Also,
+\begin{align*}
+u     & =1, v=0, & \mbox{so} \\
+ua+vb & = 1a+0b=a =x & \mbox{confirming~\eqref{uaVb}.  }
+\end{align*}
+Now by the Invariant Principle, they are true at termination.  But at
+termination, $y \divides x$ so preserved invariants~\eqref{XY}
+and~\eqref{SaTb} imply
+\[
+\gcd(a,b) = \gcd(x,y) = y = sa + tb.
+\]
+so we have the desired coefficients $s$ and $t$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

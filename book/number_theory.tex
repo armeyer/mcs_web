@@ -35,12 +35,17 @@ impracticality when he wrote:
  algorithms.
 
 Number theory also provides an excellent environment for us to
-practice and apply the proof techniques that we developed in
-Chapters~\ref{templates_chap} and~\ref{induction_chap}.
+practice and apply the proof techniques that we developed in previous
+Chapters.  We'll work out properties of \idx{greatest common divisors}
+(gcd's) and use them to prove that integers factor uniquely into
+primes.  Then we'll introduce modular arithmetic and work out enough
+of its properties to explain the \idx{RSA public key crypto-system}.
+
+%~\ref{templates_chap} and~\ref{induction_chap}.
 
 Since we'll be focusing on properties of the integers, we'll adopt
 the default convention in this chapter that \emph{variables range over
-the set of integers}, $\integers$.
+the set, $\integers$, of integers}.
 
 %% Divisibility %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -48,92 +53,70 @@ the set of integers}, $\integers$.
 
 The nature of number theory emerges as soon as we consider the
 \term{divides} relation
-\[
-a \text{ divides } b \qiff ak = b \text{ for some } k.
-\]
-The notation, $a$ \index{$\divides$ (divides relation)}$\divides$ $b$,
-is an abbreviation for ``$a$ divides $b$.''  If $a \divides b$, then
-we also say that $b$ is a \term{multiple} of $a$.  A consequence of
-this definition is that every number divides zero.
+\begin{definition}\label{divides_def}
+a \divides (a \text{ divides } b) \eqdef [ ak = b \text{ for some } k].
+\end{definition}
 
-This seems simple enough, but let's play with this definition.  The
-Pythagoreans, an ancient sect of mathematical mystics, said that a number
-is \index{perfect number}\term*{perfect} if it equals the sum of its
-positive integral divisors, excluding itself.  For example, $6 = 1 + 2 +
-3$ and $28 = 1 + 2 + 4 + 7 + 14$ are perfect numbers.  On the other hand,
-10 is not perfect because $1 + 2 + 5 = 8$, and 12 is not perfect because
-$1 + 2 + 3 + 4 + 6 = 16$.  \idx{Euclid} characterized all the \emph{even}
-perfect numbers around 300 BC.  But is there an \emph{odd} perfect number?
-More than two thousand years later, we still don't know!  All numbers up
-to about $10^{300}$ have been ruled out, but no one has proved that there
-isn't an odd perfect number waiting just over the horizon.
+The divides relation comes up so frequently that multiple synonyms for
+it are used all the time.  The following phrases all say the same
+thing:
+\begin{itemize}
+\item $a$ divides $b$,
+\item $a$ is a \term{divisor} of $b$,
+\item $a$ is a \term{factor} of $b$,
+\item $b$ is \term{divisible} by $a$,
+\item $b$ is a \term{multiple} of $a$.
+\end{itemize}
+
+Some immediate consequences of Definition~\ref{divides_def} are that
+\begin{align*}
+n \divides 0,\\
+n \divides n,\\
+1 \divides n.
+\end{align*}
+
+Dividing seems simple enough, but let's play with this definition.
+The Pythagoreans, an ancient sect of mathematical mystics, said that a
+number is \index{perfect number}\term*{perfect} if it equals the sum
+of its positive integral divisors, excluding itself.  For example, $6
+= 1 + 2 + 3$ and $28 = 1 + 2 + 4 + 7 + 14$ are perfect numbers.  On
+the other hand, 10 is not perfect because $1 + 2 + 5 = 8$, and 12 is
+not perfect because $1 + 2 + 3 + 4 + 6 = 16$.  \idx{Euclid}
+characterized all the \emph{even} perfect numbers around 300 BC.  But
+is there an \emph{odd} perfect number?  More than two thousand years
+later, we still don't know!  All numbers up to about $10^{300}$ have
+been ruled out, but no one has proved that there isn't an odd perfect
+number waiting just over the horizon.
 
 So a half-page into number theory, we've strayed past the outer limits
 of human knowledge!  This is pretty typical; number theory is full of
 questions that are easy to pose, but incredibly difficult to
 answer.\footnote{\emph{Don't Panic}---we're going to stick to some
 relatively benign parts of number theory.  These super-hard unsolved
-problems rarely get put on problem sets.}  For example, several such
-problems are shown in the box on the following page.
+problems rarely get put on problem sets.}
+
+Some of the greatest insights and mysteries in number theory concern
+properties of \term{prime} \index{prime number}{numbers}:
+\begin{definition}
+A \emph{prime} is a number greater than~1 that is divisible only by
+itself and~1.
+\end{definition}
+Several such problems are included in the box on the following page.
 Interestingly, we'll see that computer scientists have found ways to
 turn some of these difficulties to their advantage.
-
-\subsection{Facts about Divisibility}
-
-The lemma below states some basic facts about divisibility that are
-\emph{not} difficult to prove:
-
-\begin{lemma}
-\label{lem:div}
-The following statements about divisibility hold.
-%
-\begin{enumerate}
-\item If $a \divides b$, then $a \divides bc$ for all $c$.
-\item If $a \divides b$ and $b \divides c$, then $a \divides c$.
-
-\item\label{lem:divsbtc} If $a \divides b$ and $a \divides c$,
-then $a \divides sb + tc$ for all $s$ and $t$.
-
-\item For all $c \neq 0$, $a \divides b$ if and only if $ca \divides cb$.
-\end{enumerate}
-\end{lemma}
-
-\begin{proof}
-We'll prove only part 2.; the other proofs are similar.
-
-Proof of 2: Assume $a \divides b$ and $b \divides c$.
-Since $a \divides b$, there exists an integer $k_1$ such
-that $a k_1 = b$.  Since $b \divides c$, there exists an integer $k_2$
-such that $b k_2=c$.  Substituting $a k_1$ for $b$ in the second
-equation gives $(a k_1) k_2 = c$.  So $ a (k_1 k_2) = c$, which
-implies that $a \divides c$.
-\end{proof}
 
 \floatingtextbox{
 \textboxtitle{Famous Conjectures in Number Theory}
 
 \begin{description}
 
-\item[\term{Fermat's Last Theorem}] There are no positive integers $x$,
-$y$, and $z$ such that
-%
-\[
-x^n + y^n = z^n
-\]
-%
-for some integer $n > 2$.  In a book he was reading around 1630,
-Fermat claimed to have a proof but not enough space in the margin to
-write it down.  Wiles finally gave a proof of the theorem in 1994,
-after seven years of working in secrecy and isolation in his attic.
-His proof did not fit in any margin.
-
-\item[\term{Goldbach Conjecture}] Every even integer greater than two is equal to
-the sum of two primes\footnote{Recall that a prime is a number greater
-than~1 that is divisible only by itself and~1.}.  For example, $4 = 2 + 2$, $6 = 3 + 3$, $8 = 3
-+ 5$, etc.  The conjecture holds for all numbers up to $10^{16}$.  In
-1939 Schnirelman proved that every even number can be written as the
-sum of not more than 300,000 primes, which was a start.  Today, we
-know that every even number is the sum of at most 6 primes.
+\item[\term{Goldbach Conjecture}] Every even integer greater than two
+  is equal to the sum of two primes.  For example, $4 = 2 + 2$, $6 = 3
+  + 3$, $8 = 3 + 5$, etc.  The conjecture holds for all numbers up to
+  $10^{16}$.  In 1939 Schnirelman proved that every even number can be
+  written as the sum of not more than 300,000 primes, which was a
+  start.  Today, we know that every even number is the sum of at most
+  6 primes.
 
 \item[\term{Twin Prime Conjecture}] There are infinitely many primes $p$ such
 that $p + 2$ is also a prime.  In 1966 Chen showed that there are
@@ -164,16 +147,78 @@ e^{1.9(\ln n)^{1/3} (\ln\ln n)^{2/3}}
 \]
 %
 This is infeasible when $n$ has 300 digits or more.
+
+\item[\term{Fermat's Last Theorem}] There are no positive integers $x$,
+$y$, and $z$ such that
+%
+\[
+x^n + y^n = z^n
+\]
+%
+for some integer $n > 2$.  In a book he was reading around 1630,
+Fermat claimed to have a proof but not enough space in the margin to
+write it down.  Wiles finally gave a proof of the theorem in 1994,
+after seven years of working in secrecy and isolation in his attic.
+His proof did not fit in any margin.
+
 \end{description}
 }
+
+\subsection{Facts about Divisibility}
+
+The following lemma collects some basic facts about divisibility.
+
+\begin{lemma}\label{lem:div}
+\begin{enumerate}
+%\item If $a \divides b$, then $a \divides bc$ for all $c$.
+
+\item\label{lem:divtrans} If $a \divides b$ and $b \divides c$, then $a \divides c$.
+
+\item\label{lem:divsbtc} If $a \divides b$ and $a \divides c$,
+then $a \divides sb + tc$ for all $s$ and $t$.
+
+\item\label{lem:divcancel} For all $c \neq 0$, $a \divides b$ if and only if $ca \divides cb$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+These facts all follow directly from Definition~\ref{divides_def}, and
+we'll just prove part~\ref{lem:divsbtc} for practice:
+
+Given that $a \divides b$, there is some $k_1 \in \integers$ such that
+$a k_1 = b$.  Likewise, $a k_2 = c$, so
+\[
+sb+tc= s(k_1a) + t(k_2a) = (sk_1+tk_2)a.
+\]
+Therefore $sb+tc = k_3a$ where $k_3 \eqdef (sk_1+tk_2)$, which means
+that $a \divides sb+tc$.
+\end{proof}
+
+A number of the form $sb+tc$ is called an \term{integer linear
+  combination} of $b$ and $c$, or a plain \emph{linear combination},
+since in this chapter we're only talking integers.  So
+Lemma~\ref{lem:div}.\ref{lem:divsbtc} can be rephrased as
+\begin{quote}
+If $a$ divides $b$ and $c$, then $a$ divides every linear combination
+of $b$ and $c$.
+\end{quote}
+We'll be making good use of linear combinations, so let's get the general
+definition on record:
+\begin{definition\label{linear_def}}
+An integer $n$ is a \term{linear combination} of numbers
+$b_0,\dots,b_n$ iff
+\[
+n = s_0b_0+s_1b_1+\cdots+s_nb_n
+\]
+for some integers $s_0,\dots,s_n$.
+\end{definition}
 
 \subsection{When Divisibility Goes Bad}
 
 As you learned in elementary school, if one number does \emph{not}
 evenly divide another, you get a ``quotient'' and a ``remainder'' left
 over.  More precisely:
-
-\begin{theorem}[\idx{Division Theorem}]%
+\begin{theorem}\label{division_thm}[\idx{Division Theorem}]%
 \footnote{This theorem is often called the ``Division Algorithm,'' even
 though it is not what we would call an algorithm.  We will take this
 familiar result for granted without proof.}  Let $n$ and $d$ be
@@ -192,60 +237,27 @@ remainder.
 For example, $\qcnt{2716}{10} = 271$ and $\rem{2716}{10} = 6$, since
 $2716 = 271 \cdot 10 + 6$.  Similarly, $\rem{-11}{7} = 3$, since $-11
 = (-2) \cdot 7 + 3$.  There is a remainder operator built into many
-programming languages.  For example, the expression ``32 \% 5''
-evaluates to 2 in Java, C, and C++.  However, all these languages
-treat negative numbers strangely.
+programming languages.  For example, ``32 \% 5'' will be familiar as
+remainder notation to programmers in in Java, C, and C++; it evaluates
+to $\qcnt{32}{5} =2$ in all three languages.  On the other hand, these
+languages treat quotients involving negative numbers
+idiosyncratically, so if you program in one those languages, remember
+to stick to the definition according to the Division
+Theorem~\ref{division_thm}.
 
 \subsection{Die Hard}
 
-\textbox{%
-\leftskip10pt
-\parindent-\leftskip
+\emph{Die Hard~3} is just a B-grade action movie, but we think it has
+an inner message: everyone should learn at least a little number
+theory.  In Section~\ref{diehard_machine}, we formalized a state
+machine for the \idx{Die Hard} jug-filling problem using 3 and 5
+gallon jugs, and also with 3 and 9 gallon jugs, and came to different
+conclusions about bomb explosions.  What's going on in general ---for
+example, how about getting 4 gallons from 12- and 18-gallon jugs,
+getting 32 gallons with 899- and 1147-gallon jugs, or getting 3
+gallons into a jug using just 21- and 26-gallon jugs?
 
-\textbf{Simon}: On the fountain, there should be 2 jugs, do you see
-them?  A 5-gallon and a 3-gallon.  Fill one of the jugs with exactly 4
-gallons of water and place it on the scale and the timer will stop.
-You must be precise; one ounce more or less will result in
-detonation.  If you're still alive in 5~minutes, we'll speak.
-
-\textbf{Bruce}: Wait, wait a second.  I don't get it.  Do you get it?
-
-\textbf{Samuel}: No.
-
-\textbf{Bruce}: Get the jugs.  Obviously, we can't fill the 3-gallon
-jug with 4 gallons of water.
-
-\textbf{Samuel}: Obviously.
-
-\textbf{Bruce}: All right.  I know, here we go.  We fill the 3-gallon
-jug exactly to the top, right?
-
-\textbf{Samuel}: Uh-huh.
-
-\textbf{Bruce}: Okay, now we pour this 3 gallons into the 5-gallon
-jug, giving us exactly 3~gallons in the 5-gallon jug, right?
-
-\textbf{Samuel}: Right, then what?
-
-\textbf{Bruce}: All right.  We take the 3-gallon jug and fill it a
-third of the way\dots
-
-\textbf{Samuel}: No!  He said, ``Be precise.''  Exactly 4 gallons.
-
-\textbf{Bruce}: Sh---.  Every cop within 50 miles is running his a---
-off and I'm out here playing kids' games in the park.
-
-\textbf{Samuel}: Hey, you want to focus on the problem at hand?
-}
-
-The preceding script is from the movie \emph{Die Hard~3: With a
-Vengeance}.  In the movie, Samuel L. Jackson and Bruce Willis have to
-disarm a bomb planted by the diabolical Simon Gruber.  Fortunately,
-they find a solution in the nick of time.  (No doubt reading the
-script helped.)  On the surface, \emph{Die Hard~3} is just a B-grade
-action movie; however, we think the inner message of the film is that
-everyone should learn at least a little number theory.
-
+\iffalse
 Unfortunately, Hollywood never lets go of a gimmick.  Although there
 were no water jug tests in \emph{Die Hard~4: Live Free or Die Hard},
 rumor has it that the
@@ -264,21 +276,18 @@ mastermind by forming 2 gallons with 899- and 1147-gallon jugs.
 \item[Die Hard~7: Die Once and For All]
 Bruce has to make 4 gallons using 3- and 6-gallon jugs.
 
-\end{description}
-It would be nice if we could solve all these silly water jug questions
-at once.  In particular, how can one form $g$ gallons using jugs with
-capacities $a$ and~$b$?
+\end{description}\fi
 
-That's where number theory comes in handy.
+It would be nice if we could solve all these silly water jug questions
+at once.  \iffalse In particular, how can one form $g$ gallons using
+jugs with capacities $a$ and~$b$?\fi This is where number theory comes
+in handy.
 
 \subsubsection{Finding an \idx{Invariant} Property}
 
-Suppose that we have water jugs with capacities $a$ and $b$ with
-$b \geq a$.  The state of the system is described below with a pair of
-numbers $(x, y)$, where $x$ is the amount of water in the jug with
-capacity $a$ and $y$ is the amount in the jug with capacity $b$.
-Let's carry out sample operations and see what happens, assuming the
-$b$-jug is big enough:
+Suppose that we have water jugs with capacities $a$ and $b$ with $b
+\geq a$.  Let's carry out some sample operations of the state machine
+and see what happens, assuming the $b$-jug is big enough:
 %
 \begin{align*}
 (0,0)
@@ -291,42 +300,30 @@ $b$-jug is big enough:
 & \rightarrow (a, 2a-b) & \text{fill first} \\
 & \rightarrow (3a-2b, b) & \text{pour first into second (assuming $3a \geq 2b$)}
 \end{align*}
-%
-What leaps out is that at every step, the amount of water in each jug is
-of the form
-%
-\begin{equation}\label{satb}
-s \cdot a + t \cdot b
-\end{equation}
-%
-for some integers $s$ and $t$.  An expression of the form~\eqref{satb} is
-called an \term{integer linear combination} of $a$ and $b$, but in this
-chapter we'll just call it a \term{linear combination}, since we're only
-talking integers.  So we're suggesting:
-\begin{lemma}
-\label{lem:waterjugs}
-Suppose that we have water jugs with capacities $a$ and $b$.  Then the
+What leaps out is that at every step, the amount of water in each jug
+is of a linear combination of $a$ and $b$.  This is easy to prove by
+induction on the number of transitions:
+\begin{lemma}[Water Jugs]\label{lem:waterjugs}
+In the \emph{\idx{Die Hard}} state machine of
+Section~\ref{diehard_machine} with jug of sizes $a$ and $b$, the
 amount of water in each jug is always a linear combination of $a$ and
-$b$.
-\end{lemma}
-
-Lemma~\ref{lem:waterjugs} is easy to prove by induction on the number of
-pourings.
+$b$.\end{lemma}
 
 \begin{proof}
 The induction hypothesis, $P(n)$, is the proposition that after $n$
-steps, the amount of water in each jug is a linear combination of $a$
-and $b$.
+transitions, the amount of water in each jug is a linear combination
+of $a$ and $b$.
 
 \noindent \textbf{Base case}: ($n = 0$).  $P(0)$ is true, because both jugs are
 initially empty, and $0 \cdot a + 0 \cdot b = 0$.
 
-\noindent \textbf{Inductive step}.  We assume by induction hypothesis that
-after $n$ steps the amount of water in each jug is a linear combination of
-$a$ and $b$.  There are two cases:
-%
+\noindent \textbf{Inductive step}.  Suppose the machine is in state
+$(x,y)$ after $n$ steps, that is, the little jug contains $x$ gallons
+and the big one contains $y$ gallons.
+There are two cases:
+
 \begin{itemize}
-%
+
 \item If we fill a jug from the fountain or empty a jug into the
 fountain, then that jug is empty or full.  The amount in the other jug
 remains a linear combination of $a$ and $b$.  So $P(n+1)$ holds.
@@ -334,208 +331,245 @@ remains a linear combination of $a$ and $b$.  So $P(n+1)$ holds.
 \item Otherwise, we pour water from one jug to another until one is
 empty or the other is full.  By our assumption, the amount in each jug
 is a linear combination of $a$ and $b$ before we begin pouring:
-%
 \begin{align*}
-j_1 & = s_1 \cdot a + t_1 \cdot b \\
-j_2 & = s_2 \cdot a + t_2 \cdot b
+x & = s_1 \cdot a + t_1 \cdot b \\
+y & = s_2 \cdot a + t_2 \cdot b
 \end{align*}
-%
+
 After pouring, one jug is either empty (contains 0 gallons) or full
 (contains $a$ or $b$ gallons).  Thus, the other jug contains either
-$j_1 + j_2$ gallons, $j_1 + j_2 - a$, or $j_1 + j_2 - b$ gallons, all
+$x + y$ gallons, $x + y - a$, or $x + y - b$ gallons, all
 of which are linear combinations of $a$ and $b$.  So $P(n+1)$ holds in
 this case as well.
 \end{itemize}
-%
-So in any case,  $P(n+1)$ follows, completing the proof by induction.
+Since $P(n+1)$ holds in any case, this proves the inductive step,
+completing the proof by induction.
 \end{proof}
 
 So we have established that the jug problem has an invariant property,
 namely that the amount of water in every jug is always a linear
 combination of the capacities of the jugs.
-This lemma has an important corollary:
-\begin{corollary}
-Bruce dies.
-\end{corollary}
+Lemma~\ref{lem:waterjugs} has an important corollary:
+\begin{corollary*}
+Getting getting 4 gallons from 12- and 18-gallon jugs, and likewise
+getting 32 gallons from 899- and 1147-gallon jugs
+\begin{center}
+\textbf{Bruce dies!}
+\end{center}
+\end{corollary*}
 
 \begin{proof}
-In Die Hard~7, Bruce has water jugs with capacities 3 and 6 and must
-form 4 gallons of water.  However, the amount in each jug is always of
-the form $3s + 6t$ by Lemma~\ref{lem:waterjugs}.  This is always a
-multiple of 3 by part~\ref{lem:divsbtc} of Lemma~\ref{lem:div}, so he cannot
-measure out 4 gallons.
+By the Water Jugs Lemma~\ref{lem:waterjugs}, with 12- and 18-gallon
+jugs, the amount in any jug is a linear combination of 12 and 18.
+This is always a multiple of 6 by
+Lemma~\ref{lem:div}.\ref{lem:divsbtc}, so Bruce can't get 4 gallons.
+Likewise, the amount in any jug using 899- and 1147-gallon jugs is a
+multiple of 31, so he can't get 32 either.
 \end{proof}
 
-But Lemma~\ref{lem:waterjugs} isn't very satisfying.  We've just
-managed to recast a pretty understandable question about water jugs
-into a complicated question about linear combinations.  This might not
-seem like a lot of progress.  Fortunately, linear combinations are closely
-related to something more familiar, namely greatest common divisors,
-and these will help us solve the water jug problem.
+But the Water Jugs Lemma isn't very satisfying.  One problem is that
+it leaves the question of getting 3 gallons into a jug using just 21-
+and 26-gallon jugs unresolved since the only positive factor of both
+21 and 26 is 1, and of course 1 divides 3.  A bigger problem is that
+we've just managed to recast a pretty understandable question about
+water jugs into a complicated question about linear combinations.
+This might not seem like a lot of progress.  Fortunately, linear
+combinations are closely related to something more familiar, namely
+greatest common divisors, and these will help us solve the general
+water jug problem.
 
 %% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\startclassproblems
-%\pinput{CP_}
+\begin{problems}
+\practiceproblems
+\pinput{TP_linear-combs-combined}
 
+\classproblems
+\pinput{CP_perfect_numbers}
+
+\homeworkproblems
+\pinput{PS_linear_combination_game}
+
+\end{problems}
 
 %% The Greatest Common Divisor %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Greatest Common Divisor}
 \label{sec:gcd}
 
-The \emph{greatest common divisor} of $a$ and~$b$ is exactly what
-you'd guess: the largest number that is a divisor of both $a$ and~$b$.
-It is denoted by $\gcd(a, b)$.  For example, $\gcd(18, 24) = 6$.  The
-greatest common divisor turns out to be a very valuable piece of
-information about the relationship between $a$ and $b$ and for
-reasoning about integers in general.  So we'll be making lots of
-arguments about greatest common divisors in what follows.
+A \term{common divisor} of~$a$ and~$b$ is a number that divides them
+both.  The \emph{greatest common divisor (gcd)} of $a$ and~$b$ is
+written $\gcd(a, b)$.  For example, $\gcd(18, 24) = 6$.  The gcd turns
+out to be a very valuable piece of information about the relationship
+between $a$ and $b$ and for reasoning about integers in general.  So
+we'll be making lots of arguments about gcd's in what follows.
 
-\subsection{\idx{Linear Combinations} and the \idx{GCD}}
+%% \subsection{\idx{Linear Combinations} and the \idx{GCD}}
 
-The theorem below relates the greatest common divisor to linear
-combinations.  This theorem is \emph{very} useful; take the time to
-understand it and then remember it!
+%% The theorem below relates the greatest common divisor to linear
+%% combinations.  This theorem is \emph{very} useful; take the time to
+%% understand it and then remember it!
 
-\begin{theorem}
-\label{th:gcd}
-The greatest common divisor of $a$ and $b$ is equal to the smallest
-positive linear combination of $a$ and $b$.
-\end{theorem}
+%% \begin{theorem}
+%% \label{th:gcd}
+%% The greatest common divisor of $a$ and $b$ is equal to the smallest
+%% positive linear combination of $a$ and $b$.
+%% \end{theorem}
 
-For example, the greatest common divisor of 52 and 44 is 4.  And, sure
-enough, 4 is a linear combination of 52 and 44:
-%
-\[
-6 \cdot 52 + (-7) \cdot 44  =  4
-\]
-%
-Furthermore, no linear combination of 52 and 44 is equal to a smaller
-positive integer.
+%% For example, the greatest common divisor of 52 and 44 is 4.  And, sure
+%% enough, 4 is a linear combination of 52 and 44:
+%% %
+%% \[
+%% 6 \cdot 52 + (-7) \cdot 44  =  4
+%% \]
+%% %
+%% Furthermore, no linear combination of 52 and 44 is equal to a smaller
+%% positive integer.
 
-\begin{proof}[Proof of Theorem~\ref{th:gcd}]
-By the Well Ordering Principle, there is a smallest positive linear
-combination of $a$ and $b$; call it $m$.  We'll prove that $m = \gcd(a,
-b)$ by showing both $\gcd(a, b) \leq m$ and $m \leq \gcd(a, b)$.
+%% \begin{proof}[Proof of Theorem~\ref{th:gcd}]
+%% By the Well Ordering Principle, there is a smallest positive linear
+%% combination of $a$ and $b$; call it $m$.  We'll prove that $m = \gcd(a,
+%% b)$ by showing both $\gcd(a, b) \leq m$ and $m \leq \gcd(a, b)$.
 
-First, we show that $\gcd(a, b) \leq m$.  Now any common divisor of
-$a$ and $b$---that is, any $c$ such that $c \divides a$ and
-$c \divides b$---will divide both $sa$ and $tb$, and therefore also
-$sa+tb$ for any $s$ and~$t$.  The $\gcd(a, b)$ is by
-definition a common divisor of $a$ and $b$, so
-%
-\begin{equation}\label{gcdabdivlin}
-\gcd(a, b) \divides s a + t b
-\end{equation}
-for every $s$ and $t$.
-%
-In particular, $\gcd(a, b) \divides m$, which implies that $\gcd(a, b)
-\leq m$.
+%% First, we show that $\gcd(a, b) \leq m$.  Now any common divisor of
+%% $a$ and $b$---that is, any $c$ such that $c \divides a$ and
+%% $c \divides b$---will divide both $sa$ and $tb$, and therefore also
+%% $sa+tb$ for any $s$ and~$t$.  The $\gcd(a, b)$ is by
+%% definition a common divisor of $a$ and $b$, so
+%% %
+%% \begin{equation}\label{gcdabdivlin}
+%% \gcd(a, b) \divides s a + t b
+%% \end{equation}
+%% for every $s$ and $t$.
+%% %
+%% In particular, $\gcd(a, b) \divides m$, which implies that $\gcd(a, b)
+%% \leq m$.
 
-Now, we show that $m \leq \gcd(a, b)$.  We do this by showing that $m
-\divides a$.  A symmetric argument shows that $m \divides b$, which means
-that $m$ is a common divisor of $a$ and $b$.  Thus, $m$ must be less than
-or equal to the \emph{greatest} common divisor of $a$ and $b$.
+%% Now, we show that $m \leq \gcd(a, b)$.  We do this by showing that $m
+%% \divides a$.  A symmetric argument shows that $m \divides b$, which means
+%% that $m$ is a common divisor of $a$ and $b$.  Thus, $m$ must be less than
+%% or equal to the \emph{greatest} common divisor of $a$ and $b$.
 
-All that remains is to show that $m \divides a$.  By the Division
-Algorithm, there exists a quotient $q$ and remainder $r$ such that:
-%
-\[
-a = q \cdot m + r \hspace{1in} \text{(where $0 \leq r < m$)}
-\]
-%
-Recall that $m = s a + t b$ for some integers $s$ and $t$.
-Substituting in for $m$ gives:
-%
-\begin{align*}
-a & = q \cdot (s a + t b) + r, \qquad \text{so} \\
-r & = (1 - qs) a + (-qt) b.
-\end{align*}
-%
-We've just expressed $r$ as a linear combination of $a$ and $b$.
-However, $m$ is the \emph{smallest positive} linear combination and
-$0 \leq r < m$.  The only possibility is that the remainder $r$ is not
-positive; that is, $r = 0$.  This implies $m \divides a$.
-\end{proof}
+%% All that remains is to show that $m \divides a$.  By the Division
+%% Algorithm, there exists a quotient $q$ and remainder $r$ such that:
+%% %
+%% \[
+%% a = q \cdot m + r \hspace{1in} \text{(where $0 \leq r < m$)}
+%% \]
+%% %
+%% Recall that $m = s a + t b$ for some integers $s$ and $t$.
+%% Substituting in for $m$ gives:
+%% %
+%% \begin{align*}
+%% a & = q \cdot (s a + t b) + r, \qquad \text{so} \\
+%% r & = (1 - qs) a + (-qt) b.
+%% \end{align*}
+%% %
+%% We've just expressed $r$ as a linear combination of $a$ and $b$.
+%% However, $m$ is the \emph{smallest positive} linear combination and
+%% $0 \leq r < m$.  The only possibility is that the remainder $r$ is not
+%% positive; that is, $r = 0$.  This implies $m \divides a$.
+%% \end{proof}
 
-\begin{corollary}\label{cor:lin-comb}
-An integer is linear combination of $a$ and $b$ iff it is a multiple
-of $\gcd(a, b)$.
-\end{corollary}
+%% \begin{corollary}\label{cor:lin-comb}
+%% An integer is linear combination of $a$ and $b$ iff it is a multiple
+%% of $\gcd(a, b)$.
+%% \end{corollary}
 
-\begin{proof}
-By~\eqref{gcdabdivlin}, every linear combination of $a$ and $b$ is a
-multiple of $\gcd(a, b)$.  Conversely, since $\gcd(a, b)$ is a linear
-combination of $a$ and $b$, every multiple of $\gcd(a, b)$ is as well.
-\end{proof}
+%% \begin{proof}
+%% By~\eqref{gcdabdivlin}, every linear combination of $a$ and $b$ is a
+%% multiple of $\gcd(a, b)$.  Conversely, since $\gcd(a, b)$ is a linear
+%% combination of $a$ and $b$, every multiple of $\gcd(a, b)$ is as well.
+%% \end{proof}
 
-Now we can restate the water jugs lemma in terms of the greatest
-common divisor:
-\begin{corollary}
-\label{cor:waterjugs}
-Suppose that we have water jugs with capacities $a$ and $b$.  Then the
-amount of water in each jug is always a multiple of $\gcd(a, b)$.
-\end{corollary}
+%% Now we can restate the water jugs lemma in terms of the greatest
+%% common divisor:
+%% \begin{corollary}
+%% \label{cor:waterjugs}
+%% Suppose that we have water jugs with capacities $a$ and $b$.  Then the
+%% amount of water in each jug is always a multiple of $\gcd(a, b)$.
+%% \end{corollary}
 
-For example, there is no way to form 4 gallons using 3- and 6-gallon
-jugs, because 4 is not a multiple of $\gcd(3, 6) = 3$.
+%% For example, there is no way to form 4 gallons using 3- and 6-gallon
+%% jugs, because 4 is not a multiple of $\gcd(3, 6) = 3$.
 
-\subsection{Properties of the \idx{Greatest Common Divisor}}
+%% \subsection{Properties of the \idx{Greatest Common Divisor}}
 
-We'll often make use of some basic $\gcd$ facts:
+%% We'll often make use of some basic $\gcd$ facts:
 
-\begin{lemma} The following statements about the greatest common divisor hold:
-\label{lem:gcd}
-%
-\begin{enumerate}
-\item Every common divisor of $a$ and $b$ divides $\gcd(a, b)$.
-\item\label{gcd2} $\gcd(k a, k b) = k \cdot \gcd(a, b)$ for all $k > 0$.
-\item\label{gcd3} If $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$, then $\gcd(a, bc) =
-1$.
-\item\label{gcd4} If $a \divides b c$ and $\gcd(a, b) = 1$, then $a \divides c$.
-\item\label{gcd5} $\gcd(a, b) = \gcd(b, \rem{a}{b})$.
-\end{enumerate}
-\end{lemma}
+%% \begin{lemma} The following statements about the greatest common divisor hold:
+%% \label{lem:gcd}
+%% %
+%% \begin{enumerate}
+%% \item Every common divisor of $a$ and $b$ divides $\gcd(a, b)$.
+%% \item\label{gcd2} $\gcd(k a, k b) = k \cdot \gcd(a, b)$ for all $k > 0$.
+%% \item\label{gcd3} If $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$, then $\gcd(a, bc) =
+%% 1$.
+%% \item\label{gcd4} If $a \divides b c$ and $\gcd(a, b) = 1$, then $a \divides c$.
+%% \item\label{gcd5} $\gcd(a, b) = \gcd(b, \rem{a}{b})$.
+%% \end{enumerate}
+%% \end{lemma}
 
-Here's the trick to proving these statements: translate the $\gcd$
-world to the linear combination world using Theorem~\ref{th:gcd},
-argue about linear combinations, and then translate back using
-Theorem~\ref{th:gcd} again.
+%% Here's the trick to proving these statements: translate the $\gcd$
+%% world to the linear combination world using Theorem~\ref{th:gcd},
+%% argue about linear combinations, and then translate back using
+%% Theorem~\ref{th:gcd} again.
 
-\begin{proof}
-We prove only parts~\ref{gcd3}.\ and~\ref{gcd4}.
+%% \begin{proof}
+%% We prove only parts~\ref{gcd3}.\ and~\ref{gcd4}.
 
-\textbf{Proof of~\ref{gcd3}}.  The assumptions together with Theorem~\ref{th:gcd} imply
-that there exist integers $s$, $t$, $u$, and $v$ such that:
-%
-\begin{align*}
-s a + t b & = 1 \\
-u a + v c & = 1
-\end{align*}
-%
-Multiplying these two equations gives:
-\[
-(s a + t b)(u a + v c) = 1
-\]
-%
-The left side can be rewritten as $a \cdot (a s u + b t u + c s v) + b c
-(t v)$.  This is a linear combination of $a$ and $b c$ that is equal to 1,
-so $\gcd(a, bc) = 1$ by Theorem~\ref{th:gcd}.
+%% \textbf{Proof of~\ref{gcd3}}.  The assumptions together with Theorem~\ref{th:gcd} imply
+%% that there exist integers $s$, $t$, $u$, and $v$ such that:
+%% %
+%% \begin{align*}
+%% s a + t b & = 1 \\
+%% u a + v c & = 1
+%% \end{align*}
+%% %
+%% Multiplying these two equations gives:
+%% \[
+%% (s a + t b)(u a + v c) = 1
+%% \]
+%% %
+%% The left side can be rewritten as $a \cdot (a s u + b t u + c s v) + b c
+%% (t v)$.  This is a linear combination of $a$ and $b c$ that is equal to 1,
+%% so $\gcd(a, bc) = 1$ by Theorem~\ref{th:gcd}.
 
-\textbf{Proof of~\ref{gcd4}}.  Theorem~\ref{th:gcd} says that $\gcd(ac, bc)$ is equal to a
-linear combination of $ac$ and $bc$.  Now $a \divides ac$ trivially
-and $a
-\divides bc$ by assumption.  Therefore, $a$ divides \emph{every} linear
-combination of $ac$ and $bc$.  In particular, $a$ divides $\gcd(ac, bc) =
-c \cdot \gcd(a, b) = c\cdot 1 = c$.  The first equality uses part~\ref{gcd2}.\ of
-this lemma, and the second uses the assumption that $\gcd(a, b) = 1$.
-\end{proof}
+%% \textbf{Proof of~\ref{gcd4}}.  Theorem~\ref{th:gcd} says that $\gcd(ac, bc)$ is equal to a
+%% linear combination of $ac$ and $bc$.  Now $a \divides ac$ trivially
+%% and $a
+%% \divides bc$ by assumption.  Therefore, $a$ divides \emph{every} linear
+%% combination of $ac$ and $bc$.  In particular, $a$ divides $\gcd(ac, bc) =
+%% c \cdot \gcd(a, b) = c\cdot 1 = c$.  The first equality uses part~\ref{gcd2}.\ of
+%% this lemma, and the second uses the assumption that $\gcd(a, b) = 1$.
+%% \end{proof}
 
 \subsection{Euclid's Algorithm}
+The first thing to figure out how to find gcd's.  A good way has been
+known for several thousand years.  It is known as \term{Euclid's
+Algorithm} and is based on the following elementary observation.
 
-Part~(5) of Lemma~\ref{lem:gcd} is useful for quickly computing the
-greatest common divisor of two numbers.  For example, we could compute
-the greatest common divisor of 1147 and~899 by repeatedly applying
-part~(5):
+\begin{lemma}\label{lem:gcd}
+\[
+\gcd(a, b) = \gcd(b, \rem{a}{b}).
+\]
+
+\begin{proof}
+By the Division Theorem~\ref{division_thm}, 
+\begin{equation}\label{aqbrprf}
+a = qb + r
+\end{equation}
+where $r = \rem{a}{b}$.  So $a$ is a linear combination of $b$ and
+$r$, which implies that any divisor of $b$ and $r$ is a divisor of $a$
+by Lemma~\ref{lem:div}.\ref{lem:divsbtc}.  Likewise, $r$ is a linear
+combination, $a-qb$, of $a$ and $b$, so any divisor of $a$ and $b$ is
+a divisor of $r$.  This means that $a$ and $b$ have the same common
+divisors as $b$ and $r$, and so they have the same \emph{greatest}
+common divisor.
+\end{proof}
+\end{lemma}
+
+Lemma~\ref{lem:gcd} is useful for quickly computing the greatest
+common divisor of two numbers.  For example, we could compute the
+greatest common divisor of 1147 and~899 by repeatedly it:
 \begin{align*}
 \gcd(1147, 899)
     &= \gcd\bigl(899, \underbrace{\rem{1147}{899}}_{{} = 248}\bigr) \\
@@ -550,148 +584,73 @@ part~(5):
 The last equation might look wrong, but 31 is a divisor of both 31
 and~0 since every integer divides~0.
 
-This process is called \emph{Euclid's algorithm} and it was discovered
-by the Greeks over 3000 years ago.  You can prove that the algorithm
-always eventually terminates by using induction and the fact that the
-numbers in each step keep getting smaller until the remainder is~0,
-whereupon you have computed the~GCD\@.  In fact, the numbers are
-getting smaller quickly (by at least a factor of~2 every two steps)
-and so Euler's Algorithm is quite fast.  The fact that Euclid's
-Algorithm actually produces the GCD (and not something different) can
-also be proved by an inductive invariant argument.
-
-The calculation that $\gcd(1147, 899) = 31$ together with
-Corollary~\ref{cor:waterjugs} implies that there is no way to measure
-out 2~gallons of water using jugs with capacities 1147 and 899, since
-we can only obtain multiples of 31 gallons with these jugs.  This is
-good news---Bruce won't even survive \emph{Die Hard~6}!
-
-But what about Die Hard~5?  Is it
-possible for Bruce to make 3 gallons using 21- and 26-gallon
-jugs?  Using Euclid's algorithm:
-%
-\[
-\gcd(26, 21) = \gcd(21, 5) = \gcd(5, 1) = 1.
-\]
-%
-Since 3 is a multiple of~1, so we can't \emph{rule out} the possibility
-that 3 gallons can be formed.  On the other hand, we don't know if it can be
-done either.  To resolve the matter, we will need more number theory.
-
-\subsection{One Solution for All Water Jug Problems}
-
-Corollary~\ref{cor:lin-comb} says that 3 can be written as a linear
-combination of 21 and 26, since 3 is a multiple of $\gcd(21, 26) = 1$.
-In other words, there exist integers $s$ and $t$ such that:
-%
-\[
-3 = s \cdot 21 + t \cdot 26
-\]
-%
-We don't know what the coefficients $s$ and $t$ are, but we do know
-that they exist.
-
-Now the coefficient $s$ could be either positive or negative.
-However, we can readily transform this linear combination into an
-equivalent linear combination
-%
-\begin{equation}\label{3sprime21}
-3 = s' \cdot 21 + t' \cdot 26
+This process is called \emph{Euclid's algorithm}, and it was discovered
+by the Greeks over 3000 years ago.  We can formalize it as a state
+machine with states $\naturals^2$ and one transition rule:
+\begin{equation}\label{euclid_transition}
+(x,y) \movesto (y, \rem{x}{y}),
 \end{equation}
-%
-where the coefficient $s'$ is positive.  The trick is to notice that
-if we increase $s$ by 26 in the original equation and decrease $t$ by
-21, then the value of the expression $s \cdot 21 + t \cdot 26$ is
-unchanged overall.  Thus, by repeatedly increasing the value of $s$
-(by 26 at a time) and decreasing the value of $t$ (by 21 at a time),
-we get a linear combination $s' \cdot 21 + t' \cdot 26 = 3$ where the
-coefficient $s'$ is positive.  Notice that then $t'$ must be negative;
-otherwise, this expression would be much greater than 3.
-
-Now we can form 3 gallons using jugs with capacities 21 and~26:  We
-simply repeat the following steps $s'$ times:
-\begin{enumerate}
-\item Fill the 21-gallon jug.
-\item Pour all the water in the 21-gallon jug into the 26-gallon jug.
-If at any time the 26-gallon jug becomes full, empty it out, and
-continue pouring the 21-gallon jug into the 26-gallon jug.
-\end{enumerate}
-%
-At the end of this process, we must have have emptied the 26-gallon
-jug exactly $\abs{t'}$ times.  Here's why: we've taken $s' \cdot 21$
-gallons of water from the fountain, and we've poured out some multiple
-of 26 gallons.  If we emptied fewer than $\abs{t'}$ times, then
-by~\eqref{3sprime21}, the big jug would be left with at least $3+26$
-gallons, which is more than it can hold; if we emptied it more times,
-the big jug would be left containing at most $3-26$ gallons, which is
-nonsense.  But once we have emptied the 26-gallon jug exactly
-$\abs{t'}$ times, equation~\eqref{3sprime21} implies that there are
-exactly 3 gallons left.
-
-Remarkably, we don't even need to know the coefficients $s'$ and $t'$
-in order to use this strategy!  Instead of repeating the outer loop
-$s'$ times, we could just repeat \emph{until we obtain 3 gallons},
-since that must happen eventually.  Of course, we have to keep track
-of the amounts in the two jugs so we know when we're done.  Here's the
-solution that approach gives:
-%
+for $y>0$.  So by Lemma~\ref{lem:gcd}, the gcd stays the same from one
+state to the next, which means that started in state $(a,b)$, the
+predicate $P(x,y)$,
 \[
-\begin{array}{ccccccccc}
-(0,0) & \xrightarrow{\text{fill 21}} & (21,0)& \xrightarrow{\text{pour 21 into 26}} & (0,21)\\
-& \xrightarrow{\text{fill 21}} & (21,21)& \xrightarrow{\text{pour 21 into 26}} & (16,26)& \xrightarrow{\text{empty 26}} & (16,0)& \xrightarrow{\text{pour 21 into 26}} & (0,16)\\
-& \xrightarrow{\text{fill 21}} & (21,16)& \xrightarrow{\text{pour 21 into 26}} & (11,26)& \xrightarrow{\text{empty 26}} & (11,0)& \xrightarrow{\text{pour 21 into 26}} & (0,11)\\
-& \xrightarrow{\text{fill 21}} & (21,11)& \xrightarrow{\text{pour 21 into 26}} & (6,26)& \xrightarrow{\text{empty 26}} & (6,0)& \xrightarrow{\text{pour 21 into 26}} & (0,6)\\
-& \xrightarrow{\text{fill 21}} & (21,6)& \xrightarrow{\text{pour 21 into 26}} & (1,26)& \xrightarrow{\text{empty 26}} & (1,0)& \xrightarrow{\text{pour 21 into 26}} & (0,1)\\
-& \xrightarrow{\text{fill 21}} & (21,1)& \xrightarrow{\text{pour 21 into 26}} & (0,22)\\
-& \xrightarrow{\text{fill 21}} & (21,22)& \xrightarrow{\text{pour 21 into 26}} & (17,26)& \xrightarrow{\text{empty 26}} & (17,0)& \xrightarrow{\text{pour 21 into 26}} & (0,17)\\
-& \xrightarrow{\text{fill 21}} & (21,17)& \xrightarrow{\text{pour 21 into 26}} & (12,26)& \xrightarrow{\text{empty 26}} & (12,0)& \xrightarrow{\text{pour 21 into 26}} & (0,12)\\
-& \xrightarrow{\text{fill 21}} & (21,12)& \xrightarrow{\text{pour 21 into 26}} & (7,26)& \xrightarrow{\text{empty 26}} & (7,0)& \xrightarrow{\text{pour 21 into 26}} & (0,7)\\
-& \xrightarrow{\text{fill 21}} & (21,7)& \xrightarrow{\text{pour 21 into 26}} & (2,26)& \xrightarrow{\text{empty 26}} & (2,0)& \xrightarrow{\text{pour 21 into 26}} & (0,2)\\
-& \xrightarrow{\text{fill 21}} & (21,2)& \xrightarrow{\text{pour 21 into 26}} & (0,23)\\
-& \xrightarrow{\text{fill 21}} & (21,23)& \xrightarrow{\text{pour 21 into 26}} & (18,26)& \xrightarrow{\text{empty 26}} & (18,0)& \xrightarrow{\text{pour 21 into 26}} & (0,18)\\
-& \xrightarrow{\text{fill 21}} & (21,18)& \xrightarrow{\text{pour 21 into 26}} & (13,26)& \xrightarrow{\text{empty 26}} & (13,0)& \xrightarrow{\text{pour 21 into 26}} & (0,13)\\
-& \xrightarrow{\text{fill 21}} & (21,13)& \xrightarrow{\text{pour 21 into 26}} & (8,26)& \xrightarrow{\text{empty 26}} & (8,0)& \xrightarrow{\text{pour 21 into 26}} & (0,8)\\
-& \xrightarrow{\text{fill 21}} & (21,8)& \xrightarrow{\text{pour 21 into 26}} & (3,26)& \xrightarrow{\text{empty 26}} & (3,0)& \xrightarrow{\text{pour 21 into 26}} & (0,3)
-\end{array}
+\gcd(x,y) = \gcd(a,b),
 \]
-%
-
-The same approach works regardless of the jug capacities and even
-regardless the amount we're trying to produce!  Simply repeat these two
-steps until the desired amount of water is obtained:
-\begin{enumerate}
-\item Fill the smaller jug.
-\item Pour all the water in the smaller jug into the larger jug.
-If at any time the larger jug becomes full, empty it out, and continue
-pouring the smaller jug into the larger jug.
-\end{enumerate}
-By the same reasoning as before, this method eventually generates every
-multiple of the greatest common divisor of the jug capacities---all the
-quantities we can possibly produce.  No ingenuity is needed at all!
-
-
-\subsection{The Pulverizer}
-\label{sec:pulverizer}
-
-We have shown that no matter which pair of numbers $a$ and~$b$ we
-are given, there is always a pair of integer coefficients $s$ and $t$
-such that
+is an invariant.  By the Invariant Principle, when $y=0$ the value of
+$x$ is the gcd because
 \[
-\gcd(a, b)  =  s a + t b.
+x = \gcd(x,0) = \gcd(a,b).
 \]
-Unfortunately, the proof was \emph{nonconstructive}: it didn't suggest
-a way for finding such $s$ and~$t$.  That job is tackled by a
-mathematical tool that dates to sixth-century India, where it was
-called \emph{kuttak}, which means ``The Pulverizer''.  Today, the
-Pulverizer is more commonly known as ``the extended Euclidean GCD
-algorithm'', because it is so close to Euclid's Algorithm.
+What's more, $y$ does get to be 0 pretty fast: it's easy to check that
+$y \le x$ is another invariant, and since $x$ gets divided by $y$ at
+each step, $x$ gets smaller by more than 1/2 until $y \le 1$, after
+which the machine terminates in at most two more transitions.  It
+follows that Euclid's algorithm terminates after at most $2+ \log a$
+transtions.
 
-Euclid's Algorithm for finding the GCD of two numbers relies on
-repeated application of the equation:
-\begin{equation*}
-    \gcd(a, b) = gcd(b, \rem{a, b}).
-\end{equation*}
-For example, we can compute the GCD of 259 and~70 as follows:
+The calculation that $\gcd(1147, 899) = 31$ was how we figured out
+that with water jugs of sizes 1147 and 899, Bruce dies trying to get
+32 gallons.
+
+On the other hand applyng Euclid's algorithm to 26 and 21:
+\[
+\gcd(26, 21) = \gcd(21, 5) = \gcd(5, 1) = 1,
+\]
+which is why we left the 21- and 26-gallon jug problem unresolved.  To
+resolve the matter, we will need more number theory.
+
+\subsection{The Pulverizer}\label{sec:pulverizer}
+It will be very useful to know
+\begin{theorem}\label{gcd_is_lin_thm}
+The greatest common divisor of $a$ and $b$ is a linear combination of $a$ and $b$.
+\end{theorem}
+That is,
+\[
+\gcd(a, b)  =  s a + t b,
+\]
+for some integers $s$ and $t$.
+
+We already know from Lemma~\ref{lem:div}.\ref{lem:divsbtc} that every
+linear combination of $a$ and $b$ is divisible by any common factor of
+$a$ and $b$, so it is certainly divisible by the greatest of these
+common divisors.  Since any constant multiple of a linear combination
+is also a linear combination, Theorem~\ref{gcd_is_lin_thm} implies that
+any muultiple of the gcd is a linear combination.  So we have the
+immediate corollary:
+\begin{corollary}\label{cor:lin-comb}
+An integer is a linear combination of $a$ and $b$ iff it is a multiple of
+$\gcd(a, b)$.
+\end{corollary}
+
+We'll prove Theorem~\ref{gcd_is_lin_thm} directly by explaining how to
+find $s$ and $t$.  This job is tackled by a mathematical tool that
+dates to sixth-century India, where it was called \emph{kuttak}, which
+means ``The Pulverizer''.  Today, the Pulverizer is more commonly
+known as ``the extended Euclidean GCD algorithm'', because it is so
+close to Euclid's Algorithm.
+
+For example, following Euclid's Algorithm, we can compute the GCD of
+259 and~70 as follows:
 \begin{align*}
 \gcd(259, 70)
     & = \gcd(70, 49) & \quad & \text{since $\rem{259}{70} = 49$}\\
@@ -732,57 +691,155 @@ had computed.  After simplifying, we were left with a linear
 combination of $a$ and $b$ that was equal to the remainder as desired.
 The final solution is boxed.
 
-You can prove that the Pulverizer always works and that it terminates
-by using induction.  Indeed, you can ``pulverize'' very large numbers
-very quickly by using this algorithm.  As we will soon see, its speed
-makes the Pulverizer a very useful tool in the field of
-cryptography.
+This should make it pretty clear how and why the Pulverizer works.
+Anyone who has doubts can work out
+Problem~\ref{PS_pulverizer_machine}, where the Pulverizer is
+formalized as a state machine and then verified using an invariant
+that is an extension of the one used for Euclid's algorithm.
+
+Since the Pulverizer requires only a little more computation than
+Euclid's algorithm, you can ``pulverize'' very large numbers very
+quickly by using this algorithm.  As we will soon see, its speed makes
+the Pulverizer a very useful tool in the field of cryptography.
+
+Now we can restate the Water Jugs Lemma~~\ref{lem:waterjugs} in terms
+of the greatest common divisor:
+\begin{corollary}\label{cor:waterjugs}
+Suppose that we have water jugs with capacities $a$ and $b$.  Then the
+amount of water in each jug is always a multiple of $\gcd(a, b)$.
+\end{corollary}
+For example, there is no way to form 4 gallons using 3- and 6-gallon
+jugs, because 4 is not a multiple of $\gcd(3, 6) = 3$.
+
+\subsection{One Solution for All Water Jug Problems}
+
+Corollary~\ref{cor:lin-comb} says that 3 can be written as a linear
+combination of 21 and 26, since 3 is a multiple of $\gcd(21, 26) = 1$.
+So the Pulverizer will give us integers $s$ and $t$ such that
+\begin{equation}\label{3s21t26}
+3 = s \cdot 21 + t \cdot 26
+\end{equation}
+
+Now the coefficient $s$ could be either positive or negative.
+However, we can readily transform this linear combination into an
+equivalent linear combination
+\begin{equation}\label{3sprime21}
+3 = s' \cdot 21 + t' \cdot 26
+\end{equation}
+where the coefficient $s'$ is positive.  The trick is to notice that
+if in equation~\eqref{3s21t26} we increase $s$ by 26 and decrease $t$
+by 21, then the value of the expression $s \cdot 21 + t \cdot 26$ is
+unchanged overall.  Thus, by repeatedly increasing the value of $s$
+(by 26 at a time) and decreasing the value of $t$ (by 21 at a time),
+we get a linear combination $s' \cdot 21 + t' \cdot 26 = 3$ where the
+coefficient $s'$ is positive.  Notice that then $t'$ must be negative;
+otherwise, this expression would be much greater than 3.
+
+Now we can form 3 gallons using jugs with capacities 21 and~26:  We
+simply repeat the following steps $s'$ times:
+\begin{enumerate}
+\item Fill the 21-gallon jug.
+\item Pour all the water in the 21-gallon jug into the 26-gallon jug.
+If at any time the 26-gallon jug becomes full, empty it out, and
+continue pouring the 21-gallon jug into the 26-gallon jug.
+\end{enumerate}
+At the end of this process, we must have have emptied the 26-gallon
+jug exactly $\abs{t'}$ times.  Here's why: we've taken $s' \cdot 21$
+gallons of water from the fountain, and we've poured out some multiple
+of 26 gallons.  If we emptied fewer than $\abs{t'}$ times, then
+by~\eqref{3sprime21}, the big jug would be left with at least $3+26$
+gallons, which is more than it can hold; if we emptied it more times,
+the big jug would be left containing at most $3-26$ gallons, which is
+nonsense.  But once we have emptied the 26-gallon jug exactly
+$\abs{t'}$ times, equation~\eqref{3sprime21} implies that there are
+exactly 3 gallons left.
+
+Remarkably, we don't even need to know the coefficients $s'$ and $t'$
+in order to use this strategy!  Instead of repeating the outer loop
+$s'$ times, we could just repeat \emph{until we obtain 3 gallons},
+since that must happen eventually.  Of course, we have to keep track
+of the amounts in the two jugs so we know when we're done.  Here's the
+solution that approach gives:
+\[
+\begin{array}{ccccccccc}
+\lefteqn{(0,0)  \xrightarrow{\text{fill 21}}}\\
+& (21,0)& \xrightarrow{\text{pour 21 into 26}} & (0,21)\\
+& \xrightarrow{\text{fill 21}} & (21,21)& \xrightarrow{\text{pour 21 into 26}} & (16,26)& \xrightarrow{\text{empty 26}} & (16,0)& \xrightarrow{\text{pour 21 into 26}} & (0,16)\\
+& \xrightarrow{\text{fill 21}} & (21,16)& \xrightarrow{\text{pour 21 into 26}} & (11,26)& \xrightarrow{\text{empty 26}} & (11,0)& \xrightarrow{\text{pour 21 into 26}} & (0,11)\\
+& \xrightarrow{\text{fill 21}} & (21,11)& \xrightarrow{\text{pour 21 into 26}} & (6,26)& \xrightarrow{\text{empty 26}} & (6,0)& \xrightarrow{\text{pour 21 into 26}} & (0,6)\\
+& \xrightarrow{\text{fill 21}} & (21,6)& \xrightarrow{\text{pour 21 into 26}} & (1,26)& \xrightarrow{\text{empty 26}} & (1,0)& \xrightarrow{\text{pour 21 into 26}} & (0,1)\\
+& \xrightarrow{\text{fill 21}} & (21,1)& \xrightarrow{\text{pour 21 into 26}} & (0,22)\\
+& \xrightarrow{\text{fill 21}} & (21,22)& \xrightarrow{\text{pour 21 into 26}} & (17,26)& \xrightarrow{\text{empty 26}} & (17,0)& \xrightarrow{\text{pour 21 into 26}} & (0,17)\\
+& \xrightarrow{\text{fill 21}} & (21,17)& \xrightarrow{\text{pour 21 into 26}} & (12,26)& \xrightarrow{\text{empty 26}} & (12,0)& \xrightarrow{\text{pour 21 into 26}} & (0,12)\\
+& \xrightarrow{\text{fill 21}} & (21,12)& \xrightarrow{\text{pour 21 into 26}} & (7,26)& \xrightarrow{\text{empty 26}} & (7,0)& \xrightarrow{\text{pour 21 into 26}} & (0,7)\\
+& \xrightarrow{\text{fill 21}} & (21,7)& \xrightarrow{\text{pour 21 into 26}} & (2,26)& \xrightarrow{\text{empty 26}} & (2,0)& \xrightarrow{\text{pour 21 into 26}} & (0,2)\\
+& \xrightarrow{\text{fill 21}} & (21,2)& \xrightarrow{\text{pour 21 into 26}} & (0,23)\\
+& \xrightarrow{\text{fill 21}} & (21,23)& \xrightarrow{\text{pour 21 into 26}} & (18,26)& \xrightarrow{\text{empty 26}} & (18,0)& \xrightarrow{\text{pour 21 into 26}} & (0,18)\\
+& \xrightarrow{\text{fill 21}} & (21,18)& \xrightarrow{\text{pour 21 into 26}} & (13,26)& \xrightarrow{\text{empty 26}} & (13,0)& \xrightarrow{\text{pour 21 into 26}} & (0,13)\\
+& \xrightarrow{\text{fill 21}} & (21,13)& \xrightarrow{\text{pour 21 into 26}} & (8,26)& \xrightarrow{\text{empty 26}} & (8,0)& \xrightarrow{\text{pour 21 into 26}} & (0,8)\\
+& \xrightarrow{\text{fill 21}} & (21,8)& \xrightarrow{\text{pour 21 into 26}} & (3,26)& \xrightarrow{\text{empty 26}} & (3,0)& \xrightarrow{\text{pour 21 into 26}} & (0,3)
+\end{array}
+\]
+
+The same approach works regardless of the jug capacities and even
+regardless the amount we're trying to produce!  Simply repeat these
+two steps until the desired amount of water is obtained:
+\begin{enumerate}
+\item Fill the smaller jug.
+\item Pour all the water in the smaller jug into the larger jug.
+If at any time the larger jug becomes full, empty it out, and continue
+pouring the smaller jug into the larger jug.
+\end{enumerate}
+By the same reasoning as before, this method eventually generates every
+multiple of the greatest common divisor of the jug capacities ---all the
+quantities we can possibly produce.  No ingenuity is needed at all!
 
 %% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
 \classproblems
-\pinput{CP_perfect_numbers}
 \pinput{CP_use_the_pulverizer}
 \pinput{CP_proving_basic_gcd_properties}
 
+\homeworkproblems
+\pinput{PS_filling_buckets_with_water}
 \end{problems}
 
 %% The Fundamental Theorem of Arithmetic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Fundamental Theorem of Arithmetic}\label{fundamental_theorem_sec}
 
 We now have almost enough tools to prove something that you probably
-already know.
+already know, namely, that every number has a unique prime
+factorization.  
+
+Let's state this more carefully.  A sequence of numbers is
+\emph{\idx{weakly decreasing}} when each number in the sequence is
+$\ge$ the numbers after it.  Note that a sequence of just one number
+as well as a sequence of no number ---the empty sequence ---is weakly
+decreasing by this definition.
 
 \begin{theorem}[\idx{Fundamental Theorem of Arithmetic}]
-Every positive integer $n$ can be written in a unique way as a product
-of primes:
-\begin{equation*}
-    n = p_1 \cdot p_2 \cdots p_j \qquad (p_1 \leq p_2 \leq \cdots \leq p_j)
-\end{equation*}
+Every positive integer is a\emph{product of a unique weakly decreasing
+  sequence of primes}.
 \end{theorem}
 
 Notice that the theorem would be false if 1 were considered a prime;
 for example, $15$ could be written as $3 \cdot 5$ or $1 \cdot 3 \cdot
-5$ or $1^2 \cdot 3 \cdot 5$.  Also, we're relying on a standard
-convention: the product of an empty set of numbers is defined to be 1,
-much as the sum of an empty set of numbers is defined to be 0.
-Without this convention, the theorem would be false for $n = 1$.
+5$ or $1^2 \cdot 3 \cdot 5$.
 
 There is a certain wonder in the Fundamental Theorem, even if you've
-known it since you were in a crib.  Primes show up erratically in the sequence
-of integers.  In fact, their distribution seems almost random:
-%
+known it since you were in a crib.  Primes show up erratically in the
+sequence of integers.  In fact, their distribution seems almost
+random:
 \[
 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, \dots
 \]
-%
 Basic questions about this sequence have stumped humanity for
 centuries.  And yet we know that every natural number can be built up
 from primes in \emph{exactly one way}.  These quirky numbers are the
 building blocks for the integers.
 
-The Fundamental Theorem is not hard
-to prove, but we'll need a couple of preliminary facts.
+The Fundamental Theorem is not hard to prove, but we'll need a couple
+of preliminary facts.
 
 \floatingtextbox{
 \textboxtitle{The Prime Number Theorem}
@@ -857,11 +914,15 @@ If $p$ is a prime and $p \divides ab$, then $p \divides a$ or $p \divides b$.
 \end{lemma}
 
 \begin{proof}
-The greatest common divisor of $a$ and $p$ must be either 1 or $p$,
-since these are the only positive divisors of $p$.  If $\gcd(a, p) =
-p$, then the claim holds, because $a$ is a multiple of $p$.
-Otherwise, $\gcd(a, p) = 1$ and so $p \divides b$ by part~(\ref{gcd4})
-of Lemma~\ref{lem:gcd}.
+One case is if $\gcd(a, p) = p$.  Then the claim holds, because $a$ is
+a multiple of $p$.
+
+Otherwise, $\gcd(a, p) \neq p$.  In this case $\gcd(a, p)$ must be 1,
+since 1 and $p$ are the only positive divisors of $p$.  Since $\gcd(a,
+p)$ is a linear combination of $a$ and $p$, we have $1=sa+tp$ for some
+$s,t$.  Then $b =s(ab)+ (tb)p$, that is, $b$ is a linear combination
+of $ab$ and $p$.  Since $p$ divides both $ab$ and $p$, it also divides
+their linear combination $b$.
 \end{proof}
 
 A routine induction argument extends this statement to:\iffalse the fact
@@ -877,20 +938,8 @@ Now we're ready to prove the Fundamental Theorem of Arithmetic.
 \begin{proof}
 Theorem~\ref{factor_into_primes} showed, using the Well Ordering
 Principle, that every positive integer can be expressed as a product
-of primes.  So we just have to prove this expression is unique.  We
-will use Well Ordering to prove this too.
-
-\iffalse
-First, we use strong induction to prove that every positive integer
-$n$ is a product of primes.  As a base case, $n = 1$ is the product of
-the empty set of primes.  For the inductive step, suppose that every
-$k < n$ is a product of primes.  We must show that $n$ is also a
-product of primes.  If $n$ is itself prime, then this is true
-trivially.  Otherwise, $n = a b$ for some $a, b < n$.  By the
-induction assumption, $a$ and $b$ are both products of primes.
-Therefore, $a \cdot b = n$ is also a product of primes.  Thus, the
-claim is proved by induction.
-\fi
+of primes.  So we just have to prove this expression is unique.
+We will use Well Ordering to prove this too.
 
 The proof is by contradiction: assume, contrary to the claim, that there
 exist positive integers that can be written as products of primes in more
@@ -898,19 +947,18 @@ than one way.  By the Well Ordering Principle, there is a smallest integer
 with this property.  Call this integer $n$, and let
 %
 \begin{align*}
-n & = p_1 \cdot p_2 \cdots p_j \\
-  & = q_1 \cdot q_2 \cdots q_k
+n & = p_1 \cdot p_2 \cdots p_j, \\
+  & = q_1 \cdot q_2 \cdots q_k,
 \end{align*}
-%
-be two of the (possibly many) ways to write $n$ as a product of
-primes.  Then $p_1 \divides n$ and so $p_1 \divides q_1 q_2 \cdots q_k$.
-Lemma~\ref{lem:prime-divides-ind} implies that $p_1$ divides one of
-the primes $q_i$.  But since $q_i$ is a prime, it must be that $p_1 =
-q_i$.  Deleting $p_1$ from the first product and $q_i$ from the
-second, we find that $n / p_1$ is a positive integer \emph{smaller}
-than $n$ that can also be written as a product of primes in two
-distinct ways.  But this contradicts the definition of $n$ as the
-smallest such positive integer.
+where both products are in weakly decreasing order where $p_1 \le q_1$.
+
+But if $q_1 = p_1$ then $n/q_1$ would be a smaller number than $n$
+that was the product of different weakly decreasing sequences of
+primes.  So $p_1 <q_1$, and since the $p_i$'s are weakly decreasing,
+$q_1$ is greater than all the $p_i$'s.  But $q_1 \divides n= p_1 \cdot
+p_2 \cdots p_j$, so Lemma~\ref{lem:prime-divides-ind} implies that
+$q_1$ divides one of the $p_i$'s, which contradicts the fact that
+$q_1$ is bigger than all the $p_i$'s.
 \end{proof}
 
 %% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1003,7 +1051,7 @@ $k$ is the key.
 \begin{description}
 
 \item[Beforehand] The sender and receiver agree on a secret key, which
-is a large prime $k$.
+is a large prime~$k$.
 
 \item[Encryption] The sender encrypts the message $m$ by computing:
 \[
@@ -1089,10 +1137,10 @@ numbers can be computed very efficiently.  So after the second message is
 sent, the Nazis can recover the secret key and read \emph{every}
 message!
 
-It is difficult to believe a mathematician as brilliant as Turing
-could overlook such a glaring problem.  One possible explanation is
-that he had a slightly different system in mind, one based on
-\emph{modular} arithmetic.
+A mathematician as brilliant as Turing is not likely to have
+overlooked such a glaring problem, and we can guess that he had a
+slightly different system in mind, one based on \emph{modular}
+arithmetic.
 
 %% Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\startclassproblems
@@ -1129,7 +1177,7 @@ a \equiv b \pmod{n} \qiff \rem{a}{n} = \rem{b}{n}.
 \end{lemma}
 
 \begin{proof}
-By the Division Theorem, there exist unique pairs of integers $q_1, r_1$
+By the Division Theorem~\ref{division_thm}, there exist unique pairs of integers $q_1, r_1$
 and $q_2, r_2$ such that:
 %
 \begin{align*}
@@ -1156,11 +1204,20 @@ So we can also see that
 29 \equiv 15 \pmod{7} \quad\text{ because } \rem{29}{7} = 1 = \rem{15}{7}.
 \]
 This formulation explains why the congruence relation has properties
-like an equality relation.  Notice that even though (mod 7) appears
-over on the right side, the $\equiv$ symbol, it isn't any more strongly
-associated with the 15 than with the 29.  It would really be clearer
-to write $29 \equiv_{\mod 7} 15$ for example, but the notation with
-the modulus at the end is firmly entrenched and we'll stick to it.
+like an equality relation.  In particular, the following properties are follow immediately:
+\begin{lemma}\label{mod_equiv_rel_lem}
+\begin{enumerate}
+\item $a \equiv a \pmod{n}$
+\item $a \equiv b \pmod{n}$ implies $b \equiv a \pmod{n}$
+\item $a \equiv b \pmod{n}$ and $b \equiv c \pmod{n}$ implies $a \equiv c \pmod{n}$
+\end{enumerate}
+\end{lemma}
+
+Notice that even though (mod 7) appears over on the right side, the
+$\equiv$ symbol, it isn't any more strongly associated with the 15
+than with the 29.  It would really be clearer to write $29
+\equiv_7 15$ for example, but the notation with the modulus at
+the end is firmly entrenched and we'll stick to it.
 
 We'll make frequent use of the following immediate Corollary of
 Lemma~\ref{lem:conrem}:
@@ -1188,47 +1245,38 @@ only $n$ different kinds of numbers to worry about, because there are only
 $n$ possible remainders.  In this sense, modular arithmetic is a
 simplification of ordinary arithmetic and thus is a good reasoning tool.
 
-There are many useful facts about congruences, some of which are listed in
-the lemma below.  The overall theme is that \emph{congruences work a lot
-like equations}, though there are a couple of exceptions.
+The next most useful fact about congruences is that they are
+\term{preserved} by addition and multiplication:
 
-\begin{lemma}[Facts About Congruences]  The following  hold for
-$n \geq 1$:
-%
+\begin{lemma}\label{mod_congruence_lem} For $n \geq 1$, if
+$a \equiv b \pmod{n}$ and $c \equiv d \pmod{n}$, then
 \begin{enumerate}
-\item $a \equiv a \pmod{n}$
-\item $a \equiv b \pmod{n}$ implies $b \equiv a \pmod{n}$
-\item $a \equiv b \pmod{n}$ and $b \equiv c \pmod{n}$ implies $a \equiv c \pmod{n}$
-\item $a \equiv b \pmod{n}$ implies $a + c \equiv b + c \pmod{n}$
-\item $a \equiv b \pmod{n}$ implies $a c \equiv b c \pmod{n}$
-\item $a \equiv b \pmod{n}$ and $c \equiv d \pmod{n}$ imply $a + c
-\equiv b + d \pmod{n}$
-\item $a \equiv b \pmod{n}$ and $c \equiv d \pmod{n}$ imply $a c
-\equiv b d \pmod{n}$
+\item $a + c \equiv b + d \pmod{n}$,
+\item $a c \equiv b d \pmod{n}$.
 \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-Parts 1--3.\ follow immediately from Lemma~\ref{lem:conrem}.  Part 4.\
-follows immediately from the definition that $a \equiv b \pmod{n}$ iff $n
-\divides (a-b)$.  Likewise, part 5.\ follows because if $n \divides (a-b)$
-then it divides $(a-b)c = ac - bc$.  To prove part 6., assume
-\begin{equation}\label{ab}
-a \equiv b \pmod{n}
-\end{equation}
-and
-\begin{equation}\label{cd}
-c \equiv d \pmod{n}.
-\end{equation}
-Then
-\begin{align*}
-a + c & \equiv b + c \pmod{n} & \text{(by part 4.\ and~\eqref{ab}}),\\
-c + b & \equiv d + b \pmod{n} & \text{(by part 4.\ and~\eqref{cd}), so}\\
-b + c & \equiv b + d \pmod{n} & \text{and therefore}\\
-a + c & \equiv b + d \pmod{n} & \text{(by part 3.)}
-\end{align*}
-Part~7 has a similar proof.
+We have that $n$ divides $(b-a)$ which is equal to $(b+c)-(a+c)$, so
+\[
+a+c \equiv b+c \pmod{n}.
+\]
+Also, $n$ divides $(d-c)$, so by the same reasoning
+\[
+b + c & \equiv b + d \pmod{n}.
+\]
+Combining these according to Lemma~\ref{mod_equiv_rel_lem}, we get
+\[
+ + c & \equiv b + d \pmod{n}.
+\]
+ 
+The proof for multiplication is virtually identical, using the fact
+that if $n$ divides $(b-a)$, then it obviously divides $(bc-ac)$ as
+well.
 \end{proof}
+
+The overall theme is that \emph{congruences work a lot like
+  equations}, though there are a couple of exceptions.
 
 \subsection{\index{Turing's code}Turing's Code (Version 2.0)}
 
@@ -1327,9 +1375,7 @@ example, the multiplicative inverse of 3 is $1 / 3$ since:
 \]
 %
 The sole exception is that 0 does not have an inverse.
-
-On the other hand, inverses generally do not exist over the integers.
-For example, 7 can not be multiplied by another integer to give 1.
+On the other hand, over the integers, only 1 and -1 have inverses.
 
 Surprisingly, multiplicative inverses do exist when we're working
 \emph{modulo a prime number}.  For example, if we're working modulo
@@ -1485,9 +1531,8 @@ process of encryption and thus they can't read encoded messages.
 \subsection{Fermat's Little Theorem}
 
 An alternative approach to finding the inverse of the secret key~$k$
-in Turing's code (about equally efficient and probably more
-memorable) is to rely on Fermat's Little Theorem, which is much easier than his
-famous Last Theorem.  \iffalse ---and more useful.\fi
+in Turing's code is to rely on Fermat's Little Theorem, which is much
+easier than his famous Last Theorem.  \iffalse ---and more useful.\fi
 
 \begin{theorem}[\idx{Fermat's Little Theorem}]\label{fermat_little}
 Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then:
@@ -1522,32 +1567,30 @@ Theorem, we know that:
 \[
 k^{p-2} \cdot k \equiv 1 \pmod{p}
 \]
-%
 Therefore, $k^{p-2}$ must be a multiplicative inverse of $k$.  For
 example, suppose that we want the multiplicative inverse of 6 modulo
-17.  Then we need to compute $\rem{6^{15}}{17}$, which we can do by
-successive squaring.  All the congruences below hold modulo 17.
-%
-\begin{align*}
-6^2 & \equiv 36 \equiv 2 \\
-6^4 & \equiv (6^2)^2 \equiv 2^2 \equiv 4 \\
-6^8 & \equiv (6^4)^2 \equiv 4^2 \equiv 16 \\
-6^{15} & \equiv 6^8 \cdot 6^4 \cdot 6^2 \cdot 6
-       \equiv 16 \cdot 4 \cdot 2 \cdot 6
-       \equiv 3
-\end{align*}
-%
-Therefore, $\rem{6^{15}}{17} = 3$.  Sure enough, 3 is the multiplicative
-inverse of 6 modulo 17, since:
-%
+17.  Then we need to compute $\rem{6^{15}}{17}$, which we can do using
+the fast exponentiation procedure of Section~\ref{fast_exp_subsubsec},
+with all the arithemetic done modulo 17.  Namely,
 \[
-3 \cdot 6 \equiv 1 \pmod{17}
+(6,1,15) \movesto 
+(36,6,7) \equiv \pmod{17}
+(2,6,7)  \movesto
+(4,12,3) \movesto
+(16,14,1) \movesto
+(256, 224, 1) \equiv \pmod{17}
+(1, 3, 0)
+\]
+Therefore, $6^{15} \equiv 3 \pmod{17}$.  Sure enough, 3 is the
+multiplicative inverse of 6 modulo 17 since
+\[
+3 \cdot 6 = 18 \equiv 1 \pmod{17}.
 \]
 
 In general, if we were working modulo a prime $p$, finding a
 multiplicative inverse by trying every value between 1 and $p - 1$
-would require about $p$ operations.  However, the approach above
-requires only about  $2 \log p$ operations, which is far
+would require about $p$ operations.  However, this approach, like the
+Pulverizer requires only about $\log p$ transition, which is far
 better when $p$ is large.
 
 \subsection{Breaking \index{Turing's code}Turing's Code---Again}
@@ -1779,7 +1822,7 @@ This holds because we can multiply both sides of the first congruence
 by $k^{-1}$ and simplify to obtain the second.
 
 The following lemma is the natural generalization of
-Corollary~\ref{cor:prime-permutes}.
+Corollary~\ref{cor:prime-permutes} with much the same proof.
 \begin{lemma}
 \label{lem:permutes-arb}
 Suppose $n$ is a positive integer and $k$ is relatively prime to $n$.
@@ -1849,6 +1892,9 @@ If $n$ is prime, then $\phi(n) = n - 1$ since every number less than a
 prime number is relatively prime to that prime.  When $n$ is
 composite, however, the $\phi$ function gets a little complicated.
 The following theorem characterizes the $\phi$ function for
+
+
+
 composite~$n$.  We won't prove the theorem in its full generality,
 although we will give a proof for the special case when $n$ is the
 product of two primes since that is the case that matters for~RSA.
