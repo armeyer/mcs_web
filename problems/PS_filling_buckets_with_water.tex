@@ -3,10 +3,15 @@
 \begin{pcomments}
   \pcomment{PS_filling_buckets_with_water}
   \pcomment{from: F09.ps4, F02.ps5}
+  \pcomment{edited and cut down by ARM 2/26/11}
 \end{pcomments}
 
 \pkeywords{
 	state_machines
+        invariant
+        jug
+        die_hard
+        gcd
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14,9 +19,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-You are given two buckets, $A$ and $B$, a water hose, a receptacle, and a
-drain.  The buckets and receptacle are initially empty.  The buckets are
-labeled with their respectively capacities, positive integers $a$ and $b$.
+Let's extend the jug filling scenario of Section~\bref{jug_invar_subsubsec}
+to three jugs and a receptacle.
 The receptacle can be used to store an unlimited amount of water, but has
 no measurement markings.  Excess water can be dumped into the drain.
 Among the possible moves are:
@@ -32,11 +36,7 @@ or the receptacle is empty, whichever happens first,
 
 \item\label{bucket-receptacle} empty a bucket to the receptacle,
 
-\item pour from $A$ to $B$ until either $A$ is empty or $B$ is full,
-whichever happens first,
-
-\item pour from $B$ to $A$ until either $B$ is empty or $A$ is full,
-whichever happens first.
+\item pour from one bucket to another until either the first is empty or the second is full,
 
 \end{enumerate}
 
@@ -47,10 +47,15 @@ Model this scenario with a state machine.  (What are the states?  How does
 a state change in response to a move?)
 
 \begin{solution}
-The states are triples $(x,y,z)$ which give the current amount of
-water in the bucket $A$, bucket $B$, and the receptacle, respectively.
-The initial state is $(0,0,0)$.
+The states are quadruples $(w,x,y,z)$ which give the current amount of
+water in the bucket three buckets and the receptacle, respectively.
+The initial state is $(0,0,0,0)$.
 
+\dots rest of proof TBA.
+
+\iffalse
+
+%NEEDS REVISION TO THREE BUCKETS
 The moves make the following transitions:
 \begin{enumerate}
 \item fill a bucket from the hose
@@ -106,81 +111,56 @@ whichever happens first
 \end{array} \right.
 \]
 \end{enumerate}
+\fi
+
 \end{solution}
 
-\ppart
-\label{gcd-iff}
 
-Prove that we can put $k\in\naturals$ gallons of water into the receptacle
-using the above operations if and only if $\gcd(a,b) \mid k $.  \hint Use
+\ppart \label{gcd-iff}
+Prove that Bruce can get $k\in\naturals$ gallons of water into the
+receptacle using the above operations only if $\gcd(a,b) \divides k$.
+
+\iffalse
+ \hint Use
 the fact that if $a,b$ are positive integers then there exist integers
 $s,t$ such that $\gcd(a,b)=sa+tb$ from Section~\bref{sec:pulverizer}.
 
-% was (proven Week 5 Notes, \S5.4).
+--was (proven Week 5 Notes, \S5.4).
+\fi
 
 \begin{solution}
-We need to prove two facts (the ``iff'' statement has two directions):
-\begin{enumerate}
-\item
-If $\gcd(a,b) \mid k $ then we can put $k$ gallons of water into
-the receptacle.
-
 \begin{proof}
+TBA
 
-Since there exist integers $s,t$ s.t.  $\gcd(a,b)=sa+tb$, then
-if $\gcd(a,b) \mid k $ then there exists an integer $n$ s.t. $n
- \gcd(a,b) = k$, and hence $n(sa+tb)=k$.  Assume without loss
-of generality that $sa\geq{tb}$ (otherwise exchange the buckets in the
-following argument).  Then we can fill the receptacle with $k$ gallons: \\
-First, we repeat $ns$ times moves $1$ and $4$, filling the $A$ bucket
-and pouring its content into the receptacle (note that if $sa\geq{tb}$
-then $s\geq{0}$).  With this series of moves we will get from state
-$(0,0,0)$ to $(0,0,nsa)$.  Then, if $t=0$, we are already done since
-$k=nsa$.  If $t>0$, we repeat $nt$ times moves $1$ and $4$ but now
-using the bucket $B$.  This gets us from $(0,0,nsa)$ to
-$(0,0,nsa+ntb)=(0,0,k)$.  If $t<0$ we repeat $n\abs{t}$ times moves $2$
-and $3$ using the bucket $B$.  At the end of this series we will be in
-state $(0,0,nsa-n(-t)b)=(0,0,nsa+ntb)=(0,0,k)$
-\end{proof}
-
-\item
-If we can put $k$ gallons of water into the receptacle then
-$\gcd(a,b) \mid k $.
-
-\begin{proof}
+\iffalse
 We show that a preserved invariant of our state machine is that
 $\gcd(a,b)$ divides $x$, $y$ and $z$.  Thus, in particular $z$ is
 always a multiple of $\gcd(a,b)$.
 
-Let's denote $\gcd(a,b)$ by $c$.  The invariant is true in the
-initial state $(0,0,0)$.\footnote{Remember that $(x \divides
-y) \qiff (\exists_{b\in\integers}.\, y=xb)$}.  Each move preserves this
-invariant because in each move the new values of $x,y$ or $z$ are
-always integer linear combinations of the previous values $x,y,z$ or
-$a,b$, that is, they are expressed by a formula
-$n_1x+n_2y+n_3z+n_4a+n_5b$ for some
-$(n_1,n_2,n_3,n_4,n_5)\in\integers^5$.  For example in move 2, case 1,
-the new value of $z$ is expressed by the above formula with
-$(n_1,n_2,n_3,n_4,n_5)=(1,0,1,-1,0)$.  Since $c$ divides $a$ and $b$,
-if $c$ divides $x,y,z$ before the move, then it divides every such
-linear formula, and hence it divides the values of $x,y$ and $z$ after
-each move.
-\end{proof}
+Let's denote $\gcd(a,b)$ by $c$.  The invariant is true in the initial
+state $(0,0,0)$.  Each move preserves this invariant because in each
+move the new values of $x,y$ or $z$ are always integer linear
+combinations of the previous values $x,y,z$ or $a,b$.  For example in
+move 2, case 1, the new value of $z$ is expressed by the above formula
+with $1x+0y+1z+-1a+0b$.  Since $c$ divides $a$ and $b$, if $c$ divides
+$x,y,z$ before the move, then it divides every such linear formula,
+and hence it divides the values of $x,y$ and $z$ after each move.
+\fi
 
-\end{enumerate}
+\end{proof}
 
 \end{solution}
 
 % \ppart Let's restrict the valid moves to numbers~\ref{hose-bucket}
 % and~\ref{bucket-receptacle} only.  Prove that there exists a number
 % $n$, such that for all integer $k\geq n$, we can fill the receptacle
-% with $k$ gallons of water iff $\gcd(a,b) \mid k$.
+% with $k$ gallons of water iff $\gcd(a,b) \divides k$.
 
 % \begin{solution}
 % Again, pick $s,t$ s.t. $c=\gcd(a,b)=sa+bt$.  If both
 % $s,t\geq{0}$ then $(s,t)=(0,1)$ or $(1,0)$, i.e., $a=b$ (check that in
 % all other cases $c$ would be greater than either $a$ or $b$, which is
-% impossible).  If $a=b$ then $c=a=b$, and for each $k\geq{c}$, $c\mid
+% impossible).  If $a=b$ then $c=a=b$, and for each $k\geq{c}$, $c\divides
 % k$, we can fill the receptacle by repeating moves $1$ and $4$
 % ${k}/{c}\in\naturals$ times (with any bucket, since $a=b$).
 
