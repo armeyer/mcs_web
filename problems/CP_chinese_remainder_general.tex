@@ -1,0 +1,154 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_chinese_remainder_general}
+  \pcomment{same as PS_chinese_remainder_general w/o restatement of Chinese remainder with two}
+  \pcomment{by ARM 3/1/11}
+\end{pcomments}
+
+\pkeywords{
+  prime
+  relatively_prime
+  number_theory
+  modular_arithmetic
+  chinese_remainder
+  remainder
+  parallel
+  residue
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The general version of the Chinese Remainder theorem
+\inbook{(Problem~\bref{CP_chinese_remainder})} extends to more than two
+relatively prime moduli.  Namely,
+\begin{theorem*}[General Chinese Remainder]
+Suppose $a_1,\dots,a_k$ are integers greater than 1 and each is
+relatively prime to the others.  Let $n \eqdef a_1 \cdot a_2 \cdots
+a_k$.  Then for any integers $m_1,m_2,\dots,m_k$, there is a unique $x
+\in [0,n)$ such that
+\[
+x \equiv m_i \pmod a_i,
+\]
+for $1 \le i \le k$.
+\end{theorem*}
+
+The proof is a routine induction on $k$ using a fact that follows
+immediately from unique factorization: if a number is relatively prime
+to some other numbers, then it is relatively prime to their product.
+
+Now suppose an $n$-bit number, $N$, was a product of relatively prime
+$k$-bit numbers, where $n$ was big, but $k$ was small enough to be
+handled by cheap and available arithmetic hardware units.  Suppose a
+calculation requiring a large number of additions and multiplications
+modulo $N$ had to be performed starting with some small set of $n$-bit
+numbers.  For example, suppose we wanted to compute
+\[
+\rem{\ (x-3)^{110033}((y+7)^{27123} - z^{4328})\ }{N}
+\]
+which would require several dozen $n$-bit operations starting from the
+three numbers $x,y,z$.
+
+Doing a multiplication or addition modulo $N$ directly requires
+breaking up the $n$-bit numbers $x,y,z$ and all the intermediate
+results of the mod $N$ calculation into $k$-bit pieces, using the
+hardware to perform the additions and multiplications on the pieces,
+and then reassembling the $k$-bit results into an $n$-bit answer after
+each operation.  Suppose $N$ was a product of $m$ relatively prime
+$k$-bit numbers.
+
+Explain how the General Chinese Remainder Theorem offers a far more
+efficient approach to performing the required operations.
+
+\begin{solution}
+Suppose $N= a_1\cdot a_2 \cdots a_m$ where the $a_i$'s are relatively
+prime $k$-bit numbers.  Represent any $n$-bit numbers, $x$, as a
+vector
+\[
+(\rem{x}{a_1}, \rem{x}{a_2},\dots, \rem{x}{a_m}).
+\]
+
+Notice that if $x$ is represented by $(x_1,x_2,\dots,x_m)$ and likewise $y$ by 
+$(y_1,y_2,\dots,y_m)$ then
+$x+y$ is represented by
+\[
+(x_1+y+1,x_2+y+2, \dots, x_m+y+m),
+\]
+and likewise for $x \cdot y$.  So with this representation, additions
+and multiplications of $n$-bit numbers can be performed by the
+hardware units without need to break apart and reassemble the $n$-bit
+numbers to perform each operation.  Moreover, the $k$-bit operations
+can be performed \emph{in parallel}.  This is sometimes referred to as
+\term{residue arithmetic}.
+
+Doing residue arithmetic involves an initial cost of converting $x$,
+$y$, and $z$ into the vectors of their remainders, but which requires
+$m$ different GCD computations with $n$-bit numbers for each of $x$,
+$y$, and $z$.  When the vector representation of the final value, $v$,
+is found, it must be converted back into an $n$-bit representation,
+say using the method from the proof of the chinese remainder theorem;
+this requires another $m$ different extended-GCD computations with
+$n$-digit numbers.  But these conversion are one time only for $x$,
+$y$ and $z$, so their costs will be outweighed by the savings in doing
+a large number of mod $N$ operations on the vector representations of
+$x$, $y$ and $z$.
+
+\end{solution}
+
+\begin{staffnotes}
+This problem started out aiming to ask for an induction proof of the
+General Chinese Remainder Theorem, assuming the Chinese Remainder
+Theorem for $k=2$.  Most of the proof appears below, but it turned out
+to make a poor problem: the proof is easy but seems very cumbersome to
+write out.
+
+\begin{proof}
+The proof is By induction on $k \ge 2$, with induction hypothesis,
+$P(k)$ being the Theorem as stated.
+
+\textbf{base case} ($k =2$): Given by the $a,b$-version stated at the
+start.
+
+\textbf{inductive step}: Suppose $a_1,\dots,a_k, a_{k+1}$ satisfy the
+conditions for $P(k+1)$ and let $n_{k+1} \eqdef a_1 \cdot a_2 \cdots
+a_k cdot a_{k+1} = n \cdot a_{k+1}$.  Then given $m_1,\dots,
+m_k,m_{k+1}$, we want to prove there is a unique $x \in [0,n_{k+1})$
+  such that
+\begin{equation}\label{aemiaik+1}
+x \equiv m_i \pmod a_i,\quad \text{ for } 1 \le i \le k+1.
+\end{equation}
+Now by induction hypothesis, there is a unique
+$x_k \in [0,n)$ satisfying the first $k$ congruences.  But $n$, and
+  $a_{k+1}$ are relatively, so by the original Chinese Remainder
+  Theorem, there is a unique $x_{k+1} \in [0,na_{k+1})$ such that
+\begin{align*}
+x_{k+1} \equiv x_k \pmod n,\\
+x_{k+1} \equiv m_{k+1} \pmod a_{k+1}.
+\end{align*}
+But for any $c,d >$, if follows immediately from definition of congruence that
+\[
+y \equiv m \pmod{cd} \qimplies y \equiv m \pmod{c}.
+\]
+So in particular,
+\[
+x_{k+1} \equiv x_k \equiv m_i \pmod a_i
+\]
+for $1 \le i \le k$.  Hence, $x_{k+1}$ satisfies~\eqref{aemiaik+1}.
+
+
+UNIQUENESS ARGUMENT TBA.
+
+\end{proof}
+
+\end{staffnotes}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
