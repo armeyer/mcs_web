@@ -1,0 +1,211 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{MQ_ambiguous_recursive_def}
+  \pcomment{subsumes actual MQ-3-2-11 version MQ_ambiguous_recursive-def}
+\end{pcomments}
+
+\pkeywords{
+ recursive_data
+ matching
+ brackets
+ ambiguous_definition
+}
+
+\newcommand{\lefnum}{\text{numleft}}
+\newcommand{\derlen}{\text{two-t}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}
+
+\bparts
+
+  \ppart To prove that the set \RM, of matched strings\inbook{ of
+    Definition~\bref{RM_def}} equals\inhandout{\footnote{The set, $\RM$,
+      of strings of brackets is defined recursively as follows:
+\begin{itemize}
+
+\item \textbf{Base case:} $\emptystring \in\RM$.
+
+\item \textbf{Constructor case:} If $s,t \in \RM$, then $\lefbrk s\, \rhtbrk t \in \RM.$
+\end{itemize}}} the
+set \AM\ of ambiguous
+matched strings\inbook{ of Definition~\bref{AM_def}},\inhandout{\footnote{
+The set, $\AM \subseteq \brkts$ is defined recursively as follows:
+\begin{itemize}
+
+\item \textbf{Base case:} $\emptystring \in \AM$,
+
+\item \textbf{Constructor cases:} if $s,t \in \AM$, then
+  the strings $\lefbrk s\, \rhtbrk$ and $st$ are also in $\AM$.
+\end{itemize}
+}}
+you could first prove that
+\[
+\forall r \in \RM.\ r \in \AM,
+\]
+and then prove that
+\[
+\forall u \in \AM.\ u \in \RM.
+\]
+
+Of these two statements, circle the one that would be simpler to prove by
+structural induction directly from the definitions.
+
+\iffalse
+\hint The harder of the two proofs requires first working out an idea like
+``good counting'' to find matching brackets.
+\fi
+
+\begin{solution}
+  It's easy to prove that $\forall r \in \RM.\ r \in \AM$
+  by structural induction on $r \in \RM$.
+
+  That's because if $s,t \in \AM$, then it's obvious that
+  $\lefbrks\rhtbrk t \in \AM$, and this immediately proves the inductive
+  step of showing that if $\lefbrk s\rhtbrk t \in \RM$ then $\lefbrk s\rhtbrk t \in
+  \AM$.
+
+  On the other hand, proving that if $s,t \in \RM$ then $st \RM$ is
+  what's needed in the inductive step that if $st \in \AM$ then $st \in
+  \RM$.  But proving this requires working out a definition of which
+  bracket matches the initial bracket in a string in $\RM$.  We saw how
+  to do this using the idea of ``good counting,'' but it took some work.
+\end{solution}
+
+\ppart Suppose structural induction was being used to prove that $\AM
+\subseteq \RM$.  Circle the one predicate below that would fit the format
+for a structural induction hypothesis in such a proof.
+
+\begin{itemize}
+
+\item $P_0(n) \eqdef  \lnth{s} \leq n \QIMPLIES s \in \RM$.
+
+\item $P_1(n) \eqdef  \lnth{s} \leq n \QIMPLIES s \in \AM$.
+
+\item $P_2(s) \eqdef s \in \RM$.
+
+\item $P_3(s) \eqdef s \in \AM$.
+
+\item $P_4(s) \eqdef\ (s \in \RM \QIMPLIES s \in \AM)$.
+
+\end{itemize}
+
+\begin{solution}
+  $\AM \subseteq \RM$ means that $\forall s \in \AM.\ s \in
+  \RM$.  To prove this, the only hypothesis above that fits the format
+  for a structural induction would be $P_2$ in a structural induction on
+  the definition of $\AM$.
+\end{solution}
+
+
+\ppart The recursive definition $\AM$ is ambiguous because it allows the
+$s\cdot t$ constructor to apply when $s$ or $t$ is the empty string.  But
+even fixing that, ambiguity remains.  Demonstrate this by giving two
+different derivations for the string "$\lefbrk \rhtbrk \lefbrk \rhtbrk
+\lefbrk \rhtbrk$ according to $\AM$ but only using the $s\cdot t$
+constructor when $s \neq \emptystring$ and $t \neq \emptystring$.
+
+\examspace[2in]
+
+\begin{solution}
+  The string $\lefbrk \rhtbrk \lefbrk \rhtbrk \lefbrk \rhtbrk \in \AM$ can
+  be derived from the second constructor with $s = \lefbrk \rhtbrk$ and $t
+  = \lefbrk \rhtbrk \lefbrk \rhtbrk$, but also with $s = \lefbrk \rhtbrk
+  \lefbrk \rhtbrk$ and $t = \lefbrk \rhtbrk$.
+\end{solution}
+
+%\ppart Explain in one or two sentences (preferably one) \emph{why} we need
+%be concerned about ambiguous recursive definitions.
+%
+%\examspace[2in]
+
+%
+%\begin{solution}
+%
+%A function defined recursively from an ambiguous definition of a data type
+%may not be well-defined. For example, the following function:
+%
+%\[\begin{array}{rl}
+%f(r) & \eqdef \begin{cases}
+%                   0 & \text{ if } r = \emptystring\\
+%                   1 + f(s)
+%                     & \text{ if } r = \lefbrks\rhtbrk ,\\
+%                   f(s) + 2 \cdot f(t)
+%                     & \text{ if } r = st\text{ and } s,t \neq \emptystring.
+%                   \end{cases}
+%\end{array}\]
+%
+%is not well-defined because
+%
+%\[
+%5= 3+2\cdot 1 =f([\ ][\ ]\cdot[\ ]) = f([\ ]\cdot[\ ][\ ]) = 1+2\cdot 3 =7.
+%\]
+%
+%\end{solution}
+
+
+
+% \ppart Ambiguous definitions can lead to ill-defined recursive definitions
+% of functions.  Here are apparent definitions of four functions $\lefnum_i$
+% and $\derlen_i$
+% \iffalse from $\MB{i} \to \naturals$\fi
+% based on the recursive definition of $\MB{i}$, for $i=1,2$.  Circle all the
+% apparent definitions which do not, in fact, uniquely determine a function.
+%
+% \[\begin{array}{rl}
+% \lefnum_1(r)  & \eqdef \begin{cases}
+%                    0 & \text{ if } r = \emptystring\\
+%                    1 + \lefnum_1(s) + \lefnum_1(t)
+%                      & \text{ if } r = \lefbrks\rhtbrk t.
+%                    \end{cases}\\
+% \\
+% \lefnum_2(r)  & \eqdef \begin{cases}
+%                    0 & \text{ if } r = \emptystring\\
+%                    1 + \lefnum_2(s)
+%                      & \text{ if } r = \lefbrks\rhtbrk ,\\
+%                    \lefnum_2(s) + \lefnum_2(t)
+%                      & \text{ if } r = st.
+%                    \end{cases}\\
+% \\
+% \derlen_1(r)  & \eqdef \begin{cases}
+%                    0 & \text{ if } r = \emptystring\\
+%                    1+ \derlen_1(s) + 2\cdot\derlen_1(t)
+%                      & \text{ if } r = \lefbrks\rhtbrk t.
+%                    \end{cases}\\
+% \\
+% \derlen_2(r)  & \eqdef \begin{cases}
+%                    0 & \text{ if } r = \emptystring\\
+%                    1 + \derlen_2(s)
+%                      & \text{ if } r = \lefbrk s\rhtbrk,\\
+%                    \derlen_2(s) + 2 \cdot \derlen_2(t)
+%                      & \text{ if } r = st\text{ and } s,t \neq \emptystring.
+%                    \end{cases}
+% \end{array}\]
+%
+% \begin{solution}
+% $\lefnum_1$ and $\derlen_1$ are well-defined because the definition of
+% $\RM$ is unambiguous.
+%
+% $\derlen_2$ is ill-defined, because
+% \[
+% 5= 3+2\cdot 1 =\derlen_2([\ ][\ ]\cdot[\ ]) = \derlen_2([\ ]\cdot[\ ][\ ]) = 1+2\cdot 3 =7.
+% \]
+%
+% $\lefnum_2(r)$ is well-defined because it equals the number of left
+% brackets in $r$, which could be proved by structural induction on the
+% definition of $\MB{2}$.
+% \end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
