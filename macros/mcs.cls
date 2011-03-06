@@ -1091,7 +1091,8 @@
 \newcommand{\rightbi}[1]{R(#1)}
 \newcommand{\walkv}[1]{\vec{\mathbf{#1}}}
 %\newcommand{\catv}[3]{#1\ang{#2}#3}
-\newcommand{\catv}[3]{#1\cdot_{#2}#3}
+\newcommand{\catv}[3]{#1\hat{#2}#3}
+\newcommand{\merge}[2]{\catv{#1}{\;}{#3}}
 
 
 %% Text -- Abbreviations
