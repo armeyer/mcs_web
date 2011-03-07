@@ -1,0 +1,181 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_directed_Euler_circuits}
+  \pcomment{digraph version of PS_Euler_circuits}
+  \pcomment{adapted to digraphs by ARM 3/7/11}
+\end{pcomments}
+
+\pkeywords{
+  Euler
+  Euler_circuit
+  Euler_tours
+  cycle
+  degree
+  closed_walk
+  digraph
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  In this problem we'll consider some special cycles in graphs called
+  \term{Euler tours}, named after the famous mathematician Leonhard
+  Euler.  (Same Euler as for the constant $e\approx 2.718$---he did a
+  lot of stuff.)
+
+\begin{definition}
+  An Euler tour of a graph is a closed walk that includes every edge
+  exactly once.
+\end{definition}
+\iffalse
+
+Does the graph in the following figure contain an Euler tour?
+
+\begin{figure}
+\graphic{example}
+\end{figure}
+
+Well, if it did, the edge $(E, F)$ would need to be included.  If the path
+does not start at $F$ then at some point it traverses edge $(E,F)$, and
+now it is stuck at $F$ since $F$ has no other edges incident to it and an
+Euler tour can't traverse $(E,F)$ twice.  But then the path could not
+be a tour.  On the other hand, if the path starts at $F$, it must then
+go to $E$ along $(E,F)$, but now it cannot return to $F$.  It again cannot
+be a tour. This argument generalizes to show that if a graph has a
+vertex of degree $1$, it cannot contain an Euler tour.
+
+\begin{staffnotes}
+On the other hand, it is easy to see that any cycle has an Euler
+tour. You can just start at any vertex and walk around back to it.
+\end{staffnotes}
+\fi
+
+So how do you tell in general whether a graph has an Euler tour?  At
+first glance this may seem like a daunting problem (the similar sounding
+problem of finding a cycle that touches every vertex exactly once is one
+of those million dollar NP-complete problems known as the \term{Traveling
+  Salesman Problem})---but it turns out to be easy.
+
+\bparts
+
+\ppart Show that if a graph has an Euler tour, then the in-degree
+of each vertex equals its out-degree.
+
+\begin{solution}
+Let
+\[
+C \eqdef v_1\ \diredge{v_1}{v_2}\ v_2\ \dots\ \diredge{v_r}{v_1}\ v_1
+\]
+be an Euler tour.  Except for the initial and final occcurrences of
+$v_1$, each occurrence of a vertex $v$ in the tour is immediately
+preceded by an edge $\diredge{u}{v}$ and immediately followed by an
+edge $\diredge{v}{w}$.  It follows that if $v\neq v_1$ occurs $s$
+times in $C$, then $\indegr{v} = \outdegr{v} = s$ since every edge incident to $v$
+occurs in $C$ exactly once.  For the same reason, if $v_1$ occurs $s$ times on the path, 
+then $\indegr{v_1} = \outdegr{v_1} = s-1$.
+\end{solution}
+\eparts
+
+A digraph is \term{weakly connected} if there is a ``path'' between
+any two vertices that may follow edges backwards or forwards.  More
+precisely, a digraph, $G$ is weakly connected iff there is a path from
+each vertex to every other vertex in the digraph $G \union G^{-1}$.
+
+In the remaining parts, we'll work out the converse: if a graph is
+weakly connected and if the in-degree of every vertex equals its
+out-degree, then the graph has an Euler tour.  To do this, let's
+define an Euler \term{walk} to be a walk that traverses each edge
+\emph{at most} once.
+
+\bparts
+
+\ppart\label{conn} Suppose that an Euler path in a connected graph
+does not include every edge.  Explain why there must be an edge not on
+the path whose head or tail is on the path.
+
+\begin{solution}
+  If an edge is not on the path but its head or tail is on the Euler
+  path, that already is the desired edge.  So suppose there's an edge,
+  $e$, not on the path and both ends of $e$ are not on the Euler path.
+  Since there is a path in $G \union G^{-1}$ each endpoint of $e$ and
+  a vertex on the Euler path, there must be a shortest path from an
+  endpoint of $e$ to a vertex on the Euler path.  All the edges on
+  this shortest path must also not be on the Euler path or the
+  shortest could be shortened, so the last edge on the shortest path,
+  or its reversal, will be the desired edge of $G$.
+\end{solution}
+
+\eparts
+
+In the remaining parts, let $W$ be the \emph{longest} Euler path in
+the graph.
+
+\bparts
+
+\ppart\label{cycle-circuit} Show that if $W$ is a cycle, then it must be
+an Euler tour.
+
+\hint part~\eqref{conn}
+
+\begin{solution}
+Suppose $W$ is a cycle and some edge is not in $W$.  By
+part~\eqref{conn}, there must be a vertex $w$ in $W$ that is the head
+or tail of an edge not in $W$.  Suppose $w$ is the tail of that edge.
+Then starting at $w$, go around $W$ back to vertex $w$, and then the
+follow the edge.  This makes a longer Euler path, contradicting the
+maximality of $W$.  Similarly, if $w$ is the head of an edge not in
+$W$, then starting at the tail of that edge, following it to $w$ and
+then going around $W$ toget back to $w$ also makes a longer Euler
+path, again contradicting maximality.
+
+So no edge can be missing from $W$.
+\end{solution}
+
+\ppart\label{already} Explain why all the edges incident to the end of $W$
+must be on $W$.
+
+\begin{solution}
+Otherwise we could extend $W$ to a longer Euler path with any edge
+from the end not already in $W$.
+\end{solution}
+
+\ppart\label{odd} Show that if the end of $W$ was not equal to the start
+of $W$, then the degree of the end would be odd.
+
+\hint part~\eqref{already}
+
+\begin{solution}
+Let $v$ be the end vertex of $W$.  Given that $v$ is not the start of
+$W$, it follows that at any occurrence of $v$ in $W$ other than at the
+end, $W$ includes an edge whose head is $v$ that appears just before
+that occurrence of $v$, and another edge whose tail is $v$ that
+appears just after that occurrence of $v$.  Since $W$ is an Euler
+path, all the edges in all these pairs are distinct.  In addition, the
+final edge traversed by $W$ as it ends at $v$ is distinct from all the
+paired edges.  Altogether, this imples that there are an odd number of
+edges traversed by $W$ and incident to $v$.  But by
+part~\eqref{already}, these are all the edges incident to $v$, proving
+that $v$ has odd degree.
+\end{solution}
+
+\ppart Conclude that if every vertex of a finite, connected graph has even
+degree, then it has an Euler tour.
+
+\begin{solution}
+If all vertices in $G$ have even degree, then by
+  part~\eqref{odd}, the only possibility is that the end of $W$ equals the
+  start, that is, $W$ is a cycle.  So by part~\eqref{cycle-circuit}, $W$ is
+  an Euler tour.
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
