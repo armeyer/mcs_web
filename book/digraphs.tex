@@ -72,6 +72,28 @@ $x_i$ contains a hyperlink to page $x_j$.
 
 \end{figure}
 
+\section{Vertex Degrees}
+The \emph{in-degree} of a vertex in a digraph is the number of arrows
+coming into it and similarly its \emph{out-degree} is the number of
+arrows out of it.  More precisely,
+\begin{definition}\label{digraph-degree}
+If $G$ is a digraph and $v \in \vertices{G}$, then
+\begin{align*}
+\indegr{v} \eqdef \card{\set{ e \in \edges{G} \suchthat \text{head}(e) = v}}\\
+\outdegr{v} \eqdef \card{\set{ e \in \edges{G} \suchthat \text{tail}(e) = v}}\\
+\end{align*}
+\end{definition}
+
+An immediate consequence of this definition is
+\begin{lemma}\label{digraph-handshake}
+\[
+\sum_{v \in \vertices{G}} \indegr{v} = \sum_{v \in \vertices{G}} \outdegr{v}.
+\]
+\end{lemma}
+\begin{proof}
+Both sums are obviously equal to $\card{\edges{G}}$.
+\end{proof}
+
 \section{Digraph Walks and Paths}
 
 \begin{definition}\label{graphdef}
@@ -127,14 +149,14 @@ called a \emph{walk} through the graph.
 The obvious way to represent a walk is with the sequence of sucessive
 vertices it went through, in this case:
 \[
-1,2,4,12,12,12.
+1\ \:2\ \:4\ \:12\ \:12\ \:12.
 \]
 However, it is conventional to represent a walk by an alternating
 sequence of successive vertices and edges, so this walk would formally
 be
 \begin{equation}\label{walk12412}
-1,\diredge{1}{2}, 2, \diredge{2}{4}, 4,\diredge{4}{12}, 12,
-\diredge{12}{12}, 12,\diredge{12}{12}, 12.
+1\ \diredge{1}{2}\  2\  \diredge{2}{4}\  4\ \diredge{4}{12}\  12\ 
+\diredge{12}{12}\  12\ \diredge{12}{12}\  12.
 \end{equation}\
 The redundancy of this definition is enough to make any computer
 scientist cringe, but it does make it easy to talk about how many
@@ -150,8 +172,8 @@ after the edge.
 
 So a walk, $\walkv{v}$, is a sequence of the form
 \[
-\walkv{v} \eqdef v_0, \diredge{v_0}{v_1},
-v_1, \diredge{v_1}{v_2}, v_2, \dots, \diredge{v_{k-1}}{v_k}, v_k
+\walkv{v} \eqdef v_0\ \diredge{v_0}{v_1}\
+v_1\  \diredge{v_1}{v_2}\  v_2\  \dots\  \diredge{v_{k-1}}{v_k}\  v_k
 \]
 where $\diredge{v_i}{v_{i+1}} \in \vertices{G}$ for $i \in [0,k)$.
   The walk is said to \emph{start} at $v_0$, to \emph{end} at $v_k$,
@@ -165,13 +187,13 @@ ends at itself.
 If you walk for a while, stop for a rest at some vertex, and then
 continue walking, you have broken a walk into two parts.  For example,
 stopping to rest after following two edges in the walk~\eqref{walk12412}
-through the divisibility graph breaks the walk into the walk
+through the divisibility graph breaks the walk into the first part of the walk
 \begin{equation}\label{startwalk124}
-1,\diredge{1}{2}, 2, \diredge{2}{4}, 4
+1\ \diredge{1}{2}\  2\  \diredge{2}{4}\  4
 \end{equation}
-from 1 to 4, and the walk
+from 1 to 4, and the rest of the walk
 \begin{equation}\label{endwalk412}
-4,\diredge{4}{12}, 12, \diredge{12}{12}, 12,\diredge{12}{12}, 12.
+4\ \diredge{4}{12}\  12\  \diredge{12}{12}\  12\ \diredge{12}{12}\  12.
 \end{equation}
 from 4 to 12, and we'll say the whole walk~\eqref{walk12412} is the
 \term{merge} of the walks~\eqref{startwalk124} and~\eqref{endwalk412}.
@@ -183,7 +205,7 @@ with $\walkv{f}$ and continues with $\walkv{r}$.\footnote{It's
   walks, but that wouldn't quite be right because if the walks were
   concatenated, the vertex $v$ would appear twice in a row where the
   walks meet.}  Two walks can only be merged if the first ends with
-the same vertex, $v$, that the second one starts with.  Sometimes its
+the same vertex, $v$, that the second one starts with.  Sometimes it's
 useful to name the node $v$ where the walks merge; we'll use the
 notation $\catv{\walkv{f}}{v}{\walkv{r}}$ to describe the merge of a
 walk $\walkv{f}$ that ends at $v$ with a walk $\walkv{r}$ that begins
@@ -212,13 +234,13 @@ then
 \end{definition}
 \fi
 
-A useful consequence of this definition is that
+A consequence of this definition is that
 \begin{lemma}\label{sumoflengths}
 \[
 \lnth{\merge{\walkv{f}}{\walkv{r}}} = \lnth{\walkv{f}} + \lnth{\walkv{r}}.
 \]
 \end{lemma}
-In the next section we'll get useful mileage out of walking this way.
+In the next section we'll get mileage out of walking this way.
 
 \subsection{Finding a Path}
 If you were trying to walk somewhere quickly, you'd know you were in
@@ -265,7 +287,7 @@ Distance properties below \arm{inserted by arm}
 \begin{definition}
   The \index{distance!between vertices} \emph{distance}
   $\dstuv{u}{v}$, in a graph from vertex $u$ to vertex $v$ is the
-  length of a shortest walk from $u$ to $v$.
+  length of a shortest path from $u$ to $v$.
 \end{definition}
 
 As would be expected, this definition of distance satisfies:
@@ -653,7 +675,7 @@ A binary relation, $R$, on a set, $A$, is \term{reflexive} iff $a
 \mrel{R} a$ for all $a \in A$.
 \end{definition}
 
-\subsection{Composition of path relations}\label{relation_compose_subsec}
+\subsection{Composition of Relations}\label{relation_compose_subsec}
 There is a simple way to extend \idx{composition} of functions to
 composition of relations, and this gives another way to talk about
 paths in digraphs.
@@ -686,10 +708,12 @@ is the \term{length-$n$ path relation}:
 a  \mrel{G^n} b \qiff \mbox{ there is a length-$n$ path in $G$ from $a$ to $b$}.
 \]
 This even works for $n=0$, with the usual convention that $G^0$ is the
-identity relation $\ident{\vertices{G}}$ on the set of vertices.  That
-is, $u \mrel{\ident{\vertices{G}}} v$ iff $u = v$.  So now we
-have\footnote{Equation~\eqref{g*union} involves a harmless abuse of
-  notation: we should have written
+identity relation $\ident{\vertices{G}}$ on the set of vertices.\footnote{The identity relation, $\ident{A}$, on a set, $A$, is the equality relation:
+\[
+a \mrel{\ident{A}} b \qiff a  = b.
+\]}
+So now we have\footnote{Equation~\eqref{g*union} involves a harmless
+  abuse of notation: we should have written
 \[
 \graph{G^*} = \graph{G^0} \union \graph{G^1} \dots.
 \]
@@ -735,9 +759,8 @@ structure among MIT computer science subjects.
 
 \end{figure}
 
-The consequences of having a positive length cycle in a prerequisite
-graph like this would have dire consequences on the time it takes to
-graduate.
+A positive length cycle in a prerequisite graph like this would have a
+dire effect on the time it takes to graduate.
 
 The edges in subject prerequisite DAG of Figure~\ref{6-3_subjects} show the
 \emph{direct} prerequisites listed for each subject, but to enroll for
@@ -843,7 +866,8 @@ to be unique and easy to find (see Problem~\ref{CP_covering_edges}).
 \homeworkproblems
 \pinput{PS_path_relation_composition}
 \pinput{PS_finite_transitive_closure}
-\pinput{PS_top_sort_for_closure_of_DAG}
+\pinput{PS_directed_Euler_circuits}
+\pinput{CP_de_Bruijn_graphs}
 \end{problems}
 
 \begin{staffnotes}
@@ -853,11 +877,6 @@ to be unique and easy to find (see Problem~\ref{CP_covering_edges}).
 \end{staffnotes}
 
 \section{Weak Partial Orders}\label{partial_order_sec}
-
-\begin{staffnotes}
-\textbf{and EQUIVALENCE RELATIONS to be added}
-\end{staffnotes}
-
 Partial orders come up in many situations which on the face of it have
 nothing to do with digraphs.  For example, the less-than order, $<$, on
 numbers is a partial order:
@@ -868,9 +887,9 @@ numbers is a partial order:
  The proper containment relation $\subset$ is also a
 partial order:
 \begin{itemize}
-\item if $A \subset B$ and $B \subset C$ then $A \subset C$
+\item if $A \subset B$ and $B \subset C$ then $A \subset C$,
 so containment is transitive, and
-\item  $A \not\subset A$ so proper containment is irreflexive.
+\item  $A \not\subset A$, so proper containment is irreflexive.
 \end{itemize}
 
 
@@ -1138,7 +1157,6 @@ other.
 \pinput{CP_binary_relations_on_01_mq}
 
 \end{problems}
-
 
 
 %% Product Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1531,6 +1549,7 @@ which makes for an amusing in-class demo.
 \pinput{CP_minimal_maximal_elements}
 
 \homeworkproblems
+\pinput{PS_top_sort_for_closure_of_DAG}
 \pinput{PS_antichains_by_depth}
 \pinput{PS_subsequences_partial_order_Dilworth_Lemma}
 \pinput{PS_Brents_theorem}
