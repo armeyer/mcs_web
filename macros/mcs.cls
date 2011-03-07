@@ -1084,7 +1084,7 @@
 
 %\newcommand{\edge}[2]{\{#1, #2\}}
 
-\newcommand{\diredge}[2]{\ang{#1\, \to\, #2}}
+\newcommand{\diredge}[2]{\ang{#1\! \to\! #2}}
 \newcommand{\vertices}[1]{V(#1)}
 \newcommand{\edges}[1]{E(#1)}
 \newcommand{\leftbi}[1]{L(#1)}
@@ -1093,7 +1093,7 @@
 \newcommand{\walkv}[1]{\mathbf{#1}}
 %\newcommand{\catv}[3]{#1\ang{#2}#3}
 \newcommand{\catv}[3]{#1\:\widehat{#2}\: #3}
-\newcommand{\merge}[2]{#1\:\widehat{\ } #2}
+\newcommand{\merge}[2]{#1\;\widehat{\ }\: #2}
 
 
 %% Text -- Abbreviations
@@ -1258,8 +1258,8 @@
 %% delimiters anyway.
 
 \newcommand{\degr}[1]{\operatorname{deg}(#1)}
-\newcommand{\indegr}[1]{\operatorname{indegree}(#1)}
-\newcommand{\outdegr}[1]{\operatorname{outdegree}(#1)}
+\newcommand{\indegr}[1]{\operatorname{indeg}(#1)}
+\newcommand{\outdegr}[1]{\operatorname{outdeg}(#1)}
 
 \newcommand{\dist}{\operatorname{dist}}
 \newcommand{\dstuv}[3][]{\operatorname{\text{dist}_{#1}}\left(#2,#3\right)}
