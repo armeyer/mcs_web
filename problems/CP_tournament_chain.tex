@@ -2,15 +2,18 @@
 
 \begin{pcomments}
   \pcomment{CP_tournament_chain}
-  \pcomment{by ARM 10/17/09 but I saw it somewhere}
   \pcomment{from ps4.S10}
+  \pcomment{substantially revised by ARM 3/8/11}
+  \pcomment{by ARM 10/17/09 but I saw it somewhere}
 \end{pcomments}
 
 \pkeywords{
   digraphs
   relations
-  chain
+  ranking
   tournament
+  rationals
+  path
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,38 +22,67 @@
 
 \begin{problem} %\textbf{Tournament Graphs}
 
-  \newcommand{\beats}{\!\rightarrow\!}
+%  \newcommand{\beats}{\!\rightarrow\!}
 
-  In a \term{round-robin} tournament, every pair of distinct players play
-  against each other just once.  For a round-robin tournament with with no
+  In a round-robin tournament, every two distinct players play against
+  each other just once.  For a round-robin tournament with with no
   tied games, a record of who beat whom can be described with a
-  \term{tournament digraph}, where the vertices correspond to players and
-  there is an edge $x \beats y$ if $x$ beat $y$ in their game.
+  \term{tournament digraph}, where the vertices correspond to players
+  and there is an edge $\diredge{x}{y}$ iff $x$ beat $y$ in their
+  game.
 
-  A \term*{ranking} is a directed simple path that includes all the
-  players.
+  A \term*{ranking} is a path that includes all the players.
 
-  \bparts
+\begin{staffnotes}
+ Paths used to be called ``simple paths'' or ``\emph{directed} simple
+ paths.''
+\end{staffnotes}
 
-  \ppart Give an example of a tournament digraph with more than one
-  ranking.
+\bparts
 
-   \begin{solution}
-   Let $n=3$ with edges $u \beats v \beats w \beats u$.  There are three
-   different rankings starting with $u$, $v$, and $w$, respectively.
-   \end{solution}
-
-  \ppart If a tournament digraph is a DAG, then it has a unique ranking.  Explain.
+\ppart Give an example of a tournament digraph with more than one
+ranking.
 
 \begin{solution}
-  If it's a DAG, then its path relation defines a partial order, and since
-  every pair of elements are comparable, this is in fact a total order.
-  So there's no alternative but to rank the elements from smallest to
-  largest.
+  Let $n=2$ with edges $\diredge{u}{v}$ and $\diredge{v}{u}$.  Then
+  both $u,v$ and $v,u$ are rankings.
 \end{solution}
 
-\ppart Prove that every tournament digraph has a ranking.
-\hint Induction on the size of the tournament.
+\ppart Prove that if a tournament digraph is a DAG, then it has at
+most one ranking.  \hint Prove that the elements below $u$ in any
+ranking are uniquely determined.
+
+\begin{solution}
+If there is a (positive length) path from $u$ to $v$, there cannot be
+one back in a DAG, so $v$ must be below $u$ in any ranking.
+Conversely, it $v$ is (strictly) below $u$ in some ranking, then by
+definition there is a positive length path from $u$ to $v$.  So the
+elements below $u$ in any ranking are uniquely determined to be
+\[
+\set{v \suchthat \text{there is a positive length path from $u$ to
+    $v$}} = \set{v \suchthat u \mrel{G^+} v} \eqdef G^+(\set{v}).
+\]
+
+\begin{staffnotes}
+  Alternative explanation after \emph{total partial orders} are
+  defined:
+
+  If it's a DAG, then its path relation defines a partial order, and
+  since every pair of elements are comparable, this is in fact a total
+  order.  So there's no alternative but to rank the elements from
+  smallest to largest.
+\end{staffnotes}
+
+\end{solution}
+
+\ppart\label{hasrank} Prove that every finite tournament digraph has a
+ranking.
+
+\begin{staffnotes}
+\hint Induction on the size of the tournament.  Could also rephrase
+the proof below by considereing a maximum length ranking (there is one
+by WOP applied to $\#\text{players} - \text{ranking length}$).
+\end{staffnotes}
 
 \begin{solution}
 By induction on $n$ with induction hypothesis
@@ -73,12 +105,39 @@ ranking for $G$.  Since $G$ was an arbitrary $n+1$ vertex tournament
 graph, we conclude that $P(n+1)$ holds, which completes the proof.
 \end{solution}
 
-\iffalse
-  \ppart Give an example of a tournament that has a unique ranking and is
-  \emph{not} a DAG.  \hint Try $n=4$.
-\fi
+\ppart Give an example of a tournament with a countably infinite number of
+players,$p_0,p_1,\dots$ that has no ranking.
 
-  \eparts
+\hint $\rationals$.
+
+\begin{staffnotes}
+Intervene if teams start to spend much time on this part.  Tell them
+we mostly will focus on finite graphs, and in general, infinite
+counter-examples like this are not particularly important.
+
+On the other hand, to really understand a proof, you need to be aware
+where the proof depends on finiteness (whether it needs to or not).
+\end{staffnotes}
+
+\begin{solution}
+The rationals, $\rationals$, are a countable set, and specifying that
+$r$ beats $s$ precisely when $r > s$ defines a tournament graph with
+$\rationals$ as the set of players.
+
+Now in any tournament graph, vertex $u$ can come before vertex $u$ in
+some ranking only if there is a path from $u$ to $v$.  This implies
+that if $r > s$, then $r$ must come before $s$ in \emph{any} ranking
+of $\rationals$.
+
+So suppose there was a ranking of $\rationals$ and $\diredge{r}{s}$
+was an edge on the path.  This implies that $r >s$.  Now let $t$ be
+any rational such that $r>t>s$.  Now in a ranking, $t$ must come
+before $r$ or after $s$, which implies $t >r$ or $s>t$, a
+contradicting the choice of $t$.  SO there cannot be a ranking of the 
+$\rationals$ tournament.
+\end{solution}
+
+ \eparts
 \end{problem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
