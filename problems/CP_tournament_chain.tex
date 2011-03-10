@@ -3,7 +3,7 @@
 \begin{pcomments}
   \pcomment{CP_tournament_chain}
   \pcomment{from ps4.S10}
-  \pcomment{substantially revised by ARM 3/8/11}
+  \pcomment{substantially revised by ARM 3/8-10/11}
   \pcomment{by ARM 10/17/09 but I saw it somewhere}
 \end{pcomments}
 
@@ -31,8 +31,12 @@
   and there is an edge $\diredge{x}{y}$ iff $x$ beat $y$ in their
   game.
 
-  A \term*{ranking} is a path that includes all the players.
-
+  A \term*{ranking} is a path that includes all the players.  So in a
+  ranking, each player won the game against the next lowest ranked
+  player, but may very well have lost their games against must lower
+  ranked players ---whoever does the ranking can have a lot of room to
+  play favorites.
+  
 \begin{staffnotes}
  Paths used to be called ``simple paths'' or ``\emph{directed} simple
  paths.''
@@ -49,112 +53,44 @@ ranking.
 \end{solution}
 
 \ppart Prove that if a tournament digraph is a DAG, then it has at
-most one ranking.  \iffalse
-\hint Prove that the elements below~$u$ in any
-ranking are uniquely determined.\fi
+most one ranking.
 
 \begin{solution}
-Suppose for contradiction that there are two rankings for the graph.
-Since the rankings differ, there must be two players~$u \neq v$ such
-that~$u$ ranks higher than $v$ in one ranking and lower than $v$ in
-the other ranking.  So one ranking gives a path from~$u$ to $v$ and
-the other ranking gives a path from $v$ to~$u$.
+The most direct proof goes as follows: given a ranking in a tournament
+graph, if $u$ ranks higher than $v$, and $v$ ranks higher than $w$,
+then if $w$ beat $u$ in their game, there would be a length-3 cycle
+from $u$ to $v$ to $w$ and back to $u$.  So in a tournament
+\emph{DAG}, higher ranking players must have beaten all lower ranking
+players.  This of course is the same as saying that all lower ranking
+players were beaten by all higher ranking players.  So there is no
+choice on how to rank a player: if the player lost $k$ matches, they
+must be the $k+1$st ranked player.
 
-Merging these paths gives a closed \emph{walk} from~$u$ to~$u$ that
-goes through $v$.  From this we would like to conclude that there is a
-positive length cycle from~$u$ to~$u$.  This would contradict the fact
-that the graph is a DAG, and so would complete the proof.
+Another straighforward proof is by contradiction.  Suppose that there
+are two rankings for the graph.  Since the rankings differ, there must
+be two players~$u \neq v$ such that~$u$ ranks higher than $v$ in one
+ranking and lower than $v$ in the other ranking.  So one ranking gives
+a path from~$u$ to $v$ and the other ranking gives a path from $v$
+to~$u$.  Merging these paths gives a closed \emph{walk} from~$u$
+to~$u$ that goes through $v$.  \textcolor{red}{\emph{A common mistake
+    at this point was to assume that this closed walk was a cycle, but
+    it may not be (see Problem~\ref{PS_shortest_closed_walk})}} Since
+$v \neq u$, this walk has positive length, and
+Lemma~\bref{shortestclosedwalk_lem} implies that there is a positive
+length cycle from $u$ to $u$ (somewhere, not necessarily including
+$v$).  This contradicts the fact that the graph is a DAG, which
+completes the proof by contradiction.
 
-But having a closed walk of from~$u$ to~$u$ that goes through $v$ does
-not by itself imply that there is a \emph{cycle} from from~$u$ to~$u$
-that goes through $v$.  In fact, in general there may not be such a
-cycle ---an example of this appears at the end of this solution.
-
-Now there are two ways to close this loophole.  One is to observe that
-\begin{lemma*}
-The shortest positive length closed walk through a vertex is a cycle.
-\end{lemma*}
-
-Since a walk from from~$u$ to~$u$ that goes through $v \neq u$ must
-have positive length, this Lemma implies there is a positive length
-cycle from $u$ to $u$ (somewhere, not necessarily though $v$),
-contradicting the fact the graph is a DAG and so completing the
-overall proof.
-
-All that remains is proving the Lemma, and the proof of the Lemma is
-essentially the same as for Theorem~\bref{shortestwalk_thm} that a
-shortest walk is a path.
-
-\begin{proof} [of the Lemma]
-
-  Suppose $\walkv{w}$ is a minimum positive length walk from~$u$
-  to~$u$.  We claim $\walkv{w}$ is a cycle.
-
-  To prove the claim, suppose to the contrary that $\walkv{w}$ is not a
-  cycle.
-
-\textbf{case} ($u$ occurs more than two times in $\walkv{w}$): This
-means that
- \[
-\walkv{w}= \catv{\walkv{e}}{u}{\walkv{f}}
-\]
-where both $\walkv{e}$ and $\walkv{f}$ have positive length.  Then
-$\walkv{e}$ is a shorter positive length walk from $u$ to $u$,
-contradicting the minimality of $\walkv{w}$.
-
-\textbf{case} (some vertex $x \neq u$ occurs twice in $\walkv{w}$):
-Then
-\[
-\walkv{w} = \catv{\catv{\walkv{e}}{x}{\walkv{f}}}{x}{\walkv{g}}
-\]
-for some positive length walks $\walkv{e}, \walkv{f}, \walkv{g}$.  But
-then ``deleting'' $\walkv{f}$ yields a strictly shorter walk, namely
-\[
-\catv{\walkv{e}}{x}{\walkv{g}}
-\]
-is a shorter walk from~$u$ to~$u$, again contradicting the minimality
-of $\walkv{w}$.
-\end{proof}
-
-The second way out of the loophole is to observe that in a tournament
+Another way to close the loophole above without appeal to
+Lemma~\ref{shortestclosedwalk_lem} is to observe that in a tournament
 graph, there must be an \emph{edge} in one direction or the other
 between $u$ and $v$.  So say the edge is $\diredge{u}{v}$.  Then this
-edge merged with the path from $v$ to $u$ will be a cycle (think about
-why).
+edge merged with the path from $v$ to $u$ must be a positive length
+cycle.\footnote{If this isn't obvious to you, take a moment to think
+  again about what's going on here ---because it \emph{is} obvious.}
 
-By the way, another workable approach to this problem is by induction
-on the number of vertices, which we omit.
-
-\begin{example*}
-\begin{align*}
-V & \eqdef \set{u,v,w,x},\\
-E & \eqdef \set{\diredge{u}{w}, \diredge{w}{x}, \diredge{x}{u}, \diredge{v}{w}, \diredge{x}{v}},
-\end{align*}
-there is a path
-\[
-u \diredge{u}{w} w \diredge{w}{x} x \diredge{x}{v}
-\]
-from~$u$ to $v$, and a path
-\[
-v \diredge{v}{w} w \diredge{w}{x} x \diredge{x}{u} u
-\]
-from~$v$ to~$u$, but it is easy to see that there is no \emph{cycle}
-from~$u$ to~$u$ \emph{that contains~$v$}.   (The sole edge out of
-$u$ goes to $w$, and the sole edge out of~$v$ likewise goes to $w$,
-so any walk from~$u$ to~$u$ that goes through~$v$ must go through $w$ at
-least twice and therefore won't be a cycle.
-\end{example*}
-
-
-\begin{staffnotes}
-  Alternative explanation after \emph{total partial orders} are
-  defined:
-
-  If it's a DAG, then its path relation defines a partial order, and
-  since every pair of elements are comparable, this is in fact a total
-  order.  So there's no alternative but to rank the elements from
-  smallest to largest.
-\end{staffnotes}
+By the way, yet another workable approach to this problem is by
+induction on the number of vertices, but enough is enough.
 
 \end{solution}
 
