@@ -6,7 +6,11 @@
   \pcomment{from: digraph notes}
 \end{pcomments}
 
-\pkeywords{ binary_relation composition path_relation }
+\pkeywords{
+  binary_relation
+  composition
+  walk
+  walk_relation }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem starts here
@@ -15,67 +19,82 @@
 \begin{problem}
 %Prove Lemma~\bref{lem:Rn-paths}, Namely,
 
-Let $R$ be a binary relation on a set $A$.  Then $R^{(n)}$ denotes the
-composition of $R$ with itself $n$ times.\inhandout{\footnote{ For
-    binary relations $R: B\to C$ and $S: A \to B$, the
-    \idx{composition} of $R$ with $S$ is the binary relation $(R
-    \compose S): A\to C$ defined by the rule
-\begin{equation}\label{rel_compose_def}
-a \mrel{(R \compose S)} c \eqdef\ \exists b \in B.\, (a \mrel{S} b)
-\QAND (b \mrel{R} c).
-\end{equation}}}
-Regarding $R$ as a digraph, let $R^n$ denote the length $n$ walk
-relation $R$, that is,
+Let $R$ be a binary relation on a set $A$ and $C^n$ be the composition
+of $R$ with itself $n$ times for $n \ge 0$.  So $C^0 \eqdef
+\ident{A}$, and $C^{n+1} \eqdef R \compose C^n
+$.\inhandout{\footnote{$\ident{A}$ is the equality relation on $A$
 \[
-a \mrel{R^n} b \eqdef \mbox{there is a length $n$ walk from $a$ to
+a \mrel{\ident{A}} b \qiff a =b.
+\]
+
+For binary relations $R: M\to B$ and $S: A \to M$, the
+    \idx{composition} of $R$ with $S$ is the binary relation $(R
+    \compose S): A\to B$ defined by the rule
+\[
+a \mrel{(R \compose S)} b \eqdef\ \exists m \in M.\ (a \mrel{S} m)
+\QAND (m \mrel{R} b).
+\]}}
+Regarding $R$ as a digraph, let $R^n$ denote the length-$n$ walk
+relation in the digraph $R$, that is,
+\[
+a \mrel{R^n} b \eqdef \mbox{there is a length-$n$ walk from $a$ to
     $b$ in $R$}.
 \]
 Prove that
 \begin{equation}\label{RnRpnp}
-R^n = R^{(n)}
+R^n = C^n
 \end{equation}
 for all $n \in \naturals$.
 
 \begin{solution}
 
 \begin{proof}
-By induction on $n$ with equation~\ref{RnRpnp} as induction
+By induction on $n$ with equation~\eqref{RnRpnp} as induction
 hypothesis.
 
-\textbf{Base case} $n=0$: $R^{(0)} = \ident{A}$ by convention, and
-$R^0$ is the length-0 walk relation, so we have $a \mrel{R^0} b$ iff
-$a = b$ iff $a \mrel{\ident{A}} b$ iff $a R^{(0)}b$.  So $R^0 =
-R^{(0)}$.
+\textbf{Base case} $n=0$: $C^0 = \ident{A}$ by definition, and $R^0$
+is the length-0 walk relation which also equals $\ident{A}$ by
+definition.
 
 \textbf{Inductive step:} Suppose~\eqref{RnRpnp} holds for some $n\ge 0$.
-We want to prove it holds with ``$n$'' replaced by $n+1$."
+We want to prove it holds with ``$n$'' replaced by ``$n+1$.''
 
-First consider a length $n+1$ walk
+We begin by showing that
+\begin{equation}\label{arn1bimp}
+a \mrel{R^{n+1}} b \qimplies a \mrel{C^{n+1}} b.
+\end{equation}
+So suppose $a \mrel{R^{n+1}} b$, that is, there is a length-$(n+1)$
+walk
 \[
 a=a_0\ \diredge{a_0}{a_1}\ a_1\ \diredge{a_1}{a_2} \dots \diredge{a_n}{a_{n+1}}\ a_{n+1} =b
 \]
-in $R$.  By induction hypothesis, we can assume that $a\mrel{R^{(n)}}
-a_n$.  Also, we have by definition of walk in $R$ that $a_n \mrel{R}
-b$.  Therefore,
+in $R$.  In particular, there is a length-$n$ walk from $a$ to some
+vertex $a_n$ such that $a_n \mrel{R} b$.  By induction hypothesis, we
+have that $a\mrel{C^n} a_n$.  Therefore,
 \[
-a \mrel{(R^{(n)} \compose R)} b
+a \mrel{(C^n \compose R)} b
 \]
-by the definition~(\bref{rel_compose_def}) of composition.  So $a
-\mrel{R^{(n+1)}} b$.  This shows that $R^{(n+1)} \subseteq R^{n+1}$.
+by the definition\inbook{~(\bref{rel_compose_def})} of composition.
+This proves~\eqref{arn1bimp}.
 
-Conversely, $a \mrel{R^{n+1}} b$, that is, there is a length-$(n+1)$
-walk from $a$ to $b$.  This implies there is a length-$n$ walk from
-$a$ to some vertex $a_n$, and an edge from $a_n$ to $b$.  That is, $a
-\mrel{R^n} a_n$ and $a_n \mrel{R} b$.  Now by induction hypothesis, $a
-\mrel{R^{(n)}} a_n$ so by definition of relational composition,
+Conversely, we show that
+\begin{equation}\label{acn1imp}
+a \mrel{C^{n+1}} b \qimplies a \mrel{R^{n+1}} b.
+\end{equation}
+So suppose $a \mrel{C^{n+1}} b$, that is $a \mrel{(C^n \compose R)}
+b$.  By definition of composition, there must be an $a_n \in A$ such
+that
 \[
-a \mrel{R^{(n)} \compose R} b,
+a \mrel{C^n} a_n \QAND a_n \mrel{R} b.
 \]
-so $a \mrel{R^{n+1}} b$ by the definition of $R^{n+1}$.  This shows
-that $R^{n+1} \subseteq R^{(n+1)}$.
+So there is a length-$n$ walk from $a$ to $a_n$ by induction
+hypothesis, and $\diredge{a_n}{b} \in \edges{R}$.  Merging the walk
+with this edge yields a length-$(n+1)$ walk from $a$ to $b$.  That is,
+$a \mrel{R^{n+1}} b$.  This proves~\eqref{acn1imp}
 
-Hence, $R^{n+1} = R^{(n+1)}$, which is the exactly~\eqref{RnRpnp} with
-``$n$'' replaced by $n+1$," completing the proof by induction.
+Combining~\eqref{arn1bimp} and~\eqref{acn1imp} we conclude that
+$R^{n+1} = C^{n+1}$, which is the exactly~\eqref{RnRpnp} with ``$n$''
+replaced by ``$n+1$,'' completing the proof by induction.
 \end{proof}
 
 \end{solution}
