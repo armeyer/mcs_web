@@ -100,7 +100,6 @@ $x_i$ contains a hyperlink to page $x_j$.
 \label{fig:6EA}
 \end{figure}
 
-
 There is nothing new in Definition~\ref{graphdef} except for a lot of
 vocabulary.  Formally, a digraph $G$ is the same as a binary relation
 on the set, $V = \vertices{G}$ ---that is, a digraph is just a binary
@@ -110,9 +109,8 @@ we've already referred to the arrows in a relation $G$ as the
 integers in the interval $[1,12]$ could be pictured by the digraph in
 Figure~\ref{fig:divisibility-digraph}.
 
-
-The \emph{in-degree} of a vertex in a digraph is the number of arrows
-coming into it and similarly its \emph{out-degree} is the number of
+The \term{in-degree} of a vertex in a digraph is the number of arrows
+coming into it and similarly its \term{out-degree} is the number of
 arrows out of it.  More precisely,
 \begin{definition}\label{digraph-degree}
 If $G$ is a digraph and $v \in \vertices{G}$, then
@@ -182,9 +180,49 @@ where $\diredge{v_i}{v_{i+1}} \in \edges{G}$ for $i \in [0,k)$.
   and the \emph{length}, $\lnth{\walkv{v}}$, of the walk is defined to be
   $k$.  The walk is a \emph{path} iff all the $v_i$'s are different,
   that is, if $i \neq j$, then $v_i \neq v_j$.
+
+A \term{closed walk} is a walk that begins and ends at the same
+vertex.  A \term{cycle} is a closed walk whose vertices are distinct
+except for the beginning and end vertices.
 \end{definition}
-Note that a single vertex counts as a length zero path that begins and
-ends at itself.
+Note that a single vertex counts as a length zero path, and also a
+length zero cycle, that begins and ends at itself.
+
+Although a walk is officially an alternating sequence of vertices and
+edges, it is completely determined just by the sequence of successive
+vertices on it, and we will describe walks that way whenever it's
+convenient.  For example, for the graph in Figure~\ref{fig:4N6E},
+\begin{itemize}
+
+\item
+$a$, $b$, $c$, $b$, $d$ is a length-4 walk,
+
+\item
+$a$, $b$, $d$ is a length-3 is a path,
+
+\item
+$d$, $c$, $b$, $c$, $b$, $d$ is a length-5 closed walk,
+
+\item
+$b$, $d$, $c$, $b$ is a length-3 cycle,
+
+\item $b$, $c$, $b$ is a length-2 cycle, and
+
+\item $c$, $b$, $a$, $d$ is \emph{not} a walk.  A walk is not allowed
+  to follow edges in the wrong direction.  For this sequence to
+  describe a walk, $\diredge{b}{a}$ would have to be an edge of the
+  graph.  This edge is the reversal of an edge of the graph, but it is
+  not itself an edge of the graph.
+\end{itemize}
+
+Length-1 cycles are also possible.  The graph in Figure~\ref{fig:4N6E}
+has none, but every vertex in the divisibility relation digraph of
+Figure~\ref{fig:divisibility-digraph} is in a length-1 cycle.
+Length-1 cycles are sometimes called \term{self-loops}.
+
+\begin{editingnotes}
+length~2 cycles are not possible with undirected graphs.
+\end{editingnotes}
 
 If you walk for a while, stop for a rest at some vertex, and then
 continue walking, you have broken a walk into two parts.  For example,
@@ -338,6 +376,35 @@ So let's prove the Triangle Inequality:
   
 \end{proof}
 
+\begin{editingnotes}
+
+\textbf{This section needs to be motivated before being included.}
+
+\section{Strong Connectivity}
+
+\begin{definition}
+A digraph is \term{strongly connected} when there is a path from each
+vertex to every other vertex.
+\end{definition}
+
+For example, the graph in Figure~\ref{fig:6EB} is not strongly
+connected since there is no directed path from node~$b$ to node~$a$.
+But if node~$a$ is removed, the resulting graph would be strongly
+connected.
+
+A digraph is \term{weakly connected} \iffalse or, more simply,
+\emph{connected})\fi if there is a ``path'' from from each vertex to
+every other vertex when edges can be crossed forwards or backwards.
+For example, the graph in Figure~\ref{fig:6EB} is weakly connected.
+
+More precisely, a graph $G$ is weakly connected iff the graph $H$ with
+\begin{align*}
+\vertices{H} = \vertices{G}, \text{and}\\
+\edges{H} = \edges{G} \union \set{\diredge{v}{u} \suchthat \diredge{u}{v} \in \edges{G}},
+\end{align*}
+is strongly connected.  In other words $H = G \union G^{-1}$.
+\end{editingnotes}
+
 \section{Adjacency Matrices}
 If a graph, $G$, has $n$ vertices, $v_0,v_1,\dots, v_{n-1}$, a useful
 way to represent it is with a $n \times n$ matrix of zeroes and ones
@@ -350,7 +417,7 @@ from vertex $v_i$ to vertex $v_j$, and 0 otherwise.  That is,
 0 & \text{otherwise}.
 \end{cases}
 \]
-For example, let $H$ be the 4-node the graph shown in
+cleFor example, let $H$ be the 4-node the graph shown in
 Figure~\ref{fig:4N6E}.  Then its adjacency matrix $A_H$ is the $4 \times
 4$ matrix:
 \[
@@ -378,9 +445,9 @@ from the entries in the matrix $(A_H)^2$:
 \[
 (A_H)^2 = \begin{array}{c|cccc|}
   &  a & b & c & d \\ \hline
-a &  0 & 0 & 2 & 0 \\
-b &  0 & 0 & 1 & 0 \\
-c &  0 & 0 & 1 & 0 \\
+a &  0 & 0 & 2 & 1 \\
+b &  0 & 1 & 1 & 0 \\
+c &  0 & 0 & 1 & 1 \\
 d &  0 & 1 & 0 & 0
 \end{array}
 \]
@@ -513,14 +580,15 @@ weight, cheapest paths.  These refinements are typically covered in
 introductory algorithm courses, and we won't go into them here any
 further.
 
-\iffalse
+\begin{editingnotes}
+\textbf{Add this in the text or maybe some problems:}
+
 \begin{definition}\label{def:5H}
   The \index{path!weight of}\term{weight of a walk} \index{weighted graph,
     path weight} in a \idx{weighted graph} is the sum of the weights of
   the successive edges in the walk.
 \end{definition}
 
-\begin{editingnotes}
 \arm{cut}
 There is good news and bad news to report on this front.  The good
 news is that it is not very hard to find a shortest path.  The bad
@@ -639,11 +707,8 @@ Now you can use the repeated squaring trick to compute $(D_G)^{n-1,
   \minplus}$ using about $\log n$ $\minplus$ matrix multiplications
 instead of $n-2$ such multiplications.
 
-\begin{editingnotes}
 \arm{Good to add an example here}
 \end{editingnotes}
-
-\fi
 
 \section{Path Relations}
 A basic question about a digraph is whether there is a path from one
@@ -685,6 +750,7 @@ There is a simple way to extend \idx{composition} of functions to
 composition of relations, and this gives another way to talk about
 walks and paths in digraphs.
 
+\begin{definition}
 Let $R: B\to C$ and $S: A \to B$ be binary relations.  Then the
 \idx{composition} of $R$ with $S$ is the binary relation $(R \compose
 S): A\to C$ defined by the rule
@@ -695,7 +761,11 @@ a \mrel{(R \compose S)} c \eqdef\ \exists b \in B.\, (a \mrel{S} b)
 This agrees with the Definition~\ref{func_compose_def} of composition
 in the special case when $R$ and $S$ are functions.\footnote{The
   reversal of the order of $R$ and $S$ in~\eqref{rel_compose_def} is
-  not a typo.}
+  not a typo.  This is so that relational composition generalizes
+  function composition.  The value of function $f$ composed with
+  function $g$ at an argument, $x$, is $f(g(x))$.  So in the
+  composition, $f \compose g$, the function $g$ is applied first.}
+\end{definition}
 
 \begin{staffnotes}
 
@@ -736,11 +806,7 @@ relations.
 \section{Directed Acyclic Graphs \& Partial Orders}\label{dag_sec}
 
 \begin{definition}
-A \term{closed walk} in a digraph is a walk that begins and ends at
-the same vertex.  A \term{cycle} in a digraph is a closed walk whose
-vertices are distinct except for the beginning and end vertices.  This
-includes the path of length 0 that begins and ends at the same
-vertex.  A \term{directed acyclic graph (DAG)} is a directed graph
+A \term{directed acyclic graph (DAG)} is a directed graph
 with no \emph{positive} length cycles.
 \end{definition}
 
@@ -881,9 +947,11 @@ to be unique and easy to find (see Problem~\ref{CP_covering_edges}).
 \pinput{CP_covering_edges}
 \pinput{CP_tournament_chain}
 \pinput{CP_tournament_graphs}
+\pinput{PS_king_chicken}
 
 \homeworkproblems
 \pinput{PS_shortest_closed_walk}
+\pinput{PS_odd_length_walk}
 \pinput{PS_walk_relation_composition}
 \pinput{PS_finite_transitive_closure}
 \pinput{PS_directed_Euler_circuits}
@@ -1131,6 +1199,11 @@ To summarize
 
 \homeworkproblems
 \pinput{PS_weak_partial_order_isomorphic_to_subset}
+
+\begin{editingnotes}
+Add a Sperner's Lemma problem?
+\end{editingnotes}
+
 \end{problems}
 
 
