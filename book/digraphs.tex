@@ -1324,32 +1324,29 @@ the constraints by drawing labelled boxes corresponding to different
 tasks, with an arrow from one box to another if the first box corresponds
 to a task that must be completed before starting the second one.
 
-For example, here is a drawing describing the order in which you could put
-on clothes.  The tasks are the clothes to be put on, and the arrows
-indicate what should be put on directly before what.
+For example, the DAG for in Figure~\ref{fig:7FP} describes how a guy
+might get dressed for a formal occasion.  The vertices correspond to
+garments and the edges specify which garments have to be put on before
+others are.
 
 \begin{figure}
-% \gnote{Figure FP, p. 7-40, ftl-ch7-jul2.}
 
 \graphic{Fig_FP}
 
-\caption{Partial order describing which clothing items have to be put on before others.}
+\caption{DAG describing which clothing items have to be put on before others.}
 
 \label{fig:7FP}
 
 \end{figure}
 
-When we have a partial order of tasks to be performed, it can be useful to
-have an order in which to perform all the tasks, one at a time, while
-respecting the dependency constraints.  This amounts to finding a path-total
-order that is consistent with the partial order.  This task of finding a
-path-total ordering that is consistent with a partial order is known as
-\emph{topological sorting}. 
+When we have a partial order like this on the order in which tasks can be
+performed, it can be useful to have an order in which to perform all
+the tasks, one at a time, while respecting the dependency constraints.
+This amounts to finding a path-total order that is consistent with the
+partial order.  This task of finding a path-total ordering that is
+consistent with a partial order is known as \emph{topological
+  sorting}.
 
-\begin{staffnotes}
-probably because the sort is based only on the topology (shape) of the
-poset and not on the actual values.
-\end{staffnotes}
 
 \begin{definition}
   A \term{topological sort} of a partial order, $\prec$, on a set, $A$, is
@@ -1359,16 +1356,38 @@ a \prec b\ \QIMPLIES\  a \sqsubset b.
 \]
 \end{definition}
 
-For example,
-\begin{align*}
-  \text{shirt} \sqsubset \text{sweater} \sqsubset \text{underwear}
-  \sqsubset \text{leftsock}
-  \sqsubset \text{rightsock} \sqsubset \text{pants}\\
-  \sqsubset \text{leftshoe} \sqsubset \text{rightshoe} \sqsubset
-  \text{belt} \sqsubset \text{jacket},
-\end{align*}
-is one topological sort of the partial order of dressing tasks given by
-Figure~\ref{fig:7FP}; there are several other possible sorts as well.
+There are several path-total orders that are consistent with the partial
+order shown in Figure~\ref{fig:7FP}.  We have shown two of them in
+list form in Figure~\ref{fig:7FQ}.  Each such list is a topological
+sort for the partial order in Figure~\ref{fig:7FP}.  In what follows,
+we will prove that every \emph{finite} poset has a topological sort.
+You can think of this as a mathematical proof that you \emph{can} get
+dressed in the morning (and then show up for math lecture).
+
+\begin{figure}\redrawntrue
+
+\begin{tabular}{c@{\hspace{4em}}c}
+underwear       & left sock \\
+pants           & shirt \\
+belt            & tie \\
+shirt           & underwear \\
+tie             & right sock \\
+jacket          & pants \\
+left sock       & right shoe \\
+right sock      & belt \\
+left shoe       & jacket \\
+right shoe      & left shoe \\[\medskipamount]
+(a)             & (b)
+\end{tabular}
+
+\caption{Two possible topological sorts of the partial order described in
+  Figure~\ref{fig:7FP}.  In each case, the elements are listed so that
+  $x \preceq y$ iff $x$ is above~$y$ in the list.}
+
+\label{fig:7FQ}
+
+\end{figure}
+
 
 Topological sorts for partial orders on finite sets are easy to construct
 by starting from \term{minimal} elements:
@@ -1410,8 +1429,8 @@ elementary proof about partial orders by proving that minimal elements
 exist.
 
 \begin{lemma}\label{finmin}
-  \hyperdef{rule}{mine1}{Every} partial order on a nonempty finite set has
-  a minimal element.
+  \hyperdef{rule}{mine1}{Every} partial order on a nonempty finite set
+  has a minimal element.
 
 \begin{proof} Let $R$ be a strict partial order on a set, $A$.  Define the \emph{weight}
 of an element $a \in A$ to be $\card{R\set{a}}$ ---the number of
@@ -1466,15 +1485,21 @@ So, given a finite partially ordered set of tasks, how long does it take
 to do them all, in an optimal parallel schedule?  We can also use partial
 order concepts to analyze this problem.
 
-In the clothes example, we could do all the minimal elements first
-(leftsock, rightsock, underwear, shirt), remove them and repeat.  We'd
-need lots of hands, or maybe dressing servants.  We can do pants and
-sweater next, and then leftshoe, rightshoe, and belt, and finally jacket.
-This schedule is illustrated in Figure~\ref{fig:7FS}.
+In the first unit of time, we should do all minimal items, so we would
+put on our left sock, our right sock, our underwear, and our
+shirt.\footnote{Yes, we know that you can't actually put on both socks
+  at once, but imagine you are being dressed by a bunch of robot
+  processors and you are in a big hurry.  Still not working for you?
+  Ok, forget about the clothes and imagine they are programs with the
+  precedence constraints shown in Figure~\ref{fig:7FP}.}  In the
+second unit of time, we should put on our pants and our tie.  Note
+that we cannot put on our left or right shoe yet, since we have not
+yet put on our pants.  In the third unit of time, we should put on our
+left shoe, our right shoe, and our belt.  Finally, in the last unit of
+time, we can put on our jacket.  This schedule is illustrated in
+Figure~\ref{fig:7FS}.
 
 \begin{figure}
-
-% \gnote{Figure FS, p. 7-44, ftl-ch7-jul2.}
 
 \graphic{Fig_FS}
 
@@ -1487,10 +1512,37 @@ example) is shown with bold edges.}
 
 \end{figure}
 
+The total time to do these tasks is 4~units.  We cannot do better than
+4~units of time because there is a sequence of 4~tasks, each needing
+to be done before the next, of length~4.  For example, we must put on
+our shirt before our pants, our pants before our belt, and our belt
+before our jacket.  Such a sequence of items is known as a
+\term{chain}
+
+\begin{definition}\label{def:chain}
+A \term{chain} in a partial order is a set of elements such that any
+two different elements in the set are comparable.  A chain is said to
+\index{end of chain}\emph{end at} an its maximum element.
+\end{definition}
+
+Thus, the time it takes to schedule tasks, even with an unlimited
+number of processors, is at least the length of the longest chain.
+Indeed, if we used less time, then two items from a longest chain
+would have to be done at the same time, which contradicts the
+precedence constraints.  For this reason, a longest chain is also
+known as a \term{critical path}.  For example, Figure~\ref{fig:7FS}
+shows the critical path for the getting-dressed poset.
+
+In this example, we were in fact able to schedule all the tasks in $t$
+steps, where $t$ is the length of the longest chain.  The really nice
+thing about posets is that this is always possible!  In other words,
+for any poset, there is a legal parallel schedule that runs in $t$
+steps, where $t$ is the length of the longest chain.
+
 In general, a \emph{schedule} for performing tasks specifies which
-tasks to do at successive steps.  Every task, $a$, has be scheduled at
-some step, and all the tasks that have to be completed before task $a$
-must be scheduled for an earlier step.
+tasks to do at successive steps.  Every task, $a$, has to be scheduled
+at some step, and all the tasks that have to be completed before task
+$a$, must be scheduled for an earlier step.
 
 \begin{definition}\label{def:schedule}
 A \term{parallel schedule} for a strict partial order, $\prec$, on a set,
@@ -1515,6 +1567,8 @@ number of elements scheduled at any step is called the \term{number of
   processors} required by the schedule.
 \end{definition}
 
+\iffalse
+
 So the schedule we chose above for clothes has four steps
 \begin{align*}
 A_0 = & \set{\text{leftsock, rightsock, underwear, shirt}},\\
@@ -1534,8 +1588,9 @@ that must be done in sequence like this is called a \emph{chain}.
 \begin{definition}
 A \term{chain} in a partial order is a set of elements such that any
 two different elements in the set are comparable.  A chain is said to
-\index{end of chain}\emph{end at} an its maximum element.
+\index{end of chain}\emph{end at} its maximum element.
 \end{definition}
+\fi
 
 In general, the earliest step at which an element $a$ can ever be
 scheduled must be at least as large as any chain that ends at $a$.  A
@@ -1552,8 +1607,7 @@ given above.
 
 \begin{theorem}\label{thm:parallel-time}
 Let $\prec$ be a strict partial order on a set, $A$.  A minimum length
-schedule for $\prec$ consists of the sets $A_0, A_1,\dots,$
-where
+schedule for $\prec$ consists of the sets $A_0, A_1,\dots,$ where
 \[
 A_k \eqdef \set{a \suchthat \dpth{a} =k}.
 \]
