@@ -1079,7 +1079,7 @@
 \ifftlbranch
     \newcommand{\edge}[2]{\{#1, #2\}}
 \else
-    \newcommand{\edge}[2]{#1\text{---}#2}
+    \newcommand{\edge}[2]{\ang{#1\text{---}#2}}
 \fi
 
 %\newcommand{\edge}[2]{\{#1, #2\}}
