@@ -1223,11 +1223,14 @@
 
 %% Math -- Set theory
 
-\newcommand{\set}[1]{\{#1\}}
-\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\set}[1]{\{ #1 \}}
+\newcommand{\Set}[1]{\left\{ #1 \right\}}
 
-\newcommand{\card}[1]{|#1|}
+\newcommand{\card}[1]{| #1 |}
+\newcommand{\Card}[1]{\left| #1 \right|}
+
 \newcommand{\lnth}[1]{|#1|}
+\newcommand{\Lnth}[1]{right| #1 \right|}
 \newcommand{\ident}[1]{\text{Id}_{#1}}
 
 \newcommand{\union}{\cup}
