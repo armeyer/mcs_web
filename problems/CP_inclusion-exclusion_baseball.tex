@@ -1,0 +1,203 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_inclusion-exclusion_baseball}
+\end{pcomments}
+
+\pkeywords{
+  inclusion-exclusion
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let's develop a proof of the Inclusion-Exclusion formula using high school
+algebra.
+
+\bparts
+
+\ppart Most high school students will get freaked by the following formula,
+even though they actually know the rule it expresses.  How would you
+explain it to them?
+
+\begin{equation}\label{1-xprod}
+\prod_{i=1}^n \paren{1-x_i} = \sum_{I \subseteq \set{1,\dots,n}} (-1)^{\card{I}}\prod_{j \in I}x_j.
+\end{equation}
+\hint Show them an example.
+
+\begin{solution}
+Let's do an example.  To ``multiply out''
+\begin{equation}\label{x3prod}
+(1-x_1)(1-x_2)(1-x_3),
+\end{equation}
+you would form \emph{\idx{monomial}} products by selecting some of the
+$(-x_i)$'s to multiply together.  For example, selecting $(-x_i)$'s with
+\begin{itemize}
+\item $i \in \set{1,3}$ leads to the monomial $(-x_1)(-x_3) = (-1)^2x_1x_3
+  = x_1x_3$,
+%\item $i \in \set{2}$ leads to the monomial $x_2$,
+\item $i \in \set{1,2,3}$ leads to the monomial $(-x_1)(-x_2)(-x_3)= (-1)^3x_1x_2x_3 = -x_1x_2x_3$, and
+\item $i \in \emptyset$ leads (by convention) to the monomial $1$.
+\end{itemize}
+Then you sum up the monomials from \emph{all possible} selections to get
+\[
+(1-x_1)(1-x_2)(1-x_3) = 1 - x_1 - x_2 - x_3 + x_1x_2 + x_1x_3 + x_2x_3 - x_1x_2x_3.
+\]
+
+Now we can decipher~\eqref{1-xprod} as saying to do the same thing for
+the product of $n$ different $(1-x_i)$'s:  for any selection of $(-x_i)$'s
+with $i$ in some subset, $I \subseteq \set{1,\dots,n}$, multiply the
+$(-x_i)$'s to get the monomial
+\[
+\prod_{i \in I} (-x_i) = \prod_{i \in I} (-1)^{\card{I}} x_i,
+\]
+and sum up all such monomials obtained by every possible selection, $I$,
+to get the right hand side of equation~\eqref{1-xprod}.
+\end{solution}
+
+\eparts
+
+For any set, $S$, let $M_S$ be the \emph{membership} function of $S$:
+\[
+M_S(x) = \begin{cases}
+         1 & \text{if $x \in S$},\\
+         0 & \text{if $x \notin S$}.
+         \end{cases}
+\]
+
+Let $S_1,\dots,S_n$ be a sequence of finite sets, and abbreviate $M_{S_i}$
+as $M_i$.  Let the \idx{domain of discourse}, $D$, be the union of the
+$S_i$'s.  That is, we let
+\[
+D \eqdef \lgunion_{i=1}^n S_i,
+\]
+and take complements with respect to $D$, that is,
+\[
+\bar{T} \eqdef D - T,
+\]
+for $T \subseteq D$.
+
+\bparts
+
+\ppart\label{Mprops}
+Verify that for $T \subseteq D$ and $I \subseteq \set{1,\dots n}$,
+\begin{align}
+M_{\bar{T}}  & = 1- M_T, \label{Tbar1-T}\\
+M_{\paren{\lgintersect_{i \in I} S_i}} & = \prod_{i \in I}M_{S_i}, \label{intersectSs}\\
+M_{\paren{\lgunion_{i \in I} S_i}} & = 1- \prod_{i\in I}(1-M_i). \label{1-Mprod}
+\end{align}
+(Note that~\eqref{intersectSs} holds when $I$ is empty because, by
+convention, an empty product equals 1, and an empty intersection equals
+the domain of discourse, $D$.)
+
+\begin{solution}
+To prove~\eqref{Tbar1-T}, we have for all $u \in D$,
+\begin{align*}
+M_{\bar{T}}(u) = 1 & \qiff u \in \bar{T} \qiff M_T(u) = 0 \qiff 1-M_T(u) = 1,\\
+M_{\bar{T}}(u) = 0 & \qiff u \notin \bar{T} \qiff u \in T \qiff M_T(u) = 1 \qiff 1-M_T(u) = 0,\\
+\end{align*}
+so $M_{\bar{T}}(u) = 1-M_T(u)$.
+
+Similarly, to prove~\eqref{intersectSs},
+\[
+M_{\paren{\lgintersect_{i \in I} S_i}}(u) = 1
+   \qiff u \in \lgintersect_{i \in I} S_i
+   \qiff \lgand_{i \in I} u \in S_i
+   \qiff \lgand_{i \in I} [M_i(u) = 1] \qiff \paren{\prod_{i \in I} M_i(u)} = 1.
+\]
+
+Finally,~\eqref{1-Mprod} follows from~\eqref{Tbar1-T}
+and~\eqref{intersectSs} by DeMorgan's Law.
+\end{solution}
+
+\ppart Use~\eqref{1-xprod} and~\eqref{1-Mprod} to prove
+\begin{equation}\label{MUsum}
+M_D = \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+             (-1)^{\card{I}+1} \prod_{j \in I}M_j.
+\end{equation}
+\begin{solution}
+
+\begin{align*}
+M_D & = M_{\paren{\lgunion_{i=1}^n S_i}}\\
+    & = 1 - \prod_{i=1}^n (1-M_i)
+         &\text{by~\eqref{1-Mprod}}\\
+    & = 1 - \sum_{I \subseteq \set{1,\dots,n}} (-1)^{\card{I}}\prod_{j \in I}M_j
+        & \text{by~\eqref{1-xprod}}\\
+    & = 1 - \paren{1 + \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+             (-1)^{\card{I}} \prod_{j \in I}M_j}
+         & \text{($\prod_{j \in \emptyset} M_j \eqdef 1$)}\\
+    & = \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+             (-1)^{\card{I}+1} \prod_{j \in I}M_j.
+\end{align*}
+
+\end{solution}
+
+\ppart Prove that
+\begin{equation}\label{}\label{cardTsum}
+\card{T}  = \sum_{u \in D} M_T(u).\\
+\end{equation}
+
+\begin{solution}
+\[
+\sum_{u \in D} M_T(u) = \sum_{u \in T} M_T(u) + \sum_{u \in \bar{T}} M_T(u) 
+= \paren{\sum_{u \in T} 1} +  \paren{\sum_{u \in \bar{T}} 0}
+= \card{T}+0 = \card{T},
+\]
+\end{solution}
+
+\ppart Now use
+\iffalse~\eqref{intersectSs},~\eqref{MUsum} and~\eqref{cardTsum} \fi
+the previous parts to prove
+\begin{equation}\label{incexc-subsets}
+\card{D}  = \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+                  (-1)^{\card{I}+1} \Card{\lgintersect_{i \in I} S_i}
+\end{equation}
+
+\begin{solution}
+Summing both sides of~\eqref{MUsum} over $u \in D$, we have
+\begin{align*}
+\card{D} & = \sum_{u \in D} M_D(u)
+              & \text{(by~\eqref{cardTsum})}\\
+         & = \sum_{u \in D} \paren{\sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+             (-1)^{\card{I}+1} \prod_{j \in I}M_j(u)}
+              & \text{(by~\eqref{MUsum})}\\
+         & = \sum_{u \in D}
+                 \paren{\sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+                       (-1)^{\card{I}+1} M_{\lgintersect_{i \in I} S_i}(u)}
+             & \text{(by~\eqref{intersectSs})}\\
+         & = \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+                  (-1)^{\card{I}+1} \paren{\sum_{u \in D}
+                             M_{\lgintersect_{i \in I} S_i}(u)}
+              & \text{(reversing the order of sums)}\\
+         & = \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}}
+                  (-1)^{\card{I}+1} \Card{\lgintersect_{i \in I} S_i}
+              & \text{(by~\eqref{cardTsum})}.
+\end{align*}
+\end{solution}
+
+\ppart Finally, explain why~\eqref{incexc-subsets} immediately implies the
+usual form of the Inclusion-Exclusion Principle:
+
+\begin{equation}\label{incexc-n}
+  \card{D} = \sum_{i=1}^n (-1)^{i+1}
+             \sum_{\substack{I \subseteq \set{1,\dots,n}\\ \card{I}=i}}
+                 \Card{\lgintersect_{j \in I} S_j}.
+\end{equation}
+
+\begin{solution}
+  We obtain~\eqref{incexc-n} from~\eqref{incexc-subsets} by breaking up
+  the sum over nonempty subsets, $I \subseteq \set{1,\dots,n}$, into
+  separate sums over all the subsets of size $i$, for $1 \leq i \leq n$.
+\end{solution}
+
+\eparts
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
