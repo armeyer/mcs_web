@@ -1142,6 +1142,7 @@ analysis, this is also extremely small.
 \classproblems
 \pinput{CP_bigger_number_game}
 \pinput{CP_3_random_variables}
+\pinput{CP_binomial_distribution_max}
 
 \homeworkproblems
 \pinput{PS_drunken_sailor}
@@ -1199,7 +1200,7 @@ in the defining sum~\eqref{expsumv}:
 \begin{align*}
 \expect{R}
     & \eqdef \sum_{x \in \range{R}} x \cdot \pr{R = x} 
-                           &\text{(Def~\ref{expdef} of expectation)}\\
+                           &\text{(def~\ref{expdef} of expectation)}\\
     & = \sum_{x \in \range{R}} x \paren{\sum_{\omega \in [R=x]} \pr{\omega}}
               & \text{(def of $\pr{R=x}$)}\\
     & = \sum_{x \in \range{R}} \sum_{\omega \in [R=x]} x \pr{\omega}
@@ -1304,7 +1305,7 @@ Let $A_1,A_2,\dots$ be a partition of the sample space.  Then
 \begin{proof}
   \begin{align*}
     \expect{R} &\eqdef \sum_{r \in \range{R}} r \cdot \pr{R=r}
-                  & \text{(Def~\ref{expdef} of expectation)}\\
+                  & \text{(def~\ref{expdef} of expectation)}\\
     &= \sum_r r \cdot \sum_i \prcond{R=r}{A_i} \pr{A_i}
             & \text{(Law of Total Probability)}\\
     &= \sum_r \sum_i r \cdot \prcond{R=r}{A_i} \pr{A_i}
@@ -1314,7 +1315,7 @@ Let $A_1,A_2,\dots$ be a partition of the sample space.  Then
     &= \sum_i \pr{A_i} \sum_r r \cdot \prcond{R=r}{A_i}
              & \text{(factor constant $\pr{A_i}$)}\\
     &= \sum_i \pr{A_i} \expcond{R}{A_i}.
-             & \text{(Def~\ref{condexpdef} of cond.\ expectation)}
+             & \text{(def~\ref{condexpdef} of cond.\ expectation)}
   \end{align*}
 \end{proof}
 
@@ -1348,7 +1349,7 @@ If $R$ and $I_A$ are independent, then
 by the definition of independence of random variables, so the righthand
 side of equation~\eqref{condexpsumv} for conditional expectation coincides
 with the righthand side of the corresponding equation~\eqref{expsumv} for
-vordinary expectation.
+ordinary expectation.
 \end{proof}
 
 Many rules for conditional expectation correspond directly to rules for
@@ -1385,43 +1386,40 @@ For any two \emph{independent} random variables $R_1$, $R_2$, and event, $A$,
 
 \subsection{Mean Time to Failure}\label{mean_time_to_failure_subsec}
 
-A computer program crashes at the end of each hour of use with probability
-$p$, if it has not crashed already.  What is the expected time until the
-program crashes?
+A computer program crashes at the end of each hour of use with
+probability $p$, if it has not crashed already.  What is the expected
+time until the program crashes?  This will be easy to figure out using
+the \index{total expectation} Law of Total Expectation
+(Theorem~\ref{total_expect}).  Namely, we want to find $\expect{C}$
+where $C$ is the number of hours until the first crash.  We'll do
+this by conditioniing on whether or not the crash occurs in the first
+hour.
 
-If we let $C$ be the number of hours until the crash, then the answer to
-our problem is $\expect{C}$.  Now the probability that, for $i >0$, the
-first crash occurs in the $i$th hour is the probability that it does not
-crash in each of the first $i-1$ hours and it does crash in the $i$th
-hour, which is $(1-p)^{i-1}p$.  So from formula~\eqref{expsumv} for
-expectation, we have
-\begin{align*}
-\expect{C} & = \sum_{i \in \naturals} i \cdot \pr{R=i}\\
-           & = \sum_{i \in \naturals^+} i (1-p)^{i-1}p\\
-           &= p \sum_{i \in \naturals^+} i (1-p)^{i-1}\\
-           &= p\frac{1}{(1-(1-p))^2} & \text{(by~\eqref{sumixi-1})}\\
-           &= \frac{1}{p}
-\end{align*}
-
-
-A simple alternative derivation that does not depend on
-the formula~\eqref{sumixi-1}
-\iffalse
-for $\sum_{i \in \naturals^{+}} ix^{i-1}$
-\begin{equation}\label{Notes11form}
-\sum_{i \in \naturals^{+}} ix^{i-1} =\frac{1}{(1-x)^2}
-\end{equation}
-\fi (which you remembered, right?) is based on \idx{conditional
-  expectation}.  Given that the computer crashes in the first hour, the
-expected number of hours to the first crash is obviously 1!  On the other
-hand, given that the computer does not crash in the first hour, then the
-expected total number of hours till the first crash is the expectation of
-one plus the number of additional hours to the first crash.  So,
+Now given that the computer crashes in the first hour, the expected
+number of hours to the first crash is obviously 1!  On the other hand,
+given that the computer does not crash in the first hour, then the
+expected total number of hours till the first crash is the expectation
+of one plus the number of additional hours to the first crash.  So,
 \[
 \expect{C} = p\cdot 1 + (1-p)\expect{C+1} = p + \expect{C} -p\expect{C} +
 1 - p,
 \]
-from which we immediately calculate that $\expect{C} = 1/p$.
+from which we immediately calculate that
+\[
+\expect{C} = \frac{1}{p}.
+\]
+
+The general principle here is well-worth
+remembering:
+\textbox{
+\begin{center}
+\textboxtitle{Mean Time to Failure}
+\end{center}
+
+If a system fails at each time step with probability $p$,
+then the expected number of steps up to the first failure is
+$1/p$.
+}
 
 \begin{staffnotes}
 
@@ -1501,6 +1499,31 @@ last of these will be the girl, they should expect just one boy.
 Something to think about: If every couple follows the strategy of having
 children until they get a girl, what will eventually happen to the
 fraction of girls born in this world?
+
+Using the Law of Total Expectation to find expectations is worth
+keeping in mind, but it's good review to derive the same formula
+directly from the definition of expectation.  Namely, the probability
+that the first crash occurs in the $i$th hour for some $i >0$ is the
+probability, $(1-p)^{i-1}$, that it does not crash in each of the first
+$i-1$ hours, times the probability, $p$, that it does crash in the
+$i$th hour.  So 
+\begin{align}
+\expect{C} & = \sum_{i \in \naturals} i \cdot \pr{C=i} &
+\text{(Def.~\ref{expdef} of $\expect{\cdot}$)}\notag\\
+           & = \sum_{i \in \naturals} i (1-p)^{i-1}p\notag\\
+           &= \frac{p}{1-p} \cdot \sum_{i \in \naturals} i (1-p)^i.\label{meantimefailsum}
+\end{align}
+But we've already seen a sum like this last one, namely, according to
+equation~\eqref{eqn:inf_ixi} 
+\[
+%\begin{equation}\label{Notes11form}
+\sum_{i \in \naturals} ix^i =\frac{x}{(1-x)^2}.
+%\end{equation}
+\]
+Combining this equation with~\eqref{meantimefailsum} gives
+\[
+\expect{C} = \frac{p}{1-p}\frac{1-p}{(1-(1-p))^2} = \frac{1}{p}\,.
+\]
 
 \subsection{Linearity of Expectation}\label{finlin}
 
@@ -2139,9 +2162,9 @@ convergent, which justifies rearranging them as follows:
            & \text{(exchanging order of summation)}\\
     &= \sum_{s \in \sspace} \left[ \sum_{i=0}^\infty R_i(s) \right] \cdot \prob{s}
                 & \text{(factoring out $\pr{s}$)}\\
-    &= \sum_{s \in \sspace} T(s) \cdot \prob{s} & \text{(Def.\ of $T$)}\\
+    &= \sum_{s \in \sspace} T(s) \cdot \prob{s} & \text{(def of $T$)}\\
     &= \expect{T} & \text{(Def.~\ref{expsumssp})}\\
-    &= \expect{\sum_{i = 0}^\infty R_i}. &  \text{(Def.\ of $T$)}.
+    &= \expect{\sum_{i = 0}^\infty R_i}. &  \text{(def of $T$)}.
 \end{align*}
 \end{proof}
 
@@ -2305,11 +2328,11 @@ Here the first equality holds because the dice are independent.
 
 At the other extreme, suppose the second die is always the same as the
 first.  Now $R_1 = R_2$, and we can compute the expectation,
-$\expect{R_1^2}$, of the product of the dice explicitly, confirming that
+$\expect{(R_1)^2}$, of the product of the dice explicitly, confirming that
 it is not equal to the product of the expectations.
 \begin{align*}
-\expect{R_1 \cdot R_2} & = \expect{R_1^2}\\
-        & =    \sum_{i=1}^6 i^2 \cdot \pr{R_{1}^2 = i^2}
+\expect{R_1 \cdot R_2} & = \expect{(R_1)^2}\\
+        & =    \sum_{i=1}^6 i^2 \cdot \pr{(R_1)^2 = i^2}
                     &  \\
         & =    \sum_{i=1}^6 i^2 \cdot \pr{R_{1} = i}\\
         & =    \frac{1^2}{6} + \frac{2^2}{6} + \frac{3^2}{6} + 
@@ -2327,6 +2350,11 @@ For any two \emph{independent} random variables $R_1$, $R_2$,
 \]
 \end{theorem}
 
+The proof follows by judicious rearrangement of terms in the sum that
+defines $\expect{R_1 \cdot R_2}$.  Details appear in
+Problem~\ref{CP_independent_product}.
+
+\iffalse
 \begin{proof}
 The event $[R_1 \cdot R_2=r]$ can be split up into events of the form
 $[R_1 = r_1\ \text{ and }\ R_2 = r_2]$ where $r_1\cdot r_2=r$.  So
@@ -2358,6 +2386,7 @@ $[R_1 = r_1\ \text{ and }\ R_2 = r_2]$ where $r_1\cdot r_2=r$.  So
 \end{align*}
 
 \end{proof}
+\fi
 
 Theorem~\ref{th:prod} extends routinely to a collection of mutually
 independent variables.
