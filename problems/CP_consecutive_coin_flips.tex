@@ -1,11 +1,13 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
+  \pcomment{CP_consecutive_coin_flips}
   \pcomment{from: S09.cp14m}
 \end{pcomments}
 
 \pkeywords{
   expectation
+  total_expectation
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,45 +18,90 @@
 
 \bparts
 
-\ppart Suppose we flip a fair coin until two Tails in a row come up.  What
-is the expected number, $N_\mathtt{TT}$, of flips we perform?  \hint Let
-$D$ be the tree diagram for this process.  Explain why $D = H\cdot D +T
-\cdot(H\cdot D + T)$.  Use the Law of Total Expectation~\bref{total_expect}
+\ppart Suppose we flip a fair coin and let $N_\mathtt{TT}$ be the
+number of flips until the first time two Tails in a row appear.  What
+is $\expect{N_\mathtt{TT}}$?
+
+\hint Let $D$ be the tree diagram for this process.  Explain why
+\[
+D = H\cdot D + T\cdot(H\cdot D + T).
+\]
+Use the Law of Total Expectation\inbook{~\bref{total_expect}.}%
+\inhandout{:
+
+Let $R$~be a random variable and $A_1$, $A_2$, \dots, be a partition
+of the sample space.  Then
+\[
+    \expect{R} = \sum_i \expcond{R}{A_i} \prob{A_i}.
+\]
+}
+
+\begin{staffnotes}
+Let people struggle a little with the hint, then suggest that $H$
+refers to flipping a Head and $T$ to flipping a Tail.  They should be
+able to realize that ``$+$'' describes a tree branch.
+\end{staffnotes}
 
 \begin{solution}
-$N_\mathtt{TT}=6$.
-
-From $D$ and Total Expectation:
 \[
-N_\mathtt{TT} = \frac{1}{2}\cdot [1+ N_\mathtt{TT}] + \frac{1}{2} \cdot
-\paren{ 1+ \frac{1}{2}\cdot[1+ N_\mathtt{TT}] + \frac{1}{2}\cdot 1}
+\expect{N_\mathtt{TT}}=6.
+\]
+
+Let $H_k$ be the event that the first Head appears on the $k$th flip.
+From $D$ and Total Expectation:
+
+\begin{align*}
+\lefteqn{\expect{N_\mathtt{TT}}}\\
+  & = \expcond{N_\mathtt{TT}}{H_1}          \cdot \pr{H_1}
+       + \expcond{N_\mathtt{TT}}{\bar{H_1}} \cdot \pr{\bar{H_1}}\\ 
+  & = \paren{1 + \expect{N_\mathtt{TT}}}\cdot \frac{1}{2}\\
+  &   \qquad  + \paren{\paren{\expcond{N_\mathtt{TT}}{H_2}\prcond{H_2}{\bar{H_1}}}
+                  + \paren{\expcond{N_\mathtt{TT}}{\bar{H_1} \intersect \bar{H_2}}}
+                  \prcond{\bar{H_2}}{\bar{H_1}}}
+         \cdot \frac{1}{2}\\ 
+  & = \paren{1 + \expect{N_\mathtt{TT}}}\cdot \frac{1}{2}
+       + \paren{\paren{2+\expect{N_\mathtt{TT}}}\cdot \frac{1}{2}
+                  + 2 \cdot \frac{1}{2}}
+         \cdot \frac{1}{2}\\ 
+  & = \frac{1}{2} + \frac{\expect{N_\mathtt{TT}}}{2}
+       + \paren{2+\expect{N_\mathtt{TT}}}\cdot \frac{1}{4}
+       + \frac{1}{2}\\
+  & = \frac{3}{2} + \frac{3\expect{N_\mathtt{TT}}}{4}
+\end{align*}
+So
+\[
+\frac{\expect{N_\mathtt{TT}}}{4} = \frac{3}{2}.
 \]
 \end{solution}
 
 
-\ppart Suppose we flip a fair coin until a Tail immediately followed by a
-Head come up.  What is the expected number, $N_\mathtt{TH}$, of flips we
-perform?
+\ppart Suppose we flip a fair coin until a Tail immediately followed
+by a Head come up.  What is the expectation of the number
+$N_\mathtt{TH}$ of flips we perform?
 
 \begin{solution}
-$N_\mathtt{TH}=4$.
+\[
+\expect{N_\mathtt{TH}}=4.
+\]
 
-  This time the tree diagram $C = H\cdot C +T\cdot B$ where the subtree $B =
-  H + T\cdot B$.
+This time the tree diagram is $C \eqdef H\cdot C +T\cdot B$ where the subtree
+$B \eqdef H + T\cdot B$.
 
 So
 \[
-N_\mathtt{TH}  = \frac{1}{2} \cdot [1+ N_\mathtt{TH}] + \frac{1}{2}\cdot [1+ N_B]
+\expect{N_\mathtt{TH}} =  \paren{1+ \expect{N_\mathtt{TH}}} \cdot \frac{1}{2}
++  (1+ \expect{N_B}) \cdot \frac{1}{2}
 \]
 where $N_B$ is the expected number of flips in the $B$ subtree.  But
 \[
-N_B = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot [1+N_B].
+\expect{N_B} = 1 \cdot \frac{1}{2} + (1+\expect{N_B}) \cdot  \frac{1}{2}.
 \]
-That is, $N_B = 2$.  Hence,
+That is, $\expect{N_B} = 2$.  Hence,
 \[
-N_\mathtt{TH} = \frac{1}{2}\cdot [1+ 2] + \frac{1}{2} \cdot [1+ N_\mathtt{TH}]
+\expect{N_\mathtt{TH}} = \frac{1}{2} +\frac{\expect{N_\mathtt{TH}}}{2}
++ \frac{1}{2} + \frac{2}{2}
 \]
-which implies $N_\mathtt{TH} = 4$.
+which implies $\expect{N_\mathtt{TH}} = 4$.
 \end{solution}
 
 \ppart Suppose we now play a game: flip a fair coin until either
@@ -78,6 +125,16 @@ It's easy to see that both \texttt{TT} and \texttt{TH} are
 \frac{1}{2}\cdot 6 + \frac{1}{2}\cdot (-5)\]
 dollars, that is 50 cents per game.  So leap to play.
 \end{solution}
+
+\begin{staffnotes}
+Start a discussion of the apparent paradox: \texttt{TT} and
+\texttt{TH} are equally likely to show up first, but \texttt{TT} takes
+longer to show up on average.
+
+The explanation is that when \texttt{TT} shows up first, we are
+already one step along the way to \texttt{TH}, while when \texttt{TH}
+shows up first, we start waiting for \texttt{TT} without a head start.
+\end{staffnotes}
 
 \eparts
 

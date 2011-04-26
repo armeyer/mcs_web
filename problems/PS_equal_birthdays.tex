@@ -1,7 +1,7 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{PS_equal_birthdays}
+  \pcomment{PS_equal_birthdays2}
   \pcomment{by ARM 4/23/11}
 \end{pcomments}
 
@@ -18,57 +18,115 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
+\begin{definition*}
+A random variable, $R$, is independent of a set $\set{R_1,R_2,\dots}$ of
+random variables iff the event $[R=r]$ is independent of the event
+\[
+[R_1 = r_1 \QAND R_2 = r_2 \QAND \cdots]
+\]
+for all values $r, r_1, r_2, \dots$.
+\end{definition*}
+Let $R$, $S$, and $T$ be random variables with the same codomain, $V$.
+
 \bparts
 
-\ppart Give an example of mutually independent random variables
-$R,S,T$ such that the event $[R=S]$ is not independent of $[R=T]$.
+\ppart\label{R=S=b} Prove that if $R$ is uniform ---that is, $\pr{R=b}
+= p$ for all $b \in V$ where $p = 1/\card{V}$ ---and $R$ is
+independent of $S$, then $\pr{R=S} = p$.
 
 \begin{solution}
-Let $R$ and $S$ both take the same constant value.
+\begin{staffnotes}
+Given the first line below as a hint if students are stuck.
+\end{staffnotes}
+
+\begin{proof}
+\begin{align*}
+\pr{R=S}
+   & = \sum_{b \in V} \prcond{R=S}{S=b}\pr{S=b}
+         & \text{(total probability law)}\\
+   & = \sum_{b \in V} \prcond{R=b}{S=b} \cdot \pr{S=b}\\
+   & = \sum_{b \in V} \pr{R=b} \cdot \pr{S=b}
+          & \text{$R$ independent of $S$}\\
+   & = \sum_{b \in V} p \cdot \pr{S=b}\\
+   & = p \cdot \sum_{b \in V} \pr{S=b} = p \cdot 1 = p.
+\end{align*}
+The second equality follows from the fact that $[R=S] \intersect
+[S=b]$ is the same event as $[R=b] \intersect [S=b]$.
+\end{proof}
+
 \end{solution}
 
-\ppart Prove that if $R,S,T$ are mutually independent random variables
-and $R$ and $S$ have a uniform distribution, then $[R=S]$ is
-independent of $[R=T]$.
+\ppart Prove that if $R$ has a uniform distribution, and $R$ is
+independent of $\set{S,T}$, then $[R=S]$ is independent of $[S=T]$.
 
-\hint Let $p = \pr{R = b}$ and first prove that $\pr{R=T} = p$.
+\begin{staffnotes}
+Give
+\[
+[R=S \QAND\ S=T] = \lgunion_{b \in V} [R=b \QAND\ S=b \QAND\ T=b]
+\]
+as a hint if students are stuck.
+
+This proof follows directly enough from the definitions, but I have a
+feeling I'm overlooking a simpler argument that does not require
+part~\eqref{R=S=b} beforehand.  --ARM 4/25/11
+\end{staffnotes}
 
 \begin{solution}
-\begin{proof}
-Since $R$ is uniform, there is a $p$ such that $p = \pr{R = b}$ for
-all $b \range{R}$.  Then
-\begin{align*}
-\pr{R=T}
-   & = \pr{\lgunion_{b \in \range{R}} [R=b \QAND\ T=b]\\
-   & = \sum_{b \in \range{R}} \pr{[R=b \QAND\ T=b]}
-         & \text{(disjoint sum rule)}\\
-   & = \sum_{b \in \range{R}} \pr{R=b} \cdot \pr{T=b}
-         & (R & T \text{ independent})\\
-   & = \sum_{b \in \range{R}} p \cdot \pr{T=b}
-          & \text{$R$ is uniform}\\
-   & = p \sum_{b \in \range{R}} \pr{T=b} = p.
-\end{align*}
-Similarly, $\pr{R=S} = p$.  Further, since $S$ is uniform, $\pr{S=T} =
-p$.
 
-Now,
 \begin{align*}
-\pr{R=S \QAND\ R=T}
-    & = \lgunion_{b \in \range{R}} [R=b \QAND\ S=b \QAND\ T=b]\\
-    & = \sum_{b \in \range{R}} \pr{R=b \QAND\ S=b \QAND\ T=b}
+\pr{R=S \QAND\ S=T}
+    & = \Prob{\lgunion_{b \in V} [R=b \QAND\ S=b \QAND\ T=b]}\\
+    & = \sum_{b \in V} \pr{R=b \QAND\ S=b \QAND\ T=b}
           & \text{(disjoint sum rule)}\\
-    & = \sum_{b \in \range{R}} \pr{R=b}\cdot \pr{S=b} \cdot \pr{T=b}
-          & \text{mutual independence}\\
-    & = \sum_{b \in \range{R}} p \cdot p  \cdot \pr{T=b}
-          & \text{$R,S$ are  uniform}\\
-    & = p^2 \sum_{b \in \range{R}} \pr{T=b}\\
-    & = p^2 = \pr{R=S} \cdot \pr{R=T}.
+    & = \sum_{b \in V} \pr{R=b} \cdot \pr{S=b \QAND\ T=b}
+          & \text{($R$ independent of $\set{S,T}$)}\\
+    & =  \sum_{b \in V} p \cdot \pr{S=b \QAND\ T=b}
+             & (\text{$R$ is uniform})\\
+    & = p \cdot \sum_{b \in V} \pr{S=b \QAND\ T=b}\\
+    & = p \cdot \pr{\lgunion_{b \in V} [S=b \QAND\ T=b]}
+          & \text{(disjoint sum rule)}\\
+    & = p \cdot \pr{S=T}\\
+    & = \pr{R=S} \cdot \pr{S=T}.
+          & \text{(part~\eqref{R=S=b})}
 \end{align*}
-\end{proof}
+
+\end{solution}
+
+
+\ppart Let $V = \set{1,2,3}$ and $R,S,T$ take the following values
+with equal probability, namely, 1/6:
+\[
+111, 211, 123, 223, 132, 232.
+\]
+Verify that
+\begin{enumerate}
+
+\item $S$ and $T$ have a uniform distribution,\label{STunif}
+\item $R$ is independent of $\set{S,T}$,\label{RindST}
+\item The event $[R=S]$ is not independent of $[S=T]$.\label{R=SnotS=T}
+\end{enumerate}
+
+\begin{solution}
+There are two outcomes with $S=i$ for each $i \in V$, so $\pr{S=i} =
+1/3$ for all $i \in V$, that is, $S$ is uniform.  Likewise for $T$.
+This proves~\ref{STunif}.
+
+To prove independence, note that $1,s,t$ is a possible sequence of
+values $R,S,T$ iff $2,s,t$ is.  This implies that $\pr{R=1} = \pr{R=2}
+= 1/2$, and also that $\pr{R=i \QAND S=s \QAND T = t} =1/6 = $
+\TBA{remaining cases}.  This proves~\ref{RindST}.
+
+Finally, there are two outcomes out of six with $R = S$, so $\pr{R=S}
+= 1/3$.  But of the two outcomes with $S=T$, only one has $R=S$,
+namely when $R=S=T=1$, so $\prcond{R=S}{S=T} = 1/2 \neq 1/3 =
+\pr{R=S}$.  So $[R=S]$ is not independent of $[S=T]$, which
+proves~\ref{R=SnotS=T}.
+
 \end{solution}
 
 \eparts
 \end{problem}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem ends here
