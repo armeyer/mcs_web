@@ -284,6 +284,7 @@ mutually independent random variables, then it follows that:
 
 \homeworkproblems
 \pinput{PS_equal_birthdays}
+\pinput{PS_dependent-pairs}
 
 \end{problems}
 
@@ -591,7 +592,7 @@ to be distinct.
 Sure enough, you win with this strategy more than half the time,
 regardless of the numbers in the envelopes!  For example, if I choose
 numbers in the range $0, 1, \dots, 100$, then you win with probability at
-least $\frac{1}{2} + \frac{1}{200} = 50.5\%$.  Even better, if I'm allowed
+least $1/2 +1/200 = 50.5\%$.  Even better, if I'm allowed
 only numbers in the range $0, \dots, 10$, then your probability of
 winning rises to 55\%!  By Las Vegas standards, those are great odds!
 
@@ -647,6 +648,7 @@ We'll talk a lot more about these tails shortly.
 
 \end{figure}
 
+\iffalse
 The cumulative distribution function for the unbiased binomial
 distribution is $F_n: \reals \to [0, 1]$ where
 \begin{equation*}
@@ -658,6 +660,7 @@ F_n(x) =
         1 & \text{if $n \le x$}.
     \end{cases}
 \end{equation*}
+\fi
 
 In many fields, including Computer Science, probability analyses come down
 to getting small bounds on the \idx{tails} of the binomial distribution.
@@ -712,6 +715,7 @@ larger and smaller values of $k$.
 
 \end{figure}
 
+\iffalse
 The cumulative distribution function for the general binomial
 distribution is~$F_{n, p}: \reals \to [0,1]$ where
 \begin{equation}\label{eqn:16F5}
@@ -723,6 +727,7 @@ F_{n, p}(x) =
         1 & \text{if $n \le x$}.
     \end{cases}
 \end{equation}
+\fi
 
 
 \begin{editingnotes}
@@ -1544,7 +1549,7 @@ Something to think about: If every couple follows the strategy of having
 children until they get a girl, what will eventually happen to the
 fraction of girls born in this world?
 
-Using the Law of Total Expectation to find expectations is worthwhile
+Using the Law of Total Expectation to find expectations is a worthwhile
 approach to keep in mind, but it's good review to derive the same
 formula directly from the definition of expectation.  Namely, the
 probability that the first crash occurs in the $i$th hour for some $i
@@ -1557,7 +1562,8 @@ crash in the $i$th hour.  So
            & = \sum_{i \in \naturals} i (1-p)^{i-1}p\notag\\
            &= \frac{p}{1-p} \cdot \sum_{i \in \naturals} i (1-p)^i.\label{meantimefailsum}
 \end{align}
-But we've already seen a sum like this last one, namely, equation~\eqref{eqn:inf_ixi}:
+But we've already seen a sum like this last one (you did remember
+this, right?), namely, equation~\eqref{eqn:inf_ixi}:
 \[
 %\begin{equation}\label{Notes11form}
 \sum_{i \in \naturals} ix^i =\frac{x}{(1-x)^2}.
@@ -1988,9 +1994,9 @@ Since we have just learned about linearity of expectation for sums of
 indicator random variables, maybe Theorem~\ref{thm:17T3} will be
 helpful.  But how do we express~$J$ as a sum of indicator random
 variables?  It turns out to be easy.  Let $J_i$~be the indicator
-random variable for the $i$th~coin.  In particular, define
+random variable for the $i$th~coin coming up heads, that is,
 \begin{equation*}
-J_i = \begin{cases}
+J_i \eqdef \begin{cases}
         1 & \text{if the $i$th coin is heads} \\
         0 & \text{if the $i$th coin is tails}.
       \end{cases}
@@ -2014,12 +2020,33 @@ and Theorem~\ref{thm:17T3} do not assume any independence.
 
 If you are not yet convinced that Linearity of Expectation and
 Theorem~\ref{thm:17T3} are powerful tools, consider this: without even
-trying, we have used them to prove a very complicated identity,
-namely, combining equations~\eqref{eqn:17T7} and~\eqref{eqn:17T8} gives:
+trying, we have used them to prove a complicated looking identity,
+namely,
+\begin{equation}\label{binomial-expectsum}
+    \sum_{k = 0}^n k \binom{n}{k} p^k (1 - p)^{n - k} = p n,
+\end{equation}
+which follows by combining equations~\eqref{eqn:17T7}
+and~\eqref{eqn:17T8}.\footnote{Equation~\eqref{binomial-expectsum} may
+  look daunting initially, but it is, after all, pretty similar to the
+  binomial identity, and that connection leads to a simple derivation
+  by algebra.  Namely, starting with the binomial identity
 \[
-    \sum_{k = 0}^n k \binom{n}{k} p^k (1 - p)^{n - k} = p n.
+(x + y)^n = \sum_{k = 0}^n \binom{n}{k} x^k y^{n - k}.
 \]
-If you are still not convinced, then take a look at the next problem.
+we can differentiate with respect to $x$ (as in
+Section~\ref{variant_sum_sec}) to get
+\[
+n(x + y)^{n-1} = \sum_{k = 0}^n k\binom{n}{k} x^{k-1} y^{n - k}.
+\]
+Multiplying both sides by $x$ gives
+\begin{equation}\label{xybinomial-expectsum}
+xn(x + y)^{n-1} = \sum_{k = 0}^n k\binom{n}{k} x^{k} y^{n - k}
+\end{equation}
+Plugging $p$ for $x$ and $1-p$ for $y$ in~\eqref{xybinomial-expectsum}
+then yields~\eqref{binomial-expectsum}.}
+
+The next section has an even more convincing illustration of the power
+of linearity to solve a challenging problem.
 
 \subsection{The Coupon Collector Problem}
 
@@ -2182,7 +2209,7 @@ We know that $\expect{R} = 3\frac{1}{2}$ and thus $\expect{R}^2 =
 result.
 \begin{align*}
 \Expect{R^2}
-     = \sum_{\omega \in \sspace} R^2(\omega) \prob{w}
+   & = \sum_{\omega \in \sspace} R^2(\omega) \prob{w}
      = \sum_{i=1}^6 i^2 \cdot \prob{R_i = i} \\
    & = \frac{1^2}{6} + \frac{2^2}{6} + \frac{3^2}{6} +
             \frac{4^2}{6} + \frac{5^2}{6} + \frac{6^2}{6} 
@@ -2590,9 +2617,9 @@ plug~\eqref{eqn:2} into~\eqref{eqn:1}:
 \pinput{CP_carnival_dice_fair}
 \pinput{CP_sixteen_desks}
 \pinput{CP_probable_satisfiability}
+\pinput{CP_probable_satisfiability_nk}
 \pinput{CP_consecutive_coin_flips}
 \pinput{CP_independent_product}
-\pinput{CP_probable_satisfiability_nk}
 \pinput{CP_st_petersberg}
 
 \begin{editingnotes}
