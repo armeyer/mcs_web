@@ -1,0 +1,121 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{from: S06 PS10 -> S09 PS11}
+\end{pcomments}
+
+\pkeywords{
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We have two coins: one is a fair coin, but the other
+produces heads with probability $\frac{3}{4}$.  One of the two coins is 
+picked, and this coin is tossed $n$ times.  
+
+\begin{problemparts}
+
+\ppart  How large must $n$ be for you to be able to infer, with 95\% confidence,
+which of the two coins had been chosen?  (Get close to the minimum
+value of $n$ required without considering any details of the relevant distribution
+functions, apart from mean and variance.)  
+\hint Use Chebyshev's Theorem.
+
+\begin{solution}
+To guess which coin was picked, set a threshold $t$ between $\frac{1}{2}$ 
+and $\frac{3}{4}$.  If the proportion of heads is less than the threshold,
+guess that the fair coin had been picked; otherwise, guess the biased coin.
+Let the random variable $F$ be the number of heads that would appear in 
+the first $n$ flips of the fair coin, and let $B$ denote the number of heads
+that would appear in the first $n$ flips of the biased coin.  We must flip 
+the coin sufficiently many times to ensure that 
+\begin{equation}\label{confreqF}
+\pr{\frac{F}{n} \geq t} \leq 0.05
+\end{equation}
+and
+\begin{equation}\label{confreqB}
+\pr{\frac{B}{n} \leq t} \leq 0.05
+\end{equation}
+A natural threshold to choose is
+$t=\frac{5}{8}$, exactly in the middle of $\frac{1}{2}$ and $\frac{3}{4}$.
+
+Now, $F$ has an $\paren{n,\frac{1}{2}}$-binomial distribution, so its 
+expectation and
+variance are $n\frac{1}{2}=\frac{n}{2}$ and 
+$n\paren{\frac{1}{2}}\paren{1-\frac{1}{2}}=\frac{n}{4}$, respectively.  Using Chebyshev's
+inequality for the fair coin,
+\begin{align*}
+\pr{\frac{F}{n} > \frac{5}{8}} 
+& = \pr{\frac{F}{n} - \frac{1}{2} > \frac{5}{8} - \frac{1}{2}}
+  = \pr{F - \frac{n}{2} > \frac{n}{8} } \\
+& = \pr{F - \expect{F} > \frac{n}{8} } 
+  \leq \pr{ \abs{F - \expect{F}} > \frac{n}{8} } \\
+& \leq \frac{\variance{F}}{\paren{\frac{n}{8}}^2} 
+  = \frac{\frac{n}{4}}{\frac{n^2}{64}}
+  = \frac{16}{n}
+\end{align*}
+
+$B$, on the other hand, has an $\paren{n,\frac{3}{4}}$-binomial 
+distribution, 
+so its expectation and variance are $n\frac{3}{4}=\frac{3n}{4}$ and
+$n\paren{\frac{3}{4}}\paren{1-\frac{3}{4}}=\frac{3n}{16}$, respectively.  Using Chebyshev's
+inequality for the biased coin,
+\begin{align*}
+\pr{\frac{B}{n} < \frac{5}{8}} 
+& = \pr{\frac{3}{4} - \frac{B}{n} > \frac{3}{4} - \frac{5}{8}}
+  = \pr{\frac{3n}{4} - B > \frac{n}{8} } \\
+& = \pr{\expect{B} - B > \frac{n}{8} } 
+  \leq \pr{ \abs{B - \expect{B}} > \frac{n}{8} } \\
+& \leq \frac{\variance{B}}{\paren{\frac{n}{8}}^2} 
+  = \frac{\frac{3n}{16}}{\frac{n^2}{64}}
+  = \frac{12}{n}
+\end{align*}
+
+So, for the required confidence level, demand that $\frac{16}{n} \leq 0.05$ and $\frac{12}{n} \leq 0.05$.
+These hold iff $\frac{16}{n} \leq 0.05$, which is true iff $n \geq 320$.  So knowing the results of at
+least $320$ flips of the chosen coin will allow us to guess its identity with 95\% confidence. 
+
+(Because the variance of the biased coin is less than that of the fair coin, we
+can do slightly better if we increase our threshold a bit to about
+$0.634$, which gives 95\% confidence with 279 coin flips.)
+\end{solution}
+
+\ppart Suppose you had access to a computer program that would accept any $n \geq 0$ and $p\in[0,1]$ and 
+generate, in the form of a plot or table, the full binomial probability 
+density and cumulative distribution functions corresponding to 
+those 
+parameters.  How would you find the minimum number of coin flips needed to infer the identity of the
+chosen coin with 95\% confidence?  (You do not need to determine the 
+numerical value of this minimum $n$,
+but we'd be interested to know if you did.)
+
+\begin{solution}
+Again, we seek to determine the values of $n$ that satisfy both~\eqref{confreqF} 
+and~\eqref{confreqB}.  Using the same threshold as before, $t=\frac{5}{8}$, it is obvious 
+that~\eqref{confreqF} is equivalent to
+\begin{equation}\label{cdfF}
+\cdf_F\paren{\frac{5}{8}n} \geq 0.95
+\end{equation}
+while~\eqref{confreqB} is equivalent to
+\begin{equation}\label{cdfB}
+\cdf_B\paren{\frac{5}{8}n} \leq 0.05
+\end{equation}
+
+Knowing that $F$ is $\paren{n,\frac{1}{2}}$-binomially distributed and 
+$B$ is
+$\paren{n,\frac{3}{4}}$-binomially distributed, we can use the computer 
+program to
+find the smallest $n$ that satisfies both~\eqref{cdfF} and~\eqref{cdfB}.
+\end{solution}
+\end{problemparts}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
