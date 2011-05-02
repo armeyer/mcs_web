@@ -1,0 +1,329 @@
+\documentclass[11pt]{article}   
+\usepackage{latex-macros/course}
+
+\begin{document}
+\inclassproblems{14, Mon.}
+
+\section*{Gamblers Ruin}
+
+A gambler aims to gamble until he reaches a \emph{goal} of $T$ dollars
+or until he runs out of money, in which case he is said to be
+``ruined.''  He gambles by making a sequence of 1 dollar bets.  If he
+wins an individual bet, his stake increases by one dollar.  If he
+loses, his stake decreases by one dollar.  In each bet, he wins with
+probability $p>0$ and loses with probability $q \eqdef 1-p >0$.  He is
+an overall {\em winner} if he reaches his goal and is an overall
+\emph{loser} if he gets ruined.
+
+In a \emph{fair} game, $p = q = 1/2$.  The gambler is more likely to win
+if $p>1/2$ and less likely to win if $p<1/2$.
+
+With $T$ and $p$ fixed, the gambler's probability of winning will depend
+on how much money he starts with.  Let $w_n$ be the probability that he is
+a winner when his initial stake in $n$ dollars.
+
+\begin{problem}
+\bparts
+
+\ppart  What are $w_0$ and $w_T$?
+
+\solution{$w_0 = 0$ and $w_T=1$.}
+
+\ppart Note that $w_n$ satisfies a linear recurrence
+\begin{equation}\label{recab}
+w_{n+1} = aw_{n}+bw_{n-1}
+\end{equation}
+for some constants $a,b$ and $0 < n < T$.  Write simple expressions for
+$a$ and $b$ in terms of $p$.
+
+\solution{By Total Probability
+\begin{align}
+w_n & = \prcond{\text{win game}}{\text{win the first bet}}\pr{\text{win the first
+   bet}} +\\
+    & \quad \prcond{\text{win game}}{\text{lose the first bet}}\pr{\text{lose the first bet}}\notag\\
+   & = pw_{n+1}+q\pr{w_{n-1}}, & \text{so}\notag\\
+pw_{n+1} & = w_n - qw_{n-1}\notag\\
+w_{n+1} & = \frac{w_n}{p} - \frac{qw_{n-1}}{p}.\label{wrec}
+\end{align}
+So
+\[
+a = \frac{1}{p}, \qquad b= - \frac{q}{p}.
+\]
+}
+
+\ppart For $n>T$, let $w_n$ be defined by the recurrence~\eqref{recab},
+and let $g(x) \eqdef \sum_{n=1}^\infty w_nx^n$ be the generating function
+for the sequence $w_0,w_1,\dots$.  Verify that
+\begin{equation}\label{gx}
+g(x) = \frac{w_1 x}{(1-x)(1-\dfrac{q}{p}x)}.
+\end{equation}
+
+\solution{
+\[\begin{array}{rclclclclc}
+g(x)          & = & w_0 & + & w_1x   & + & w_2x^2       & + & w_3x^3       & + \cdots\\
+xg(x)/p       & = &     &   & w_0x/p & + & w_1x^2/p     & + & w_2x^3/p     & + \cdots\\
+(q/p)x^2g(x) & = &     &   &        &    & (q/p)w_0x^2  & + & (q/p)w_1x^3 & + \cdots
+\end{array}\]
+so
+\begin{align}
+g(x) - \paren{\frac{xg(x)}{p} - \frac{qx^2g(x)}{p}} & = w_0 + w_1x - w_0 x/p =
+w_1x,\notag\\
+g(x)\paren{ 1 - \frac{x}{p} + \frac{qx^2}{p}} & = w_1 x.\label{gfw}
+\end{align}
+But
+\begin{equation}\label{fac}
+1 - \frac{x}{p} + \frac{qx^2}{p} = (1-x)(1-\frac{q}{p}x)
+\end{equation}
+Combining~\eqref{fac} and~\eqref{gfw} yields~\eqref{gx}.%
+}
+
+\ppart Conclude that in an unfair game
+\begin{equation}\label{wncd}
+w_n = c+d\paren{\frac{q}{p}}^n
+\end{equation}
+for some constants $c,d$.
+
+\solution{
+In an unfair game $p/q \neq 1$, so from~\eqref{gx}, we know that there
+will be $c,d$ such that
+\begin{equation}\label{cd}
+g(x) = \frac{c}{1-x} + \frac{d}{1-\dfrac{q}{p}x}
+\end{equation}
+so $w_n$ will be the corresponding combination of the coefficients of
+$x^n$ in $1/(1-x)$ and $1/(1- (q/p)x)$, namely,~\eqref{wncd}.
+}
+
+\ppart  Show that in an unfair game,
+\[
+w_n=\frac{(q/p)^n-1}{(q/p)^T-1}.
+\]
+
+
+\solution{
+Given~\eqref{gx}, we want $c,d$ such that
+\[
+\frac{w_1 x}{(1-x)(1-\dfrac{q}{p}x)} = \frac{c}{1-x} +
+\frac{d}{1-\dfrac{q}{p}x}.
+\]
+So $c,d$ satisfy
+\[
+w_1 x = c(1-\frac{q}{p}x) + d(1-x).
+\]
+
+Letting $x= 1$ gives
+\[
+c= \frac{w_1}{1-q/p}.% = \frac{pw_1}{2p-1}.
+\]
+Letting $x= p/q$ gives
+\[
+d= \frac{pw_1/q}{1-p/q} = \frac{w_1}{q/p-1}= - c.
+\]
+So plugging into~\eqref{wncd} gives
+\begin{equation}\label{wnd}
+w_n = \frac{w_1}{q/p-1} \paren{\paren{\frac{q}{p}}^n -1}.
+\end{equation}
+Now we can solve for $w_1$, by letting $n=T$ in~\eqref{wnd}:
+\[
+1=w_T = \frac{w_1}{q/p-1} \paren{\paren{\frac{q}{p}}^T -1}
+\]
+so
+\[
+w_1 = \frac{\paren{q/p -1}}{\paren{q/p}^T - 1}.
+\]
+Combining this with~\eqref{wnd} yields
+\[
+w_n = \frac{\paren{\paren{q/p}^n -1}}{\paren{q/p}^T -1}.
+\]
+}
+
+\ppart Verify that if $0 < a < b$, then
+\[
+\frac{a}{b} < \frac{a+1}{b+1}.
+\]
+Conclude that if $p < 1/2$, then
+\[
+w_n < \paren{\frac{p}{q}}^{T-n}.
+\]
+
+\solution{
+\[
+\frac{a}{b} = \frac{a(1+1/b)}{b(1+1/b)} = \frac{a+a/b}{b+1} < \frac{a+1}{b+1}.
+\]
+So from the previous part, we have
+\[
+w_n=\frac{(q/p)^n-1}{(q/p)^T-1} < \frac{(q/p)^n}{(q/p)^T} =
+\paren{\frac{q}{p}}^{n-T} = \paren{\frac{p}{q}}^{T-n}.
+\]
+}
+
+\eparts
+\end{problem}
+
+\begin{problem}
+Now suppose $T=\infty$, that is, the gambler keeps playing until he is
+ruined.  (Now there may be a positive probability that he actually plays
+forever.)  Let $r$ be the probability that starting with $n>0$ dollars,
+the gambler's stake ever gets reduced to $n-1$.
+
+\bparts
+
+\ppart
+Explain why
+\[
+r = q+ pr^2.
+\]
+
+\solution{By Total Probability
+\begin{align*}
+r & = \prcond{\text{ever down \$1}}{\text{lose the first
+   bet}}\pr{\text{lose the first bet}} +\\
+ & \qquad \prcond{\text{ever down \$1}}{\text{win the first bet}}\pr{\text{win the first bet}}\\
+   & = q +p\prcond{\text{ever down \$1}}{\text{win the first bet}}
+\end{align*}
+But
+\begin{align*}
+\lefteqn{\prcond{\text{ever down \$1}}{\text{win the first bet}}}\\
+  & = \pr{\text{ever down \$2}}\\
+  & = \pr{\text{being down the first \$1}}
+        \pr{\text{being down another \$1}}\\
+  & = r^2.
+\end{align*}
+}
+
+\ppart
+Conclude that if $p \leq 1/2$, then $r=1$.
+
+\iffalse
+\[
+r =  \begin{cases}
+        1           & \text{if $p \leq 1/2$},\\
+        \frac{q}{p} & \text{if $p > 1/2$}.
+\end{cases}
+\]
+\fi
+
+\solution{
+$pr^2-r+q$ has roots $q/p$ and 1.  So $r=1$ or $r=q/p$.  But $r \leq 1$,
+which implies $r=1$ when $q/p \geq 1$, that is, when $p \leq 1/2$.
+
+In fact $r = q/p$ when $q/p < 1$, namely, when $p > 1/2$, but this
+requires an additional argument that we omit.
+}
+
+\ppart Conclude that even in a fair game, the gambler is sure to get
+ruined \emph{no matter how much money he starts with}!
+
+\solution{The gambler gets ruined starting with initial stake $n=1$
+precisely if his initial stake goes down by 1 dollar, so his probability
+of ruin is $r$, which equals 1 in the fair case.
+
+The recurrence~\eqref{recab} will also hold in this $T=\infty$ case if we
+interpret $w_n$ as the probability of \emph{not} being ruined, that is,
+the gambler wins if he can gamble forever.  So $w_1$ is the probability he
+is \emph{not} getting ruined starting with a 1 dollar stake, that is $w_1
+= 1-r = 0$.  Since $w_0 = 0 = w_1$, the recurrence implies that $w_n=0$
+for all $n \geq 0$.}
+
+\ppart  Let $t$ be the expected time for the gambler's stake to go down by
+1 dollar.  Verify that
+\[
+t = q + p(1+2t).
+\]
+Conclude that starting with a 1 dollar stake in a fair game, the gambler
+can expect to play forever!
+
+\solution{By Total Expectation
+\begin{align*}
+t & = \expcond{\text{\#steps to be down \$1}}{\text{lose the first
+   bet}}\pr{\text{lose the first bet}} +\\
+ & \qquad \expcond{\text{\#steps to be down \$1}}{\text{win the first bet}}\pr{\text{win the first bet}}\\
+   & = q +p\expcond{1 + \text{\#steps to be down \$1}}{\text{win the first bet}}.
+\end{align*}
+But
+\begin{align*}
+\lefteqn{\expcond{\text{\#steps to be down \$1}}{\text{win the first
+ bet}}}\\
+  & = \expect{\text{\#steps to be down \$2}}\\
+  & = \expect{\text{\#steps to be down the first \$1}}
+      + \expect{\text{\#steps to be down another \$1}}\\
+  & = 2t.
+\end{align*}
+This implies the required formula $t = q + p(1+2t)$.  If $p=1/2$ we
+conclude that $t=1+t$, which means $t$ must be infinite.
+}
+
+\eparts
+
+\end{problem}
+
+\begin{problem}
+  
+  Prove that the stationary distribution on the line graph on $n$
+  nodes is of the form:
+  $$\left(\frac{1}{2(n-1)}, \frac{1}{n-1}, \frac{1}{n-1}, \ldots ,
+  \frac{1}{n-1}, \frac{1}{2(n-1)}\right).$$
+  Each node transitions to itself
+  with probability $1/2$; the remaining probability is split equally
+  amongst its neighbors.
+
+  \solution{
+    Consider the end nodes.  We have that:
+    $$\frac{1}{2(n-1)} = \frac{1}{2} \cdot \frac{1}{2(n-1)} +
+    \frac{1}{4} \cdot \frac{1}{n-1}.$$
+    Now, consider the nodes 2 and $n-1$.  We have that:
+    $$\frac{1}{n-1} = \frac{1}{2} \cdot \frac{1}{n-1} + \frac{1}{2}
+    \cdot \frac{1}{2(n-1)} + \frac{1}{4} \cdot \frac{1}{n-1}.$$
+    Lastly, consider any interior node:
+    $$\frac{1}{n-1} = \frac{1}{2} \cdot \frac{1}{n-1} + \frac{1}{4}
+    \cdot \frac{1}{n-1} + \frac{1}{4} \cdot \frac{1}{n-1}.$$
+  }
+\end{problem}
+
+
+\begin{problem}
+  The \emph{cover time} for a random walk on a graph is defined to be
+  the expected number of steps to traverse each and every node in the
+  graph.
+  
+  Consider the random walk on the complete graph $K_n$.  The
+  probability of moving from node $i$ to node $j$ is $\frac{1}{n}$,
+  for every two nodes $i,j$.
+  
+  In this problem, we determine the cover time on the complete graph.
+  Let $X$ be a random variable for the cover time.  We seek to
+  determine $\expect{X}$.
+  
+  \bparts
+  
+  \ppart Suppose we have already visited a set $S$ of $i-1$ nodes.
+  Let $X_i$ be a random variable for the number of steps to visit a
+  node not in $S$.  Explain why $X = X_1 + X_2 + X_3 + \ldots + X_n$.
+  
+  \solution{We can break $X$ down in terms of the number of steps to
+    visit the $i$th new node, where new means we haven't traversed it
+    yet.  When we have visited the $n$th new node, we will have
+    visited all the nodes in the graph.}
+
+  \ppart What is $\expect{X}$? (Hint: use linearity of expectation)
+
+  \solution{The probability we succeed is $\frac{n-(i-1)}{n}$, since
+    there are $n-(i-1)$ nodes not in $S$.  Therefore, $\expect{X_i} =
+    \frac{n}{n-(i-1)}$.
+    
+    By linearity of expectation, we have:
+    $$\expect{X} = \sum_{i=1}^n \expect{X_i}.$$
+    From above, we have:
+    \begin{eqnarray*}
+      \expect{X} & = & \sum_{i=1}^n \frac{n}{n-(i-1)}\\
+      & = & n \left(\sum_{i=1}^n \frac{1}{n-(i-1)}\right)\\
+      & = & n \left(\sum_{i=1}^n \frac{1}{i} \right)\\
+      & = & n H_n\\
+      & = & O(n \log n)
+    \end{eqnarray*}
+  }
+  
+  \eparts
+  
+\end{problem}
+
+\end{document}
