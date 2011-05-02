@@ -1,0 +1,118 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{CP_mean_time_variance}
+\pcomment{from: F07.rec14h, S07.cp14w}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  additivity
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+\bparts
+
+\ppart\label{varH} A computer program crashes at the end of each hour
+of use with probability $1/p$, if it has not crashed already.  If $H$
+is the number of hours until the first crash, we know that
+$\expect{H}= 1/p$.  What is the \idx{variance} of the number of hours
+until the program crashes?
+
+\hint % Equation~\bref{squares_gen_func}:
+\[
+\sum_1^{\infty} k^2x^k = \frac{x(1+x)}{(1-x)^3}
+\]
+
+\begin{solution}
+We have
+\[
+\pr{H=k} = q^{k-1}p
+\]
+where $q \eqdef 1-p$.  Now
+\[
+\variance{H}  = \expect{H^2} - \expectsq{H},
+\]
+But
+\begin{align*}
+\expect{H^2}
+   & \eqdef \sum_{k \in \naturals^{+}} k^2 q^{k-1}p\\
+   & =  \frac{p}{q} \sum_{k \in \naturals^{+}} k^2 q^k\\
+   & =  \frac{p}{q} \paren{\frac{q(1+q)}{(1-q)^3}} &\text{(hint)}\\
+   & =  \frac{1+q}{p^2},
+\end{align*}
+so
+\[
+\variance{H}  = \frac{(1+q)}{p^2} - \paren{\frac{1}{p}}^2 = \frac{q}{p^2}.
+\]
+\end{solution}
+
+\ppart\label{Cheb} What is the \idx{Chebyshev bound} on
+\[
+\pr{\abs{H - (1/p)}> x/p}
+\]
+where $x > 0$?
+
+\begin{solution}
+
+\[
+\frac{\variance{H}}{\paren{x/p}^2} = \frac{q}{p^2\paren{x/p}^2} = 
+    \frac{q}{x^2}.
+\]
+\end{solution}
+
+\ppart\label{Hap} Conclude from part~\eqref{Cheb} that for $a \geq 2$,
+\[
+\pr{H > a /p} \leq \frac{q}{(a-1)^2}
+\]
+
+\hint Check that $\abs{H - (1/p)} > (a-1)/p$ iff  $H > a/p$.
+
+\begin{solution}
+Note that if $H \leq 1/p$, then $\abs{H - (1/p)} = (1/p) - H$,
+and since $H > 0$, we have $ (1/p) - H < 1/p \leq (a-1)/p$.  It follows
+that $\abs{H - (1/p)} > (a-1)/p$ iff $H - (1/p)> (a-1)/p$ iff $H > a/p$.
+So
+\begin{align*}
+\pr{H > a/p} & = \pr{\abs{H - (1/p)} > (a-1)/p}\\
+             & \leq q/(a-1)^2 & \text{(by part~\eqref{Cheb})}.
+\end{align*}
+\end{solution}
+
+\ppart What actually is
+\[
+\pr{H > a/p}?
+\]
+
+Conclude that for any fixed $p>0$, the probability that $H > a/p$ is an
+asymptotically smaller function of $a$ than the Chebyshev bound of 
+part~\eqref{Hap}.
+
+\begin{solution}
+
+\[
+\pr{H > a/p} =  \sum_{k >a/p} q^{k-1}p = pq^{\floor{a/p}} \sum_0^{\infty}
+q^j = q^{\floor{a/p}}.
+\]
+So
+\[
+\pr{H > a/p} \leq q^{(a-p)/p} = \paren{(1-p)^{1/p}}^{a-p} <
+\paren{\paren{e^{-p}}^{1/p}}^{a-p} = e^{p-a}.
+\]
+
+But Chebyshev gives $\pr{H > a/p} \leq q/(a-1)^2 = \Theta(1/a^2)$.  Since
+$e^{p-a} = o(1/a^2)$, we conclude that the actual probability is much
+smaller than we got from the Chebyshev Bound.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput

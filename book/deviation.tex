@@ -14,18 +14,33 @@ estimate the average age, income, family size, or other measure of a
 population.  To do this, we determine a random process for selecting
 people ---say throwing darts at census lists.  This process makes the
 selected person's age, income, and so on into a random variable whose
-\emph{mean} equals the \emph{actual \idx{average}} age or income of the
-population.  So we can select a random sample of people and calculate the
-average of people in the sample to estimate the true average in the whole
-population.  Many fundamental results of probability theory explain
-exactly how the reliability of such estimates improves as the sample size
-increases, and in this chapter we'll examine a few such results.
+\emph{mean} equals the \emph{actual \idx{average}} age or income of
+the population.  So we can select a random sample of people and
+calculate the average of people in the sample to estimate the true
+average in the whole population.  But when we make an estimate by
+repeated sampling, we need to know how much confidence we should have
+that our estimate is OK or how large a sample is needed to reach a
+given confidence level.  The issue is also fundamental in all
+experimental science.  Because of random errors ---\emph{noise}
+---repeated measurements of the same quantity rarely come out exactly
+the same.  Determining how much confidence to put in experimental
+measurements is a fundamental and universal scientific issue.  
+Technically, judging sampling or measurement accuracy reduces to
+finding the probability that an estimate \emph{deviates} by a given
+amount from its expected value.
 
-In particular, when we make an estimate by repeated sampling, we need to
-know how much confidence we should have that our estimate is OK.
-Technically, this reduces to finding the probability that an estimate
-\emph{deviates} a lot from its expected value.  This topic of
-\term{deviation from the mean} is the focus of this final chapter.
+Another aspect of this issue comes up in engineering.  When designing
+a sea wall, you need to know how strong to make it to likely withstand
+tsunamis for, say, at least a century.  If you're assembling a
+computer network, you need to know how many component failures it
+should tolerate to likely operate without maintenance for, say, at
+least a month.  If your business is insurance, you need to know how
+large a financial reserve to maintain to be nearly certain of paying
+benefits for, say, the next three decades.  Technically, such
+questions come down to finding the probability of \emph{extreme}
+deviations from the mean.
+
+\term{Deviation from the mean} is the focus of this chapter.
 
 \begin{editingnotes}
 A random variable may never take a value anywhere near its expected value,
@@ -64,25 +79,27 @@ information about the variance to give more refined bounds.
 
 \end{editingnotes}
 
-Markov's theorem is an easy result that gives a generally rough estimate
-of the probability that a random variable takes a value \emph{much larger}
-than its mean.
+Markov's theorem gives a generally coarse estimate of the probability
+that a random variable takes a value \emph{much larger} than its mean.
+It is an almost trivial result by itelf, but it actually leads fairly
+directly to much stronger results.
 
 The idea behind \idx{Markov's Theorem} can be explained with a simple
 example of \emph{intelligence quotient}, \idx{\IQ}.  This quantity was
-devised so that the average \IQ\ measurement would be 100.  Now from this
-fact alone we can conclude that at most 1/3 the population can have an
-\IQ\ of 300 or more, because if more than a third had an \IQ\ of 300, then
-the average would have to be \emph{more} than $(1/3)300 = 100$,
-contradicting the fact that the average is 100.  So the probability that a
-randomly chosen person has an \IQ\ of 300 or more is at most 1/3.  Of
-course this is not a very strong conclusion; in fact no \IQ\ of over 300
-has ever been recorded.  But by the same logic, we can also conclude that
-at most 2/3 of the population can have an \IQ\ of 150 or more.  \IQ's of
-over 150 have certainly been recorded, though again, a much smaller
-fraction than 2/3 of the population actually has an \IQ\ that high.
+devised so that the average \IQ\ measurement would be 100.  Now from
+this fact alone we can conclude that at most 1/3 of the population can
+have an \IQ\ of 300 or more, because if more than a third had an
+\IQ\ of 300, then the average would have to be \emph{more} than
+$(1/3)\cdot 300 = 100$, contradicting the fact that the average is
+100.  So the probability that a randomly chosen person has an \IQ\ of
+300 or more is at most 1/3.  Of course this is not a very strong
+conclusion; in fact no \IQ\ of over 300 has ever been recorded.  But
+by the same logic, we can also conclude that at most 2/3 of the
+population can have an \IQ\ of 150 or more.  \IQ's of over 150 have
+certainly been recorded, though again, a much smaller fraction than
+2/3 of the population actually has an \IQ\ that high.
 
-But although these conclusions about \IQ\ are weak, they are actually the
+Although these conclusions about \IQ\ are weak, they are actually the
 strongest general conclusions that can be reached about a random
 variable using \emph{only} the fact that it is nonnegative and its mean is
 100.  For example, if we choose a random variable equal to 300 with
@@ -168,9 +185,9 @@ worst-case distribution with respect to deviation from the mean.
 
 \begin{theorem}[\idx{Markov's Theorem}]\label{markovthm}
   If R is a nonnegative random variable, then for all $x > 0$
-  \begin{displaymath}
+\begin{equation}\label{markovx}
     \pr{R \geq x} \leq \frac{\expect{R}}{x}.
-  \end{displaymath}
+\end{equation}
 \end{theorem}
 
 \begin{editingnotes}
@@ -243,17 +260,42 @@ probability of an event in the tail $[R \geq x]$.
 \end{editingnotes}
 
 \begin{proof}%[Proof of Markov's Theorem]
-For any $x > 0$
+Let $y$ vary over the range of $R$.  Then for any $x > 0$
+
+\iffalse
 \begin{align}
   \expect{R}
-  & \eqdef \sum_{y \in \range{R}} y\pr{R=y}\notag\\
-  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} y\pr{R=y} & \text{(because $R \geq 0$)}\notag\\
-  & \geq \sum_{\substack{y \geq x,\\ y \in \range{R}}} x\pr{R=y}\notag\\
-  & = x \sum_{\substack{y \geq x,\\ y \in \range{R}}} \pr{R=y}\notag\\
+  & = \expcond{R}{R < x}\pr{R<x} + \expcond{R}{R \geq x}\pr{R \geq x}
+       & \text{(total expectation)}\notag\\
+  & \geq \expcond{R}{R \geq x}\pr{R \geq x}
+       & \text{(because $R \geq 0$)}\notag\\
+  & \geq x \pr{R \geq x}.\label{markovproof}
+\end{align}
+\fi
+\iffalse
+
+\begin{align}
+  \expect{R}
+  & \eqdef \sum_{y} y\pr{R=y}\notag\\
+  & \geq \sum_{y \geq x} y\pr{R=y} & \text{(because $R \geq 0$)}\notag\\
+  & \geq \sum_{y \geq x} x\pr{R=y}\notag\\
+  & = x \sum_{y \geq x} \pr{R=y}\notag\\
   & = x \pr{R \geq x}.\label{markovproof}
 \end{align}
-Dividing the first and last expression~\eqref{markovproof} by $x$ gives
-the desired result.
+\fi
+
+\begin{align}
+  \expect{R}
+   & \eqdef \sum_{y} y\pr{R=y}\notag\\
+   & \geq \sum_{y \geq x} y\pr{R=y}
+     \geq \sum_{y \geq x} x\pr{R=y}
+      = x \sum_{y \geq x} \pr{R=y}\notag\\
+  & = x \pr{R \geq x},\label{markovproof}
+\end{align}
+where the first inequality follows from the fact that $R \geq 0$.
+
+Dividing the first and last expressions in~\eqref{markovproof} by $x$
+gives the desired result.
 \end{proof}
 
 \iffalse
@@ -302,9 +344,10 @@ This gives:
 
 \subsection{Applying Markov's Theorem}
 
-Let's consider the \idx{Hat-Check problem} again.  Now we ask what the
-probability is that $x$ or more men get the right hat, this is, what the
-value of $\pr{G \geq x}$ is.
+Let's go back to the \idx{Hat-Check problem} of
+Section~\ref{sec:hat_check}.  Now we ask what the probability is that
+$x$ or more men get the right hat, this is, what the value of $\pr{G
+  \geq x}$ is.
 
 We can compute an upper bound with Markov's Theorem.  Since we know
 $\expect{G}=1$, Markov's Theorem implies
@@ -334,11 +377,10 @@ applying Markov's Theorem, we find:
 \end{displaymath}
 So for the Chinese appetizer problem, Markov's Theorem is tight!
 
-On the other hand, Markov's Theorem gives the same $1/n$ bound for the
-probability everyone gets their hat in the Hat-Check problem in the case
-that all permutations are equally likely.  But the probability of this
-event is $1/(n!)$.  So for this case, Markov's Theorem gives a probability
-bound that is way off.
+On the other hand, Markov's Theorem gives the same $1/n$ bound in the
+Hat-Check problem where the probability of probability everyone gets
+their hat is $1/(n!)$.  So for this case, Markov's Theorem gives a
+probability bound that is way too large.
 
 \subsection{Markov's Theorem for Bounded Variables}
 
@@ -507,16 +549,16 @@ with score 50 or less is at most $n/2$.
 
 \section{Chebyshev's Theorem}
 
-We got more mileage out of Markov's Theorem by applying it to $R-b$
-rather than $R$.  More generally, a really good trick for getting
+We've seen that Markov's Theorem can give a better bound when applied
+to $R-b$ rather than $R$.  More generally, a good trick for getting
 stronger bounds on a random variable $R$ out of Markov's Theorem is to
 apply some cleverly chosen function of $R$.
 
 Choosing functions that are powers of $\abs{R}$ turns out to be
 specially useful.  In particular, since $\abs{R}^\alpha$ is
 nonnegative, Markov's inequality also applies to the event
-$[\abs{R}^\alpha \geq x^\alpha]$.  But this event is equivalent to the
-event $[\abs{R} \geq x]$, so we have:
+$[\, \abs{R}^\alpha \geq x^\alpha]$.  But this event is equivalent to the
+event $[\, \abs{R} \geq x]$, so we have:
 
 \iffalse
 It is a bit messy to apply Markov's Theorem directly to this problem,
@@ -533,11 +575,11 @@ For any random variable~$R$, $\alpha \in \reals^+$, and $x > 0$,
 \pr{\abs{R} \geq x} \leq \frac{\expect{\abs{R}^\alpha}}{x^\alpha}.
 \]
 \end{lemma}
-Rephrasing~\eqref{lem:Markov2} in terms of the random variable, $\abs{R -
-  \expect{R}}$, that measures $R$'s deviation from its mean, we get
+Rephrasing~\eqref{lem:Markov2} in terms of the random variable,
+$\abs{R -  \expect{R}\, }$, that measures $R$'s deviation from its mean, we get
 
 \begin{equation}\label{chebE2}
-  \pr{\abs{R - \expect{R}\ } \geq x} \leq \frac{\expect{(R - \expect{R})^\alpha}}{x^\alpha}.
+  \pr{\, \abs{R - \expect{R}\, } \geq x} \leq \frac{\expect{(R - \expect{R})^\alpha}}{x^\alpha}.
 \end{equation}
 The case when $\alpha =2$ is turns out to be so important that numerator
 of the right hand side of~\eqref{chebE2} has been given a name:
@@ -554,7 +596,7 @@ The restatement of~\eqref{chebE2} for $\alpha=2$ is known as \term{Chebyshev's
 \begin{theorem}[Chebyshev]\label{chebthm}
   Let $R$ be a random variable and $x \in \reals^+$.  Then
 \[
-\pr{\abs{R - \expect{R}} \geq x} \leq \frac{\variance{R}}{x^2}.
+\pr{\abs{R - \expect{R}\, } \geq x} \leq \frac{\variance{R}}{x^2}.
 \]
 \end{theorem}
 
@@ -693,21 +735,22 @@ Figure~\ref{fig:stdev}.
 \end{figure}
 
 It's useful to rephrase Chebyshev's Theorem in terms of standard
-deviation.
-\begin{corollary}
-\label{cor:cheby}
+deviation which we can do by substituting $x = c \sigma_R$
+in~\eqref{markovx}:
+\begin{corollary}\label{cor:cheby}
 Let $R$ be a random variable, and let $c$ be a positive real number.
-\[
+\begin{equation}\label{markovcexp}
 \pr{\abs{R - \expect{R}} \geq c \sigma_R} \leq \frac{1}{c^2}.
-\]
+\end{equation}
 \end{corollary}
 Here we see explicitly how the ``likely'' values of $R$ are clustered in
 an $O(\sigma_R)$-sized region around $\expect{R}$, confirming that the
 standard deviation measures how spread out the distribution of $R$ is
 around its mean.
 
+\iffalse
 \begin{proof}
-  Substituting $x = c \sigma_R$ in Chebyshev's Theorem gives:
+  Substituting $x = c \sigma_R$ in~\eqref{markovx} gives:
   \begin{displaymath}
     \pr{\card{R - \expect{R}} \geq c \sigma_R}
     \leq
@@ -715,12 +758,14 @@ around its mean.
     =  \frac{\sigma_R^2}{(c \sigma_R)^2}
     = \frac{1}{c^2}.
   \end{displaymath}
-\iffalse
-  The last equality holds because variance is the square of standard
-  deviation: $\variance{R} = \sigma_R^2$.
-\fi
+
+
+%  The last equality holds because variance is the square of standard
+% deviation: $\variance{R} = \sigma_R^2$.
 
 \end{proof}
+
+\fi
 
 \subsubsection{The IQ\ Example}\label{IQsec}
 
@@ -1260,6 +1305,7 @@ If $J$ has the $(n,p)$-binomial distribution, then
 \begin{problems}
 \practiceproblems
 \pinput{TP_markov_chebyshev_for_card_games}
+\pinput{TP_mean_time_variance_given}
 
 \classproblems
 \pinput{CP_chebyshev_hat_check}
@@ -1275,8 +1321,6 @@ If $J$ has the $(n,p)$-binomial distribution, then
 
 \section{Estimation by Random Sampling}
 
-
-\subsubsection{Polling again}
 \begin{editingnotes}
 
 \textcolor{blue}{This paragraph reflects an alternative exposition
@@ -1291,20 +1335,30 @@ Chebyshev's Theorem as an alternative approach to calculate poll size.
 The setup is the same as in Chapter~<none>
 \end{editingnotes}
 
-Suppose we had wanted an advance estimate of the fraction of the
-Massachusetts voters who favored Scott Brown over everyone else in the
-recent Democratic primary election to fill Senator Edward Kennedy's seat.
+Democratic politicians were astonished 2010 when their early polls of
+sample voters showed Republican Scott Brown was favored by a majority
+of voters and so would win the special election to fill the Senate
+seat Democrat Teddy Kennedy had occupied for over 40 years.  Based on
+their poll results, they mounted an intense, but ultimately
+unsuccessful, effort to save the seat for their party.
 
 \iffalse
 \footnote{We can only keep our fingers crossed for this race to happen --
 when they ran against each other for the U.S. Senate in 2000, they
 generated some of the best entertainment in TV history.}  \fi
 
-Let $p$ be this unknown fraction, and let's suppose we have some random
-process ---say throwing darts at voter registration lists ---which will
-select each voter with equal probability.  We can define a Bernoulli
-variable, $K$, by the rule that $K=1$ if the random voter most prefers
-Brown, and $K=0$ otherwise.
+\subsection{A Voter Poll}
+How did polling give an advance estimate of the fraction of the
+Massachusetts voters who favored Scott Brown over his Democratic
+opponent?
+
+Suppose at some time before the election that $p$ was the fraction of
+voters favoring Scott Brown.  We want to estimate this unknown
+fraction $p$.   Suppose we have some random
+process ---say throwing darts at voter registration lists ---which
+will select each voter with equal probability.  We can define a
+Bernoulli variable, $K$, by the rule that $K=1$ if the random voter
+most prefers Brown, and $K=0$ otherwise.
 
 Now to estimate $p$, we take a large number, $n$, of random choices of
 voters\footnote{We're choosing a random voter $n$ times \emph{with
@@ -1324,32 +1378,26 @@ $S_n$ be their sum, that is,
 \begin{equation}\label{LN12:Sn}
 S_n \eqdef \sum_{i=1}^n K_i.
 \end{equation}
-So $S_n$ has the binomial distribution with parameter $n$, which we can
-choose, and unknown parameter $p$.
-
-The variable $S_n/n$ describes the fraction of voters we will sample
-who favor Scott Brown.  Most people intuitively expect this sample
+The variable $S_n/n$ describes the fraction of sampled voters who
+favor Scott Brown.  Most people intuitively expect this sample
 fraction to give a useful approximation to the unknown fraction, $p$
----and they would be right.
-\iffalse
-Note that
+---and they would be right.  \iffalse Note that
 \[
 \expect{\frac{S_n}{n}} = \sum_{i=1}^n \expect{K_i} = pn.
 \]
-\fi
-So we will use the sample value, $S_n/n$, as our \emph{statistical
-  estimate} of $p$ and use the Pairwise Independent Sampling
-Theorem~\ref{th:pairwise-sampling} to work out how good an estinate
-this is.
+\fi So we will use the sample value, $S_n/n$, as our \emph{statistical
+  estimate} of $p$.  We know that $S_n$ has the binomial distribution
+with parameters $n$ and $p$, where we can choose $n$, but $p$ in unknown.
 
-\subsection{Sampling}
-Suppose we want our estimate to be within $0.04$ of the Brown favoring
-fraction, $p$, at least 95\% of the time.  This means we want
+\subsubsection{How Large a Sample?}
+Suppose we want our estimate to be within $0.04$ of the fraction, $p$,
+at least 95\% of the time.  This means we want
 \begin{equation}\label{pollsizeinequality}
-\pr{\abs{\frac{S_n}{n} - p} \leq 0.04} \geq 0.95\ .
+\Pr{\abs{\frac{S_n}{n} - p} \leq 0.04} \geq 0.95\ .
 \end{equation}
 So we better determine the number, $n$, of times we must poll voters so
-that inequality~\eqref{pollsizeinequality} will hold.
+that inequality~\eqref{pollsizeinequality} will hold.  Chebyshev's
+Theorem offers a simple way to determine such a $n$.
 
 \begin{editingnotes}
 the value, $S_n/n$, of our estimate will, with probability at least
@@ -1366,22 +1414,22 @@ $1 -\delta$, be within $\epsilon$ of the actual fraction in the nation
 favoring Brown.
 \end{editingnotes}
 
-Now $S_n$ is binomially distributed, so from~\eqref{p1p} we have
+Since $S_n$ is binomially distributed, equation~\eqref{p1p} gives
 \[
-\variance{S_n}  = n(p(1-p)) \leq n \cdot \frac{1}{4} = \frac{n}{4}\label{n4}
+\variance{S_n}  = n(p(1-p)) \leq n \cdot \frac{1}{4} = \frac{n}{4}.\label{n4}
 \]
 The bound of 1/4 follows from the fact that $p(1-p)$ is maximized when $p
 = 1-p$, that is, when $p=1/2$ (check this yourself!).
 
 Next, we bound the variance of $S_n/n$:
 \begin{align}
-\variance{\frac{S_n}{n}}
+\Variance{\frac{S_n}{n}}
        & = \paren{\frac{1}{n}}^2 \variance{S_n}
                      & \text{(by~\eqref{a2R})}\notag\\
        & \leq \paren{\frac{1}{n}}^2 \frac{n}{4} & \text{(by~\eqref{n4})}\notag\\
        & = \frac{1}{4n}\label{1/4n}
 \end{align}
-Now from Chebyshev and~\eqref{1/4n} we have:
+Using Chebyshev's bound and~\eqref{1/4n} we have:
 \begin{equation}\label{CK}
 \pr{\abs{\frac{S_n}{n} - p} \geq 0.04}
     \leq \frac{\variance{S_n/n}}{(0.04)^2}
@@ -1398,17 +1446,13 @@ that is,
 n \geq 3,125.
 \]
 
-A more exact calculation of the tail of this binomial distribution
-shows that the above sample size is about four times larger than
-necessary, but it is still a feasible size to sample.  The fact that
-the sample size derived using \idx{Chebyshev's Theorem} was unduly
-pessimistic should not be surprising.  After all, in applying the
-Chebyshev Theorem, we only used the variance of $S_n$.  It makes sense
-that more detailed information about the distribution leads to better
-bounds.  But working through this example using only the
-\idx{variance} has the virtue of illustrating an approach to
-estimation that is applicable to arbitrary random variables, not just
-binomial variables.
+Section~\ref{chernoff_sec} describes how to get tighter estimates of
+the tails of binomial distributions that lead to a bound on $n$ that
+is about four times smaller than the one above.  But working through
+this example using only the \idx{variance} has the virtue of
+illustrating an approach to estimation that is applicable to arbitrary
+random variables, not just binomial variables, and it did lead to a
+feasible sample size
 
 \subsection{Matching Birthdays}\label{bday_deviation_subsec}
 
@@ -1462,14 +1506,14 @@ D \eqdef \sum_{1\le i < j \le n} E_{i,j}.
 \end{equation}
 So by linearity of expectation
 \[
-\expect{D} = \expect{\sum_{1\le i < j \le n} E_{i,j}} = 
+\expect{D} = \Expect{\sum_{1\le i < j \le n} E_{i,j}} = 
                \sum_{1\le i < j \le n} \expect{E_{i,j}} =
                \binom{n}{2}\cdot \frac{1}{d}.
 \]
 Similarly,
 \begin{align*}
 \variance{D}
-   & = \variance{\sum_{1\le i < j \le n} E_{i,j}}\\
+   & = \Variance{\sum_{1\le i < j \le n} E_{i,j}}\\
    & = \sum_{1\le i < j \le n} \variance{E_{i,j}}
            & \text{(by Theorem~\ref{th:varsum})}\\
    & = \binom{n}{2} \cdot \frac{1}{d}\paren{1-\frac{1}{d}}.
@@ -1517,7 +1561,7 @@ Then
 \begin{proof}
 We observe first that the expectation of $S_n/n$ is $\mu$:
 \begin{align*}
-\expect{\frac{S_n}{n}} & = \expect{\frac{\sum_{i=1}^n G_i}{n}}
+\Expect{\frac{S_n}{n}} & = \Expect{\frac{\sum_{i=1}^n G_i}{n}}
          & \text{(def of $S_n$)}\\
  & = \frac{\sum_{i=1}^n \expect{G_i}}{n} 
      & \text{(linearity of expectation)}\\
@@ -1528,9 +1572,9 @@ We observe first that the expectation of $S_n/n$ is $\mu$:
 The second important property of $S_n/n$ is that its variance is the
 variance of $G_i$ divided by $n$:
 \begin{align}
-\variance{\frac{S_n}{n}} & =  \paren{\frac{1}{n}}^2 \variance{S_n}
+\Variance{\frac{S_n}{n}} & =  \paren{\frac{1}{n}}^2 \variance{S_n}
           & \mbox{(by~\eqref{a2R})}\notag\\
- & =  \frac{1}{n^2} \variance{\sum_{i=1}^n G_i} 
+ & =  \frac{1}{n^2} \Variance{\sum_{i=1}^n G_i} 
           & \text{(def of $S_n$)}\notag\\
  & =  \frac{1}{n^2} \sum_{i=1}^n \variance{G_i}
         & \text{(pairwise independent additivity)}\notag\\
@@ -1539,7 +1583,7 @@ variance of $G_i$ divided by $n$:
 
 This is enough to apply \idx{Chebyshev's Theorem} and conclude:
 \begin{align*}
-\pr{\abs{\frac{S_n}{n} - \mu} \geq x} & \leq \frac{\variance{S_n/n}}{x^2}.
+\Pr{\abs{\frac{S_n}{n} - \mu} \geq x} & \leq \frac{\Variance{S_n/n}}{x^2}.
        & \text{(Chebyshev's bound)}\\
     & = \frac{\sigma^2/n}{x^2} & \text{(by~\eqref{Snu})}\\
     & = \frac{1}{n} \paren{\frac{\sigma}{x}}^2.
@@ -1553,7 +1597,7 @@ variable approaches the mean.  In particular, it proves what is known as
 the \idx{Law of Large Numbers}\footnote{This is the \index{Weak Law of
     Large Numbers} \emph{Weak} Law of Large Numbers.  As you might
   suppose, there is also a Strong Law, but it's outside the scope of
-  6.042.} : by choosing a large enough sample size, we can get arbitrarily
+  6.042.}: by choosing a large enough sample size, we can get arbitrarily
 accurate estimates of the mean with confidence arbitrarily close to 100\%.
 
 \begin{corollary}\label{weaklaw}[Weak Law of Large Numbers]
