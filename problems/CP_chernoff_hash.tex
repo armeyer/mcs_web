@@ -1,0 +1,80 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_chernoff_hash}
+  \pcomment{based on Dec 7, 04 notes}
+\end{pcomments}
+
+\pkeywords{
+  hash
+  chernoff
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+We want to store 2 billion records into a hash table that has 1
+billion slots.  Assuming the records are randomly and independently
+chosen with uniform probability of being assigned to each slot, two
+records are expected to be stored in each slot.  Of course under a
+random assignment, some slots may be assigned more than two records.
+
+\bparts
+
+\ppart Show that the probability that a given slot gets assigned more
+than 23 records is less than $e^{-36}$.
+
+\hint For $c = 12$, the value of $c \ln c -c +1$ is greater than 18.
+
+\begin{solution}
+Let $T$ be the number of records assigned to a particular slot, say
+the first one.  So $\expect{T} = 2$.  Then by Chernoff
+\[
+\prob{T \geq 24} = \prob{T \geq 12 \expect{T}}
+                 \leq e^{-\beta(12) \expect{T}}
+                 < e^{-18 \cdot 2} = e^{-36}.
+\]
+\end{solution}
+
+\ppart Show that the probability that there is a slot that gets
+assigned more than 23 records is less than $e^{-15}$.  This is less
+than $1/3,000,000$.  \hint $\ln 10^9 < 21$.
+
+\begin{solution}
+By the Union Bound, the probability that some slot gets assigned more
+than 23 records is at most 1 billion times the probability that each
+particular slot gets assigned
+more than 23 records, and is therefore
+\[
+\leq 10^9 \cdot e^{-36} < e^{21} \cdot e^{-36} = e^{-15} <
+\frac{1}{3,270,000} < \frac{1}{3,000,000}.
+\]
+
+\end{solution}
+
+\begin{editingnotes}
+\pparts  compare to log search size $\log 10^9 < 21$.
+\end{editingnotes}
+\eparts
+
+
+\inhandout{
+
+\textbf{The Chernoff Bound}: Let $T$ be the sum of a finite number of
+mutually independent variables whose codomain is the real interval
+$[0,1]$.  Then for all $c \geq 1$,
+\[
+\prob{T \geq c \expect{T}} \leq e^{-\beta(c) \expect{T}}
+\]
+where $\beta(c) \eqdef c \ln c - c + 1$.
+}
+
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
