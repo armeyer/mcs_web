@@ -1,0 +1,206 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_dressing_chernoff}
+  \pcomment{from F10.rec23}
+\end{pcomments}
+
+\pkeywords{
+   Chernoff_bound
+   Markov_bound
+   Murphys_Law
+   Murphy
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+%\section{Getting Dressed}
+
+Sometimes I forget a few items when I leave the house in the morning.
+For example, here are probabilities that I forget various pieces of
+footwear:
+%
+\[
+\begin{array}{p{2in}l}
+left sock & 0.2 \\
+right sock & 0.1 \\
+left shoe & 0.1 \\
+right shoe & 0.3
+\end{array}
+\]
+%
+\bparts
+
+\ppart %\item[a.]
+
+Let $X$ be the number of these that I forget.  What is $\expect{X}$?
+
+\examspace[1in]
+
+\begin{solution}
+
+%By Theorem~\ref{th:num-events}, 
+
+The expected number of events that happen is the sum of the event
+probabilities:
+\[
+\expect{X} = 0.2 + 0.1 + 0.1 + 0.3 = 0.7
+\]
+\end{solution}
+
+\ppart  %\item[b.]
+
+Upper bound the probability that I forget one or more items.  Make no
+independence assumptions.
+
+\examspace[1in]
+
+\begin{solution}
+By the Union Bound, the probability that I forget something is at
+most:
+%
+\[
+0.1 + 0.1 + 0.2 + 0.3 = 0.7
+\]
+\end{solution}
+
+\ppart  %\item[c.]
+
+Use the Markov Inequality to upper bound the probability that I forget
+3 or more items.
+
+\examspace[1.5in]
+
+\begin{solution}
+\[
+\prob{X \geq 3} \leq \frac{\expect{X}}{3} = \frac{7}{30}
+\]
+\end{solution}
+
+\ppart  %\item[d.]
+
+Now suppose that I forget each item of footwear independently. Use
+Chebyshev's Inequality to upper bound the probability that I forget
+two or more items.
+
+\examspace[1.5in]
+
+\begin{solution}
+ Let $X_1$ be the event I bring my left sock, $X_2$ my right sock,
+ $X_3$ my left shoe, and $X_4$ my right shoe.  Then
+\[
+\expect{X_1} = .2, \expect{X_2} = .1, \expect{X_3} = .1, \expect{X_4} = .3.
+\]
+Moreover, since the $X_i$ are Bernoulli random variables (binomial
+with $n=1$), we have
+\begin{align*}
+\variance{X_1} & = .2(1-.2) = .16, \variance{X_2} = .1(1-.1) = .09,\\
+\variance{X_3} & = .1(1-.1) = .09, \variance{X_4} = .3(1-.3) = .21.
+\end{align*}
+
+Let $X = \sum_{i=1}^4 X_i$. Then
+\[
+\expect{X} = \sum_{i=1}^4 \expect{X_i} = .2 + .1 + .1 + .3 = .7.
+\]
+Since the $X_i$ are independent,
+\[
+\variance{X} = \sum_{i=1}^4 \variance{X_i} = .16 + .09 + .09 + .21 = .55.
+\]
+
+Now by Chebyshev's Inequality,
+\begin{align*}
+\prob{X \geq 2} & \leq \prob{\abs{X-.7} \geq 1.3} = \prob{\abs{X-\expect{X}} \geq 1.3}\\
+                & \leq \frac{\variance{X}}{1.3^2} = \frac{.55}{1.3^2} \leq .326
+\end{align*}
+\end{solution}
+
+\ppart %\item[e.]
+
+Use Theorem~\bref{th:murphy} to lower bound the probability that I
+forget one or more items.
+
+\examspace[1in]
+
+\begin{solution}
+Plugging into Theorem~\bref{th:murphy}, the probability that
+  I forget one or more items:
+%
+\[
+1 - e^{-\expect{X}} = 1 - e^{-0.7} = 0.503\dots
+\]
+\end{solution}
+
+\iffalse
+\ppart %\item[f.]
+
+I'm supposed to remember many other items, of course: clothing, watch,
+backpack, notebook, pencil, kleenex, ID, keys, etc.  Let $X$ be the
+total number of items I remember.  Suppose I remember items mutually
+independently and $\expect{X} = 36$.
+
+Give an upper bound on the probability that I remember 18 or fewer
+items.
+
+\examspace[1in]
+
+\begin{solution}
+
+By the first Chernoff inequality:
+%
+\begin{align*}
+\prob{X \leq 18}
+    & = \prob{X \leq (1 - 1/2) \expect{X}} \\
+    & \leq e^{-(1/2)^2 36 / 2} \\
+    & = e^{-9/2}
+\end{align*}
+\end{solution}
+\fi
+
+\ppart %\item[g.]
+ 
+I'm supposed to remember many other items, of course: clothing, watch,
+backpack, notebook, pencil, kleenex, ID, keys, etc.  Let $X$ be the
+total number of items I remember.  Suppose I remember items mutually
+independently and $\expect{X} = 36$.  Use Chernoff's Bound to give an
+upper bound on the probability that I remember 48 or more items.
+
+\examspace[2in]
+
+\begin{solution}
+
+By the Chernoff Bound,
+%
+\[
+\prob{X \geq 48} = \prob{X \geq (1 + 1/3) \expect{X}} \leq e^{-(4/3
+  \ln 4/3 - 4/3 + 1) \cdot 36} \approx .1638
+\]
+\end{solution}
+
+\ppart
+%\item[h.]
+
+Give an upper bound on the probability that I remember $108$ or more
+items.
+
+\begin{solution}
+By the Chernoff Bound,
+%
+\begin{align*}
+\prob{X \geq 108} = \prob{X \geq 3 \cdot \expect{X}} \leq e^{-(3 \ln 3
+  - 3 + 1) \cdot 36} \leq e^{-46} \approx 1.05\times 10^{-20}.
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+ 

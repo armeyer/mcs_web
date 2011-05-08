@@ -1,0 +1,179 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_financial_crisis}
+  \pcomment{from F10.rec23}
+\end{pcomments}
+
+\pkeywords{
+  Chernoff
+  loan
+  tranche
+  mutual_independence
+  Markov_bound
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Reasoning based on the Chernoff bound goes a long way in explaining
+the recent subprime mortgage collapse.  A bit of standard vocabulary
+about the mortgage market is needed:
+
+\begin{itemize}
+
+\item A \textbf{loan} is money lent to a borrower.  If the borrower
+  does not pay on the loan, the loan is said to be in
+  \textbf{default}, and collateral is seized.  In the case of mortgage
+  loans, the borrower's home is used as collateral.
+	
+\item A \textbf{bond} is a collection of loans, packaged into one
+  entity.  A bond can be divided into \textbf{tranches}, in some
+  ordering, which tell us how to assign losses from defaults.  Suppose
+  a bond contains 1000 loans, and is divided into 10 tranches of 100
+  bonds each.  Then, all the defaults must fill up the lowest tranche
+  before the affect others.  For example, suppose 150 defaults
+  happened.  Then, the first 100 defaults would occur in tranche 1,
+  and the next 50 defaults would happen in tranche 2.
+
+\item The lowest tranche of a bond is called the \textbf{mezzanine
+  tranche}.
+	
+\item We can make a ``super bond'' of tranches called a
+  \textbf{\idx{collateralized debt obligation} (\idx{CDO})} by
+  collecting mezzanine tranches from different bonds.  This super bond
+  can then be itself separated into tranches, which are again ordered
+  to indicate how to assign losses.
+	
+\end{itemize}
+
+\bparts
+
+\ppart Suppose that 1000 loans make up a bond, and the fail rate is
+$5\%$ in a year.  Assuming mutual independence, give an upper bound
+for the probability that there are one or more failures in the
+second-worst tranche.  What is the probability that there are failures
+in the best Tranche?
+	
+\begin{solution}
+If we assume mutual independence, we can use Chernoff's Theorem to
+give an upper bound to this.  Because the fail rate is $5\%$, $EX[X] =
+50$.  From Chernoff, we have that
+\[
+\prob{X \geq 2 \cdot 50} \leq e^{-(2\ln 2 - 2 + 1)\cdot 50}
+\]
+which evaluates to $1.759 * 10^{-6}$.
+		
+In order for failure to reach the best Tranche, there must have been
+at least 900 failures.  This corresponds to $c=18$ in the Chernoff
+bound, so the bound is
+\[
+\prob{X \geq 18 \cdot 50} \leq e^{-(18\ln 18 - 18 + 1)\cdot 50}
+\]
+		
+This evaluates to $e^{-2551.33}$, which evaluates to less than
+$10^{-1000}$.
+\end{solution}	
+	
+	
+\ppart Now, do not assume that the loans are independent.  Give an
+upper bound for the probability that there are one or more failures in
+the second tranche.  What is an upper bound for the probability that
+the entire bond defaults?  Show that it is a tight bound.  \hint Use
+Markov's theorem.
+
+\begin{solution}
+From the Markov bound, we have that
+\[
+\prob{X \geq 100} \leq \frac{50}{100} = 1/2
+\]
+		
+Applying Markov's theorem again in the case of failures occuring in
+every bond, we have
+\[
+\prob{X \geq 1000} \leq \frac{50}{1000} = 1/20
+\]
+		
+We can see that these bounds are tight by constructing situations
+where they occur.  In the first case, consider if the bond consisted
+of 100 bonds that always defaulted half the time, and the other bonds
+never defaulted.  In the second case, assume that all the bonds are
+completely correlated (they all default or all do not default), and
+default $5\%$ of the time.
+\end{solution}
+	
+	
+\ppart Given this setup (and assuming mutual independence between the
+loans), what is the expected failure rate in the mezzanine tranche?
+
+\begin{solution}
+The expected number of failures per bond is $50$.  Because all losses
+are sent to the mezzanine, the expected failure rate is $50\%$ (mighty
+high!).
+	
+\end{solution}
+	
+	
+\ppart We take the mezzanine tranches from 100 bonds and create a CDO.
+What is the expected number of underlying failures to hit the CDO?
+
+\begin{solution}
+From the previous part, each mezzanine tranche has a $50\%$ rate of
+failure.  The CDO contains $10000$ loans, at a $50\%$ rate of failure,
+and so we expect $5000$ failures in the CDO.
+\end{solution}
+	
+\ppart We divide this CDO into $10$ tranches of $1000$ bonds each.
+Assuming mutual independence, give an upper bound on the probability
+of one or more failures in the best tranche.  The third tranche?
+
+\begin{solution}
+We use a $50\%$ failure rate to model the loans in this CDO.  If we
+assume mutual independence, we use the Chernoff bound to bound this.
+One or more failures in the best tranche corresponds to over $9000$
+failures in the CDO.  Using the Chernoff bound, we find that
+\[
+\prob{X \geq 9/5*5000} \leq e^{-(9/5 \ln(9/5) - 9/5 + 1) \cdot 5000}
+\] 
+which is approximately zero.
+		
+For the third tranche, we make a similar calculation, finding the
+probability that there are over $7000$ failures in the CDO.
+
+\[
+\prob{X \geq 7/5*5000} \leq e^{-(7/5 \ln(7/5) - 7/5 + 1) \cdot 5000}
+\] 
+		
+This is about $10^{-155}$ ---that is, still vanishingly small.
+\end{solution}
+	
+
+\ppart  Repeat the previous question without the assumption of mutual independence.
+
+\begin{solution}
+Without a mutual independence assumption, the best we can do is bounds
+from Markov's theorem, like we did in part b.  Thus, the upper bound
+on failures in the top tranche, or over $9000$ failures, is:
+\[
+\prob{X \geq 9000} \leq \frac{5000}{9000} = 5/9
+\]
+
+For failures in the third trance, Markov's theorem gives us:
+\[
+\prob{X \geq 7000} \leq \frac{5000}{7000} = 5/7
+\]
+To put it generously, these probabilities are not very low.
+	
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
