@@ -1,0 +1,273 @@
+\inclassproblems{14, Wed}
+
+%F02 cp14w
+%F01 pset10
+
+\begin{problem}
+A gambler has been studying the roulette wheel in a Las Vegas casino over
+a long period of time, and his data confirms that the wheel is biased to
+come up on a red number about 51\% of the time.  Since a bet on red pays
+even money (bet \$1 and either lose it, or win and get back \$2), he
+realizes the odds are in his favor.
+
+So with high hopes and an initial stake of \$10,000, the gambler aims to
+turn his stake into \$1,000,000.  He plans simply to continue making \$100
+bets on red until either he is ahead the \$1,000,000, or he goes bankrupt.
+He considers bankruptcy very unlikely because the odds are in his favor,
+and the bets are small enough relative to his initial stake that he can
+withstand a long run of losses.
+
+\bparts
+
+\ppart 
+Based on this description, describe a reasonable probability space to
+model this situation.
+
+\solution{
+An easy way to describe an appropriate sample space is to keep track of
+the gambler's stake.  So sample points will be all the finite sequences of
+nonnegative multiples of 100, that
+\begin{itemize}
+\item start at 10,000,
+\item end at the first occurrence of either 0 or 1,000,000,
+\item have successive integers in the sequence differ by exactly 100.
+\end{itemize}
+For example, the sample point describing two initial wins, followed by 102
+losses and bankruptcy would be the length 105 sequence
+\[
+(10000, 10100,10200, 10100,10000,9900,9800,\dots,200,100,0).
+\]
+The sample point corresponding to his winning every bet until he reaches
+his goal would the length 9,900 sequence
+\[
+(10000, 10100,10200, 10300,10400,\dots, 999800, 999900, 1000000).
+\]
+The probability of an outcome is defined to be $(0.51)^k(0.49)^j$ where
+$k$ is the number of increases by 100, and $j$ is the number of decreases
+by 100.  Note that either $j-k = 100$ for sample points that lead to
+bankruptcy or $k-j = 9,900$ for those leading to \$1,000,000.}
+
+\ppart Describe a positive constant, $\epsilon$, such that, at any point
+during his play when the gambler has not gone bankrupt, there is a
+probability of at least $\epsilon$ that he will reach his goal of
+\$1,000,000 within the next 9,999 bets.
+
+\solution{ $\epsilon \eqdef (0.51)^{9999}$ will do, since even if the
+gambler's stake was down to \$100, there is still this much probability
+that he will win the next 9,999 bets in a row and reach his goal of
+\$1,000,000.}
+
+\ppart Conclude that the probability that the gambler bets $n\geq 9,999$
+or more times before the game ends is at most $r^{n-9999}$ for some
+constant $r < 1$.
+
+\solution{Let $r \eqdef (1-\epsilon)^{1/9999}$.  The reason this works is
+that the probability of not reaching the goal of \$1,000,000 in the first
+9999 bets is at most $1- \epsilon$, because there is at least an
+$\epsilon$ chance the Gambler wins by the 9,999th bet.  Likewise, the
+probability of not reaching the goal of \$1,000,000 in the second 9999
+bets---given that he didn't in the first 9999---is also $\leq 1-
+\epsilon$.  So the probability of not reaching the goal in the first
+$2\cdot 9999$ bets is $\leq (1- \epsilon)^2$.  Repeating this argument for
+the first $\floor{n/9999}$ blocks of 9999 bets, we conclude that the
+probability of not reaching the goal of \$1,000,000 by the $n$th bet is
+$\leq$ the probability of not reaching it by the $\floor{n/9999} \cdot
+9999 \leq n\text{th}$ bet, which is $\leq (1- \epsilon)^{ \floor{n/9999}} = r^{
+\floor{n/9999} \cdot 9999} \leq r^{n-9999}$.}
+
+\iffalse
+
+\ppart Conclude that the probability that he bets forever---without either
+going bankrupt or reaching his \$1,000,000 goal---is zero.
+
+\solution{By part~(b) the probability that the gambler does \emph{not}
+reach his \$1,000,000 goal during his first 9,999 bets is at most
+$1-\epsilon$.  The conditional probability that he reaches \$1,000,000
+during his second sequence of 9,999 bets, given that he hasn't already
+reached his goal or gone bankrupt, is at most $(1-\epsilon)^2$.  The
+conditional probability that he reaches \$1,000,000 during his $n$th
+sequence of 9,999 bets, given that he hasn't already reached his goal or
+gone bankrupt, is at most $(1-\epsilon)^n$.
+
+This implies that the probability that he bets more than $9999n$ times is
+at most $(1-\epsilon)^n$, and so the probability that he bets forever is
+at most $(1-\epsilon)^n$ for every $n$.  Since $(1-\epsilon)^n$ approaches
+0 as $n \rightarrow \infty$.  The probability that the gambler bets
+forever is at most 0.}
+\fi
+
+\eparts
+\end{problem}
+
+\textbf{NOTE:} We didn't get to any of the following three problems in
+class.
+
+\begin{problem}
+The ``high hopes'' of the Gambler in Problem 1 overlook some difficulties
+with his strategy.  Is he really very likely to win?  How long will it take?
+
+\solution{He has a 98\% chance of winning: more than $1-
+\paren{0.49/0.51}^{100}$ using the formula~(\ref{intended-profit})
+bounding the probability of getting an intended profit in an unfair game.
+To apply the formula, we reverse the roles of $T$ and $n$ to turn the
+favorable game into an unfair one.  This turns into a game with
+probability 0.49 of winning a bet, starting with a stake of 9900 betting
+units of \$100 and aiming to win 100 units.  So the probability of a win
+in this game is a most $\paren{0.49/0.51}^{100} \approx 0.018$; winning
+this reversed game corresponds to going bankrupt in the original game, so
+his probability of winning the real game is $\geq 1 - 0.18$.
+
+It follows from the formula for expected number of bets that he can expect
+to make about a half million bets before winning, however.
+}
+
+\end{problem}
+
+\begin{problem}
+Let $G$ be the amount won by the gambler when a Gambler's Ruin game ends.
+Let $Q$ be the number of bets till the game ends.
+
+The derivation of the formula for the expected number of bets,
+$\expect{Q}$, in an unfair Gambler's Ruin game used the fact that
+\begin{equation}\label{gw}
+\expect{Q}\cdot\expect{\text{amount won win per bet}} = \expect{G}.
+\end{equation}
+Prove this equation. \hint Since the amount won per bet may be negative,
+Wald's Theorem does not immediately apply.
+
+\solution{Directly from Notes 13-14:
+
+Let $G_{i}$ be the amount the gambler gains on the $i$th flip:
+$G_{i}=1$ if the gambler wins the flip, $G_{i}=-1$ if the gambler loses
+the flip, and $G_{i}=0$ if the game has ended before the $i$th flip.  So
+the amount won by the gambler when the game ends is
+\[
+G = \sum_{i=1}^Q G_i.
+\]
+
+Now the random variable $G_i+1$ is nonnegative, and $\expcond{G_i+1}{Q\geq
+i} = \expcond{G_i}{Q \geq i}+1 = \expect{\text{amount won win per bet}}+1$, so by
+Wald's Theorem
+\begin{equation}\label{G1}
+\expect{\sum_{i=1}^Q (G_i+1)} = \expect{\text{amount won win per bet}}+1
+\cdot \expect{Q}.
+\end{equation}
+But
+\begin{eqnarray}
+\expect{\sum_{i=1}^Q (G_i+1)} & = & \expect{\sum_{i=1}^Q G_i + \sum_{i=1}^Q 1}\notag\\
+   & = & \expect{(\sum_{i=1}^Q G_i) + Q}\notag\\
+   & = & \expect{\sum_{i=1}^Q G_i} + \expect{Q}\notag\\
+   & = & \expect{G} + \expect{Q}\label{GQ}.
+\end{eqnarray}
+Now combining~(\ref{G1}) and~(\ref{GQ}) confirms the truth of~(\ref{gw}).}
+\end{problem}
+
+\begin{problem}
+Prove that in an \emph{unbounded} fair game, where the Gambler plays until
+he is broke no matter how much his stake increases in the meantime, the
+Gambler is \emph{sure} to go broke, but the expected number of bets before
+he goes broke is infinite.
+
+\solution{
+Directly from Notes 13-14:
+
+\begin{lemma}\label{go broke}
+If the gambler starts with one or more dollars and plays a fair game until
+he is broke, then he will go broke with probability 1.
+\end{lemma}
+
+\begin{proof}
+If the gambler has initial capital $n$ and goes broke in a game without
+reaching a goal $T$, then he would also go broke if he were playing and
+ignored the goal.  So the probability that he will lose if he keeps
+playing without stopping at any goal $T$ must be at least as large as the
+probability that he loses when he has a goal $T>n$.
+
+But we know that in a fair game, the probability that he loses is $1 -
+n/T$.  This number can be made arbitrarily close to 1 by choosing a
+sufficiently large value of $T$.  Hence, the probability of his losing
+while playing without any goal has a lower bound arbitrarily close to 1,
+which means it must in fact be 1.
+\end{proof}
+
+So even if the gambler starts with a million dollars and plays a perfectly
+fair game, he will eventually lose it all with probability 1.
+
+\begin{lemma}\label{play forever}
+If the gambler starts with one or more dollars and plays a fair game until
+he goes broke, then his expected number of plays is infinite.
+\end{lemma}
+
+\begin{proof}
+Consider the gambler's ruin game where the gambler starts with initial
+capital $n$, and let $u_n$ be the expected number of bets for
+the \emph{unbounded} game to end.  Also, choose any $T \geq n$, and as
+above, let $e_n$ be the expected number of bets for the game to end when
+the gambler's goal is $T$.
+
+The unbounded game will have a larger expected number of bets compared to
+the bounded game because, in addition to the possibility that the gambler
+goes broke, in the bounded game there is also the possibility that the
+game will end when the gambler reaches his goal, $T$.  That is,
+\[
+u_n \geq e_n.
+\]
+So by~(\ref{Tn}), 
+\[
+u_n \geq n(T-n).
+\]
+But $n \geq 1$, and $T$ can be any number greater than or equal to $n$, so
+this lower bound on $u_n$ can be arbitrarily large.  This implies that
+$u_n$ must be infinite.
+
+Now by Lemma~\ref{go broke}, with probability 1, the unbounded game ends
+when the gambler goes broke.  So the expected time for the unbounded game
+to \emph{end} is the \emph{same} as the expected time for the gambler to
+\emph{go broke}.  Therefore, the expected time to go broke is infinite.
+\end{proof}
+
+In particular, even if the gambler starts with just one dollar, his
+expected number of plays before going broke is infinite!  Of course, this
+does not mean that it is likely he will play for long.  For example, there
+is a 50\% chance he will lose the very first bet and go broke right away.
+
+Lemma~\ref{play forever} says that the gambler can ``expect'' to play
+forever, while Lemma~\ref{go broke} says that with probability 1 he will
+go broke.  These Lemmas sound contradictory, but our analysis showed that
+they are not.
+}
+\end{problem}
+
+
+\appendix
+\section{Appendix}
+
+\begin{theorem*}
+In the Gambler's Ruin game with probability $p$ of winning
+each individual bet, with initial capital, $n$, and goal, $T$,
+\begin{align}
+\pr{\text{the gambler is a winner in the fair game}} = & \frac{n}{T},
+        \label{fairwin}\\
+\pr{\text{the gambler is a winner a biased game}} = &
+        \frac{(q/p)^n-1}{(q/p)^T -1}. \label{biaswin}
+\end{align}
+\begin{equation}\label{intended-profit}
+\pr{\text{the gambler is a winner in an unfair game}} \leq (p/q)^{T-n}.
+\end{equation}
+Let $Q$ be the number of bets till the game ends.
+\[
+\expect{\text{$Q$ in an unfair game}} =
+\frac{\pr{\text{gambler is a winner}}T-n}{2p-1}.
+\]
+
+\begin{equation}
+\label{Tn}
+\expect{\text{$Q$ in a fair game}} = n(T-n).
+\end{equation}
+
+\end{theorem*}
+
+\end{document}
+
+
+

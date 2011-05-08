@@ -1,0 +1,336 @@
+\documentclass[11pt]{article}	
+\usepackage{latex-macros/course}
+
+\renewcommand{\coursecopyrightyear}{2002}
+\renewcommand{\coursecopyrightnames}{Prof. Albert~R.~Meyer}
+
+%\renewcommand{\problemdata}[5]{}
+
+\begin{document}
+\inclassproblems{15, Mon}
+
+\begin{problem}
+Prove that the Central Limit Theorem implies the Weak Law of Large
+Numbers.  \hint The only properties of $N(y)$ needed in the proof are that
+$\lim_{y \to \infty} N(y) = 1$ and $\lim_{y \to \infty} N(-y) = 0$.
+
+\solution{
+Note first that $\mu_{S_n} = n\mu$, $\variance{S_n} = n\sigma^2$, and so
+$\sigma_{S_n} = \sigma\sqrt{n}$.  Now,
+\begin{eqnarray*}
+\abs{\frac{S_n}{n} - \mu} > \epsilon & \text{ iff } &
+      \abs{S_n - n\mu} > n\epsilon\\
+      & \text{ iff }  & \abs{\frac{S_n - n\mu}{\sigma_{S_n}}} > \frac{n\epsilon}{\sigma_{S_n}}\\
+      &  \text{ iff } & \abs{S^*_n} > \dfrac{\sqrt{n}\epsilon}{\sigma}.
+\end{eqnarray*}
+But for any real number $\beta>0$,
+\[
+\frac{\sqrt{n}\epsilon}{\sigma} > \beta
+\]
+will hold for all large $n$.  Hence, for any $\beta >0$ and all large $n$,
+\begin{equation} \label{Sne}
+\pr{\abs{\frac{S_n}{n} - \mu} > \epsilon} = \pr{\abs{S^*_n} >
+    \frac{\sqrt{n}\epsilon}{\sigma}} \leq \pr{\abs{S^*_n} > \beta}.
+\end{equation}
+So
+\begin{align*}
+\lim_{n\rightarrow\infty}
+    \pr{\abs{\frac{S_n}{n} - \mu} > \epsilon}
+ \leq & \lim_{n\rightarrow\infty}
+    \pr{\abs{S^*_n} > \beta} & \text{(by~(\ref{Sne}))}\\
+ = &  \lim_{n\rightarrow\infty} \pr{S^*_n > \beta} + \pr{S^*_n < -\beta}\\
+ = &\  1 - N(\beta) + N(-\beta), & \text{(by the Central Limit Thm~(\ref{normal}))}
+\end{align*}
+for all real numbers $\beta >0$.  By choosing $\beta$ large enough, we can
+ensure that $N(\beta)$ is arbitrarily close to 1 and $N(-\beta)$ is
+arbitrarily close to 0, so that final term above is arbitrarily close to
+1-1+0 = 0.  Hence,
+\[
+\lim_{n\rightarrow\infty} \pr{\abs{\frac{S_n}{n} - \mu} > \epsilon} = 0,
+\]
+which is the Weak Law of Large Numbers.}
+
+
+\end{problem}
+
+\textbf{NOTE:} We didn't get to the following problem in class.
+
+\begin{problem}
+To clarify the somewhat subtle difference between the Weak and Strong Laws
+of Large Numbers, we will construct an example of a sequence
+$X_1,X_2,\dots$ of mutually independent random variables that satisfies
+the Weak Law of Large Numbers, but not the Strong Law.  The distribution
+of $X_i$ will have to depend on $i$, because otherwise both laws would be
+satisfied.\footnote{This problem is adapted from Grinstead \& Snell,
+\emph{Intro. to Probability}, Ch.8, exercise 16, pp314--315, where is
+credited to David Maslen.}
+
+In particular, let $X_1,X_2,\dots$ be a sequence of mutually independent
+random variables such that $X_1=0$, and for each integer $i > 1$,
+\[
+\pr{X_i=i} = \frac{1}{2i\log i},\quad
+\pr{X_i=-i} = \frac{1}{2i\log i},\quad
+\pr{X_i=0} = 1 - \frac{1}{i\log i}.
+\]
+Note that $\mu = \expect{X_i} = 0$ for all $i$.
+
+\bparts
+
+\problempart
+Show that $\variance{S_n} = \Theta(n^2/\log n)$.
+\hint $n/\log n > i/\log i$ for $2 \leq i \leq n$. %$\int x/\log x\, dx = ???$
+
+\solution{\begin{align}
+\variance{S_n} & = \sum_{i=1}^\infty \variance{X_i} &\text{(independent variance
+additivity)}\notag\\
+  & = \variance{X_1}+ \sum_{i=2}^n \expect{X_i^2} - \expectsq{X_i}\notag\\
+  & =  0+ \sum_{i=2}^n i^2\left( \frac{1}{i\log i} - 0\right)\notag\\
+  & =  \sum_{i=2}^n \frac{i}{\log i}.\notag\\
+  & = \Theta(n^2/\log n). & \text{(see below)}\label{Theta}
+\end{align}
+
+To justify~(\ref{Theta}), note that $x/\log x$ is increasing for $x>e$
+since its derivative $(1/\log x) (1- 1/\log x)$ is positive.  So $n/\log n
+\geq i/\log i$ for $2 \leq i \leq n$.  Therefore,
+\begin{align*}
+\frac{n^2}{\log n} & = \sum_{i=1}^n \frac{n}{\log n}\\
+  & \geq \sum_{i=2}^n \frac{i}{\log i}\\
+  & \geq \sum_{i=\ceil{n/2}}^n \frac{i}{\log i}\\
+  & \geq \sum_{i=\ceil{n/2}}^n \frac{n/2}{\log n}\\
+  & \geq \frac{n+1}{2} \frac{n/2}{\log n}\\
+  & \geq \frac{1}{4}\frac{n^2}{\log n}.
+\end{align*}
+}
+
+\problempart
+Show that the sequence $X_1,X_2,\dots$ satisfies the Weak Law of Large
+Numbers, \ie prove that for any $\epsilon>0$ 
+\[
+\lim_{n \to \infty} \pr{ \abs{\frac{S_n}{n}} \geq \epsilon } = 0.
+\]
+
+\solution{
+\begin{align*}
+\pr{\abs{\frac{S_n}{n}} \geq \epsilon} & =
+  \pr{\abs{\frac{S_n}{n}-0} \geq \epsilon}\\
+  &  \leq \variance{\frac{S_n}{n}}\frac{1}{\epsilon^2} & \text{(Chebychev Bound)}\\
+  & = \frac{\variance{S_n}}{n^2}\frac{1}{\epsilon^2}\\
+  & = \Theta(\frac{1}{\epsilon^2\log n}), & \text{(by~(\ref{Theta}))}
+\end{align*}
+which goes to zero as $n$ goes to $\infty$.
+}
+
+\end{problemparts}
+
+We now show that the sequence $X_1,X_2,\dots$ does not satisfy the Strong
+Law of Large Numbers.
+
+\begin{problemparts}
+
+\problempart\label{BC}
+(The first Borel-Cantelli lemma.) 
+Let $A_1,A_2,\dots$ be any infinite sequence of mutually independent
+events such that
+\begin{equation}\label{sai}
+\sum_{i=1}^\infty \pr{A_i} = \infty.
+\end{equation}
+Prove that
+
+\iffalse
+
+USE THIS VERSION NEXT TIME:
+\[
+\pr{\text{No $A_i$ occurs}} = 0.
+\]
+\hint The probability that no $A_i$ for $i \leq n$ occurs is
+\begin{equation}\label{-epA}
+\leq e^{-\sum_{i=1}^n \pr{A_i}}.
+\end{equation}
+
+\ppart Conclude that
+\fi
+
+\[
+\pr{\text{infinitely many $A_i$ occur}} = 1.
+\]
+
+\hint 
+We know that the probability that no $A_i$ with $n\geq i \geq r$
+occurs is
+\begin{equation}\label{-eT}
+\leq  e^{-\expect{T_{r,n}}}
+\end{equation}
+where $T_{r,n} \eqdef \sum_{i=r}^n I_{A_i}$ is the number of events $A_i$
+with $n \geq i\geq r$ that occur.  What happens as $n \to \infty$?
+
+\solution{
+Let $K_r$ be the event that no $A_i$ with $i \geq r$ occurs.
+Also, let $K_{r,n}$ be the event that no $A_i$ with $n \geq i
+\geq r$ occurs.  Finally, let $K$ be the event that only finitely
+many $A_i$'s occur.  We must prove that $\pr{K} = 0$.
+
+We begin by computing $\lim_{n \to \infty} e^{-\expect{T_{r,n}}}$:
+
+\begin{align*}
+\expect{T_{r,n}} & = \sum_{i=r}^n \expect{I_{A_i}}
+         &\text{(linearity of expectation)} \\
+  & = \sum_{i=r}^n \pr{A_i} & \text{(expectation of indicator
+         variable)}
+  %& = \infty & \text{(by~(\ref{sai}))}.
+\end{align*}
+
+If we take the the limit as $n \to \infty$ we have:
+
+\begin{align*}
+\lim_{n \to \infty}\expect{T_{r,n}} & = \lim_{n \to \infty}\sum_{i=r}^n \pr{A_i} \\
+	& = \infty & \text{(by ~(\ref{sai}))}. 
+  %& = \infty & \text{(by~(\ref{sai}))}.
+\end{align*}
+
+Since $e^x \to 0$ as $x \to -\infty$, we conclude that:
+
+\begin{align*}
+\lim_{n \to \infty} e^{-\expect{T_{r,n}}} = 0
+\end{align*}
+
+Note that $K_r \subset K_{r,n}$ for any $r, n$.  Hence $\pr{K_r}
+\leq \pr{K_{r,n}} \leq e^{-\expect{T_{r,n}}}$.  We have just
+proved that the right hand side tends to zero as $n$ goes to $\infty$.
+Since the left hand side does not depend on $n$, and the inequality
+holds for all $n$ s.t. $n \geq r$, we conclude that $\pr{K_r}$
+must be zero.
+
+Now note that $K = \bigcup_r K_r$, so by Boole's law, $\pr{K} \leq
+\sum_r \pr{K_r}$, and since we've just proved that $\pr{K_r} = 0$ for
+all $r$, it follows that $\pr{K} = 0$. Hence the probability that
+infinitely many $A_i$'s occur is $1$.  }
+
+\problempart\label{divsum}
+Show that
+$\sum_{i=1}^\infty\pr{\abs{X_i}\geq i}$ diverges.  \hint $\int dx/(x
+log x) = \log\log x$.
+
+\solution{
+$\pr{\abs{X_i}\geq i}= 1/(i\log i)$, so
+\begin{align*}
+\sum_{i=1}^n \pr{\abs{X_i}\geq i} & = 0+ \sum_{i=2}^n \frac{1}{i\log i}\\
+  & \geq \int_2^{n+1} \frac{dx}{x\log x}\\
+  & = \log\log (n + 1 ) - \log\log 2,
+\end{align*}
+and this last term approaches infinity and $n$ approaches infinity.
+}
+
+\problempart
+Conclude that
+\begin{equation}\label{sm0}
+\pr{\lim_{n \to \infty} \frac{S_n}{n} = \mu} = 0.
+\end{equation}
+and hence that the Strong Law of Large Numbers \emph{completely} fails for
+the sequence $X_1,X_2,\dots$.
+
+\hint
+\[
+\frac{X_n}{n} = \frac{S_n}{n} - \frac{n-1}{n}\frac{S_{n-1}}{n-1},
+\]
+so if $\lim_{n \to \infty} S_n/n = 0$, then also $\lim_{n \to \infty}
+X_n/n = 0$.
+
+\solution{By parts~(\ref{BC}) and~(\ref{divsum}), the probability that
+$\abs{X_i}\geq i$ for infinitely many $i$ is 1.  But if $\abs{X_i}\geq i$
+for infinitely many $i$, then by definition of the limit, $\lim_{n \to
+\infty} X_n/n \neq 0$.  Hence,
+\[
+\pr{\lim_{n \to \infty} X_n/n  \neq 0} = 1,
+\]
+which means
+\begin{equation}\label{xn0}
+\pr{\lim_{n \to \infty} X_n/n = 0} = 0,
+\end{equation}
+But the hint implies that
+\begin{equation}\label{slx}
+\pr{\lim_{n \to \infty} \frac{S_n}{n} =  0} \leq
+\pr{\lim_{n \to \infty}  \frac{X_n}{n} = 0}.
+\end{equation}
+Now~(\ref{xn0}) and~(\ref{slx}) immediately imply~(\ref{sm0}).
+}
+
+\end{problemparts}
+\end{problem}
+
+\appendix
+
+\section{Appendix}
+\setcounter{secnumdepth}{0}
+
+The \emph{probability density function (pdf)} for a random variable, $R$, is
+the function $f_R : \range{R} \to [0,1]$ defined by:
+\[
+f_R(x) \eqdef \pr{R = x}.
+\]
+
+Random variables $R_1, R_2, \dots$ are \emph{mutually independent} iff
+\[
+\pr{\lgintersect_{i} [R_i = x_i]} = \prod_{i} \pr{R_i = x_i},
+\]
+for all $x_1, x_2, \dots \in \reals$.  They are \emph{$k$-wise
+independent} iff $\set{R_i \suchthat i\in J}$ are mutually independent for
+all subsets $J \subset \naturals$ with $\card{J} = k$.
+
+\begin{theorem*}[Weak Law of Large Numbers]
+Let $S_n \eqdef \sum_{i=1}^n X_i$, where $X_1, \dots, X_n, \dots$ are
+pairwise independent variables with the same expectation, $\mu$, and
+standard deviation, $\sigma$.  For any $\epsilon > 0$,
+\[
+\lim_{n \rightarrow \infty} \pr{\abs{\frac{S_n}{n} - \mu} \geq \epsilon} = 0.
+\]
+\end{theorem*}
+
+\begin{theorem*}[The Strong Law of Large Numbers]
+Let $S_n \eqdef \sum_{i=1}^n X_i$ where $X_1, \dots, X_i, \dots$ are
+mutually independent, identically distributed random variables with finite
+expectation, $\mu$.  Then
+\[
+\pr{\lim_{n\to\infty}\frac{S_n}{n} = \mu} =1.
+\]
+\end{theorem*}
+
+\begin{definition*}
+For any random variable, $R$, with finite mean, $\mu_R$, and
+deviation, $\sigma_R$, let $R^*$ be the random variable
+\[
+R^* \eqdef \frac{R-\mu_R}{\sigma_R}.
+\]
+$R^*$ is called the ``normalized'' version of $R$.
+\end{definition*}
+
+\begin{definition*}
+The \emph{normal density function} is the function 
+\[
+\eta(x) = \frac{1}{\sqrt{2\pi}}e^{-x^2/2},
+\]
+and the \emph{normal distribution function} is its integral
+\[
+N(y) = \int_{-\infty}^y \eta(x)dx = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^y
+e^{-x^2/2}dx.
+\]
+\end{definition*}
+
+The function $\eta(x)$ defines the standard \emph{Bell curve}, centered about
+the origin with height $1/\sqrt{2\pi}$ and about two-thirds of its area
+within unit distance of the origin.  The normal distribution function
+$N(y)$ approaches 0 as $y \rightarrow -\infty$.  As $y$ approaches zero
+from below, $N(y)$ grows rapidly towards $1/2$.  Then as $y$ continues to
+increase beyond zero, $N(y)$ rapidly approaches 1.
+
+\begin{theorem*}[Central Limit Theorem]
+Let $S_n = \sum_{i=1}^n X_i$ where $X_1, \dots, X_i, \dots$ are
+mutually independent variables with the same mean, $\mu$, and deviation,
+$\sigma$, and let $S^*_n$ be the normalized version of $S_n$.  Then
+\begin{equation}\label{normal}
+\lim_{n\rightarrow\infty} \pr{S^*_n \leq \beta}= N(\beta)
+\end{equation}
+for any real number $\beta$.
+\end{theorem*}
+
+
+\end{document}
