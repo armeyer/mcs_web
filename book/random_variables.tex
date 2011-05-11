@@ -292,15 +292,18 @@ mutually independent random variables, then it follows that:
 %% Probability Distributions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Distribution Functions}\label{distributions_sec}
 
-A random variable maps outcomes to values.  Often, random variables
-that show up for different spaces of outcomes wind up behaving in much
-the same way because they have the same probability of taking any
-given value.  Hence, random variables on different probability spaces
-may wind up having the same \term{probability density function}.
+A random variable maps outcomes to values.  The \idx{probability
+  density function,} $\pdf_R(x)$, of a random variable, $R$, measures
+the probability that $R$ takes the value $x$, and the closely related
+\idx{cumulative distribution function}, $\cdf_R(x)$, measures the
+probability that $R \leq x$.  Random variables that show up for
+different spaces of outcomes often wind up behaving in much the same
+way because they have the same probability of taking different values,
+that is, because they have same pdf/cdf.
 
 \begin{definition}
 Let $R$ be a random variable with codomain $V$.
-The \term{probability density function (pdf)} of $R$
+The \term{probability density function} of $R$
 is a function $\pdf_R : V \to [0,1]$ defined by:
 %
 \[
@@ -308,6 +311,13 @@ is a function $\pdf_R : V \to [0,1]$ defined by:
             \pr{R = x} & \text{if } x \in \range{R},\\
              0 & \text{if } x \notin \range{R}.
            \end{cases}
+\]
+
+If the codomain is a subset of the real numbers, then the \term{cumulative distribution
+  function} is the function $\cdf_R : \reals \to [0,1]$ defined by:
+%
+\[
+\cdf_R(x) \eqdef \pr{R \leq x}.
 \]
 \end{definition}
 %
@@ -340,17 +350,8 @@ sums in $V = \set{2, 3, \dots, 12}$.
 
 \end{figure}
 
-\term{Cumulative distribution functions (cdf's)} are closely-related
-to pdf's.  The cdf for a random variable $R$ whose codomain is a
-subset of real numbers is the function $\cdf_R : \reals \to [0,1]$
-defined by:
-%
-\[
-\cdf_R(x) \eqdef \pr{R \leq x}.
-\]
-%
-As an example, the cumulative distribution function for the random
-variable $T$ is shown in Figure~\ref{fig:16F3}:
+The cumulative distribution function for $T$ is shown in
+Figure~\ref{fig:16F3}:
 %
 \begin{figure}
 
@@ -381,10 +382,12 @@ definitions of pdf and~cdf:
 \end{align*}
 \fi
 
-In summary, $\pdf_R(x)$ measures the probability that $R = x$ and
-$\cdf_R(x)$ measures the probability that $R \leq x$.  Both $\pdf_R$
-and $\cdf_R$ capture the same information about the random variable
-$R$ ---obviously each one determines the other ---but sometimes one is
+It also follows from the definition that
+\[\lim_{x \to \infty}\cdf_R(x) = 1 \text{  and  } \lim_{x \to -\infty}
+\cdf_R(x) = 0.
+\]
+Both $\pdf_R$ and $\cdf_R$ capture the same information $R$
+---obviously each one determines the other ---but sometimes one is
 more convenient.  The key point here is that neither the probability
 density function nor the cumulative distribution function involves the
 sample space of an experiment.
@@ -447,6 +450,7 @@ where
 \]
 for all $v \in V$.  
 
+\iffalse
 If $V = \set{1,2,\dots,n}$, the cumulative distribution function would be
 $F: \reals \to [0, 1]$ where
 \[
@@ -457,6 +461,7 @@ F(x) \eqdef
         1 & \text{if $n \le x$}.
     \end{cases}
 \]
+\fi
 
 Uniform distributions come up all the time.  For example, the number
 rolled on a fair die is uniform on the set $\set{1, 2, \dots, 6}$.  An
@@ -1214,10 +1219,9 @@ If $I_A$ is the indicator random variable for event $A$, then
 
 \begin{proof}
 \begin{align*}
-\expect{I_A}
-& =  1 \cdot \prob{I_A = 1} + 0 \cdot \prob{I_A = 0} \\
-& = \prob{I_A = 1} \\
-& =  \prob{A}.\qedhere & \text{(def of $I_A$)}
+\expect{I_A} =  1 \cdot \prob{I_A = 1} + 0 \cdot \prob{I_A = 0}
+     & = \prob{I_A = 1} \\
+     & =  \prob{A}.\qedhere & \text{(def of $I_A$)}
 \end{align*}
 \end{proof}
 For example, if $A$~is the event that a coin with bias~$p$ comes up
@@ -1241,14 +1245,14 @@ in equation~\eqref{eqn:expectation}:
 Suppose~$R$ is defined on a sample space~$\sspace$.  Then,
 \begin{align*}
 \expect{R}
-    &= \sum_{\omega \in \sspace} R(\omega) \prob{\omega}
-            &\text{(Def~\ref{def:expectation} of expectation)} \\
+    &\eqdef \sum_{\omega \in \sspace} R(\omega) \prob{\omega}\\
+%            &\text{(Def~\ref{def:expectation} of expectation)} \\
     &= \sum_{x \in \range{R}} \, \sum_{\omega \in [R=x]} R(\omega) \prob{\omega}
                 \\
     &= \sum_{x \in \range{R}} \, \sum_{\omega \in [R=x]} x \prob{\omega}
             &\text{(def of the event $[R=x]$)}\\
     &= \sum_{x \in \range{R}} x \paren{\sum_{\omega \in [R=x]} \prob{\omega}}
-            & \text{(distributing $x$ over the inner sum)} \\
+            & \text{(factoring $x$ from the inner sum)} \\
     &= \sum_{x \in \range{R}} x \cdot \prob{R = x}.
             & \text{(def of $\prob{R=x}$)}
 \end{align*}
@@ -1412,8 +1416,8 @@ that $A_1$, $A_2$, \dots, is a partition of~$\sspace$.  Then
 A computer program crashes at the end of each hour of use with
 probability $p$, if it has not crashed already.  What is the expected
 time until the program crashes?  This will be easy to figure out using
-the \index{total expectation} Law of Total Expectation
-(Theorem~\ref{total_expect}).  Specifically, we want to find
+the \index{total expectation} Law of Total Expectation,
+Theorem~\ref{total_expect}.  Specifically, we want to find
 $\expect{C}$ where $C$ is the number of hours until the first crash.
 We'll do this by conditioniing on whether or not the crash occurs in
 the first hour.
@@ -1450,8 +1454,10 @@ Then, rearranging terms gives
     1   = \expect{C} - (1 - p) \expect{C} % \\
         = p \expect{C},
 \end{align*}
-and thus $\expect{C} = 1/p$.
-
+and thus 
+\[
+\expect{C} = 1/p.
+\]
 The general principle here is well-worth remembering.
 
 \textbox{
@@ -1459,10 +1465,9 @@ The general principle here is well-worth remembering.
 \textboxtitle{Mean Time to Failure}
 \end{center}
 
-If a system fails at each time step with probability $p$,
-then the expected number of steps up to the first failure is
-$1/p$.
-}
+If a system independently fails at each time step with probability
+$p$, then the expected number of steps up to the first failure is
+$1/p$.}
 
 \begin{editingnotes}
 We will use this sort of analysis extensively in
@@ -1828,14 +1833,14 @@ rearranging terms in equation~\eqref{eqn:expectation} in the
 definition of expectation:
 \begin{align*}
 \expect{T}
-     & = \sum_{\omega \in \sspace} T(\omega) \cdot \pr{\omega}
-                & \text{(by~\eqref{eqn:expectation})}\\
+     & \eqdef \sum_{\omega \in \sspace} T(\omega) \cdot \pr{\omega}\\
+%                & \text{(by~\eqref{eqn:expectation})}\\
         & = \sum_{\omega \in \sspace} (R_1(\omega) + R_2(\omega)) \cdot \pr{\omega}
                          & \text{(def of $T$)}\\
         & = \sum_{\omega \in \sspace} R_1(\omega) \pr{\omega} + 
               \sum_{\omega \in \sspace} R_2(\omega) \pr{\omega} & \text{(rearranging terms)}\\
         & = \expect{R_1} + \expect{R_2}.
-                & \text{(by~\ref{eqn:expectation})}
+                & \text{(by~\eqref{eqn:expectation})}
 \end{align*}
 \end{proof}
 
@@ -1852,7 +1857,7 @@ extends the result to more than two variables:
 For any random variables $R_1, \dots, R_k$ and constants $a_1, \dots, a_k
 \in \reals$,
 \[
-\expect{\sum_{i=1}^k a_iR_i} = \sum_{i=1}^k a_i\expect{R_i}.
+\Expect{\sum_{i=1}^k a_iR_i} = \sum_{i=1}^k a_i\expect{R_i}.
 \]
 \end{corollary}
 
@@ -2186,7 +2191,7 @@ convergence criteria.
 \begin{theorem}[Linearity of Expectation]\label{linexp}
 Let $R_0$, $R_1$, \dots, be random variables such that
 \[
-\sum_{i = 0}^\infty \expect{\abs{R_i}}
+\sum_{i = 0}^\infty \expect{\, \abs{R_i}\, }
 \]
 converges.  Then
 \[
@@ -2202,7 +2207,7 @@ hypothesis, all the sums in the following derivation are absolutely
 convergent, which justifies rearranging them as follows:
 \begin{align*}
 \sum_{i=0}^\infty \expect{R_i}
-    &= \sum_{i=0}^\infty \sum_{s \in \sspace} R_i(s) \cdot \prob{s}
+    &== \sum_{i=0}^\infty \sum_{s \in \sspace} R_i(s) \cdot \prob{s}
             & \text{(Def.~\ref{def:expectation})}\\
     &= \sum_{s \in \sspace} \sum_{i=0}^\infty R_i(s) \cdot \prob{s}
            & \text{(exchanging order of summation)}\\
