@@ -1,0 +1,117 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_divide_using_3}
+  \pcomment{excerpted from PS_divide_using_3}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  division
+  algorithm
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We describe a state machine for multiplying a real number, $x$, by a
+nonnegative integer, $y$, using only addition, and multiplication and
+division by 3.  The states are triples of numbers $(r,s,a)$.  The
+initial state is $(x,y,0)$.  The transitions are given by the rule
+that for $s>0$:
+\[
+(r,s,a)\rightarrow\begin{cases}
+        (3r,s/3,a) &\text{ if } 3 \divides s\\
+        (3r,(s-1)/3,a+r) &\text{ if } 3 \divides (s-1)\\
+        (3r,(s-2)/3,a+2r) &\text{otherwise}.
+       \end{cases}
+\]
+
+\bparts
+
+\ppart Prove that the property that $s$ is a nonnegative integer is a
+preserved invariant of this state machine.
+
+\ppart Prove that the machine terminates after at most $1+ \log_3 y$
+transitions.
+
+\begin{solution}
+Also, each transition corresponds to an execution of the \texttt{do}
+statement body, and each transition reduces $s$ to at most $s/3$.
+Hence, after at most $1+ \log_3 y$ executions of the body, the value
+of $s$ is at most its initial value, $y$, times $\paren{1/3}^{1+
+  \log_3 y} = 1/3y$.  That is, the value of $s$ is at most 1/3.  Since
+$s \in \naturals$, it follows that $s$ will be 0 after this many
+executions of the body, if it wasn't 0 earlier.  But with $s=0$, the
+procedure terminates.
+\end{solution}
+
+\ppart Use the Invariant Method to prove that the algorithm is partially
+correct ---that is, if $s = 0$, then $a = xy$.
+
+\begin{solution}
+Let
+\[
+P((r,s,a)) \eqdef\quad [rs+a = xy].
+\]
+
+Clearly, $P$ holds for the start state because
+\[
+P((x,y,0)) \qiff [xy+0 = xy].
+\]
+
+Now, we show that $P$ is indeed a preserved invariant, namely, assuming
+$P((r,s,a))$,
+\begin{equation}\label{inv}
+rs+a = xy,
+\end{equation}
+holds and $(r,s,a) \to (r',s',a')$ is a transition, then $P((a',b',p'))$,
+\begin{equation}\label{inv'}
+r's'+a' = xy,
+\end{equation}
+holds.
+
+We consider three cases:
+
+If $3 \divides s$, then we have that $r' = 3r, s' = s/3, a'=a$.
+Therefore,
+\begin{align*}
+  r's' + a' & = 3r \cdot \frac{s}{3} + a\\
+            & = rs+a\\
+            & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+If $3 \divides s-1$, then $r' = 3r, s' = (s-1)/3,a = a+r$.  So:
+\begin{align*}
+  r's' + a'  & = 3r \cdot \frac{s-1}{3} + a+r\\
+   & = r\cdot(s-1) + a + r\\
+   & = rs+a\\
+   & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+Otherwise, we have $r' = 3r, s' = (s-2)/3,a = a+2r$.  So:
+\begin{align*}
+  r's' + a'  & = 3r \cdot \frac{s-2}{3} + a+2r\\
+   & = r\cdot(s-2) + a + 2r\\
+   & = rs+a\\
+   & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+So in all three cases,~\eqref{inv'} holds, proving that $P$ is indeed a
+preserved invariant.
+
+Since the procedure's only termination condition is that $s=0$,
+partial correctness will follow if we can show that if $s=0$, then $a=xy$.
+But this follows immediately from~\eqref{inv}.
+\end{solution}
+
+
+\eparts
+\end{problem}
+
+\endinput
