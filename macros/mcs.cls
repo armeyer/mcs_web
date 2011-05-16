@@ -1356,7 +1356,7 @@
 \providecommand{\sg}{\ms{sg}}
 \providecommand{\ide}{\ms{id}}
 \providecommand{\EF}{\ms{F18}}
-\providecommand{\T}{\ms{ST}}
+%\providecommand{\T}{\ms{ST}}
 
 \newcommand{\binnum}[1]{\operatorname{num}\left(#1\right)}
 \newcommand{\binnumt}[1]{\operatorname{num}\left(\mathtt{#1}\right)}
