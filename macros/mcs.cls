@@ -2617,7 +2617,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 % command is meant to be renewed: 
 %
 %\renewcommand{\exampreamble}{
-%  \textbf{Circle the name of your Tutorial Instructor}:
+%  \textbf{Circle your Tutorial Instructor}:
 %  \begin{center}
 %  \renewcommand{\arraystretch}{1.5}
 %  \begin{tabular}{llll}
@@ -2680,17 +2680,15 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \vfill}
 \newcommand{\useStandardMiniquizPreamble}{
 \renewcommand{\exampreamble}{   % !! renew \exampreamble
-  \textbf{Circle the name of your TA}:
-  \begin{center}
-  \renewcommand{\arraystretch}{2.5}
-  \begin{tabular}{c}
-     \courseassistants
+  \begin{tabular}{ll}
+    \textbf{Circle your TA}: &  \courseassistants\\[.35cm] 
+    \textbf{Write your}:     &  \teaminfo
   \end{tabular}
-  \end{center}
+
   \begin{itemize}
 
   \item
-   This quiz is \textbf{closed book}.  Total time is 25 minutes.
+   This quiz is \textbf{closed book}.  Total time is 15 minutes.
 
   \item
    Write your solutions in the space provided.  If you need more
@@ -2774,11 +2772,12 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \bigskip
   \begin{fminipage}
   \vspace{.35cm}
-  \begin{tabular}{rl}
+  \begin{tabular}{ll}
     \textbf{Your name:}       &                       \\[.35cm]
     \textbf{Due date:}        & \duedateofpaper{ps#1} \\[.35cm]
     \textbf{Submission date:} &                       \\[.35cm] 
-    \textbf{Circle your TA/LA}:         & \courseassistants
+    \textbf{Circle your TA}:  & \courseassistants\\[.35cm] 
+    \textbf{Write your}:      & \teaminfo
   \end{tabular}
   \vspace{.35cm}
   \end{fminipage}
@@ -2811,6 +2810,10 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   Renew $\backslash$\texttt{courseassistants} to get 
   the TAs' names here!%  
   \message{^^JCourse assistants list *INCORRECT*.^^J^^J}}
+\newcommand{\teaminfo}{%
+  Renew $\backslash$\texttt{teaminfo} to get 
+  Team info here!%  
+  \message{^^JTeam info list *INCORRECT*.^^J^^J}}
 \newcommand{\collaborationnote}{%
   You have to renew $\backslash$\texttt{collaborationnote} in
   \texttt{00course.dat} to have a collaboration statement form printed 
