@@ -2948,7 +2948,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \centerline{\emph{Due}: \duedateofpaper{ps#2}}
     \bigskip
     \readingnote 
-    \AtEndDocument{\coversheet{#2}}
+%    \AtEndDocument{\coversheet{#2}}
     \fi
     \fi}
 
