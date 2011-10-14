@@ -17,21 +17,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  A critical fact about \idx{RSA} is, of course, that decrypting an encrypted
-  message always gives back the original message!  That is, that
-  $\rem{(m^{d})^e}{pq} = m$.  This will follow from something slightly more
-  general:
-\begin{lemma}\label{npdp}
-Let $n$ be a product of distinct primes and $a \equiv 1 \pmod {\phi(n)}$
-for some nonnegative integer, $a$.  Then
-\begin{equation}\label{ma}
-m^a \equiv m \pmod n.
+  A critical fact about \idx{RSA} is, of course, that decrypting an
+  encrypted message, $m^*$, always gives back the original message,
+  $m$.  Namely, if $n=pq$ where $p$ and $q$ are distinct primes, $m
+  \in [0,pq)$, and
+\[
+d\cdot e \equiv 1 \pmod{(p-1)(q-1)},
+\]
+then
+\begin{equation}\label{mdepq=m}
+\rem{\rem{m^{d}}{pq}^e}{pq} = m.
 \end{equation}
-\end{lemma}
+This will follow from something simpler and more general:
+
+\begin{lemma*}%\label{npdp}
+If $n$ is a product of distinct primes and $a \in \naturals$ is
+$\equiv 1\, (\emph{\textrm{mod}}\,{\phi(n)})$, then $m^a \equiv m \pmod {n}$.
+\end{lemma*}
 
 \bparts
+\iffalse
 
-\ppart Explain why Lemma~\ref{npdp} implies that $k$ and $k^5$ have the
+\ppart Explain why the Lemma implies that $k$ and $k^5$ have the
 same last digit.  For example:
 %
 \[
@@ -44,55 +51,60 @@ same last digit.  For example:
 \begin{solution}
 Two nonnegative integers have the same last digit iff they are $\equiv
 \pmod {10}$.  Now $\phi(10) = \phi(2)\phi(5) = 4$ and $5 \equiv 1
-\pmod 4$, so by Lemma~\ref{npdp},
+\pmod {4}$, so by the Lemma,
 \[
 k^5 \equiv k \pmod {10}.
 \]
 \end{solution}
+\fi
 
-\ppart Explain why Lemma~\ref{npdp} implies that the original message
-$m$ is equal to $\rem{(m^e)^d}{pq}$.
+\ppart Explain why the Lemma implies~\eqref{mdepq=m}.
+
+\hint Verify that if
+\begin{equation}\label{mdeqvmpq}
+(m^{d})^e \equiv m \pmod {pq},
+\end{equation}
+then~\eqref{mdepq=m} is true.
 
 \begin{solution}
- To apply Lemma~\ref{npdp} to RSA, note that the first condition
-  of the Lemma is that $n$ be a product of primes.  In RSA, $n=pq$ so this
-  condition holds.
-
-For $n=pq$, we have from from Lemma~\bref{phi_pq} or the more general
-the Theorem~\bref{th:phi} that $\phi(n) = (p-1)(q-1)$.  So when $d$
-and $e$ are chosen according to RSA, $de \equiv 1 \pmod {\phi(n)}$.
-So $a \eqdef de$ satisfies the second condition of the Lemma.
-
-Now, from equation~\eqref{ma} with $n=pq$ and $a=de$, we have
+We begin by verifying the hint: if congruence~\eqref{mdeqvmpq} is true, then
+replacing $m^{d}$ by its remainder modulo $pq$ preserves the
+congruence,\footnote{See Corollary~\bref{aran} of the Remainder
+  Lemma~\bref{lem:conrem}.} giving
 \[
-(m^e)^d = m^{de} \equiv m \pmod {pq}.
+\rem{m^{d}}{pq}^e \equiv m \pmod {pq}.
 \]
-Hence,
+Now replacing the left hand side by its remainder yields
 \[
-\rem{(m^e)^d}{pq} = \rem{m}{pq},
+\rem{\rem{m^{d}}{pq}^e}{pq} \equiv m \pmod {pq}.
 \]
-but $\rem{m}{pq} = m$, since $0\leq m<pq$.
+Since both the left and right hand sides of the previous congruence are in
+$[0,pq)$, they must be equal, which proves~\eqref{mdepq=m}.
+
+So we just have to prove the congruence~\eqref{mdeqvmpq}.  For
+$n=pq$, we have from from Lemma~\bref{phi_pq} ---or the more general
+the Theorem~\bref{th:phi} ---that $\phi(n) = (p-1)(q-1)$, so $a \eqdef
+d \cdot e \equiv 1 \pmod \phi(n)$.  Now the Lemma implies
+\[
+m^a \equiv m \pmod {n},
+\]
+and this implies~\eqref{mdeqvmpq} since $(m^d)^e = m^{d \cdot e} =
+m^a$.
 \end{solution}
 
-
-\ppart\label{pma} Prove that if $p$ is prime, then
-\begin{equation}\label{mp}
-m^a \equiv m \pmod{p}
-\end{equation}
-for all nonnegative integers $a \equiv 1 \pmod {p-1}$.
+\ppart\label{pma} Prove that if $p$ is prime, then $m^a \equiv m \pmod
+            {p}$ for all $a \in \naturals$ congruent to 1 mod $p-1$.
 
 \begin{solution}
-If $p \divides m$, then equation~\eqref{mp} holds since both sides of the
-congruence are $\equiv 0 \pmod p$.
-
-So assume $p$ does not divide $m$.  Now if $a \equiv 1 \pmod {p-1}$,
-then $a = 1 + (p-1)k$ for some $k$, so
+If $p \divides m$, then the congruence holds since both sides are
+$\equiv 0 \pmod {p}$.  So assume $p$ does not divide $m$.  Now if $a
+\equiv 1 \pmod{p-1}$, then $a = 1 + (p-1)k$ for some $k$, so
 \begin{align*}
 m^a & = m^{1+ (p-1)k}\\
     & = m\cdot \paren{m^{p-1}}^k\\
-    & \equiv m\cdot \paren{1}^k \pmod p
+    & \equiv m\cdot (1)^k \pmod {p}
             & \text{(by Fermat's Little Thm.)}\\
-    & \equiv m \pmod p.
+    & \equiv m \pmod {p}.
 \end{align*}
 \end{solution}
 
@@ -115,7 +127,7 @@ primes $p_1,p_2,\dots,p_n$, then $a \equiv b \pmod{p_1p_1\cdots
 p_n}$.
 
 \begin{solution}
-By definition of congruence, $a \equiv b \pmod k$ iff $k \divides
+By definition of congruence, $a \equiv b \pmod {k}$ iff $k \divides
 (a-b)$.  So if $a \equiv b \pmod {p_i}$ for each $p_i$, then $p_i
 \divides (a-b)$ for each $p_i$.  By the Unique Factorization
 Theorem~\bref{thm:unique_factor}, the product of the $p_i$'s must also
@@ -140,7 +152,7 @@ $\phi(p) = (p-1)$ which divides $(p-1)p^{k-1} = \phi(p^k)$.
 
 
 \ppart Combine the previous parts to complete the proof of
-Lemma~\ref{npdp}.
+the Lemma.
 
 \begin{solution}
 Suppose $n$ is a product of distinct primes,
@@ -165,7 +177,7 @@ from part~\eqref{abp} that
 \[
 m^a \equiv m \pmod{n},
 \]
-which proves Lemma~\ref{npdp}.
+which proves the Lemma.
 \end{solution}
 
 \eparts

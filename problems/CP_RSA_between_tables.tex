@@ -30,7 +30,7 @@ Let's try out RSA!  \inhandout{There is a complete description of the
 \begin{itemize}
 
 \item Choose primes $p$ and $q$ to be relatively small, say in the
-range 10-40.  In practice, $p$ and $q$ might contain several hundred
+range 10-40.  In practice, $p$ and $q$ might contain hundreds of
 digits, but small numbers are easier to handle with pencil and paper.
 
 \item Try $e = 3, 5, 7, \dots$ until you find something that works.
@@ -69,36 +69,47 @@ what the other team sent!
 \eparts
 
 \inhandout{\textbox{
-%\begin{minipage}{\textwidth}
-\textboxheader{The RSA Cryptosystem}
+%\begin{minipage}{\textwidth} \textboxheader{The RSA Cryptosystem}
+
+A \textbf{Receiver} who wants to be able to receive secret numerical
+messages creates a \emph{private key}, which they keep secret, and a
+\emph{public key} which they make publicly available.  Anyone with the
+public key can then be a \textbf{Sender} who can publicly send secret
+messages to the \textbf{Receiver} ---even if they have never
+communicated or shared any information besides the public key.
+
+Here is how they do it:
 
 \begin{description}
 
-\item[Beforehand] The receiver creates a public key and a private key
+\item[Beforehand] The \textbf{Receiver} creates a public key and a private key
 as follows.
 
 \begin{enumerate}
 
-\item Generate two distinct primes, $p$ and $q$.  Since they can be
-used to generate the private key, they must be kept hidden.
+\item Generate two distinct primes, $p$ and $q$.  These are used to
+  generate the private key, and they must be kept hidden.  (In current
+  practice, $p$ and $q$ are chosen to be hundreds of digits long.)
 
-\item Let $n = pq$.
+\item Let $n \eqdef pq$.
 
-\item Select an integer $e$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
+\item Select an integer $e \in [1,n)$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
 \emph{public key} is the pair $(e, n)$.  This should be distributed
 widely.
 
-\item Compute $d$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.  This
-can be done using the Pulverizer.\\ The
-\emph{private key} is the pair $(d, n)$.  This should be kept hidden!
+\item Compute $d \in [1,n)$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.
+  This can be done using the Pulverizer.\\ The \emph{private key} is
+  the pair $(d, n)$.  This should be kept hidden!
 
 \end{enumerate}
 
 \item[Encoding]
+
+\iffalse
 Given a message~$m$, the sender first checks that $\gcd(m, n) =
 1$.
 
-\iffalse
+
 \footnote{It would be very bad if $\gcd(m, n)$ equals $p$ or $q$
 since then it would be easy for someone to use the encoded message to
 compute the private key  If $\gcd(m, n) = n$, then the encoded message
@@ -108,14 +119,17 @@ you should get a new set of keys or, at the very least, add some bits
 to~$m$ so that the resulting message is relatively prime to~$n$.}
 \fi
 
-The sender then encrypts message $m$ to produce $m^*$ using
-the public key:
+To transmit a message $m \in [0,n)$ to \textbf{Receiver}, a \textbf{Sender} uses the
+  public key to encrypt $m$ into a numerical message
 \[
-m^* = \rem{m^e}{n}.
+m^* \eqdef \rem{m^e}{n}.
 \]
+The \textbf{Sender} can then publicly transmit $m^*$ to the
+\textbf{Receiver}.
 
-\item[Decoding] The receiver decrypts message $m^*$ back to message $m$
-using the private key:
+
+\item[Decoding] The \textbf{Receiver} decrypts message $m^*$ back to
+  message $m$ using the private key:
 \[
 m = \rem{(m^*)^d}{n}.
 \]

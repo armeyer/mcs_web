@@ -2076,60 +2076,75 @@ of remaining elements in the interval, namely, $p^k -p^{k-1}$.
 
 \section{The RSA Algorithm}\label{RSA_sec}
 We are finally ready to see how the \term{RSA public key encryption
-  scheme} works.  The details are in the box on the next page.
+  scheme} works.  The purpose of the RSA scheme is to transmit secret
+messages over public communincation channels.  The messages
+transmitted will actually be nonnegative integers of some fixed size
+---typically of hundreds of digits.
+
+The details are in the box on the next page.
 
 \begin{figure}[p]\redrawntrue
 \textbox{
 \begin{minipage}{\textwidth}
 \textboxheader{The RSA Cryptosystem}
 
+A \textbf{Receiver} who wants to be able to receive secret numerical
+messages creates a \emph{private key}, which they keep secret, and a
+\emph{public key} which they make publicly available.  Anyone with the
+public key can then be a \textbf{Sender} who can publicly send secret
+messages to the \textbf{Receiver} ---even if they have never
+communicated or shared any information besides the public key.
+
+Here is how they do it:
 \begin{description}
 
-\item[Beforehand] The receiver creates a public key and a private key
+\item[Beforehand] The \textbf{Receiver} creates a public key and a private key
 as follows.
 
 \begin{enumerate}
 
-\item Generate two distinct primes, $p$ and $q$.  Since they can be
-used to generate the private key, they must be kept hidden.
+\item Generate two distinct primes, $p$ and $q$.  These are used to
+  generate the private key, and they must be kept hidden.  (In current
+  practice, $p$ and $q$ are chosen to be hundreds of digits long.)
 
-\item Let $n = pq$.
+\item Let $n \eqdef pq$.
 
-\item Select an integer $e$ such that $\gcd(e, (p-1)(q-1)) = 1$.
+\item Select an integer $e \in [1,n)$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
+\emph{public key} is the pair $(e, n)$.  This should be distributed
+widely.
 
-The \emph{public key} is the pair $(e, n)$.  This should be
-distributed widely.
-
-\item Compute $d$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.  This
-can be done using the Pulverizer.
-
-The \emph{private key} is the pair $(d, n)$.  This should be kept
-hidden!
+\item Compute $d \in [1,n)$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.
+  This can be done using the Pulverizer.\\ The \emph{private key} is
+  the pair $(d, n)$.  This should be kept hidden!
 
 \end{enumerate}
 
 \item[Encoding]
+
+\iffalse
 Given a message~$m$, the sender first checks that $\gcd(m, n) =
 1$.
 
-\iffalse
+
 \footnote{It would be very bad if $\gcd(m, n)$ equals $p$ or $q$
 since then it would be easy for someone to use the encoded message to
-compute the private key.  If $\gcd(m, n) = n$, then the encoded message
+compute the private key  If $\gcd(m, n) = n$, then the encoded message
 would be~0, which is fairly useless.  For very large values of~$n$, it
 is extremely unlikely that $\gcd(m, n) \ne 1$.  If this does happen,
 you should get a new set of keys or, at the very least, add some bits
 to~$m$ so that the resulting message is relatively prime to~$n$.}
 \fi
 
-The sender then encrypts message $m$ to produce $m^*$ using
-the public key:
+To transmit a message $m \in [0,n)$ to \textbf{Receiver}, a \textbf{Sender} uses the
+  public key to encrypt $m$ into a numerical message
 \[
-m^* = \rem{m^e}{n}.
+m^* \eqdef \rem{m^e}{n}.
 \]
+The \textbf{Sender} can then publicly transmit $m^*$ to the
+\textbf{Receiver}.
 
-\item[Decoding] The receiver decrypts message $m^*$ back to message $m$
-using the private key:
+\item[Decoding] The \textbf{Receiver} decrypts message $m^*$ back to
+  message $m$ using the private key:
 \[
 m = \rem{(m^*)^d}{n}.
 \]
@@ -2140,10 +2155,13 @@ m = \rem{(m^*)^d}{n}.
 }
 \end{figure}
 
-It is almost an immediate consequence of Euler's Theorem that this way
-of decoding the encrypted message indeed reproduces the original
-unencrypted message.  The details are worked out in
-Problem~\ref{CP_RSA_proving_correctness}.
+\newpage
+If the message $m$ is relatively prime to $n$, it is an almost
+immediate consequence of Euler's Theorem that this way of decoding the
+encrypted message indeed reproduces the original unencrypted message.
+In fact, the decoding always works ---even in (the higky unlikely)
+case that $m$ is not relatively prime to $n$.  The details are worked
+out in Problem~\ref{CP_RSA_proving_correctness}.
 
 %hide after lecture
 
@@ -2192,19 +2210,35 @@ message~$m$.
 
 %end unhide after lecture
 
-Is it hard for someone without the private key to decrypt the message?
-No one knows for sure but it is generally believed that if $n$ is a
-very large number (say, with a thousand digits), then it is difficult
-to reverse engineer~$d$ from $e$ and~$n$.  Of course, it is easy to
-compute a private key~$(d, n)$ if you know $p$ and~$q$ ---do it the
-same way the receiver does using the Pulverizer ---but it is not known
-how to factor~$n$ into $p$ and~$q$ in any reasonable amount of time
-when $n$~is very large.  Maybe with a little more studying of number
-theory, you will be the first to figure out how to do it.  Although,
-we should warn you that Gauss worked on it for years without a lot to
-show for his efforts.  And if you do figure it out, you might wind up
-meeting some serious-looking fellows who work for a Federal
-agency\dots.
+Why is RSA thought to be secure?  It would be easy to figure out the
+private key~$(d, n)$ if you knew $p$ and~$q$ ---you could do it the
+same way the \textbf{Receiver} does using the Pulverizer.  Now no one
+knows for sure, but the mathematical, financial, and intelligence
+communities are convinced that if $n$ is a very large number (say,
+with a thousand digits), then it would be hopelessly hard to factor
+$n$ and find $p$ and $q$, so that approach is not going to break RSA.
+
+Could there be another approach to reverse engineering the private key
+from the public key that did not involve factoring $n$?  Not really.
+It turns out that given just the private and the public keys, it is
+easy to factor $n$ (a proof of this is sketched in
+Problem~\ref{PS_RSA_key_implies_factoring}).  So if we are confident
+that factoring is hopelessly hard, then we can be equally confident
+that finding the private key just from the public key will be
+hopeless.\footnote{The possibility of decoding RSA messages
+  \emph{without finding the private key or factoring} has not been
+  ruled out.  It is an important unproven conjecture in cyptography
+  that the ability to crack RSA would imply the ability to factor.
+  This would be a much stronger theoretical assurance of RSA security
+  than is presently known.  But the real reason for confidence in RSA
+  is that it has stood up against all the attacks by the world's most
+  sophisticated cryptographers for over 30 years.}
+
+You can hope that with more studying of number theory, you will be the
+first to figure out how to do factoring quickly.  We should warn you
+that Gauss worked on it for years without a lot to show for his
+efforts.  And if you do figure it out, you might wind up meeting some
+serious-looking fellows who work for a Federal agency\dots.
 
 \section{What has SAT got to do with it?}\label{SAT_RSA-sec}
 So why does the world, or at least the world's secret codes, fall
