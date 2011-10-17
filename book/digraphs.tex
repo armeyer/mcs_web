@@ -807,21 +807,16 @@ relations.
 
 \section{Directed Acyclic Graphs \& Partial Orders}\label{dag_sec}
 
-\begin{definition}
-A \term{directed acyclic graph (DAG)} is a directed graph
-with no \emph{positive} length cycles.
-\end{definition}
-
-\begin{editingnotes}
-In contrast to undirected graphs, a single vertex \emph{is} considered to
-be a cycle.
-\end{editingnotes}
-
-DAG's come up constantly because, among other things, they model task
-scheduling problems, where nodes represent tasks to be completed and
-arrows indicate which tasks must be completed before others can begin.
-For example, Figure~\ref{6-3_subjects} shows the prerequisite
-structure among MIT computer science subjects.
+Some of the prerequisites of MIT computer science subjects are shown
+in Figure~\ref{6-3_subjects}.  An edge going from subject $s$ to
+subject $t$ indicates that $s$ is listed in the catalogue as a direct
+prerequisite of $t$.  of course, in order to take subject $t$, you not
+only have to take subject $s$ first, but you also have to
+take all the prerequisites of $s$, as well as any prerequisites of
+these prerequisites, and so on.  We can state this precisely in terms
+of the positive path relation: if $D$ is the direct prerequisite
+relation on subjects, then subject $u$ has to be completed before
+taking subject $v$ iff $u \mrel{D^+} v$.
 
 \begin{figure}
 
@@ -833,42 +828,36 @@ structure among MIT computer science subjects.
 
 \end{figure}
 
-A positive length cycle in a prerequisite graph like this would have a
-dire effect on the time it takes to graduate.
+It would clearly have a dire effect on the time it takes to graduate
+if this direct prerequisite graph had a positive length cycle :-) So
+the direct prerequisite graph among subjects had better be
+\term{acyclic}:
+
+\begin{definition}
+A \term{directed acyclic graph (DAG)} is a directed graph with no
+positive length cycles.
+\end{definition}
+
+DAG's come up constantly because, among other things, they model task
+scheduling problems, where nodes represent tasks to be completed and
+arrows indicate which tasks must be completed before others can begin.
+
+\begin{editingnotes}
+In contrast to undirected graphs, a single vertex \emph{is} considered to
+be a cycle.
+\end{editingnotes}
 
 The relationship between walks and paths extends to closed walks and cycles.
 \begin{lemma}\label{shortestclosedwalk_lem}
-The shortest positive length closed walk through a vertex is a cycle
-through that vertex.
+The shortest positive length closed walk through a vertex is a
+positive length cycle through that vertex.
 \end{lemma}
 The proof is essentially the same as for
 Theorem~\ref{shortestwalk_thm} (see
-Problem~\ref{PS_shortest_directed_closed_walk}).
-
-The edges in the subject prerequisite DAG of Figure~\ref{6-3_subjects}
-show the \emph{direct} prerequisites listed for each subject, but to
-enroll for a subject you must of course have taken the prerequisites
-of the prerequisites and their prerequisites, and so on.  In other
-words, if $D$ is the direct prerequisite relation, then subject $u$
-has to be completed before taking subject $v$ iff $u \mrel{D^+} v$.
-
-The condition that $D$ is a DAG is equivalent to saying that if there
-is a positive length path from vertex $u$ to vertex $v$, there can't
-be one from $v$ back to $u$.  This relational property is called
-\term{asymmetry}.
-
-\begin{definition}
-A binary relation, $R$, on a set, $A$, is
-\term{asymmetric} iff
-\[
-a \mrel{R} b\ \QIMPLIES\ \QNOT(b \mrel{R} a)
-\]
-for all $a,b\in A$.
-\end{definition}
-
-A simpler way to say that a graph is a DAG is to say that there is no
-positive length path from any vertex to itself.  This property is
-called \term{irreflexivity}.
+Problem~\ref{PS_shortest_directed_closed_walk}).  This implies that a
+graph $D$ is a DAG iff it has no positive length walk from any vertex
+to itself.  This relational property of $D^+$ is called
+\term{irreflexivity}.
 
 \begin{definition}
 A binary relation, $R$, on a set, $A$, is
@@ -879,35 +868,76 @@ A binary relation, $R$, on a set, $A$, is
 for all $a \in A$.
 \end{definition}
 
+So we have
+\begin{lemma}\label{R+irr}
+$R$ is a DAG iff $R^+$ is irreflexive.
+\end{lemma}
+
 \begin{definition}
-A relation that is transitive and asymmetric is called a \term{strict partial order}.
+A relation that is transitive and irreflexive is called a \term{strict
+  partial order}.
 \end{definition}
 
+Since we know that the positive walk relation is transitive, we have
 \begin{lemma}
 If $D$ is a DAG, then $D^+$ is a strict partial order.
 \end{lemma}
 
+The transitivity property of a relation says that where there's a
+length two path, there is an edge.  This implies by induction that
+where there is a path of any positive length, there is an edge (see
+Problem~\ref{PS_transitive_closure_proof}), namely:
+
+\begin{lemma}\label{transitive_closure_lem}
+If a binary relation $R$ is transitive, then $R^+ = R$.
+\end{lemma}
+
+\begin{corollary}
+If $R$ is a strict partial order, then $R$ is a DAG.
+\end{corollary}
+
 \begin{proof}
-We know that $D^+$ is transitive.  Also, if there was a positive
-length walk from a vertex to itself, then by
-Lemma~\ref{shortestclosedwalk_lem}, that vertex is on a positive
-length cycle, contradicting the fact that $D$ is acyclic.  This means
-$D^+$ is irreflexive, which implies it is a strict partial order (see
-problem~\ref{CP_transitive_irreflexive_implies_SPO}).
+If vertex $a$ is on a positive length cycle in the graph of $R$, then
+$a \mrel{R^+} a$ holds by definition, which in particular implies that
+$R^+$ is not irreflexive.  This means that if $R^+$ is irreflexive,
+the $R$ must be a DAG.
+
+But if $R$ is a strict partial order, then by definition it is
+irreflexive and by Lemma~\ref{transitive_closure_lem} $R^+ = R$, so
+$R^+$ is indeed irreflexive.
 \end{proof}
 
-It's easy to check that conversely, the graph of any strict partial
-order is a DAG.
-
 To summarize, we have
-\begin{theorem}
+\begin{theorem}\label{SPOiffDAG}
 A relation is a strict partial order iff it is the positive walk relation of a DAG.
 \end{theorem}
 
-\begin{corollary}
-A relation is a strict partial order iff it is transitive and
-irreflexive.
+Another consequence of Lemma~\ref{shortestclosedwalk_lem} is that if a
+graph is a DAG, it cannot have two vertices with positive length paths
+in both directions between them.  This relational property of a
+positive path relation is called \term{asymmetry}.
+
+\begin{definition}
+A binary relation, $R$, on a set, $A$, is \term{asymmetric} iff
+\[
+a \mrel{R} b \QIMPLIES \QNOT(b \mrel{R} a)
+\]
+for all $a,b \in A$.
+\end{definition}
+
+That is, Lemma~\ref{shortestclosedwalk_lem} implies
+\begin{corollary}\label{R+asymm}
+$R$ is a DAG iff $R^+$ is asymmetric.
 \end{corollary}
+
+And immediately from Lemma~\ref{R+asymm} and Theorem~\ref{SPOiffDAG}
+we get
+\begin{corollary}
+$R$ is a strict partial order iff it is transitive and
+  asymmetric.\footnote{Some texts use this Corollary to define strict
+    partial orders.}
+\end{corollary}
+
 
 \iffalse
 can be an economical way to represent partial orders.  For example,
@@ -955,9 +985,10 @@ to be unique and easy to find (see Problem~\ref{CP_covering_edges}).
 
 \homeworkproblems
 \pinput{PS_shortest_directed_closed_walk}
-\pinput{PS_odd_length_walk}
+\pinput{PS_transitive_closure_proof}
 \pinput{PS_walk_relation_composition}
 \pinput{PS_finite_transitive_closure}
+\pinput{PS_odd_length_walk}
 \pinput{PS_directed_Euler_circuits}
 \pinput{CP_de_Bruijn_graphs}
 
@@ -1263,11 +1294,11 @@ Problem~\ref{CP_tournament_chain}.
 \practiceproblems
 \pinput{TP_basic_partial_orders}
 \pinput{TP_divisibility_partial_order}
+\pinput{TP_transitive_irreflexive_implies_asymmetric}
 
 \classproblems
 \pinput{CP_partially_ordered_by_divisibility}
 \pinput{CP_binary_relations_on_01}
-\pinput{CP_transitive_irreflexive_implies_SPO}
 \pinput{CP_inverse_partial_order}
 
 \homeworkproblems
@@ -1560,21 +1591,41 @@ tasks to do at successive steps.  Every task, $a$, has to be scheduled
 at some step, and all the tasks that have to be completed before task
 $a$, must be scheduled for an earlier step.
 
+
+\begin{definition}\label{def:partition}
+A \term{partition} of a set~$A$ is a set of nonempty
+subsets of $A$ called the \term{blocks}\footnote{We think it would
+  be nicer to call them the \emph{parts} of the partition, but
+  ``blocks'' is the standard terminolgy.} of the partition, such that
+\begin{itemize}
+\item every element of $A$ is in some block, and
+
+\item if $B$ and $B'$ are different blocks, then $B \intersect B' =
+  \emptyset$.
+
+\iffalse $A= \lgunion_{B\in \mathcal{P}} B$.\fi
+
+\end{itemize}
+\end{definition}
+
+For example, one possible partition of the set $\set{a, b, c, d, e}$
+into three blocks is
+\[
+\set{a, c} \qquad \set{b, e} \qquad \set{d}.
+\]
+
 \begin{definition}\label{def:schedule}
-A \term{parallel schedule} for a strict partial order, $\prec$, on a set,
-$A$, is a partition\footnote{Partitioning a set,
-$A$, means ``cutting it up'' into non-overlapping, nonempty pieces.  The
-pieces are called the blocks of the partition
-  (see Definition~\ref{def:partition}).} of $A$ into sets $A_0, A_1,\dots,$ such
+A \term{parallel schedule} for a strict partial order, $\prec$, on a
+set, $A$, is a partition of $A$ into blocks $A_0, A_1,\dots,$ such
 that for all $a,b \in A$, $k \in \naturals$,
 \[
 [a \in A_k \QAND b \prec a] \quad\QIMPLIES\quad b \in A_j \text{ for some } j < k.
 \]
-The set $A_k$ is called the set of
-elements \term{scheduled at step $k$}, and the \emph{length} of the
-schedule is the number of sets $A_k$ in the partition.  The maximum
-number of elements scheduled at any step is called the \term{number of
-  processors} required by the schedule.
+The block $A_k$ is called the set of elements \term{scheduled at step
+  $k$}, and the \emph{length} of the schedule is the number of blocks
+in the partition.  The maximum number of elements scheduled at any
+step is called the \term{number of processors} required by the
+schedule.
 \end{definition}
 
 \iffalse
@@ -1637,6 +1688,9 @@ all tasks is simply the size of a critical path:
 \begin{corollary}\label{cor:critical-path-time}
 Parallel time = length of critical path.
 \end{corollary}
+
+Things get a little more interesting when the number of processors is
+bounded (see Problem~\ref{PS_Brents_theorem}).
 
 \subsection{Dilworth's Lemma}\label{dilworth_subsec}
 
@@ -1754,61 +1808,43 @@ There is an even more well-known example of an equivalence relation:
 equality itself.  Thus, an equivalence relation is a relation that
 shares some key properties with~``$=$''.
 
-\subsection{Partitions}
+\subsection{Equivalance Classes}
 
-There is another way to think about equivalence relations, but we'll
-need a couple of definitions to understand this alternative
-perspective.
+Equivalence relations are closely related to \idx{partitions} because the
+images of elements under an equivalence relation form the blocks of a
+partition.
 
 \begin{definition}\label{def:equiv_class}
-
 Given an equivalence relation $R : A \to A$, the \term{equivalence
-  class} of an element $x \in A$  is the set of all elements of~$A$
-related to~$x$ by~$R$.  The equivalence class of~$x$ is
-denoted~$[x]_R$.  Thus, in symbols:
+  class},~$[a]_R$, of an element $a \in A$  is the set of all elements of~$A$
+related to~$a$ by~$R$.  Namely,
 \begin{equation*}
-    [x]_R \eqdef \set{y \suchthat x \mrel{R} y}.
+    [a]_R \eqdef \set{x \in A \suchthat a \mrel{R} x}.
 \end{equation*}
 \end{definition}
 
-For example, suppose that $A = \integers$ and $x \mrel{R} y$ means
-that $x \equiv y \pmod{5}$.  Then
+For example, suppose that $A = \integers$ and $a \mrel{R} b$ means
+that $a \equiv b \pmod{5}$.  Then
 \begin{equation*}
     [7]_R = \set{\dots, -3, 2, 7, 12, 22, \dots}.
 \end{equation*}
 Notice that 7, 12, 17, etc., all have the same equivalence class; that
 is, $[7]_R = [12]_R = [17]_R = \cdots$.
 
-\begin{definition}\label{def:partition}
-A \term{partition} of a set~$A$ is a set $\mathcal{P}$ of nonempty
-subsets of $A$ called the \term{blocks}\footnote{We think it would
-  be nicer to call them the \emph{parts} of the partition, but
-  ``blocks'' is the standard terminolgy.} of the partition, such that
-\begin{itemize}
-\item if $B$ and $B'$ are different blocks, then $B \intersect B' =
-  \emptyset$, and
-\item $A= \lgunion_{B\in \mathcal{P}} B$.
-\end{itemize}
-\end{definition}
-
-For example, one possible partition of $\set{a, b, c, d, e}$ into
-three blocks is
-\[
-B_1 = \set{a, c} \qquad  B_2 = \set{b, e}  \qquad   B_3 = \set{d}.
-\]
-
-Here's the connection between all this stuff: there is an exact
-correspondence  between \emph{equivalence relations on~$A$} and
-\emph{partitions of~$A$}.  We can state this as a theorem:
-
-\begin{theorem}
+There is an exact correspondence between equivalence relations on~$A$
+and partitions of~$A$.  Namely, given on one hand any partition of a
+set, then being in the same block is obviously an equivalence
+relation.  On the other hand we have:
+\begin{theorem}\label{equiv-partition_thm}
 The equivalence classes of an equivalence relation on a set~$A$ form a
 partition of~$A$.
 \end{theorem}
 
-We won't prove this theorem (too dull even for us!), but let's look at
-an example.  The congruent-mod-5 relation partitions the integers into
-five equivalence classes:
+We'll leave the proof of Theorem~\ref{equiv-partition_thm} as an easy
+exercise in axiomatic reasoning (see
+Problem~\ref{CP_equiv_partition_proof}), but let's look at an example.
+The congruent-mod-5 relation partitions the integers into five
+equivalence classes:
 \begin{gather*}
     \set{ \dots, -5, 0, 5, 10, 15, 20, \dots } \\
     \set{ \dots, -4, 1, 6, 11, 16, 21, \dots } \\
@@ -1829,6 +1865,9 @@ each other and no one else.
 \begin{problems}
 \practiceproblems
 \pinput{TP_Equivalence_relations}
+
+\classproblems
+\pinput{CP_equiv_partition_proof}
 
 \homeworkproblems
 \pinput{PS_equivalence_relation_operations}
@@ -1923,9 +1962,8 @@ For any finite, nonempty set of vertices of $R$, there is a directed path
 going through exactly these vertices.
 
 \item[Strict Partial Order] $R$ is a \term{strict partial order} iff
-  $R$ is transitive and asymmetric iff $R$ is transitive and
-  irreflexive.
-
+  $R$ is transitive and irreflexive iff $R$ is transitive and asymmetric.
+  
 \item[Weak Partial Order] $R$ is a \term{weak partial order} iff it is
   transitive and anti-symmetric and reflexive.
 
