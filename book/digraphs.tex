@@ -841,6 +841,10 @@ positive length cycles.
 DAG's come up constantly because, among other things, they model task
 scheduling problems, where nodes represent tasks to be completed and
 arrows indicate which tasks must be completed before others can begin.
+They have particular importance in computer science because, besides
+modeling task scheduling problems, they capture key concepts used, for
+example, in analyzing concurrency control; we'll expand on this in
+Section~\ref{sched_sec}.
 
 \begin{editingnotes}
 In contrast to undirected graphs, a single vertex \emph{is} considered to
@@ -930,7 +934,7 @@ That is, Lemma~\ref{shortestclosedwalk_lem} implies
 $R$ is a DAG iff $R^+$ is asymmetric.
 \end{corollary}
 
-And immediately from Lemma~\ref{R+asymm} and Theorem~\ref{SPOiffDAG}
+And immediately from Corollary~\ref{R+asymm} and Theorem~\ref{SPOiffDAG}
 we get
 \begin{corollary}
 $R$ is a strict partial order iff it is transitive and
@@ -1025,11 +1029,6 @@ so containment is transitive, and
 and the divisibility relation on integers.
 \fi
 
-Partial orders have particular importance in computer science because,
-besides modeling task scheduling problems, they capture key concepts
-used, for example, in analyzing concurrency control, as illustrated in
-Section~\ref{sched_sec}.
-
 \iffalse
 
 \section{Axioms for Partial Orders}
@@ -1113,18 +1112,11 @@ $\subset$, on sets.
 The less-than-or-equal relation, $\leq$, is at least as familiar as
 the less-than strict partial order, and the ordinary containment
 relation, $\subseteq$, is even more common than the proper containment
-relation.  These are examples of \emph{weak partial orders}.
-\begin{definition}
-A relation $R$ on a set, $A$, is a weak partial order iff
-there is a strict partial order, $S$, on $A$ such that
-\[
-a \mrel{R} b \qiff (a \mrel{S} b\ \QOR\ a = b),
-\]
-for all $a,b \in A$.
-\end{definition}
-Weak partial orders can also be defined in terms of relational
-properties.  We just have to relax the asymmetry property to allow
-each element to be related to itself; this property is called
+relation.  These are examples of \emph{weak partial orders}, which are
+just strict partial orders with the additional condition that every
+element is related to itself.  To state this precisely, we have to
+relax the asymmetry property so it does not apply when a vertex is
+compared to itself; this relaxed property is called
 \term{antisymmetry}:
 
 \begin{definition}\label{antis}
@@ -1133,12 +1125,35 @@ A binary relation, $R$, on a set $A$, is \term{antisymmetric} iff
 a \mrel{R}  b\ \QIMPLIES\ \QNOT(b \mrel{R}  a)
 \]
 for all $a \neq b \in A$.
-
-A relation is \emph{weak partial order}\footnote{Some authors define
-  partial orders to be what we call weak partial orders, but we'll use
-  the phrase ``partial order'' to mean either a weak or strict one.}
-iff it is transitive, reflexive, and antisymmetric.
 \end{definition}
+
+Now we can give an axiomatic definition of weak partial orders that
+parallels the definition of strict partial orders.\footnote{Some
+  authors define partial orders to be what we call weak partial
+  orders, but we'll use the phrase ``partial order'' to mean either a
+  weak or strict one.}
+
+\begin{definition}\label{def:weakPO-axiom}
+A binary relation on a set is a \emph{weak partial order} iff it is
+transitive, reflexive, and antisymmetric.
+\end{definition}
+
+The following lemma gives another characterizations of weak partial
+orders that follows directly from this definition.
+\begin{lemma}
+A relation $R$ on a set, $A$, is a weak partial order iff
+there is a strict partial order, $S$, on $A$ such that
+\[
+a \mrel{R} b \qiff (a \mrel{S} b\ \QOR\ a = b),
+\]
+for all $a,b \in A$.
+\end{lemma}
+
+Since a length zero walk goes from a vertex to itself, this lemma
+combined with Theorem~\ref{SPOiffDAG} yields:
+\begin{corollary}\label{weakPOiffDAGwalk}
+A relation is a weak partial order iff it is the walk relation of a DAG.
+\end{corollary}
 
 For weak partial orders in general, we often write an ordering-style
 symbol like $\preceq$ or $\sqsubseteq$ instead of a letter symbol like
@@ -1174,11 +1189,14 @@ The divides relation is a weak partial order on the nonnegative integers.
 \section{Representing Partial Orders by Set Containment}\label{poset-as-sets_sec}
 
 Axioms can be a great way to abstract and reason about important
-properties of objects, but it helps to have a clear picture of the things
-that satisfy the axioms.  We'll show that every partial order can be
-pictured as a collection of sets related by containment.  That is, every
-partial order has the ``same shape'' as such a collection.  The technical
-word for ``same shape'' is ``isomorphic.''
+properties of objects, but it helps to have a clear picture of the
+things that satisfy the axioms.  DAG's provide one way to picture
+partial orders, but it also can help to picture them in terms of other
+familiar mathematical objects.  In this section we'll show that every
+partial order can be pictured as a collection of sets related by
+containment.  That is, every partial order has the ``same shape'' as
+such a collection.  The technical word for ``same shape'' is
+``isomorphic.''
 
 \begin{definition}\label{relation-isomorphism}
   A binary relation, $R$, on a set, $A$, is
@@ -1231,6 +1249,7 @@ summarize:
   Every strict partial order, $\prec$, is isomorphic to the proper
   subset relation, $\subset$, on a collection of sets.
 \end{theorem}
+
 
 \begin{problems}
 \classproblems
@@ -1569,7 +1588,7 @@ before our jacket.  Such a sequence of items is known as a
 \begin{definition}\label{def:chain}
 A \term{chain} in a partial order is a set of elements such that any
 two different elements in the set are comparable.  A chain is said to
-\index{end of chain}\emph{end at} an its maximum element.
+\index{end of chain}\emph{end at} its maximum element.
 \end{definition}
 
 Thus, the time it takes to schedule tasks, even with an unlimited
@@ -1828,7 +1847,7 @@ that $a \equiv b \pmod{5}$.  Then
 \begin{equation*}
     [7]_R = \set{\dots, -3, 2, 7, 12, 22, \dots}.
 \end{equation*}
-Notice that 7, 12, 17, etc., all have the same equivalence class; that
+Notice that 7, 12, 17, etc., all have the smae equivalence class; that
 is, $[7]_R = [12]_R = [17]_R = \cdots$.
 
 There is an exact correspondence between equivalence relations on~$A$
@@ -1964,13 +1983,14 @@ For any finite, nonempty set of vertices of $R$, there is a directed path
 going through exactly these vertices.
 
 \item[Strict Partial Order] $R$ is a \term{strict partial order} iff
-  $R$ is transitive and irreflexive iff $R$ is transitive and asymmetric.
+  $R$ is transitive and irreflexive iff $R$ is transitive and
+  asymmetric iff it is the positive length walk relation of a DAG.
   
 \item[Weak Partial Order] $R$ is a \term{weak partial order} iff it is
-  transitive and anti-symmetric and reflexive.
+  transitive and anti-symmetric and reflexive iff it is the walk
+  relation of a DAG.
 
 \end{description}
-
 
 \endinput
 
