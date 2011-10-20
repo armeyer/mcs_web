@@ -10,6 +10,7 @@
   Euler
   Euler_circuit
   Euler_tours
+  trail
   cycle
   degree
   closed_walk
@@ -21,8 +22,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  An \term{Euler tour} of a graph is a closed walk that includes every
-  edge exactly once.  Such walks are named after the famous 17th
+  An \term{Euler tour}\footnote{In some other texts, this is called an
+    \term{Euler circuit}.} of a graph is a closed walk that includes
+  every edge exactly once.  Such walks are named after the famous 17th
   century mathematician Leonhard Euler.  (Same Euler as for the
   constant $e\approx 2.718$ and the totient function $\phi$ ---he did
   a lot of stuff.)
@@ -59,7 +61,7 @@ once is one of those million dollar NP-complete problems known as the
 
 \bparts
 
-\ppart Show that if a graph has an Euler tour, then the in-degree
+\ppart\label{in=out} Show that if a graph has an Euler tour, then the in-degree
 of each vertex equals its out-degree.
 
 \begin{solution}
@@ -92,29 +94,32 @@ is strongly connected.
 In other words $H = G \union G^{-1}$.}  In the remaining parts, we'll
 work out the converse: if a graph is weakly connected, and if the
 in-degree of every vertex equals its out-degree, then the graph has an
-Euler tour.  To do this, let's define an Euler \term{walk} to be a
-walk that includes each edge \emph{at most} once.
+Euler tour.
+
+A \term{trail} is a walk in which each edge occurs \iffalse To do
+this, let's define an \term{Euler walk} to be a walk that includes
+each edge \fi \emph{at most} once.
 
 \bparts
 
-\ppart\label{conn} Suppose that an Euler walk in a connected graph
+\ppart\label{conn} Suppose that an trail in a connected graph
 does not include every edge.  Explain why there must be an edge not on
-the walk that starts or ends at a vertex on the walk.
+the trail that starts or ends at a vertex on the trail.
 
 \begin{solution}
-  If an edge is not on the Euler walk starts or ends on it, then that
+  If an edge is not on the trail starts or ends on it, then that
   already is the desired edge.  So suppose there's an edge, $e$, not
-  on the walk that neither starts nor ends at a vertex on the walk.
+  on the trail that neither starts nor ends at a vertex on the trail.
   Since $G$ is weakly connected, there is a path, $\walkv{p}$, in $G
-  \union G^{-1}$ from any vertex, $v$, on the walk to an endpoint of
-  $e$.  Then the first edge in $\walkv{p}$ that is not on the walk
+  \union G^{-1}$ from any vertex, $v$, on the trail to an endpoint of
+  $e$.  Then the first edge in $\walkv{p}$ that is not on the trail
   will be the desired edge of $G$.
 \end{solution}
 
 \eparts
 
-In the remaining parts, let $\walkv{w}$ be the \emph{longest} Euler
-walk in the graph.
+In the remaining parts, let $\walkv{w}$ be the \emph{longest} trail in
+the graph.
 
 \bparts
 
@@ -128,11 +133,11 @@ Suppose $\walkv{w}$ is closed and some edge is not on $\walkv{w}$.  By
 part~\eqref{conn}, there must be an edge, $e$, not on $\walkv{w}$ that
 starts or ends on $\walkv{w}$.  If $e$ starts on $\walkv{w}$,
 beginning with the start of $e$, go around $\walkv{w}$ back to vertex
-$v$, and then the follow $e$.  This makes a longer Euler walk,
+$v$, and then the follow $e$.  This makes a longer trail,
 contradicting the maximality of $\walkv{w}$.  Similarly, if $e$ ends
 on $\walkv{w}$, then the walk that begins with $e$ and then follows
-$\walkv{w}$ from the end of $e$ back around to the end of $e$ is a
-longer Euler walk, again contradicting maximality.
+$\trailv{w}$ from the end of $e$ back around to the end of $e$ is a
+longer trail, again contradicting maximality.
 
 So no edge can be missing from $\walkv{w}$.
 \end{solution}
@@ -141,28 +146,29 @@ So no edge can be missing from $\walkv{w}$.
 $\walkv{w}$ must be on $\walkv{w}$.
 
 \begin{solution}
-Otherwise we could extend $\walkv{w}$ to a longer Euler walk with any edge
+Otherwise we could extend $\walkv{w}$ to a longer trail with any edge
 leaving the end not already in $\walkv{w}$.
 \end{solution}
 
-\ppart\label{odd} Show that if $\walkv{w}$ was not closed and let $v$ be the end vertex of $\walkv{w}$,
-then the in-degree of $v$ would be strictly bigger than its out-degree, ie. $\indegr{v} \geq \outdegr{v} +1$.
+\ppart\label{biggerthanout} Show that if the end of $\walkv{w}$ was not closed,
+then the in-degree of the end would be bigger than its out-degree.
 
 \hint part~\eqref{already}
 
 \begin{solution}
 Let $v$ be the end vertex of $\walkv{w}$.  Given that $v$ is not the
-start of $\walkv{w}$, it follows that at any occurrence of $v$ in
-$\walkv{w}$ other than at the end, $\walkv{w}$ includes an edge whose
-head is $v$ that appears just before that occurrence of $v$, and
-another edge whose tail is $v$ that appears just after that occurrence
-of $v$.  Since $\walkv{w}$ is an Euler walk, all the edges in all
-these pairs are distinct.  In addition, the final edge in $\walkv{w}$
+start of $\walkv{w}$, it follows that, other than at the end, any
+occurrence of $v$ in $\walkv{w}$ is preceded by an edge that ends at
+$v$ and is followed by an edge that leaves $v$.  Since $\walkv{w}$ is
+a trail, all the edges are distinct among these pairs of edges at each
+non-end occurrence $v$.  In addition, the final edge in $\walkv{w}$
 ends at $v$ and is distinct from all the paired edges.  Altogether,
-this implies that there are an equal number of edges into $v$ and out
-of $v$ in $\walkv{w}$ except for the last edge, and the last edge adds
-one more to the in-degree of $v$.  But by part~\eqref{already},  all
-the edges starting at $v$ are accounted for. But we may also have edges not in $\walkv{w}$ ending at $v$  proving that $\indegr{v} \geq  \outdegr{v} +1$.
+this implies that there are an equal number of edges in $\walkv{w}$
+that enter $v$ and that leave $v$, except for the last edge, which
+enters $v$ and so add 1 more to the in-degree.  So there is one more
+edge in $\walkv{w}$ entering $v$ than leaving $v$.  But by
+part~\eqref{already}, all edges leaving $v$ are in $\walkv{w}$,
+proving that $\indegr{v} \geq 1+ \outdegr{v}$.
 \end{solution}
 
 \ppart Conclude that if in a finite, weakly connected digraph, the
@@ -170,10 +176,10 @@ in-degree of every vertex equals its out-degree, then the digraph has an
 Euler tour.
 
 \begin{solution}
-If all vertices in $G$ have equal in-degree and out-degree, then by part~\eqref{odd}, the
-only possibility is that the end of $\walkv{w}$ equals the start, that
-is, $\walkv{w}$ is closed.  So by part~\eqref{cycle-circuit},
-$\walkv{w}$ is an Euler tour.
+If all vertices in $G$ have equal in- and out-degree, then by
+part~\eqref{biggerthanout}, the only possibility is that the end of
+$walkv{w}$ equals the start, that is, $walkv{w}$ is closed.  So by
+part~\eqref{cycle-circuit}, $walkv{w}$ is an Euler tour.
 \end{solution}
 
 \eparts
