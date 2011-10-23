@@ -5,6 +5,7 @@
   \pcomment{subsumes CP_Mark_a_spanning_tree}
   \pcomment{from: S09.cp6t; revised ARM 3/2/10}
   \pcomment{commented out in S09 so check/revise before using}
+  \pcomment{edited ARM 10/23/11}
 \end{pcomments}
 
 \pkeywords{
@@ -22,18 +23,21 @@
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{problem}\mbox{} %latex artifact
+\begin{problem}%\mbox{} %latex artifact
 
-\begin{quote}
-\begin{center}
-Procedure \textbf{create-spanning-tree}
-\end{center}
+A procedure for connecting up a (possibly disconnected) simple graph
+and creating a spanning tree can be modelled as a state machine whose
+states are finite simple graphs.  A state is \emph{final} when no
+further transitions are possible.  The transitions determined by the
+following rules:
 
-Given a simple graph $G$, keep applying the following operations to the graph
-until no operation applies:
+\textbox{
+%\begin{center}
+\textboxheader{Procedure \textbf{create-spanning-tree}}
+%\end{center}
 
 \begin{enumerate}
-\item If an edge $\edge{u}{v}$ of $G$ is on a cycle, then
+\item If there is an edge $\edge{u}{v}$ on a cycle, then
   delete $\edge{u}{v}$.
 
 \iffalse
@@ -42,26 +46,18 @@ also a path from $u$ to $v$ which does \emph{not} include this edge;
 in this case, delete the edge $\edge{u}{v}$.
 \fi
 
-\item If vertices $u$ and $v$ of $G$ are not connected, then add the
-  edge $\edge{u}{v}$.
+\item If vertices $u$ and $v$ are not connected, then add the edge
+  $\edge{u}{v}$.
 \end{enumerate}
-
-\end{quote}
-
-Assume the vertices of $G$ are the integers $1,2,\dots,n$ for some $n
-\geq 2$.  Procedure \textbf{create-spanning-tree} can be modeled as a
-state machine whose states are all possible simple graphs with
-vertices $1,2,\dots,n$.  The start state is $G$, and the final states
-are the graphs on which no operation is possible.
+}
 
 \bparts
 
-\ppart Let $G$ be the graph with vertices $\set{1,2,3,4}$ and edges
+\ppart Draw all the possible final states reachable starting with the
+graph with vertices $\set{1,2,3,4}$ and edges
 \[
-\set{\edge{1}{2},\edge{3}{4}}
+\set{\edge{1}{2},\edge{3}{4}}.
 \]
-What are the possible final states reachable from start state $G$?  Draw
-them.
 
 \begin{solution}
 It's not possible to delete any edge.  The procedure can only
@@ -70,7 +66,8 @@ vertices 3 or 4, and then terminate.  So there are four possible final
 states.
 \end{solution}
 
-\ppart Prove that any final state of must be a tree on the vertices.
+\ppart Prove that if the machine reaches a final state, then the final
+state will be a tree on the vertices graph on which it started.
 
 \begin{solution}
 We use the characterization of a tree as an acyclic connected
@@ -84,16 +81,17 @@ A final state can't have a cycle, because deleting any edge on the
 cycle would be a possible transition.
 \end{solution}
 
-\ppart \label{derived} For any state, $G'$, let $e$ be the number of edges
-in $G'$, $c$ be the number of connected components it has, and $s$ be the
-number of cycles.  For each of the derived variables below, indicate
-the \emph{strongest} of the properties that it is guaranteed to satisfy, no
-matter what the starting graph $G$ is and be prepared to briefly explain
-your answer.
+\ppart \label{derived-ecs} For any graph, $G'$, let $e$ be the number of
+edges in $G'$, $c$ be the number of connected components it has, and
+$s$ be the number of cycles.  For each of the quantities \iffalse
+derived variables\fi below, indicate the \emph{strongest} of the
+properties that it is guaranteed to satisfy, no matter what the
+starting graph is\inhandout{ and be prepared to briefly explain your
+  answer}.
 
 The choices for properties are: \emph{constant}, \emph{strictly
 increasing}, \emph{strictly decreasing}, \emph{weakly increasing},
-\emph{weakly decreasing}, \emph{none of these}.  The derived variables are
+\emph{weakly decreasing}, \emph{none of these}.  %The quantiderived variables are
 
 \begin{enumerate}
 
@@ -125,13 +123,13 @@ strictly decreasing
 strictly decreasing
 \end{solution}
 
+\iffalse  %uncomment when well-founded partial order topic is included.
 \item[(viii)] $(c,e)$, partially ordered coordinatewise (the
   \emph{product} partial order~\bref{productrel}).
 \begin{solution}
     none of these
 \end{solution}
 
-\iffalse  %uncomment when well-founded order topic is included.
 \item[(ix)] $(c,e)$, ordered lexicographically  \begin{solution}
 strictly decreasing
 \end{solution}
@@ -139,9 +137,9 @@ strictly decreasing
 
 \end{enumerate}
 
-\ppart Prove that procedure \textbf{create-spanning-tree} terminates.
-(If your proof depends on one of the answers to part~\eqref{derived},
-you must prove that answer is correct.)
+\ppart Prove that one of the quantities from part~\eqref{derived-ecs}
+strictly decreases at each transition.  Conclude that for every
+starting state, the machine will reach a final state.
 
 \iffalse
 by proving that one of the
@@ -150,12 +148,12 @@ partial order.
 \fi
 
 \begin{solution}
-  If a value (a \emph{\idx{derived variable}}) associated with a
-  process state is nonnegative integer-valued and decreases at each
-  step, then the process terminates after at most as many steps as the
-  initial value of the quantity.  So we need only identify such a
-  derived variable.  There are two in the list above, namely (vi) and
-  (vii).
+  If a value associated with states, known as a \term{derived
+    variable}, is nonnegative integer-valued and decreases at each
+  transition, then the machine must reach a final state after at most
+  as many transitions as the initial value of the variable.  So we
+  need only identify such a derived variable.  There are two in the
+  list above, namely (vi) and (vii).
 
   To show that the variable (vi) strictly decreases, note that
   the rule for deleting an edge ensures that the connectedness relation
