@@ -149,18 +149,19 @@ Pictures can be a great way to get a new idea across, but it is generally
 not a good idea to use a picture to replace precise mathematics.  Relying
 solely on pictures can sometimes lead to disaster ---or to bogus proofs,
 anyway.  There is a long history of bogus proofs about planar graphs based
-on misleading pictures.\footnote{The bogus proof of the
+on misleading pictures.\iffalse
+\footnote{The bogus proof of the
   4-Color Theorem for planar graphs is not the only example.  Mistakes
   creep in with statements like,
 \begin{quote}
     As you can see from Figure~ABC, it must be that property~XYZ holds
     for all planar graphs.
-\end{quote}}
+\end{quote}}\fi
 
 The bad news is that to prove things about planar graphs using the
 planar drawings of Definition~\ref{def:planar_drawing}, we'd have to
 take a chapter-long excursion into continuous mathematics just to
-develop the needed concepts from plane geometry and topology.
+develop the needed concepts from plane geometry and point-set topology.
 \begin{editingnotes} and this makes
   Definition~\ref{def:planar_drawing} troublesome.
 \end{editingnotes}
@@ -171,7 +172,7 @@ first need to understand the concept of a \emph{face} in a planar drawing.
 
 \subsection{Faces}
 
-The curves In a planar drawing divide up the plane into connected
+The curves in a planar drawing divide up the plane into connected
 regions called the \term{continuous faces}\footnote{Most texts drop
   the adjective \emph{continuous} from the definition of a face as a
   connected region.  We need the adjective to distinguish continuous
@@ -260,22 +261,42 @@ dongle ---once ``coming'' and once ``going.''
 \label{fig:dongle}
 \end{figure}
 
-It turns out that bridges and dongles are the only complications, at least
-for connected graphs.  In particular, every continuous face in a planar
-drawing corresponds to a closed walk in the graph.  These closed walks
-will be called the \emph{discrete faces} of the drawing, and we'll define
-them next.
+It turns out that bridges and dongles are the only complications, at
+least for connected graphs.  In particular, every continuous face in a
+planar drawing corresponds to a closed walk in the graph.  These
+closed walks will be called the \emph{discrete faces} of the drawing,
+and we'll define them next.
 
 \subsection{A Recursive Definition for Planar Embeddings}
 
 The association between the continuous faces of a planar drawing and
-closed walks will allow us to characterize a planar drawing in terms
-of the closed walks that bound the continuous faces.  In particular,
-it leads us to the discrete data type of \term{planar embeddings}
-that we can use in place of continuous planar drawings.  
-We'll define a planar embedding recursively to be the set of
-boundary-tracing closed walks that we could get by drawing one edge
-after another.
+closed walks provides the discrete data type we can use instead of
+continuous drawings.  We'll define a \term{planar embedding} of
+\emph{connected} graph to be the set of closed walks that are its face
+boundaries.  Since all we care about in a graph are the connections
+between vertices ---not what a drawing of the graph actually looks
+like ---planar embeddings are exactly what we need.
+
+The question is how to define planar embeddings without appealing to
+continuous drawings.  There is a simple way to do this based on the
+idea that any continuous drawing can drawn step by step: 
+\begin{itemize}
+\item either draw a new point somewhere in the plane to represent a vertex,
+
+\item or draw a curve between two vertex points that are already
+  there, making sure the new curve doesn't cross any of the curves
+  already there.
+\end{itemize}
+
+A new curve won't cross any other curves when it stays within one of
+the continuous faces.  Alternatively, a new curve won't have to cross
+any other curves if it can go between the outer faces of two different
+drawings.  So to be sure it's ok to draw a new curve, we just need to
+check that its endpoints are on the boundary of the same face, or that
+its endpoints are on the outer faces of different drawings.  Of course
+drawing the new curve changes the faces slightly, so the face
+boundaries will have to be updated once the new curve is drawn.  This
+is the idea behind the following recursive definition.
 
 \begin{definition}\label{def:embedding}%\label{embeddingdef}
 A \term{planar embedding} of a \emph{connected} graph consists of a
@@ -294,7 +315,8 @@ face, $\gamma$, of the planar embedding.  That is, $\gamma$ is a
 closed walk of the form
 \[
 %a \dots b \cdots a.
-\catv{\alpha}{b}{\beta}
+%\catv{\alpha}{b}{\beta}
+\gamma = \merge{\alpha}{\beta}
 \]
 where $\alpha$ is a walk from $a$ to $b$ and $\beta$ is a walk from
 $b$ to $a$.  Then the graph obtained by adding the edge $\edge{a}{b}$
@@ -310,18 +332,27 @@ discrete faces\footnote{\label{C} There is a minor exception to this
   continuous faces and discrete faces in this case, we define the two
   discrete faces of the embedding to be two ``copies'' of this same
   cycle.}
-\[
+\begin{equation}\label{alphbetsplit}
 %a\dots ba\quad \text{ and } \quad ab\cdots a,
 \merge{\alpha}{\edge{b}{a}}
  \quad \text{ and } \quad \merge{\edge{a}{b}}{\beta}
+\end{equation}
+as illustrated in Figure~\ref{fig:face-splitting}.\footnote{Formally,
+  merge is an operation on walks, not a walk and an edge, so
+  in~\eqref{alphbetsplit}, we should used a walk $(a\ \edge{a}{b}\ b)$
+  instead of an edge $\edge{a}{b}$ and written
+\[
+%a\dots ab\cdots ba.
+\merge{\alpha}{(b\ \edge{b}{a}\ a)}
+ \quad \text{ and } \quad \merge{(a\ \edge{a}{b}\ b)}{\beta}
 \]
-as illustrated in Figure~\ref{fig:face-splitting}.
+}
 
 \begin{figure}
 
 \graphic{split-a-face}
 
-\caption{The ``split a face'' case: $awxbyza$ splits into $awxyba$ and $abyza$.}
+\caption{The ``split a face'' case: $awxbyza$ splits into $awxba$ and $abyza$.}
 \label{fig:face-splitting}
 \end{figure}
 
@@ -346,12 +377,12 @@ b\cdots b.
 \fi
 
 Then the graph obtained by connecting $G$ and $H$ with a new edge,
-$\edge{a}{b}$, has a planar embedding whose discrete faces are the union of
-the discrete faces of $G$ and $H$, except that faces $\gamma$ and $\delta$
-are replaced by one new face
+$\edge{a}{b}$, has a planar embedding whose discrete faces are the
+union of the discrete faces of $G$ and $H$, except that faces $\gamma$
+and $\delta$ are replaced by one new face
 \[
 %a\dots ab\cdots ba.
-\merge{\merge{\merge{\gamma}{(a\ \edge{a}{b}\ b)}}{\delta}}{(b\ \edge{b}{a}\ a)}.
+\merge{\merge{\merge{\gamma}{\edge{a}{b}}}{\delta}}{\edge{b}{a}}.
 \]
 
 This is illustrated in Figure~\ref{fig:add-bridge}, where the vertex
@@ -377,44 +408,59 @@ single connected graph whose faces have the vertex sequences
 
 \end{definition}
 
+By the way, now we can precisely define bridges.  A \term{bridge} in a
+planar embedding is an edge that occurs on two different discrete
+faces.  Also, \idx{dongles} are trees made of bridges; we only use
+dongles in illustrations, so there's no need to define them more
+precisely.
+
 \subsection{Does It Work?}
 
-Yes!  In general, a graph is planar if and only if each of its
-connected components has a planar embedding as defined in
-Definition~\ref{def:embedding}.  Unfortunately, proving this fact
-requires a some continuous mathematics known as elementary point/set
-topology that we don't cover in this.  Of course, that is why we went
-to the trouble of including Definition~\ref{def:embedding} ---we don't
-want to deal with the continuous stuff in this text, and now that we
-have a recursive definition for planar graphs, we won't need to.
-That's the good news.
+Yes!  In general, a graph is planar because it has a planar drawing
+according to Definition~\ref{def:planar_drawing} if and only if each
+of its connected components has a planar embedding as specified in
+Definition~\ref{def:embedding}.  Of course we can't prove this without
+an excursion into exactly the kind of continuous math that we're
+trying to avoid.  But now that the recursive definition of planar
+graphs is in place, we won't ever need to fall back on the continuous
+stuff.  That's the good news.
 
-The bad news is that Definition~\ref{def:embedding} looks a lot more
-complicated than the intuitively simple notion of a drawing where
-edges don't cross.  It seems like it would be easier to stick to the
-simple notion and give proofs using pictures.  Perhaps so, but your
-proofs are more likely to be complete and correct if you work from the
-discrete Definition~\ref{def:embedding} instead of the continuous
-Definition~\ref{def:planar_drawing}.
+The bad news is that Definition~\ref{def:embedding} is a lot more
+technical than the intuitively simple notion of a drawing whose edges
+don't cross.  In many cases it's easier to stick to the idea of planar
+drawings and give proofs in those terms.  For example, it's obvious
+that erasing edges from a planar drawing leaves a planar drawing.
+It's not at all obvious, though of course it is true, that you can
+delete an edge from a planar embedding and still get a planar
+embedding (see Problem~\ref{PS_planar_graph_construction_order}).
+
+In the hands of experts, and perhaps in your hands too with a little
+more experience, proofs about planar graphs by appeal to drawings can
+be ocnvincing and reliable.  But given the long history of mistakes in
+such proofs, it's safer to work from the precise definition of planar
+embedding.  More generally, it's also important to see how the
+abstract properties of drawings with curves in the plane can be
+modelled successfully using a discrete data type.
 
 \subsection{Where Did the Outer Face Go?}
 
-Every planar drawing has an immediately-recognizable outer face---its
-the one that goes to infinity in all directions.  But where is the
-outer face in a planar embedding?
+Every planar drawing has an immediately-recognizable outer face
+---it's the one that goes to infinity in all directions.  But where is
+the outer face in a planar embedding?
 
 There isn't one!  That's because there really isn't any need to
-distinguish one.  In fact, a planar embedding could be drawn with any
-given face on the outside.  An intuitive explanation of this is to
-think of drawing the embedding on a \emph{sphere} instead of the
-plane.  Then any face can be made the outside face by ``puncturing''
-that face of the sphere, stretching the puncture hole to a circle
-around the rest of the faces, and flattening the circular drawing onto
-the plane.
+distinguish one face from another.  In fact, a planar embedding could
+be drawn with any given face on the outside.  An intuitive explanation
+of this is to think of drawing the embedding on a \emph{sphere}
+instead of the plane.  Then any face can be made the outside face by
+``puncturing'' that face of the sphere, stretching the puncture hole
+to a circle around the rest of the faces, and flattening the circular
+drawing onto the plane.
 
 So pictures that show different ``outside'' boundaries may actually be
 illustrations of the same planar embedding.  For example, the two
-embeddings shown in Figure~\ref{fig:5DE} are really the same.
+embeddings shown in Figure~\ref{fig:5DE} are really the same ---check
+it: they have the same boundary cycles.
 
 \begin{figure}
 
@@ -645,56 +691,6 @@ $K_{3, 3}$ is not planar.
   inequality~\eqref{eq:e3v} that holds in all bipartite planar graphs.
 \end{proof}
 
-\section{Another Characterization for Planar Graphs}
-
-We did not pick ~$K_5$ and~$K_{3, 3}$ as examples because of their
-application to dog houses or quadrapi shaking hands.  We really picked
-them because they provide another, famous, discrete characterizarion
-of planar graphs:
-\begin{theorem}[Kuratowski]\label{thm:kuratowski}
-A graph is not planar if and only if it contains $K_5$ or~$K_{3, 3}$
-as a minor.
-\end{theorem}
-
-\begin{definition}
-  A \term{minor} of a graph~$G$ is a graph that can be obtained by
-  repeatedly\footnote{The three operations can each be performed any
-    number of times in any order.} deleting vertices, deleting edges,
-  and \index{merging vertices}merging \emph{adjacent} vertices
-  of~$G$.  \emph{Merging} two adjacent vertices, $n_1$ and~$n_2$ of a
-  graph means deleting the two vertices and then replacing them by a
-  new ``merged'' vertex, $m$, adjacent to all the vertices that were
-  adjacent to either of~$n_1$ or~$n_2$, as illustrated in
-  Figure~\ref{fig:merged}.
-\end{definition}
-
-\begin{figure}
-
-\graphic{vertex-merge-arrows}
-
-\caption{Merging adjacent vertices $n_1$ and $n_2$ into new vertex, $m$.}
-\label{fig:merged}
-\end{figure}
-
-For example, Figure~\ref{fig:5DL} illustrates why $C_3$ is a minor of
-the graph in Figure~\ref{fig:5DL}(a).  In fact $C_3$ is a minor of a
-connected graph~$G$ if and only if $G$ is not a tree.
-
-\begin{figure}
-
-\gnote{Tom: Should we label $v_1$, $v_2$ and $v_3$ in all 6 graphs?}
-
-\graphic{Fig_5DL}
-
-\caption{One method by which the graph in~(a) can be reduced
-  to~$C_3$~(f), thereby showing that $C_3$ is a minor of the graph.
-  The steps are: merging the nodes incident to~$e_1$~(b),
-  deleting~$v_1$ and all edges incident to it~(c), deleting $v_2$~(d),
-deleting~$e_2$, and deleting $v_3$~(f).}
-
-\label{fig:5DL}
-\end{figure}
-
 \begin{editingnotes}
 \section{Planar Subgraphs}
 
@@ -768,10 +764,15 @@ and their consequences in a Theorem.
 \end{theorem}
 \end{editingnotes}
 
-The known proofs of Kuratowski's Theorem~\ref{thm:kuratowski} are a little
-too long to include in an introductory text, so we won't prove it.  There
-are two further facts about planarity that we will need in our proof that
-planar graphs are 5-colorable.
+
+\section{Coloring Planar Graphs}
+
+We've covered a lot of ground with planar graphs, but not nearly
+enough to prove the famous 4-color theorem.  But we can get awfully
+close.  Indeed, we have done almost enough work to prove that every
+planar graph can be colored using only 5 colors.
+
+There are two familiar facts about planarity that we will need.
 
 \begin{lemma}\label{planar-subgraph}
   Any \index{planar subgraph}subgraph of a planar graph is planar.
@@ -782,16 +783,30 @@ Merging two adjacent vertices of a planar graph leaves another planar
 graph.
 \end{lemma}
 
-Many authors take Lemmas~\ref{planar-subgraph} and ~\ref{mergelem} for
+\emph{Merging} two adjacent vertices, $n_1$ and~$n_2$ of a
+  graph means deleting the two vertices and then replacing them by a
+  new ``merged'' vertex, $m$, adjacent to all the vertices that were
+  adjacent to either of~$n_1$ or~$n_2$, as illustrated in
+  Figure~\ref{fig:merged}.
+
+\begin{figure}
+
+\graphic{vertex-merge-arrows}
+
+\caption{Merging adjacent vertices $n_1$ and $n_2$ into new vertex, $m$.}
+\label{fig:merged}
+\end{figure}
+
+Many authors take Lemmas~\ref{planar-subgraph} and~\ref{mergelem} for
 granted for continuous drawings of planar graphs described by
 Definition~\ref{def:planar_drawing}.  With the recursive
 Definition~\ref{def:embedding} both Lemmas can actually by proved
-using structural induction as shown in
-Problems~\ref{PS_planar_graph_construction_order}.
+using structural induction (see
+Problem~\ref{PS_planar_graph_construction_order}).
 
 \begin{editingnotes}
-problem~\ref{PS_planar_graph_construction_order} needs a solution, maybe
-an extension too.
+problem~\ref{PS_planar_graph_construction_order} needs a solution,
+maybe an extension too.
 \end{editingnotes}
 
 \begin{editingnotes}
@@ -808,24 +823,17 @@ edges, leaves another planar graph.
 \end{corollary*}
 \end{editingnotes}
 
-\section{Coloring Planar Graphs}
-
-We've covered a lot of ground with planar graphs, but not nearly
-enough to prove the famous 4-color theorem.  But we can get awfully
-close.  Indeed, we have done almost enough work to prove that every
-planar graph can be colored using only 5 colors.  We need only one
-more lemma:
+We need only one more lemma:
 \begin{lemma}\label{lem:pg5}
 Every planar graph has a vertex of degree at most five.
 \end{lemma}
 
 \begin{proof}
-By contradiction.
-If every vertex had degree at least~6, then the sum of the vertex
-degrees is at least~$6v$, but since the sum of the vertex degrees
-equals~$2e$, by the Handshake Lemma~\ref{sumedges}, we have $e
-\ge 3v$ contradicting the fact that $e \le 3v - 6 < 3v$ by
-Theorem~\ref{th:e3v}.
+Assuming to the contrary that every vertex of some planar graph had
+degree at least~6, then the sum of the vertex degrees is at
+least~$6v$.  But the sum of the vertex degrees equals~$2e$ by the
+Handshake Lemma~\ref{sumedges}, so we have $e \ge 3v$ contradicting
+the fact that $e \le 3v - 6 < 3v$ by Theorem~\ref{th:e3v}.
 \end{proof}
 
 \begin{theorem}
@@ -1012,6 +1020,48 @@ n & m & v  & e  &  f & \text{polyhedron} \\ \hline
 The 5 polyhedra in Figure~\ref{fig:5DR} are the only possible regular
 polyhedra.  So if you want to put more than 20 geocentric satellites
 in orbit so that they \emph{uniformly} blanket the globe---tough luck!
+
+\section{Another Characterization for Planar Graphs}
+
+We did not pick ~$K_5$ and~$K_{3, 3}$ as examples because of their
+application to dog houses or quadrapi shaking hands.  We really picked
+them because they provide another, famous, discrete characterizarion
+of planar graphs:
+\begin{theorem}[Kuratowski]\label{thm:kuratowski}
+A graph is not planar if and only if it contains $K_5$ or~$K_{3, 3}$
+as a minor.
+\end{theorem}
+
+\begin{definition}
+  A \term{minor} of a graph~$G$ is a graph that can be obtained by
+  repeatedly\footnote{The three operations can each be performed any
+    number of times in any order.} deleting vertices, deleting edges,
+  and \index{merging vertices}merging \emph{adjacent} vertices
+  of~$G$.
+\end{definition}
+
+For example, Figure~\ref{fig:5DL} illustrates why $C_3$ is a minor of
+the graph in Figure~\ref{fig:5DL}(a).  In fact $C_3$ is a minor of a
+connected graph~$G$ if and only if $G$ is not a tree.
+
+\begin{figure}
+
+\gnote{Tom: Should we label $v_1$, $v_2$ and $v_3$ in all 6 graphs?}
+
+\graphic{Fig_5DL}
+
+\caption{One method by which the graph in~(a) can be reduced
+  to~$C_3$~(f), thereby showing that $C_3$ is a minor of the graph.
+  The steps are: merging the nodes incident to~$e_1$~(b),
+  deleting~$v_1$ and all edges incident to it~(c), deleting $v_2$~(d),
+deleting~$e_2$, and deleting $v_3$~(f).}
+
+\label{fig:5DL}
+\end{figure}
+
+The known proofs of Kuratowski's Theorem~\ref{thm:kuratowski} are a little
+too long to include in an introductory text, so we won't give one.
+
 
 %\section{Problems}
 %\problemsection
