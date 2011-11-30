@@ -125,11 +125,12 @@ touches the $x$ axis.
 \end{picture}
 \fi
 
-Any length $k$ path can be characterized by the history of wins and losses
-on individual \$1 bets, so we use a length $k$ string of $W$'s and $L$'s to
-model a path, and assign probability $p^rq^{k-r}$ to a string that contains
-$r$ $W$'s.  The \emph{outcomes} in our sample space will be precisely those
-string corresponding to winning or losing walks, that is, when $r=2k$.
+Any length $k$ path can be characterized by the history of wins and
+losses on individual \$1 bets, so we use a length $k$ string of $W$'s
+and $L$'s to model a path, and assign probability $p^rq^{k-r}$ to a
+string that contains $r$ occurrences of $W$.  The \emph{outcomes} in
+our sample space will be precisely those string corresponding to
+winning or losing walks, that is, when $r = 2k$.
 
 What about the infinite walks in which the gambler plays forever, neither
 reaching his target nor going bankrupt?  A recitation problem will show the
@@ -260,7 +261,7 @@ probability of winning, we now have
   r^i}\cdot w_n  - \paren{\sum_{i=1}^n r^i} \cdot (1-w_n).
 \]
 In the truly fair game when $r=1$, we have $0 = mw_n - n(1-w_n)$, so
-$w_n = n/(n+m)$, proving the claim above.
+$w_n = n/(n+m)$, as claimed above.
 
 In the biased game with $r\neq 1$, we have
 \[
@@ -287,6 +288,109 @@ We have now proved
 where $r \eqdef q/p$.
 \end{theorem}
 
+\subsection{A Recurrence for the Probability of Winning}
+
+Pascal was obviously a clever fellow, but fortunately for the rest of
+us less ingenious folks, linear recurrences offer a less inspiring but
+methodical approach to Gambler's Ruin.
+
+The probability that the gambler wins is a function of his initial
+capital, $n$, his target, $T \geq n$, and the probability, $p$, that
+he wins an individual one dollar bet .  For fixed $p$ and $T$, let
+$w_n$ be the gambler's probabiliity of winning when his initial
+capital is $n$ dollars.  For example, $w_0$ is the probability that
+the gambler will win given that he starts off broke and $w_T$ is the
+probability he will win if he starts off with his target amount, so
+clearly
+\begin{align}
+w_0 & = 0,\label{LN12:w0}\\
+w_T & = 1. \label{LN12:wT}
+\end{align}
+
+Otherwise, the gambler starts with $n$ dollars, where $0 < n < T$.
+Now suppose the gambler wins his first bet.  In this case, he is left
+with $n+1$ dollars and becomes a winner with probability $w_{n+1}$.
+On the other hand, if he loses the first bet, he is left with $n-1$
+dollars and becomes a winner with probability $w_{n-1}$.  By the Total
+Probability Rule, he wins with probability $w_n = p w_{n+1} + q
+w_{n-1}$.  Solving for $w_{n+1}$ we have
+\begin{equation}\label{LN12:rec1}
+w_{n+1} = \frac{w_n}{p} - r w_{n-1}
+\end{equation}
+where $r$ is $q/p$ as in section~\ref{prwinwalk_subsec}.
+
+This recurrence holds only for $n+1 \leq T$, but there's no harm in
+using~\eqref{LN12:rec1} to define $w_{n+1}$ for all $n+1 >1$.  Now, letting
+\[
+W(x) \eqdef w_0 + w_1x + w_2x^2 + \cdots
+\]
+be the generating function for the $w_n$, we derive from~\eqref{LN12:rec1}
+and~\eqref{LN12:w0} using our generating function methods that
+\iffalse
+\[
+W(x) -\frac{xW(x)}{p} + rx^2W(x) = w_1x,
+\]
+so
+\fi
+\begin{equation}\label{LN12:Wx}
+W(x) = \frac{w_1x}{rx^2- x/p + 1}.
+\end{equation}
+But it's easy to check that the denominator factors:
+\[
+rx^2 - \frac{x}{p} + 1 = (1-x)(1-rx).
+\]
+Now if $p \neq q$, then using partial fractions we conclude that
+\begin{equation}\label{LN12:WAB}
+W(x) = \frac{A}{1-x} + \frac{B}{1-rx},
+\end{equation}
+for some constants $A,B$.  To solve for $A,B$, note that
+by~\eqref{LN12:Wx} and~\eqref{LN12:WAB},
+\[
+w_1x = A(1-rx) + B(1-x),
+\]
+so letting $x=1$, we get $A=w_1/(1-r)$, and letting $x=1/r$, we get
+$B=w_1/(r-1)$.  Therefore,
+\[
+W(x) = \frac{w_1}{r-1} \paren{\frac{1}{1-rx} - \frac{1}{1-x}},
+\]
+which implies
+\begin{equation}\label{LN12:withw1}
+w_n = w_1\frac{r^n - 1}{r-1}.
+\end{equation}
+Finally, we can use~\eqref{LN12:withw1} to solve for $w_1$ by letting
+$n=T$ to get \iffalse
+\[
+1=w_T = \frac{w_1}{r-1}\paren{r^T - 1}
+\]
+so
+\fi
+\[
+w_1= \frac{r - 1}{r^T-1}.
+\]
+Plugging this value of $w_1$ into~\eqref{LN12:withw1}, we arrive at
+the solution:
+\[
+w_n = \frac{r^n-1}{r^T -1},
+\]
+matching Pascal's result~\eqref{LN12:wnsol}.
+
+In the unbiased case where $p=q$, we get from~\eqref{LN12:Wx} that
+\[
+W(x) = \frac{w_1}{(1-x)^2},
+\]
+and again can use partial fractions to match Pascal's
+result~\eqref{eq:gamblerruin}.
+
+\iffalse
+Our derivation of~(\ref{LN12:wnsol}) ensures that it gives a formula for $w_n$
+which satisfies~(\ref{LN12:rec1}) and has the right values at $n=0$ and $n=T$.
+Moreover, the values determined by~(\ref{LN12:wnsol}) are the \emph{only ones}
+that satisfy~(\ref{LN12:rec1}) and the boundary conditions at $0$ and $T$,
+though we won't prove this.  This implies that the Gambler's probability
+of winning is indeed given by~(\ref{LN12:wnsol}).
+\fi
+
+\subsubsection{A simpler expression for the biased case}
 The expression~\eqref{LN12:wnsol} for the probability that the Gambler
 wins in the biased game is a little hard to interpret.  There is a
 simpler upper bound which is nearly tight when the gambler's starting
@@ -420,27 +524,28 @@ can drift very far.  That is, the game does not last long enough for drift
 to dominate the swings.
 \end{editingnotes}
 
-\begin{editingnotes}
 
 \subsection{How Long a Walk?}
 
 Now that we know the probability, $w_n$, that the gambler is a winner in
 both fair and unfair games, we consider how many bets he needs on average
-to either win or go broke.
+to either win or go broke.  A linear recurrence approach works here as well. 
 
+\iffalse
 \subsection{Duration of a Biased Walk}
 
-Let $Q$ be the number of bets the gambler makes until the game ends.  Since
-the gambler's expected win on any bet is $2p-1$, Wald's Theorem should tell
-us that his game winnings, $G$, will have expectation $\expect{Q}(2p-1)$.
-That is,
+Let $Q$ be the number of bets the gambler makes until the game ends.  
+
+Since the gambler's expected win on any bet is $2p-1$, Wald's
+Theorem should tell us that his game winnings, $G$, will have
+expectation $\expect{Q}(2p-1)$.  That is,
 \begin{equation}\label{LN12:gw}
 \expect{G} = (2p-1)\expect{Q},
 \end{equation}
 
 In an unbiased game~(\ref{LN12:gw}) is trivially true because both $2p-1$ and
-the expected overall winnings, $\expect{G}$, are zero.  On the other hand,
-in the unfair case, $2p-1 \neq 0$.  Also, we know that
+the expected overall winnings, $\expect{G}$, are zero.
+On the other hand, in the unfair case, $2p-1 \neq 0$.  Also, we know that
 \[
 \expect{G} = w_n(T-n) - (1-w_n)n = w_nT-n.
 \]
@@ -480,81 +585,78 @@ start, he can expect to make $((n+100)/37,648 - n)/(2(18/38) - 1) \approx
 before almost surely going broke.
 \end{example}
 
-
 \subsection{Duration of an Unbiased Walk}
 
 This time, we need the more general approach of recurrences to handle the
-unbiased case.  We consider the expected number of bets as a
-function of the gambler's initial capital.  That is, for fixed $p$ and $T$,
-let $e_n$ be the expected number of bets until the game ends when the
-gambler's initial capital is $n$ dollars.  Since the game is over in no
-steps if $n=0$ or $T$, the boundary conditions this time are $e_0=e_T=0$.
+unbiased case.  
+\fi
+
+For fixed $p$ and $T$, let $e_n$ be the expected number of bets until
+the game ends when the gambler's initial capital is $n$ dollars.
+Since the game is over in zero steps if $n=0$ or $T$, the boundary
+conditions this time are $e_0=e_T=0$.
 
 Otherwise, the gambler starts with $n$ dollars, where $0 < n < T$.
-Now by the conditional expectation rule, the expected number of steps can
-be broken down into the expected number of steps given the outcome of the
-first bet weighted by the probability of that outcome.  That is,
+Now by the conditional expectation rule, the expected number of steps
+can be broken down into the expected number of steps given the outcome
+of the first bet weighted by the probability of that outcome.  But
+after the gambler wins the first bet, his capital is $n+1$, so he can
+expect to make another $e_{n+1}$ bets.
+That is,
 \[
-e_n = p\expcond{Q}{\text{gambler wins first bet}} +
-q\expcond{Q}{\text{gambler loses first bet}}.
+\expcond{e_n}{\text{gambler wins first bet}} = 1 + e_{n+1}.
 \]
-But after the gambler wins the first bet, his capital is $n+1$, so
-he can expect to make another $e_{n+1}$ bets.  That is,
+Similarly, after the gambler
+loses his first bet, he can expect to make another $e_{n-1}$ bets:
 \[
-\expcond{Q}{\text{gambler wins first bet}} = 1 + e_{n+1},
-\]
-and similarly, 
-\[
-\expcond{Q}{\text{gambler loses first bet}} = 1 + e_{n-1}.
+\expcond{e_n}{\text{gambler loses first bet}} = 1 + e_{n-1}.
 \]
 So we have
-\[
-e_n =  p(1 + e_{n+1}) +  q(1 + e_{n-1}) =  pe_{n+1} + qe_{n-1} + 1, 
-\]
-which yields the linear recurrence
-\[
+\begin{align*}
+e_n & = p\expcond{e_n}{\text{gambler wins first bet}} +
+      q\expcond{e_n}{\text{gambler loses first bet}}\\
+    & = p(1 + e_{n+1}) +  q(1 + e_{n-1}) =  pe_{n+1} + qe_{n-1} + 1.
+\end{align*}
+This yields the linear recurrence
+\begin{equation}\label{expected-bets-recurrence}
 e_{n+1} = \frac{e_n}{p} - \frac{q}{p} e_{n-1} - \frac{1}{p}.
-\]
-For $p = q = 1/2$, this equation simplifies to
-\begin{equation}\label{LN12:en2}
+\end{equation}
+\iffalse
+For $p = q = 1/2$, this simplifies to
+\begin{equation}\label{expected-fair-bets-recurrence}
 e_{n+1} = 2e_n - e_{n-1} - 2.
 \end{equation}
-There is a general theory for solving linear recurrences like~(\ref{LN12:en2})
-in which the value at $n+1$ is a linear combination of values at some
-arguments $k<n+1$ plus another simple term---in this case plus the constant
-$-2$.  This theory implies that
-\begin{equation}\label{LN12:Tn}
-e_n  = (T - n)n.
-\end{equation}
-Fortunately, we don't need the general theory to \emph{verify} this
-solution.  Equation~(\ref{LN12:Tn}) can be verified routinely from the boundary
-conditions and~(\ref{LN12:en2}) using strong induction on $n$.
+\fi
 
-So we have shown
-\begin{theorem}\label{LN12:fairtime}
-In the unbiased Gambler's Ruin game with initial capital, $n$, and target,
-$T$, and probability, $p = 1/2$, of winning each bet,
-\begin{equation}
-\expect{\text{number of bets till game ends}} = n(T-n).
+The routine solution of this linear recurrence yields:
+\begin{theorem}\label{ExQthm}
+In the Gambler's Ruin game with initial capital, $n$, target,
+$T$, and probability, $p$, of winning each bet,
+\begin{equation}\label{expectedbets}
+\expect{\text{number of bets till game ends}} =
+\begin{cases}
+(\pr{\text{gambler is a winner}}T-n)/(p-q)  &\text{ if } p \neq
+1/2,\\
+n(T - n) &\text{ if } p = 1/2.
+\end{cases}
 \end{equation}
 \end{theorem}
 
-Another way to phrase Theorem~\ref{LN12:fairtime} is
-\begin{equation}\label{LN12:mn}
-\expect{\text{number of bets till game ends}} = \text{initial capital}
+In the unbiased case ($p=1/2$), Theorem~\ref{expectedbets} can be
+rephrased simply as
+\begin{equation}\label{capital.profit}
+\expect{\text{number of fair bets till game ends}} = \text{initial capital}
 \cdot \text{intended profit}.
 \end{equation}
 
-Now for example, we can conclude that if the gambler starts with \$10
-dollars and plays until he is broke or ahead \$10, then $10 \cdot 10 = 100$
-bets are required on average.  If he starts with \$500 and plays until he
-is broke or ahead \$100, then the expected number of bets until the game is
-over is $500 \times 100 = 50,000$.
+For example, if the gambler starts with \$10 dollars and plays until
+he is broke or ahead \$10, then $10 \cdot 10 = 100$ bets are required
+on average.  If he starts with \$500 and plays until he is broke or
+ahead \$100, then the expected number of bets until the game is over
+is $500 \times 100 = 50,000$.  Notice that~\eqref{capital.profit} is a
+very simple answer that cries out for an intuitive proof, but we have
+not found one.
 
-Notice that~(\ref{LN12:mn}) is a very simple answer that cries out for an
-intuitive proof, but we have not found one.
-
-\end{editingnotes}
 
 \iffalse
 
@@ -608,7 +710,6 @@ For $i \neq j$, $G_i$ and $G_j$ are uncorrelated.
 \end{lemma}
 \fi
 
-
 \subsection{Quit While You Are Ahead}
 
 Suppose that the gambler never quits while he is ahead.  That is, he
@@ -658,12 +759,10 @@ before going broke is infinite!  Of course, this does not mean that
 the gambler is \emph{likely} to play for long ---there is even a 50\%
 chance he will lose the very first bet and go broke right away.
 
-\iffalse
-In fact, if
-the game is unfavorable, then Theorem~\ref{LN12:ExQthm} and
-Corollary~\ref{LN12:biaswincor} imply that his expected time to go broke is
-essentially proportional to his initial capital, \ie $\Theta(n)$.
-\fi
+\iffalse In fact, if the game is unfavorable, then
+Theorem~\ref{LN12:ExQthm} and Corollary~\ref{LN12:biaswincor} imply
+that his expected time to go broke is essentially proportional to his
+initial capital, that is, $\Theta(n)$.  \fi
 
 
 \begin{editingnotes}
