@@ -1,0 +1,163 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{CP_chebyshev_hat_check}
+\pcomment{minor revision 4/30/11 by Kazerani & ARM}
+\pcomment{revised S07 by ARM from F02.CP13w, F00, S00.ps10.5, prob 4, F01.ps12.2}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  additivity
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The hat-check staff has had a long day serving at a party, and at the
+end of the party they simply return the $n$ checked hats in a random
+way such that the probability that any particular person gets their
+own hat back is $1/n$.
+
+Let $X_i$ be the \idx{indicator variable} for the $i$th person getting
+their own hat back.  Let $S_n$ be the total number of people who get
+their own hat back.
+
+\begin{problemparts}
+
+\ppart What is the expected number of people who get their own hat back?
+
+\iffalse
+\begin{center}
+\exambox{1.5in}{0.5in}{0.3in}
+\end{center}
+\examspace[0.7in]
+\fi
+
+\begin{solution}
+$S_n = \sum_{i=1}^n X_i$, so by \idx{linearity of expectation},
+\[
+\expect{S_n} = \sum_1^n \expect{X_i}.
+\]
+Since the probability a person gets their own hat back is $1/n$, therefore
+$\pr{X_i=1} = 1/n$. Now, since $X_i$ is an
+indicator, we have $\expect{X_i} = 1/n$.  By linearity of expectation,
+\[
+\expect{S_n} = \sum_1^n \expect{X_i} = n\cdot\frac{1}{n} = 1.
+\]
+
+\end{solution}
+
+\ppart Write a simple formula for $\expect{X_i X_j}$ for $i \neq j$.
+
+\hint What is $\prcond{X_j=1}{X_i=1}$?
+
+\iffalse
+\begin{center}
+\exambox{2.0in}{0.5in}{0.3in}
+\end{center}
+\examspace[0.7in]
+\fi
+
+\begin{solution}
+We observed above that $\pr{X_i=1} = 1/n$.  Also, given that the
+$i$th person got their own hat, each other person has an equal chance of
+getting their own hat among the remaining $n-1$ hats.  So
+\[
+\prcond{X_j=1}{X_i=1} = \frac{1}{n-1},
+\]
+for $j \neq i$.  Therefore,
+\[
+\pr{X_i=1 \QAND X_j=1}
+  = \prcond{X_j=1}{X_i=1}\cdot \pr{X_i=1} = \frac{1}{n(n-1)}.
+\]
+But $X_i=1 \QAND X_j=1$ iff $X_i X_j = 1$, so
+\[
+\expect{X_i X_j} = \pr{X_i X_j =1} = \pr{X_i=1 \QAND X_j=1},
+\]
+and hence
+\[
+\expect{X_i X_j} = \frac{1}{n(n-1)}.
+\]
+\end{solution}
+
+\iffalse
+\begin{staffnotes}
+\textbf{omitted part}:
+\fi
+
+\ppart Explain why you cannot use the \idx{variance} of sums formula to
+calculate $\variance{S_n}$.
+
+%\examspace[1in]
+
+\begin{solution}
+The principle of additivity of variances requires the variables
+be pairwise independent, but the indicator variables for people getting
+their hats back are not pairwise independent, since $\prcond{X_j=1}{X_i=1}
+= 1/(n-1) \neq 1/n = \pr{X_j=1}$ for $i \neq j$.
+\end{solution}
+\iffalse
+\end{staffnotes}
+\fi
+\ppart Show that $\expect{S_n^2} = 2$. \hint $X_i^2 = X_i$.
+
+%\examspace[2.0in]
+
+\begin{solution}
+
+\begin{align*}
+\expect{S_n^2}
+     & =  \expect{\sum_i X_i^2 + \sum_i \sum_{j \neq i} X_i X_j}
+           & \text{(expanding the sum for $S_n$)}\\
+     & =  \sum_i \expect{X_i^2} + \sum_i \sum_{j \neq i} \expect{X_i X_j}
+           & \text{(linearity of $\expect{\cdot}$)}\\
+     & =  \sum_i \expect{X_i} + \sum_i \sum_{j \neq i} \frac{1}{n(n-1)}
+           & \text{(since $X_i^2 = X_i$)}\\
+     & =  n \cdot \frac{1}{n} + n(n-1) \cdot \frac{1}{n(n-1)} \\
+     & =  2.
+\end{align*}
+
+\end{solution}
+
+%\examspace
+
+\ppart What is the variance of $S_n$?
+
+\iffalse
+\examspace[0.4in]
+\begin{center}
+\exambox{0.5in}{0.5in}{0in}
+\end{center}
+\examspace[0.4in]
+\fi
+
+\begin{solution}
+\[
+\variance{S_n} = \expect{S_n^2} - \expectsq{S_n} = 2 - 1^2 = 1.
+\]
+\end{solution}
+
+\ppart \iffalse Use the \idx{Chebyshev bound} to\fi Show that there is
+at most a 1\% chance that more than 10 people get their own hat back.
+%\examspace[3in]
+
+\begin{solution}
+\begin{align*}
+\pr{S_n \geq 11} &= \pr{S_n - \expect{S_n} \geq 11 - \expect{S_n}} \\
+                 &= \pr{S_n - \expect{S_n} \geq 10} \\
+                 &\leq \pr{\abs{S_n - \expect{S_n}} \geq 10} \\
+                 &\leq \frac{\variance{S_n}}{10^2} = .01
+\end{align*}
+
+\end{solution}
+
+\end{problemparts}
+\end{problem}
+
+\endinput
