@@ -3,6 +3,7 @@
 \begin{pcomments}
   \pcomment{CP_gambler_ruin_recurrences}
   \pcomment{revised from: S08.cp13m by ARM, 5/9/10}
+  \pcomment{changed \$3 back to \$2 12/14/11 ARM}
 \end{pcomments}
 
 \pkeywords{
@@ -10,7 +11,7 @@
   expectation
   random_walk
   gamblers_ruin
-  linear-recurrence
+  linear_recurrence
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,7 +21,7 @@
 \begin{problem}
   A gambler is placing \$1 bets on the ``1st dozen'' in roulette.
   This bet wins when a number from one to twelve comes in, and then
-  the gambler gets his \$1 back plus \$3 more.  Recall that there are
+  the gambler gets his \$1 back plus \$2 more.  Recall that there are
   38 numbers on the roulette wheel.
 
   The gambler's initial stake in $\$n$ and his target is $\$T$.  He
@@ -30,41 +31,44 @@
 
   \begin{problemparts}
 
-    \problempart Write a linear recurrence for $w_n$; you need \emph{not}
-    solve the recurrence.
+\problempart Write a linear recurrence for $w_n$; you need \emph{not}
+solve the recurrence.
 
-    \begin{solution}
-      The probability of winning a bet is $12/38$.  Thus, by the Law of
-      Total Probability~\bref{total_prob_Ebar},
-      \begin{align*}
-     w_n & = \prcond{\text{win starting with $\$n$}}{\text{won first bet}}
-                \cdot \pr{\text{won first bet}} \\
-         & \quad + \prcond{\text{win starting with $\$n$}}{\text{lost first bet}}
-                \cdot\pr{\text{lost first bet}}\\
-         & = \pr{\text{win starting with $\$n+3$}} \cdot \pr{\text{won first bet}}\\
-         &  \quad +\pr{\text{win starting with $\$n-1$}} \cdot \pr{\text{lost first bet}},
+\begin{solution}
+The probability of winning a bet is $12/38$.  Thus, by the Law of
+Total Probability~\bref{total_prob_Ebar},
+\begin{align*}
+w_n & = \prcond{\text{win with $\$n$ start}}{\text{won 1st bet}}
+                \cdot \pr{\text{won 1st bet}} \\
+    & \quad + \prcond{\text{win with $\$n$ start}}{\text{lost 1st bet}}
+                \cdot\pr{\text{lost 1st bet}}\\
+    & = \pr{\text{win with $\$n+2$ start}}
+                \cdot \pr{\text{won 1st bet}}\\
+    &  \quad +\pr{\text{win with $\$n-1$ start}}
+                \cdot \pr{\text{lost 1st bet}},
 \end{align*}
 so
-    \[
-    w_{n} = \frac{12}{38}w_{n+3} + \frac{26}{38}w_{n-1}.
-    \]
-Letting $m \eqdef n+3$ we get
-    \[
-    w_{m} = \frac{38}{12}w_{m-3} - \frac{26}{12}w_{m-4}.
-    \]
+\[
+w_{n} = \frac{12}{38}w_{n+2} + \frac{26}{38}w_{n-1}.
+\]
 
-  \end{solution}
+Letting $m \eqdef n+2$ we get
+\[
+w_{m} = \frac{38}{12}w_{m-2} - \frac{26}{12}w_{m-3}.
+\]
+
+\end{solution}
 
 \begin{editingnotes}
-    \textcolor{blue}{these seem redundant---ARM}
+  \textcolor{blue}{these seem redundant---ARM}
 
-    \problempart The following is intended to be an approximation of playing
-    poker at a table with eight players.  Each bet is \$10.  You win
-    \$70 with probability $1/8$.  You lose with probability $7/8$.
+  \problempart The following is intended to be an approximation of playing
+  poker at a table with eight players.  Each bet is \$10.  You win
+  \$70 with probability $1/8$.  You lose with probability $7/8$.
 
-    \begin{solution}
+  \begin{solution}
 
-      \[ w_{n} = (1/8) w_{n+70} + (7/8) w_{n-10} \]
+    \[ w_{n} = (1/8) w_{n+70} + (7/8) w_{n-10} \]
       which implies that
       \[ w_{n+70} = 8w_n - 7w_{n-10} \]
       
@@ -91,26 +95,26 @@ Letting $m \eqdef n+3$ we get
 \end{editingnotes}
 
   \problempart Let $e_n$ be the expected number of bets until the game
-  ends.  Write a linear recurrence for $e_n$; you need \emph{not}
-  solve the recurrence.
+  ends.  Write a linear recurrence for $\expect{e_n}$; you need
+  \emph{not} solve the recurrence.
 
   \begin{solution}
     By the Law of Total Expectation, Theorem~\bref{total_expect},
     \begin{align*}
-      e_n &= \paren{1+\expcond{\text{\#bets with $\$n$ start}}{\text{won first bet}}}
-      \cdot \pr{\text{won first bet}}\\
-      & \quad + \paren{1+\expcond{\text{\#bets with $\$n$ start}}{\text{lost first bet}}}
-      \cdot \pr{\text{lost first bet}}\\
-      &= \paren{1+\expect{\text{\#bets with $\$n+3$ start}}}
-      \cdot \pr{\text{won first bet}}\\
+      e_n &= \paren{1+\expcond{\text{\#bets with $\$n$ start}}{\text{won 1st bet}}}
+      \cdot \pr{\text{won 1st bet}}\\
+      & \quad + \paren{1+\expcond{\text{\#bets with $\$n$ start}}{\text{lost 1st bet}}}
+      \cdot \pr{\text{lost 1st bet}}\\
+      &= \paren{1+\expect{\text{\#bets with $\$n+2$ start}}}
+      \cdot \pr{\text{won 1st bet}}\\
       & \quad +\paren{1+\expect{\text{number of bets starting with $\$n-1$}}}
-      \cdot \pr{\text{lost first bet}},
+      \cdot \pr{\text{lost 1st bet}},
     \end{align*}
     so
     \[
-    e_n = \paren{e_{n+3} +1}\frac{12}{38} + \paren{1+e_{n-1}}\frac{26}{38}
+    e_n = \paren{e_{n+2} +1}\frac{12}{38} + \paren{1+e_{n-1}}\frac{26}{38}
     \]
-    Letting $m \eqdef n+3$ we get
+    Letting $m \eqdef n+2$ we get
     \[
     e_m = \frac{38}{12}e_{m-3} - \frac{1-26/12}{26/12}\cdot e_{m-4} - \frac{38}{12}
     \]
