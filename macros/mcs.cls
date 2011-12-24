@@ -1286,6 +1286,9 @@
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
 \newcommand{\posints}{\integers^+}
+\newcommand{\finbin}{\set{0,1}^*}
+\newcommand{\binw}{\set{0,1}^\omega}
+
 
 %% Math -- Arithmetic
 
