@@ -1,56 +1,6 @@
 \chapter{Recurrences}\label{chap:recurrences}
 
-A recurrence describes a sequence of numbers.  Early terms are
-specified explicitly and later terms are expressed as a function of
-their predecessors.  As a trivial example, this recurrence describes
-the sequence 1, 2, 3, etc.:
-\begin{align*}
-T_1 & = 1 \\
-T_n & = T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}.
-\end{align*}
-Here, the first term is defined to be 1 and each subsequent term is
-one more than its predecessor.
-
-Recurrences turn out to be a powerful tool.  In this chapter, we'll
-emphasize using recurrences to analyze the performance of recursive
-algorithms.  However, recurrences have other applications in computer
-science as well, such as enumeration of structures and analysis of
-random processes.  And, as we saw in Section~\ref{book_stacking_sec},
-they also arise in the analysis of problems in the physical sciences.
-
-A recurrence in isolation is not a very useful description of a
-sequence.  One can not easily answer simple questions such as, ``What
-is the hundredth term?'' or ``What is the asymptotic growth rate?''
-So one typically wants to \emph{solve} a recurrence; that is, to find a
-closed-form expression for the $n$th term.
-
-We'll first introduce two general solving techniques: guess-and-verify
-and plug-and-chug.  These methods are applicable to every recurrence,
-but their success requires a flash of insight---sometimes an
-unrealistically brilliant flash.  So we'll also introduce two big
-classes of recurrences, linear and divide-and-conquer, that often come
-up in computer science.  Essentially all recurrences in these two
-classes are solvable using cookbook techniques; you follow the recipe
-and get the answer.  A drawback is that calculation replaces insight.
-The ``Aha!''\  moment that is essential in the guess-and-verify and
-plug-and-chug methods is replaced by a ``Huh'' at the end of a
-cookbook procedure.
-
-At the end of the chapter, we'll develop rules of thumb to help you
-assess many recurrences without any calculation.  These rules can help
-you distinguish promising approaches from bad ideas early in the
-process of designing an algorithm.
-
-Recurrences are one aspect of a broad theme in computer science:
-reducing a big problem to progressively smaller problems until easy
-base cases are reached.  This same idea underlies both induction
-proofs and recursive algorithms.  As we'll see, all three ideas snap
-together nicely.  For example, one might describe the running time of
-a recursive algorithm with a recurrence and use induction to
-verify the solution.
-
-\section{The Towers of Hanoi}
-
+\section{The \idx{Towers of Hanoi}}
 According to legend, there is a temple in Hanoi with three posts and
 64 gold disks of different sizes.  Each disk has a hole through the
 center so that it fits on a post.  In the misty past, all the disks
@@ -102,6 +52,11 @@ importantly, ``Will this happen before the final exam?''
 
 \subsection{A Recursive Solution}
 
+\begin{editingnotes}
+Why subscript notation $T_n$ here, but function notation $T(n)$ in
+later sections?
+\end{editingnotes}
+
 The Towers of Hanoi problem can be solved recursively.  As we describe
 the procedure, we'll also analyze the running time.  To that end, let
 $T_n$ be the minimum number of steps required to solve the $n$-disk
@@ -151,20 +106,20 @@ $T_{64}$, the number of steps required to move 64 disks.  So this
 algorithm answers our first question: given sufficient time, the monks
 can finish their task and end the world.  This is a shame.  After all
 that effort, they'd probably want to smack a few high-fives and go out
-for burgers and ice cream, but nope---world's over.
+for burgers and ice cream, but nope ---world's over.
 
 \subsection{Finding a Recurrence}
 
 We can not yet compute the exact number of steps that the monks need
-to move the 64 disks, only an upper bound. Perhaps, having pondered
+to move the 64 disks, only an upper bound.  Perhaps, having pondered
 the problem since the beginning of time, the monks have devised a
 better algorithm.
 
-In fact, there is no better algorithm, and here is why. At some step,
+In fact, there is no better algorithm, and here is why.  At some step,
 the monks must move the largest disk from the first post to a
-different post. For this to happen, the $n - 1$ smaller disks must all
-be stacked out of the way on the only remaining post. Arranging the $n
-- 1$ smaller disks this way requires at least $T_{n-1}$ moves. After
+different post.  For this to happen, the $n - 1$ smaller disks must all
+be stacked out of the way on the only remaining post.  Arranging the $n
+- 1$ smaller disks this way requires at least $T_{n-1}$ moves.  After
 the largest disk is moved, at least another $T_{n-1}$ moves are
 required to pile the $n - 1$ smaller disks on top.
 
@@ -174,11 +129,11 @@ of steps, we can now write an expression for $T_n$, the number of
 moves required to complete the Towers of Hanoi problem with $n$ disks:
 \begin{align*}
 T_1 & = 1 \\
-T_n & = 2T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}.
+T_n & = 2T_{n-1} + 1 & \text{(for $n \geq 2$)}.
 \end{align*}
 
 This is a typical recurrence.  These two lines define a sequence of
-values, $T_1, T_2, T_3, \ldots$.  The first line says that the first
+values, $T_1, T_2, T_3, \dots$.  The first line says that the first
 number in the sequence, $T_1$, is equal to 1.  The second line defines
 every other number in the sequence in terms of its predecessor.  So we
 can use this recurrence to compute any number of terms in the sequence:
@@ -197,7 +152,7 @@ We could determine the number of steps to move a 64-disk tower by
 computing $T_7$, $T_8$, and so on up to $T_{64}$.  But that would take
 a lot of work.  It would be nice to have a closed-form expression for
 $T_n$, so that we could quickly find the number of steps required for
-any given number of disks. (For example, we might want to know how
+any given number of disks.  (For example, we might want to know how
 much sooner the world would end if the monks melted down one disk to
 purchase burgers and ice cream \emph{before} the end of the world.)
 
@@ -208,14 +163,14 @@ guess, let's look for a pattern in the values of $T_n$ computed above:
 1, 3, 7, 15, 31, 63.  A natural guess is $T_n = 2^n - 1$.  But
 whenever you guess a solution to a recurrence, you should always
 verify it with a proof, typically by induction.  After all, your guess
-might be wrong. (But why bother to verify in this case?  After all, if
-we're wrong, its not the end of the... no, let's check.)
+might be wrong.  (But why bother to verify in this case?  After all, if
+we're wrong, its not the end of the...  no, let's check.)
 
 \begin{claim}
 $T_n = 2^n - 1$ satisfies the recurrence:
 \begin{align*}
 T_1 & = 1 \\
-T_n & = 2T_{n-1} + 1 \text{\qquad (for $n \geq 2$)}.
+T_n & = 2T_{n-1} + 1 & \text{(for $n \geq 2$)}.
 \end{align*}
 \end{claim}
 \begin{proof}
@@ -259,7 +214,7 @@ $T_n = 2^n - 1$.  Let's try to prove the ``nicer'' upper bound $T_n
 \begin{align*}
 T_n & = 2 T_{n-1} + 1 \\
   & \leq 2 (2^{n-1}) + 1 \\
-  & \not\leq 2^n \qquad \leftarrow \text{Uh-oh!}
+  & \not\leq 2^n \qquad \text{\textcolor{red}{$\longleftarrow$ Uh-oh!}}
 \end{align*}
 The first equality is the recurrence relation, the second follows from
 the induction hypothesis, and the third step is a flaming train wreck.
@@ -311,8 +266,8 @@ equivalent.  In the third step, we simplified a little---but not too
 much!  After several similar rounds of plugging and chugging, a
 pattern is apparent.  The following formula seems to hold:
 \begin{align*}
-T_n & = 2^k T_{n - k} + 2^{k-1} + 2^{k-2} + \ldots + 2^2 + 2^1 + 2^0 \\
-   & = 2^k T_{n-k} + 2^k - 1
+T_n & = 2^k T_{n - k} + 2^{k-1} + 2^{k-2} + \cdots + 2^2 + 2^1 + 2^0 \\
+  & = 2^k T_{n-k} + 2^k - 1
 \end{align*}
 Once the pattern is clear, simplifying is safe and convenient.  In
 particular, we've collapsed the geometric sum to a closed form on the
@@ -370,7 +325,7 @@ Algorithms textbooks traditionally claim that sorting is an important,
 fundamental problem in computer science.  Then they smack you with
 sorting algorithms until life as a disk-stacking monk in Hanoi sounds
 delightful.  Here, we'll cover just \emph{one} well-known sorting
-algorithm, Merge Sort.  The analysis introduces another kind of
+algorithm, \term{Merge Sort}.  The analysis introduces another kind of
 recurrence.
 
 Here is how Merge Sort works.  The input is a list of $n$ numbers, and
@@ -438,7 +393,7 @@ Therefore, the maximum number of comparisons needed to Merge Sort $n$
 items is given by this recurrence:
 \begin{align*}
 T_1 & = 0 \\
-T_{n} & = 2 T_{n/2} + n - 1 \text{\qquad (for $n \geq 2$ and a power of 2)}.
+T_{n} & = 2 T_{n/2} + n - 1 & \text{(for $n \geq 2$ and a power of 2)}.
 \end{align*}
 This fully describes the number of comparisons, but not in a very
 useful way; a closed-form expression would be much more helpful.  To
@@ -475,9 +430,9 @@ T_n & = 2T_{n/2} + n - 1 \\
 \end{align*}
 A pattern is emerging.  In particular, this formula seems holds:
 \begin{align*}
-T_n & = 2^k T_{n/2^k} + (n - 2^{k-1}) + (n - 2^{k -2}) + \ldots + (n -
+T_n & = 2^k T_{n/2^k} + (n - 2^{k-1}) + (n - 2^{k -2}) + \cdots + (n -
 2^0) \\
-  & = 2^k T_{n/2^k} + k n - 2^{k-1}  - 2^{k-2} \ldots - 2^0 \\
+  & = 2^k T_{n/2^k} + k n - 2^{k-1}  - 2^{k-2} \cdots - 2^0 \\
   & = 2^k T_{n/2^k} + k n - 2^k + 1.
 \end{align*}
 On the second line, we grouped the $n$ terms and powers of $2$.  On
@@ -567,20 +522,20 @@ observations define a recurrence:
 \begin{align*}
 f(0) & = 1 \\
 f(1) & = 1 \\
-f(n) & = f(n-1) + f(n-2) \qquad \text{for $n \geq 2$}.
+f(n) & = f(n-1) + f(n-2) &\text{for $n \geq 2$}.
 \end{align*}
 Here, $f(n)$ denotes the number of ways to climb $n$ stairs.  Also,
 we've switched from subscript notation to functional notation, from
 $T_n$ to $f_n$.  Here the change is cosmetic, but the expressiveness
 of functions will be useful later.
 
-This is the Fibonacci recurrence, the most famous of all recurrence
-equations.  Fibonacci numbers arise in all sorts of applications and
-in nature. Fibonacci introduced the numbers in 1202 to study rabbit
-reproduction. Fibonacci numbers also appear, oddly enough, in the
-spiral patterns on the faces of sunflowers. And the input numbers that
-make Euclid's GCD algorithm require the greatest number of steps are
-consecutive Fibonacci numbers.
+This is the \idx{Fibonacci recurrence}, the most famous of all
+recurrence equations.  Fibonacci numbers arise in all sorts of
+applications and in nature.  Fibonacci introduced the numbers in 1202
+to study rabbit reproduction.  Fibonacci numbers also appear, oddly
+enough, in the spiral patterns on the faces of sunflowers.  And the
+input numbers that make Euclid's GCD algorithm require the greatest
+number of steps are consecutive Fibonacci numbers.
 
 \subsubsection{Solving the Recurrence}
 
@@ -591,9 +546,9 @@ remained unsolved for almost six centuries!
 
 In general, a \term{homogeneous linear recurrence} has the form
 \begin{align*}
-f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d)
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \cdots + a_d f(n - d)
 \end{align*}
-where $a_1, a_2, \ldots, a_d$ and $d$ are constants. The \term{order}
+where $a_1, a_2, \dots, a_d$ and $d$ are constants.  The \term{order}
 of the recurrence is $d$.  Commonly, the value of the function $f$ is
 also specified at a few points; these are called \term{boundary
   conditions}.  For example, the Fibonacci recurrence has order $d =
@@ -609,7 +564,7 @@ solutions.  So let's guess that
   f(n) = x^n
 \end{align*}
 where $x$ is a parameter introduced to improve our odds of making a
-correct guess.  We'll figure out the best value for $x$ later. To
+correct guess.  We'll figure out the best value for $x$ later.  To
 further improve our odds, let's neglect the boundary conditions, $f(0)
 = 0$ and $f(1) = 1$, for now.  Plugging this guess into the recurrence
 $f(n) = f(n - 1) + f(n - 2)$ gives
@@ -628,12 +583,12 @@ x = \frac{1 \pm \sqrt{5}}{2}.
 This suggests that there are at least two different solutions to the
 recurrence, neglecting the boundary conditions.
 \begin{equation*}
-  f(n) = \left(\frac{1 + \sqrt{5}}{2}\right)^n\quad\text{or}\quad f(n) = \left(\frac{1 - \sqrt{5}}{2}\right)^n
+  f(n) = \paren{\frac{1 + \sqrt{5}}{2}}^n \quad \text{or}\quad
+  f(n) = \paren{\frac{1 - \sqrt{5}}{2}}^n
 \end{equation*}
 
 A charming features of homogeneous linear recurrences is that any
 linear combination of solutions is another solution.
-
 \begin{theorem}
 \label{th:recur-linearity}
   If $f(n)$ and $g(n)$ are both solutions to a homogeneous linear
@@ -643,10 +598,10 @@ linear combination of solutions is another solution.
 \begin{proof}
 \begin{align*}
 h(n) & = sf(n) + tg(n) \\
-  & = s \left(a_1 f(n-1) + \ldots + a_d f(n - d)\right) + t \left(a_1 g(n-1) + \ldots + a_d g(n -
-    d)\right) \\
- & = a_1 (s f(n-1) + t g(n-1)) + \ldots + a_d (s f(n-d) + t g(n-d)) \\
-  & =  a_1 h(n-1) + \ldots + a_d h(n-d)
+  & = s \paren{a_1 f(n-1) + \cdots + a_d f(n - d)}
+        + t \paren{a_1 g(n-1) + \cdots + a_d g(n - d)} \\
+ & = a_1 (s f(n-1) + t g(n-1)) + \cdots + a_d (s f(n-d) + t g(n-d)) \\
+  & =  a_1 h(n-1) + \cdots + a_d h(n-d)
 \end{align*}
 The first step uses the definition of the function $h$, and the second
 uses the fact that $f$ and $g$ are solutions to the recurrence.  In
@@ -655,15 +610,15 @@ again.  Since the first expression is equal to the last, $h$ is also a
 solution to the recurrence.
 \end{proof}
 
-The phenomenon described in this theorem---a linear combination of
-solutions is another solution---also holds for many differential
+The phenomenon described in this theorem ---a linear combination of
+solutions is another solution ---also holds for many differential
 equations and physical systems.  In fact, linear recurrences are so
 similar to linear differential equations that you can safely snooze
 through that topic in some future math class.
 
 Returning to the Fibonacci recurrence, this theorem implies that
 \begin{align*}
-  f(n) = s \left(\frac{1 + \sqrt{5}}{2}\right)^n + t \left(\frac{1 - \sqrt{5}}{2}\right)^n
+  f(n) = s \paren{\frac{1 + \sqrt{5}}{2}}^n + t \paren{\frac{1 - \sqrt{5}}{2}}^n
 \end{align*}
 is a solution for all real numbers $s$ and $t$.  The theorem expanded
 two solutions to a whole spectrum of possibilities!  Now, given all
@@ -672,13 +627,12 @@ the boundary conditions, $f(0) = 1$ and $f(1) = 1$.  Each boundary
 condition puts some constraints on the parameters $s$ and $t$.  In
 particular, the first boundary condition implies that
 \begin{equation*}
-f(0) = s \left(\frac{1 + \sqrt{5}}{2}\right)^0 + t \left(\frac{1 -
-    \sqrt{5}}{2}\right)^0 = s + t = 1.
+f(0) = s \paren{\frac{1 + \sqrt{5}}{2}}^0 +
+       t \paren{\frac{1 - \sqrt{5}}{2}}^0 = s + t = 1.
 \end{equation*}
 Similarly, the second boundary condition implies that
 \begin{equation*}
-f(1) = s \left(\frac{1 + \sqrt{5}}{2}\right)^1 + t \left(\frac{1 -
-    \sqrt{5}}{2}\right)^1 = 1.
+f(1) = s \paren{\frac{1 + \sqrt{5}}{2}}^1 + t \paren{\frac{1 - \sqrt{5}}{2}}^1 = 1.
 \end{equation*}
 Now we have two linear equations in two unknowns.  The system is not
 degenerate, so there is a unique solution:
@@ -695,31 +649,31 @@ recurrence that also satisfies the boundary conditions:
   \frac{1}{\sqrt{5}} \left(\frac{1 - \sqrt{5}}{2}\right)^{n+1}.
 \end{align*}
 It is easy to see why no one stumbled across this solution for almost
-six centuries! All Fibonacci numbers are integers, but this expression
-is full of square roots of five! Amazingly, the square roots always
-cancel out. This expression really does give the Fibonacci numbers if
+six centuries.  All Fibonacci numbers are integers, but this expression
+is full of square roots of five!  Amazingly, the square roots always
+cancel out.  This expression really does give the Fibonacci numbers if
 we plug in $n = 0, 1, 2$, etc.
 
 This closed-form for Fibonacci numbers has some interesting
 corollaries.  The first term tends to infinity because the base of the
-exponential, $(1+\sqrt{5})/2 = 1.618\ldots$ is greater than one.
+exponential, $(1+\sqrt{5})/2 = 1.618\dots$ is greater than one.
 This value is often denoted $\phi$ and called the ``golden ratio.''
 The second term tends to zero, because $(1-\sqrt{5})/2 =
--0.618033988\ldots$ has absolute value less than 1.  This implies that
+-0.618033988\dots$ has absolute value less than 1.  This implies that
 the $n$th Fibonacci number is:
 \begin{align*}
 f(n) & = \frac{\phi^{n+1}}{\sqrt{5}} + o(1).
 \end{align*}
 Remarkably, this expression involving irrational numbers is actually
-very close to an integer for all large $n$---namely, a Fibonacci
+very close to an integer for all large $n$ ---namely, a Fibonacci
 number!  For example:
 \begin{equation*}
-\frac{\phi^{20}}{\sqrt{5}} = 6765.000029\ldots \approx f(19).
+\frac{\phi^{20}}{\sqrt{5}} = 6765.000029\dots \approx f(19).
 \end{equation*}
 This also implies that the ratio of consecutive
 Fibonacci numbers rapidly approaches the golden ratio.  For example:
 \begin{equation*}
-\frac{f(20)}{f(19)} = \frac{10946}{6765} = 1.618033998\ldots.
+\frac{f(20)}{f(19)} = \frac{10946}{6765} = 1.618033998\dots.
 \end{equation*}
 
 \subsection{Solving Homogeneous Linear Recurrences}
@@ -728,37 +682,37 @@ The method we used to solve the Fibonacci recurrence can be extended
 to solve any homogeneous linear recurrence; that is, a recurrence of
 the form
 \begin{align*}
-f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d)
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \cdots + a_d f(n - d)
 \end{align*}
-where $a_1, a_2, \ldots, a_d$ and $d$ are constants.  Substituting the
+where $a_1, a_2, \dots, a_d$ and $d$ are constants.  Substituting the
 guess $f(n) = x^n$, as with the Fibonacci recurrence, gives
 \begin{align*}
-    x^n & =a_1x^{n-1} +a_2x^{n-2} + \ldots +a_dx^{n-d}.
+   x^n & =a_1x^{n-1} +a_2x^{n-2} + \cdots +a_dx^{n-d}.
 \end{align*}
 Dividing by $x^{n-d}$ gives
 \begin{align*}
-x^d & = a_1x^{d-1} + a_2x^{d-2} + \ldots+a_{d-1}x+a_d.
+x^d & = a_1x^{d-1} + a_2x^{d-2} + \cdots+a_{d-1}x+a_d.
 \end{align*}
 This is called the \term{characteristic equation} of the
-recurrence. The characteristic equation can be read off quickly
+recurrence.  The characteristic equation can be read off quickly
 since the coefficients of the equation are the same as the
 coefficients of the recurrence.
 
 The solutions to a linear recurrence are defined by the roots of the
-characteristic equation. Neglecting boundary conditions for the
+characteristic equation.  Neglecting boundary conditions for the
 moment:
 \begin{itemize}
 \item If $r$ is a nonrepeated root of the characteristic equation,
   then $r^n$ is a solution to the recurrence.
 \item If $r$ is a repeated root with multiplicity $k$ then $r^n$,
-  $nr^n$, $n^2r^n$, \ldots, $n^{k-1}r^n$ are all solutions to the
+  $nr^n$, $n^2r^n$, \dots, $n^{k-1}r^n$ are all solutions to the
   recurrence.
 \end{itemize}
 Theorem~\ref{th:recur-linearity} implies that every linear
   combination of these solutions is also a solution.
 
 For example, suppose that the characteristic equation of a
-recurrence has roots $s$, $t$, and $u$ twice. These four roots
+recurrence has roots $s$, $t$, and $u$ twice.  These four roots
 imply four distinct solutions:
 \[
 f(n) = s^n \qquad f(n) = t^n \qquad f(n) = u^n \qquad f(n)
@@ -771,26 +725,22 @@ f(n) = a \cdot s^n + b \cdot t^n + c \cdot u^n +d \cdot nu^n
 is also a solution.
 
 All that remains is to select a solution consistent with the boundary
-conditions by choosing the constants appropriately. Each boundary
-condition implies a linear equation involving these constants. So we
+conditions by choosing the constants appropriately.  Each boundary
+condition implies a linear equation involving these constants.  So we
 can determine the constants by solving a system of linear
-equations. For example, suppose our boundary conditions were $f(0) =
+equations.  For example, suppose our boundary conditions were $f(0) =
 0$, $f(1) = 1$, $f(2) = 4$, and $f(3) = 9$.  Then we would obtain four
 equations in four unknowns:
 \[
-\begin{array}{r@{\quad\Rightarrow\quad}l}
-f(0) = 0 & a \cdot s^0 + b \cdot t^0 + c \cdot u^0 +d \cdot
-0u^0 = 0 \\
-f(1) = 1 & a \cdot s^1 + b \cdot t^1 + c \cdot u^1 +d \cdot
-1u^1 = 1 \\
-f(2) = 4 & a \cdot s^2 + b \cdot t^2 + c \cdot u^2 +d \cdot
-2u^2 = 4 \\
-f(3) = 9 & a \cdot s^3 + b \cdot t^3 + c \cdot u^3 +d \cdot
-3u^3 = 9
+\begin{array}{r@{\quad\qimplies\quad}l}
+f(0) = 0 & a \cdot s^0 + b \cdot t^0 + c \cdot u^0 + d \cdot 0u^0 = 0 \\
+f(1) = 1 & a \cdot s^1 + b \cdot t^1 + c \cdot u^1 + d \cdot 1u^1 = 1 \\
+f(2) = 4 & a \cdot s^2 + b \cdot t^2 + c \cdot u^2 + d \cdot 2u^2 = 4 \\
+f(3) = 9 & a \cdot s^3 + b \cdot t^3 + c \cdot u^3 + d \cdot 3u^3 = 9
 \end{array}
 \]
 This looks nasty, but remember that $s$, $t$, and $u$ are just
-constants. Solving this system gives values for $a$, $b$, $c$, and $d$
+constants.  Solving this system gives values for $a$, $b$, $c$, and $d$
 that define a solution to the recurrence consistent with the boundary
 conditions.
 
@@ -799,24 +749,24 @@ conditions.
 We can now solve all linear homogeneous recurrences, which have the
 form
 \begin{align*}
-f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d).
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \cdots + a_d f(n - d).
 \end{align*}
 Many recurrences that arise in practice do not quite fit this mold.
 For example, the Towers of Hanoi problem led to this recurrence:
 \begin{align*}
 f(1) & = 1 \\
-f(n) & = 2 f(n - 1) + 1 \text{\qquad (for $n \geq 2$)}.
+f(n) & = 2 f(n - 1) + 1 & \text{(for $n \geq 2$)}.
 \end{align*}
 The problem is the extra $+1$; that is not allowed in a homogeneous
 linear recurrence.  In general, adding an extra function $g(n)$ to the
 right side of a linear recurrence gives an \term{inhomogeneous linear
   recurrence}:
 \begin{align*}
-f(n) = a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n - d) + g(n).
+f(n) = a_1 f(n-1) + a_2 f(n-2) + \cdots + a_d f(n - d) + g(n).
 \end{align*}
 
 Solving inhomogeneous linear recurrences is neither very different nor
-very difficult. We can divide the whole job into five steps:
+very difficult.  We can divide the whole job into five steps:
 
 \begin{enumerate}
 
@@ -829,7 +779,7 @@ very difficult. We can divide the whole job into five steps:
 
 \item Now restore $g(n)$ and find a single solution to the recurrence,
   ignoring boundary conditions.  This is called a \term{particular
-    solution}.  We'll explain how to find a particular solution
+   solution}.  We'll explain how to find a particular solution
   shortly.
 
 \item Add the homogeneous and particular solutions together to obtain
@@ -849,7 +799,7 @@ complete the job is given by a recurrence with a $+n$ term instead of
 a $+1$:
 \begin{align*}
 f(1) & = 1 \\
-f(n) & = 2 f(n - 1) + n \text{\qquad for $n \geq 2$}.
+f(n) & = 2 f(n - 1) + n & \text{for $n \geq 2$}.
 \end{align*}
 Clearly, this will take longer, but how much longer?  Let's solve the
 recurrence with the method described above.
@@ -881,8 +831,8 @@ f(n) & = c 2^n - n - 2.
 Finally, in step~5, we use the boundary condition, $f(1) = 1$,
 determine the value of the constant~$c$:
 \begin{align*}
-f(1) = 1 \quad & \Rightarrow \quad c 2^1 - 1 - 2 = 1 \\
-  & \Rightarrow \quad c = 2.
+f(1) = 1 \quad & \QIMPLIES \quad c 2^1 - 1 - 2 = 1 \\
+  & \QIMPLIES \quad c = 2.
 \end{align*}
 Therefore, the function $f(n) = 2 \cdot 2^n - n - 2$ solves this
 variant of the Towers of Hanoi recurrence.  For comparison, the
@@ -893,25 +843,25 @@ will need about twice as much time to solve the whole puzzle.
 \subsection{How to Guess a Particular Solution}
 
 Finding a particular solution can be the hardest part of solving
-inhomogeneous recurrences. This involves guessing, and you might guess
-wrong.\footnote{In Chapter~\ref{generating_function_chap}, we will
-  show how to solve linear recurrences with generating
-  functions---it's a little more complicated, but it does not require
-  guessing.}  However, some rules of thumb make this job fairly easy
-most of the time.
+inhomogeneous recurrences.  This involves guessing, and you might
+guess wrong.\footnote{Chapter~\ref{generating_function_chap} explains
+  how to solve linear recurrences with generating functions ---it's a
+  little more complicated, but it does not require guessing.}
+However, some rules of thumb make this job fairly easy most of the
+time.
 
 \begin{itemize}
 \item Generally, look for a particular solution with the same form as
   the inhomogeneous term $g(n)$.
 \item If $g(n)$ is a constant, then guess a particular solution $f(n)
-  = c$. If this doesn't work, try polynomials of progressively higher
+  = c$.  If this doesn't work, try polynomials of progressively higher
   degree:  $f(n)=bn+c$, then $f(n)=an^2 +bn+c$, etc.
 \item More generally, if $g(n)$ is a polynomial, try a polynomial of
   the same degree, then a polynomial of degree one higher, then two
-  higher, etc. For example, if $g(n) = 6n + 5$, then try $f(n)=bn+c$
+  higher, etc.  For example, if $g(n) = 6n + 5$, then try $f(n)=bn+c$
   and then $f(n)=an^2 +bn+c$.
 \item If $g(n)$ is an exponential, such as $3^n$, then first guess
-  that $f(n) = c3^n$. Failing that, try $f(n) = bn3^n + c3^n$ and then
+  that $f(n) = c3^n$.  Failing that, try $f(n) = bn3^n + c3^n$ and then
   $an^23^n + bn3^n + c3^n$, etc.
 \end{itemize}
 
@@ -924,7 +874,7 @@ The entire process is summarized on the following page.
 
 A linear recurrence is an equation
 \begin{equation*}
-f(n) = \underbrace{a_1 f(n-1) + a_2 f(n-2) + \ldots + a_d f(n -
+f(n) = \underbrace{a_1 f(n-1) + a_2 f(n-2) + \cdots + a_d f(n -
   d)}_{\text{homogeneous part}}
 \underbrace{+\ g(n)}_{\text{inhomogeneous part}}
 \end{equation*}
@@ -934,7 +884,7 @@ etc.  Linear recurrences are solved as follows:
 \begin{enumerate}
 \item Find the roots of the characteristic equation
 \begin{equation*}
-x^n = a_1 x^{n-1} + a_2 x^{n-2} + \ldots + a_{k-1} x + a_k.
+x^n = a_1 x^{n-1} + a_2 x^{n-2} + \cdots + a_{k-1} x + a_k.
 \end{equation*}
 \item Write down the homogeneous solution.  Each root generates one
   term and the homogeneous solution is their sum.  A nonrepeated
@@ -942,9 +892,9 @@ x^n = a_1 x^{n-1} + a_2 x^{n-2} + \ldots + a_{k-1} x + a_k.
   determined later.  A root $r$ with multiplicity $k$ generates the
   terms
 \[
-d_{1} r^n \qquad d_2 n r^n \qquad d_3 n^2 r^n \qquad \ldots \qquad d_k n^{k-1} r^n
+d_{1} r^n \qquad d_2 n r^n \qquad d_3 n^2 r^n \qquad \dots \qquad d_k n^{k-1} r^n
 \]
-where $d_1, \ldots d_k$ are constants to be determined later.
+where $d_1, \dots d_k$ are constants to be determined later.
 \item Find a particular solution.  This is a solution to the full
   recurrence that need not be consistent with the boundary conditions.
   Use guess-and-verify.  If $g(n)$ is a constant or a polynomial, try
@@ -966,7 +916,7 @@ f(n) = \underbrace{c2^n + d(-1)^n}_{\text{homogeneous solution}} +
   solution above gives
 \begin{align*}
 2 & = c\cdot2^1 + d \cdot(-1)^1 + 3 \cdot 1 + 1 \\
-\Rightarrow \quad -2 & = 2c - d.
+\QIMPLIES \quad -2 & = 2c - d.
 \end{align*}
 Determine the values of these constants by solving the resulting
 system of linear equations.
@@ -981,7 +931,7 @@ We now have a recipe for solving general linear recurrences.  But the
 Merge Sort recurrence, which we encountered earlier, is not linear:
 \begin{align*}
 T(1) & = 0 \\
-T(n) & = 2 T(n/2) + n - 1 \text{\qquad (for $n \geq 2$)}.
+T(n) & = 2 T(n/2) + n - 1 & \text{(for $n \geq 2$)}.
 \end{align*}
 In particular, $T(n)$ is not a linear combination of a fixed number of
 immediately preceding terms; rather, $T(n)$ is a function of $T(n/2)$,
@@ -991,11 +941,10 @@ Merge Sort is an example of a divide-and-conquer algorithm: it divides
 the input, ``conquers'' the pieces, and combines the results.
 Analysis of such algorithms commonly leads to \term{divide-and-conquer}
 recurrences, which have this form:
-\begin{equation*}
-T(n) =
- \sum_{i=1}^k a_i T(b_i n) + g(n)
-\end{equation*}
-Here $a_1, \ldots a_k$ are positive constants, $b_1, \ldots, b_k$ are
+\[
+T(n) =  \sum_{i=1}^k a_i T(b_i n) + g(n)
+\]
+Here $a_1, \dots a_k$ are positive constants, $b_1, \dots, b_k$ are
 constants between 0 and 1, and $g(n)$ is a nonnegative function.  For
 example, setting $a_1 = 2$, $b_1 = 1/2$, and $g(n) = n - 1$ gives the
 Merge Sort recurrence.
@@ -1005,23 +954,20 @@ Merge Sort recurrence.
 The solution to virtually all divide and conquer solutions is given by
 the amazing \term{Akra-Bazzi formula}.  Quite simply, the asymptotic
 solution to the general divide-and-conquer recurrence
-\begin{equation*}
-T(n) =
- \sum_{i=1}^k a_i T(b_i n) + g(n)
-\end{equation*}
+\[
+T(n) = \sum_{i=1}^k a_i T(b_i n) + g(n)
+\]
 is
 \begin{equation}\label{eqn:10C1}
-T(n) = \Theta\left(
-n^p \left(1 + \int_1^n \frac{g(u)}{u^{p+1}}\ du\right)
-\right)
-\end{equation}\label{eqn:10C2}
+T(n) = \Theta\paren{n^p \paren{1 + \int_1^n \frac{g(u)}{u^{p+1}}\ du}}
+\end{equation}
 where $p$ satisfies
-\begin{equation}
+\begin{equation}\label{eqn:10C2}
 \sum_{i=1}^k {a_i b_i^p} = 1.
 \end{equation}
 
 A rarely-troublesome requirement is that the function $g(n)$ must not
-grow or oscillate too quickly.  Specifically, $|g'(n)|$ must be
+grow or oscillate too quickly.  Specifically, $\card{g'(n)}$ must be
 bounded by some polynomial.  So, for example, the Akra-Bazzi formula
 is valid when $g(n) = x^2 \log n$, but not when $g(n) = 2^n$.
 
@@ -1029,20 +975,14 @@ Let's solve the Merge Sort recurrence again, using the Akra-Bazzi
 formula instead of plug-and-chug.  First, we find the value $p$
 that satisfies
 \[
-    2 \cdot (1/2)^p = 1.
+   2 \cdot (1/2)^p = 1.
 \]
 Looks like $p = 1$ does the job.  Then we compute the integral:
 \begin{align*}
-T(n) & = \Theta\left(
-n \left(1 + \int_1^n \frac{u - 1}{u^2} du\right)
-\right) \\
-  & = \Theta\left(
-n \left(1 + \left(\log u + \frac{1}{u}\right)_1^n\right)
-\right) \\
-  & = \Theta\left(
-n \left(\log n + \frac{1}{n}\right)
-\right) \\
-  & = \Theta\left(n \log n\right).
+T(n) & = \Theta\paren{n \paren{1 + \int_1^n \frac{u - 1}{u^2}\ du}} \\
+  & = \Theta\paren{n \paren{1 + \brac{\log u + \frac{1}{u}}_1^n}}\\
+  & = \Theta\paren{n \paren{\log n + \frac{1}{n}}}\\
+  & = \Theta(n \log n).
 \end{align*}
 The first step is integration and the second is simplification.  We
 can drop the $1/n$ term in the last step, because the $\log n$ term
@@ -1050,19 +990,19 @@ dominates.  We're done!
 
 Let's try a scary-looking recurrence:
 \begin{align*}
-    T(n) & = 2T(n/2) + 8/9T(3n/4) + n^2.
+   T(n) & = 2T(n/2) + (8/9)T(3n/4) + n^2.
 \end{align*}
 Here, $a_1 = 2$, $b_1 = 1/2$, $a_2 = 8/9$, and $b_2 = 3/4$.  So we
 find the value $p$ that satisfies
 \[
-    2 \cdot (1/2)^p + (8/9) (3/4)^p = 1.
+   2 \cdot (1/2)^p + (8/9) (3/4)^p = 1.
 \]
 Equations of this form don't always have closed-form solutions, so you
 may need to approximate $p$ numerically sometimes.  But in this case
 the solution is simple: $p = 2$.  Then we integrate:
 \begin{align*}
 T(n) & = \Theta\left(
-n^2 \left(1 + \int_1^n \frac{u^2}{u^3} du \right) \right) \\
+n^2 \left(1 + \int_1^n \frac{u^2}{u^3}\ du \right) \right) \\
   & = \Theta\left(
 n^2 (1 + \log n) \right) \\
   & = \Theta\left(n^2 \log n\right).
@@ -1078,7 +1018,7 @@ First, the Akra-Bazzi formula makes no use of boundary conditions.  To
 see why, let's go back to Merge Sort.  During the plug-and-chug
 analysis, we found that
 \begin{equation*}
-    T_n = n T_1 + n \log n - n + 1.
+   T_n = n T_1 + n \log n - n + 1.
 \end{equation*}
 This expresses the $n$th term as a function of the first term, whose
 value is specified in a boundary condition.  But notice that $T_n =
@@ -1114,8 +1054,7 @@ $\lfloor n / 2 \rfloor$.  So the maximum number of comparisons is
 actually given by this recurrence:
 \begin{align*}
 T(1) & = 0 \\
-T(n) & = T\left(\lceil n/2\rceil\right) + T\left(\lfloor
-  n/2\rfloor\right)+ n - 1 \text{\qquad (for $n \geq 2$)}.
+T(n) & = T(\ceil{n/2}) + T(\floor{n/2})+ n - 1 & \text{(for $n \geq 2$)}.
 \end{align*}
 This may be rigorously correct, but the ceiling and floor operations
 make the recurrence hard to solve exactly.
@@ -1123,7 +1062,7 @@ make the recurrence hard to solve exactly.
 Fortunately, \emph{the asymptotic solution to a divide and conquer
   recurrence is unaffected by floors and ceilings}.  More precisely,
 the solution is not changed by replacing a term $T(b_i n)$ with either
-$T(\lceil b_i n \rceil)$ or $T(\lfloor b_i n \rfloor)$.  So leaving
+$T(ceil{b_i n})$ or $T(\floor{b_i n})$.  So leaving
 floors and ceilings out of divide-and-conquer recurrences makes sense
 in many contexts; those are complications that make no difference.
 
@@ -1135,28 +1074,27 @@ conditions and integrality all follow from the
 
 \begin{theorem}[Akra-Bazzi]
 \label{th:akra-bazzi}
-Suppose that the function $T: \mathbb{R} \to\mathbb{R}$ satisfies
+Suppose that the function $T: \reals \to \reals$ satisfies
 the recurrence
 \begin{equation*}\normalfont
-T(x) =
+T(x)
 \begin{cases}
-\text{is nonnegative and bounded} & \text{for $0 \leq x \leq x_0$} \\
-\sum\limits_{i=1}^k a_i T(b_i x + h_i(x)) + g(x) & \text{for $x > x_0$}
+\text{is nonnegative and bounded} & \text{for $0 \leq x \leq x_0$}, \\
+= \sum\limits_{i=1}^k a_i T(b_i x + h_i(x)) + g(x) & \text{for $x > x_0$}.
 \end{cases}
 \end{equation*}
 where:
 \begin{enumerate}
-\item $a_1, \ldots, a_k$ are positive constants.
-\item $b_1, \ldots, b_k$ are constants between 0 and 1.
+\item $a_1, \dots, a_k$ are positive constants.
+\item $b_1, \dots, b_k$ are constants between 0 and 1.
 \item $x_0$ is large enough so that $T$ is well-defined.
-\item $g(x)$ is a nonnegative function such that $|g'(x)|$ is bounded
+\item $g(x)$ is a nonnegative function such that $\card{g'(x)}$ is bounded
 by a polynomial.
-\item $|h_i(x)| = O(x / \log^2 x)$.
+\item $\card{h_i(x)} = O(x / \log^2 x)$.
 \end{enumerate}
 Then
 \begin{equation*}
-T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} \
-    du\right) \right)
+T(x) = \Theta\paren{x^p \paren{1 + \int_1^x \frac{g(u)}{u^{p+1}}\ du}}
 \end{equation*}
 where $p$ satisfies
 \begin{equation*}
@@ -1178,31 +1116,25 @@ $h_i$.  These functions extend the theorem to address floors,
 ceilings, and other small adjustments to the sizes of subproblems.
 The trick is illustrated by this combination of parameters
 \begin{align*}
-a_1 &= 1 & b_1 & = 1/2 & h_1(x) & = \left\lceil\frac{x}{2}\right\rceil -
-\frac{x}{2}\\
-a_2 &= 1 & b_2 & = 1/2 & h_2(x) & = \left\lfloor\frac{x}{2}\right\rfloor -
-\frac{x}{2} \\
+a_1 &= 1 & b_1 & = 1/2 & h_1(x) & =  \ceil{\frac{x}{2}} - \frac{x}{2}\\
+a_2 &= 1 & b_2 & = 1/2 & h_2(x) & = \floor{\frac{x}{2}} - \frac{x}{2} \\
 & & g(x) & = x - 1
 \end{align*}
 which corresponds the recurrence
 \begin{align*}
-T(x) & = 1 \cdot T\left(\frac{x}{2} + \left(\left\lceil\frac{x}{2}\right\rceil -\frac{x}{2}\right)\right) + 
- \cdot T\left(\frac{x}{2} +
-\left(\left\lfloor\frac{x}{2}\right\rfloor -
-  \frac{x}{2}\right)\right) + x - 1 \\
- & = T\left(\left\lceil\frac{x}{2}\right\rceil\right) +
- T\left(\left\lfloor\frac{x}{2}\right\rfloor\right) + x - 1.
+T(x) & = 1 \cdot T\paren{\frac{x}{2} + \paren{ \ceil{\frac{x}{2}} -\frac{x}{2}}} + 
+           \cdot T\paren{\frac{x}{2} + \paren{\floor{\frac{x}{2}} - \frac{x}{2}}} + x - 1 \\
+ & = T\paren{\ceil{\frac{x}{2}}} +  T\paren{\floor{\frac{x}{2}}} + x - 1.
 \end{align*}
 
 This is the rigorously correct Merge Sort recurrence valid for all
 input sizes, complete with floor and ceiling operators.  In this case,
 the functions $h_1(x)$ and $h_2(x)$ are both at most 1, which is
-easily $O(x
-/ \log^2 x)$ as required by the theorem statement.  These functions
-$h_i$ do not affect---or even appear in---the asymptotic solution to
-the recurrence.  This justifies our earlier claim that applying floor
-and ceiling operators to the size of a subproblem does not alter the
-asymptotic solution to a divide-and-conquer recurrence.
+easily $O(x / \log^2 x)$ as required by the theorem statement.  These
+functions $h_i$ do not affect ---or even appear in ---the asymptotic
+solution to the recurrence.  This justifies our earlier claim that
+applying floor and ceiling operators to the size of a subproblem does
+not alter the asymptotic solution to a divide-and-conquer recurrence.
 
 \subsection{The Master Theorem}
 
@@ -1217,24 +1149,33 @@ having to know anything about integration.
 
 \begin{theorem}[Master Theorem]\label{thm:master_theorem}
 Let $T$ be a recurrence of the form
-\begin{equation*}
-    T(n) = a T\paren{\frac{n}{b}} + g(n).
-\end{equation*}
+\[
+   T(n) = a T\paren{\frac{n}{b}} + g(n).
+\]
 \begin{description}
 
 \item[Case 1:]
 If $g(n) = O\paren{n^{\log_b(a) - \epsilon}}$ for some constant
-$\epsilon > 0$, then \[T(n) = \Theta\paren{n^{\log_b(a)}}.\]
+$\epsilon > 0$, then
+\[
+T(n) = \Theta\paren{n^{\log_b(a)}}.
+\]
 
 \item[Case 2:]
 If $g(n) = \Theta\paren{n^{\log_b(a)} \log^k(n)}$ for some constant
-$k \ge 0$, then \[T(n) = \Theta\paren{n^{\log_b(a)} \log^{k + 1}(n)}.\]
+$k \ge 0$, then
+\[
+T(n) = \Theta\paren{n^{\log_b(a)} \log^{k + 1}(n)}.
+\]
 
 \item[Case 3:]
 
 If $g(n) = \Omega\paren{n^{\log_b(a) + \epsilon}}$ for some constant
 $\epsilon > 0$ and $a g(n/b) < c g(n)$ for some constant~$c < 1$ and
-sufficiently large~$n$, then \[T(n) = \Theta(g(n)).\]
+sufficiently large~$n$, then
+\[
+T(n) = \Theta(g(n)).
+\]
 
 \end{description}
 \end{theorem}
@@ -1243,89 +1184,11 @@ The Master Theorem can be proved by induction on~$n$ or, more easily,
 as a corollary of Theorem~\ref{th:akra-bazzi}.  We will not include
 the details here.
 
-\subsection{Pitfalls with Asymptotic Notation and Induction}
-
-We've seen that asymptotic notation is quite useful, particularly in
-connection with recurrences.  And induction is our favorite proof
-technique.  But mixing the two  is risky business; there is great
-potential for subtle errors and false conclusions!
-
-\begin{falseclm*}
-If
-\begin{align*}
-    T(1)    &= 1 \quad\text{and}\\
-    T(n)    &= 2 T(n/2) + n,
-\end{align*}
-then $T(n) = O(n)$.
-\end{falseclm*}
-
-The Akra-Bazzi theorem implies that the correct solution is $T(n) =
-\Theta(n \log n)$ and so this claim is false.  But where does the
-following ``proof'' go astray?
-
-\begin{bogusproof}
-The proof is by strong induction.  Let $P(n)$ be the proposition that
-$T(n) = O(n)$.
-
-\inductioncase{Base case}: $P(1)$ is true because $T(1) = 1 = O(1)$.
-
-\inductioncase{Inductive step}:
-For $n \ge 2$, assume $P(1)$, $P(2)$, \dots, $P(n - 1)$ to
-prove~$P(n)$.  We have
-\begin{align*}
-    T(n)    &= 2 \cdot T(n/2) + n \\
-            &= 2 \cdot O(n/2) + n \\
-            &= O(n).
-\end{align*}
-The first equation is the recurrence, the second uses the assumption
-$P(n/2)$, and the third is a simplification.
-\end{bogusproof}
-
-Where's the bug?  The proof is already far off the mark in the second
-sentence, which defines the induction hypothesis.  The statement
-``$T(n) = O(n)$'' is either true or false; it's validity does not
-depend on a particular value of~$n$.  Thus the very idea of trying to
-prove that the statement holds for $n = 1$, 2, \dots, is
-wrong-headed.
-
-The safe way to reason inductively about asymptotic phenomena is to
-\emph{work directly with the definition of the asymptotic notation}.  Let's try
-to prove the claim above in this way.  Remember that $f(n) = O(n)$
-means that there exist constants $n_0$ and~$c > 0$ such that
-$\abs{f(n)} \le cn$ for all~$n \ge n_0$.  (Let's not worry about the
-absolute value for now.)  If all goes well, the proof attempt should
-fail in some blatantly obvious way, instead of in a subtle,
-hard-to-detect way like the earlier argument.  Since our perverse goal
-is to demonstrate that the proof won't work for \emph{any} constants
-$n_0$ and~$c$, we'll leave these as variables and assume only that
-they're chosen so that the base case holds; that is, $T(n_0) \le cn$.
-
-\begin{proof}[Proof Attempt]
-We use strong induction.  Let $P(n)$ be the proposition that $T(n) \le
-cn$.
-
-\inductioncase{Base case}:
-$P(n_0)$ is true, because $T(n_0) \le cn$.
-
-\inductioncase{Inductive step}:
-For $n > n_0$, assume that $P(n_0)$, \dots, $P(n - 1)$ are true in
-order to prove~$P(n)$.  We reason as follows:
-\begin{align*}
-T(n)    &=   2 T(n/2) + n \\
-        &\le 2 c(n/2) + n \\
-        &=   cn + n \\
-        &=   (c + 1) n \\
-        &\nleq c n. \qedhere
-\end{align*}
-\end{proof}
-
-The first equation is the recurrence.  Then we use induction and
-simplify until the argument collapses!
-
-In general, it is a good idea to stay away from asymptotic notation
-altogether while you are doing the induction.  Once the induction is
-over and done with, then you can safely use big-Oh to simplify your
-result.
+\begin{editingnotes}
+\subsection*{Pitfalls with Asymptotic Notation and Induction}
+MOVED to Asymptotics Chapter~\ref{chap:asymptotics} and commented out
+because redundant. --ARM
+\end{editingnotes}
 
 \section{A Feel for Recurrences}
 
@@ -1342,7 +1205,7 @@ Here are some recurrences we solved earlier:
 \text{Merge Sort} & T_n = 2 T_{n/2} + n - 1 & T_n \sim n \log n \\
 \text{Hanoi variation} & T_n = 2 T_{n-1} + n & T_n \sim 2 \cdot 2^n \\
 \text{Fibonacci} & T_n = T_{n-1} + T_{n-2} & T_n \sim
-(1.618\ldots)^{n+1} / \sqrt{5}
+(1.618\dots)^{n+1} / \sqrt{5}
 \end{array}
 \]
 Notice that the recurrence equations for Towers of Hanoi and Merge
@@ -1350,12 +1213,12 @@ Sort are somewhat similar, but the solutions are radically different.
 Merge Sorting $n = 64$ items takes a few hundred comparisons, while
 moving $n = 64$ disks takes more than $10^{19}$ steps!
 
-Each recurrence has one strength and one weakness. In the Towers of
+Each recurrence has one strength and one weakness.  In the Towers of
 Hanoi, we broke a problem of size $n$ into two subproblem of size $n -
 1$ (which is large), but needed only 1 additional step (which is
-small). In Merge Sort, we divided the problem of size $n$ into two
+small).  In Merge Sort, we divided the problem of size $n$ into two
 subproblems of size $n/2$ (which is small), but needed $(n - 1)$
-additional steps (which is large). Yet, Merge Sort is faster by a
+additional steps (which is large).  Yet, Merge Sort is faster by a
 mile!
 
 This suggests that \emph{generating smaller subproblems is far more
@@ -1412,7 +1275,7 @@ procedure is usually dictated by the size and number of subproblems,
 rather than the amount of work per recursive call or time spent at the
 base of the recursion.  In particular, if subproblems are smaller than
 the original by an additive factor, the solution is most often
-exponential.  But if the subproblems are only a fraction the size of
+exponential.   But if the subproblems are only a fraction the size of
 the original, then the solution is typically bounded by a polynomial.
 
 \endinput

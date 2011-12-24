@@ -1,8 +1,8 @@
 \newcommand{\nohalt}{\text{\small{No-halt}}}
-\newcommand{\asciistr}{\text{$\mathcal{S}$}}
+\newcommand{\asciibet}{\text{ASCII}}
+\newcommand{\asciistr}{\strings{\asciibet}}
 
 \chapter{Infinite Sets}\label{infinite_chap}\label{set_theory_chap}
-
 
 This chapter is about \idx{infinite} sets and some challenges in
 proving things about them.
@@ -565,10 +565,10 @@ computer.  Routine features of compilers involve
 run-time errors won't happen, and ``optimizing'' the generated
 programs so they run faster or use less memory.
 
-Now the fundamental thing that computation logically just can't do is
-a \emph{perfect} job of type-checking, optimizing, or any kind of
-analysis of the complete run time behavior of programs.  In this
-section we'll illustrate this with a basic example known as the
+Now the fundamental thing that logically just can't be done by
+computation is a \emph{perfect} job of type-checking, optimizing, or
+any kind of analysis of the overall run time behavior of programs.  In
+this section we'll illustrate this with a basic example known as the
 \term{Halting Problem}.  The general Halting Problem for some
 programming language is, given an arbitrary program, recognize when
 running the program will not finish successfully ---halt ---because it
@@ -584,7 +584,7 @@ have to analyze!
 To be precise about this, let's call a programming procedure
 ---written in your favorite programming language such as C++, or Java, or
 Python ---a \term{string procedure} when it is applicable to strings
-over a standard alphabet ---say the 256 character ASCII alphabet.
+over a standard alphabet ---say the 256 character ASCII alphabet $\asciibet$.
 When a string procedure applied to an ASCII string returns the boolean
 value \True, we'll say the procedure \term{recognizes} the string.  If
 the procedure does anything else ---returns a value other than \True,
@@ -592,8 +592,8 @@ aborts with an error, runs forever,\dots ---then it doesn't recognize
 the string.
 
 As a simple example, you might think about how to write a string
-procedure that recognizes precisely those \term{double letter} strings
-where every character occurs twice in a row.  For example,
+procedure that recognizes precisely those \term{double letter} ASCII
+strings in which every character occurs twice in a row.  For example,
 \texttt{aaCC33}, and \texttt{zz++ccBB} are double letter ASCII
 strings, but \texttt{aa;bb}, \texttt{b33}, and \texttt{AAAAA} are not.
 Even better, how about actually writing a recognizer for the double
@@ -603,32 +603,32 @@ We'll call a set of strings \term{recognizable} if there is a
 procedure that recognizes precisely that set of strings.  So the set
 of double letter strings is recognizable.
 
+Let $\asciistr$ be the set of (finite) strings of ASCII characters.
 There is no harm in assuming that every program can be written using
-only the ASCII characters; they usually are anyway.  When an ASCII
-string, $s$, is actually the ASCII description of some string
+only the ASCII characters; they usually are anyway.  When a
+string $s \in \asciistr$ is actually the ASCII description of some string
 procedure, we'll refer to that string procedure as $P_s$.  You can
-think of $P_s$ as the result of compiling $s$.\footnote{The string,
-  $s$, and the procedure, $P_s$, have to be distinguished to avoid a
-  type error: you can't apply a string to string.  For example, let
-  $s$ be the string that you wrote as your program to recognize the
-  double letter strings.  Applying $s$ to a string argument, say
-  \texttt{aabbccdd}, should throw a type exception; what you need to
-  do is compile $s$ to the procedure $P_s$ and then apply $P_s$ to
-  \texttt{aabbccdd}.  \iffalse This should result in a returned value
-  \True, since \texttt{aabbccdd} is a double letter string.\fi }
-It's technically helpful to treat \emph{every} ASCII string as a
-program for a string procedure.  So when a string, $s$, doesn't parse
-as a proper string procedure, we'll define $P_s$ to be some default
-string procedure ---say one that always returns \False.  \iffalse So
-$s$ is an ill-formed string, $P_S$ will be a recognizer for the empty
-set of strings.  \fi
+think of $P_s$ as the result of compiling $s$.\footnote{The string, $s
+  \in \asciistr$, and the procedure, $P_s$, have to be distinguished
+  to avoid a type error: you can't apply a string to string.  For
+  example, let $s$ be the string that you wrote as your program to
+  recognize the double letter strings.  Applying $s$ to a string
+  argument, say \texttt{aabbccdd}, should throw a type exception; what
+  you need to do is compile $s$ to the procedure $P_s$ and then apply
+  $P_s$ to \texttt{aabbccdd}.  \iffalse This should result in a
+  returned value \True, since \texttt{aabbccdd} is a double letter
+  string.\fi } It's technically helpful to treat \emph{every} ASCII
+string as a program for a string procedure.  So when a string $s \in
+\asciistr$ doesn't parse as a proper string procedure, we'll define
+$P_s$ to be some default string procedure ---say one that always
+returns \False.  \iffalse So $s$ is an ill-formed string, $P_S$ will
+be a recognizer for the empty set of strings.  \fi
 
 Now we can define the precise set of strings that describe non-halting
 programs:
 \begin{definition}\label{nohalt_def}
 \begin{equation}\label{nohalt_eqdef}
-\nohalt \eqdef \set{s \suchthat s \text{ is an ASCII string and } P_s
-  \text{ does not recognize } s}.
+\nohalt \eqdef \set{s \in \asciistr \suchthat P_s \text{ does not recognize } s}.
 \end{equation}
 \end{definition}
 Recognizing the strings in \nohalt\ is a special case of the Halting
@@ -643,8 +643,7 @@ We'll use an argument just like Cantor's in the proof of
 Theorem~\ref{powbig}.
 
 \begin{proof}
-Namely, let \asciistr\ be the set of ASCII strings, and for any string
-$s \in \asciistr$, let
+Namely for any string $s \in \asciistr$, let
 % define $f: \asciistr \to \power(\asciistr)$ so that
 $f(s)$ be the set of strings recognized by $P_s$:
 \[
@@ -654,7 +653,7 @@ By convention, we associated a string procedure, $P_s$, with every
 string, $s \in \asciistr$, which makes $f$ a total function, and by
 definition,
 \begin{equation}\label{snohaltsnfs}
-s \in \nohalt \qiff s \notin f(s),
+s \in \nohalt \QIFF\ s \notin f(s),
 \end{equation}
 for all strings, $s \in \asciistr$.
 
@@ -682,9 +681,13 @@ So that does it: it's logically impossible for programs in any
 particular language to solve just this special case of the general
 Halting Problem for programs in that language.  And having proved that
 it's impossible to have a procedure that figures out whether an
-arbitrary program returns \True, it's easy to show that
-it's impossible to have a procedure that is a perfect recognizer for
-\emph{any} complete run time property of programs.
+arbitrary program returns \True, it's easy to show that it's
+impossible to have a procedure that is a perfect recognizer for
+\emph{any} overall run time property.\footnote{The weasel word
+  ``overall'' creeps in here to rule out some run time properties that
+  are easy to recognize because they depend only on part of the run
+  time behavior.  For example, the set of programs that halt after
+  executing at most 100 instructions is recognizable.}
 
 For example, most compilers do ``static'' \idx{type-checking} at compile
 time to ensure that programs won't make run-time type errors.  A program
