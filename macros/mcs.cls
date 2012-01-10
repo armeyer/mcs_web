@@ -1190,8 +1190,10 @@
 \newcommand{\qimplies}{\quad \text{implies} \quad}
 
 \newcommand{\QOR}{\mbint{\textsc{or}}}
+\newcommand{\LGQOR}{\mbint{\text{OR}}}
 \newcommand{\QXOR}{\mbint{\textsc{xor}}}
 \newcommand{\QAND}{\mbint{\textsc{and}}}
+\newcommand{\LGQAND}{\mbint{\text{AND}}}
 \newcommand{\QIMPLIES}{\mrelt{\textsc{implies}}}
 \newcommand{\QIMP}{\QIMPLIES}
 \newcommand{\QIFF}{\mbint{\textsc{iff}}}
