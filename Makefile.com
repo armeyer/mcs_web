@@ -12,15 +12,8 @@ book: $(DRIVER_FILE)
 %: %.pdf
 	@
 
-mcs.pdf: mcsfull.tex FORCE
-	cp mcsfull.tex mcs.tex
-	$(FORMAT) mcs
-	cp mcs.pdf mcsfull.pdf
-
 %.pdf: %.tex FORCE
-	cp $< mcs.tex
-	$(FORMAT) mcs
-	cp mcs.pdf $*.pdf
+	$(FORMAT) $*
 
 FORCE: 
 
