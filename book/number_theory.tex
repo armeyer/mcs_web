@@ -1636,19 +1636,15 @@ century.  It is another of the \href{http://www.claymath.org/millennium/}{Millen
 
 \begin{problems}
 \practiceproblems
-\pinput{TP_Fermats_Little_Theorem}
+\pinput{TP_inverse_by_pulverizer}
+\pinput{MQ_inverse_by_pulverizer}
 
 \classproblems
 \pinput{CP_nonparallel_lines}
-\pinput{CP_Sk_equiv_-1_mod_p}
-\pinput{CP_calculating_inverses_fermat}
 
-\homeworkproblems
-\pinput{PS_calculating_inverses}
 \end{problems}
 
 \section{Computing Powers in Modular Arithmetic}%\label{arithmetic_modn_sec}
-
 Turing's code did not work as he hoped.  However, his essential idea ---using number theory
 as the basis for cryptography ---succeeded spectacularly in the decades after his death.
 
@@ -1683,7 +1679,7 @@ known as Euler's Theorem.
 \begin{definition}
 For any positive number, $n$, define
 \[
-\phi(n) \eqdef \text{the number integers in $[0, n)$, that are relatively prime
+\phi(n) \eqdef \text{the number integers in $[1, n)$, that are relatively prime
   to~$n$.}
 \]
 This function $\phi$ is known as \idx{Euler's $\phi$
@@ -1693,7 +1689,7 @@ This function $\phi$ is known as \idx{Euler's $\phi$
 
 For example, $\phi(7) = 6$ since 1, 2, 3, 4, 5, and~6
 are all relatively prime to~7.  Similarly, $\phi(12) = 4$ since 1, 5,
-7, and~11 are the only numbers in~$[0, 12)$ that are relatively prime
+7, and~11 are the only numbers in~$[1, 12)$ that are relatively prime
   to~12.
 
 More generally, if $p$ is prime, then $\phi(p) = p - 1$ since every
@@ -1708,12 +1704,17 @@ Suppose $n$ is a positive integer and $k$ is relatively prime to $n$.  Then
 \end{equation*}
 \end{theorem}
 
+
+
 \begin{proof}
 \TBA{using cosets, without calling them that}
 \end{proof}
 
 \begin{editingnotes}
 \TBA{Make this alternative proof into a problem}
+
+Simplify to get rid of remainders, just using the fact that no two in
+the same list are congruent (as in Fall 2011 slides5f).
 
 \begin{lemma} \label{lem:permutes-arb}
 Suppose $n>1$ and $k$ is relatively prime to $n$.
@@ -1789,8 +1790,10 @@ the best approach to computing inverses modulo~$n$.
 
 \subsubsection{Fermat's Little Theorem}
 
-A famous special case of Euler's Theorem was known to \index{Fermat's
-  Little Theorem}{Fermat} a century earlier.
+For the record, we mention a famous special case of Euler's Theorem
+that was known to \index{Fermat's Little Theorem}{Fermat} a century
+earlier.
+
 \begin{corollary}[Fermat's Little Theorem]\label{fermat_little}
 Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then:
 \[
@@ -1866,16 +1869,309 @@ interval that are divisible by $p$.  Now $\phi(p^{k})$ equals the number of rema
 elements in the interval, namely, $p^k -p^{k-1}$.  \fi
 
 \begin{problems}
-\practiceproblems \pinput{MQ_modular_arithmetic} \pinput{MQ_inverse_by_pulverizer}
-\pinput{TP_Relative_Primality} \pinput{TP_Multiplicative_Inverses}
+\practiceproblems 
+little more complicated.
+\begin{definition}\label{mod_inverse_def}
+If
+\[
+k \cdot j \equiv 1 \pmod n,
+\]
+then $j$ is called an inverse of $k$ modulo $n$.
+\end{definition}
 
-\classproblems \pinput{CP_totient_for_pq} \pinput{CP_chinese_remainder}
+For example, if we're working modulo 15, then 2 is a multiplicative
+inverse of 8, since
+\[
+8 \cdot 2 \equiv 1 \pmod{15}.
+\]
+Notice that any number congruent to 2 modulo 15, for example 17, will
+also be an inverse of 8.
 
-\homeworkproblems \pinput{PS_Euler_function_multiplicativity}
+On the other hand, 3 does not have a multiplicative inverse modulo 15.
+We can prove this by contradiction: suppose there was an inverse $j$
+for 3, that is
+\[
+3 \cdot j \equiv 1 \pmod{15}.
+\]
+By the Congruence Lemma~\ref{mod_congruence_lem}.\ref{mod_congruence_lem*},
+we can multiply both sides of this congruence by 5 to get another
+congruence:
+\[
+5 \cdot 3 \cdot j  \equiv 5 \cdot 1 \pmod{15},
+\]
+But since $5 \cdot 3 = 15 \equiv 0 \pmod{15}$, this simplfies to
+\[
+0 = 0 \cdot j \equiv 5 \pmod{15},
+\]
+which is false.  So there can't be any such inverse $j$.
+
+So some numbers have inverse modulo 15 and other don't.  This may seem
+a little unsettling at first, but there's a simple explanation of
+what's going on.
+
+\subsection{Relative Primality}
+
+Integers that have no prime factor in common are called
+\term{relatively prime}.\footnote{Other texts call them
+  \term{coprime}.}  This is the same as having no common divisor
+(prime or not) greater than~1.  It is also equivalent to saying
+$\gcd(a, b) = 1$.
+
+For example, 8 and 15 are relatively prime, since $\gcd(8, 15) = 1$.
+On the other hand, 3 and 15 are not relatively prime, since $\gcd(3,
+15) = 3 \neq 1$.  This turns out to explain why 8 has an inverse
+modulo 15 and 3 does not.
+
+\begin{lemma}\label{lem:inverse-arb} If $k$ is relatively prime to
+$n$ and $n>1$, then $k$ has an inverse modulo $n$.
+\end{lemma}
+
+\begin{proof}
+If $k$ is relatively prime to $n$, then $\gcd(n, k) = 1$ by definition
+of gcd.  So we can use the Pulverizer from section~\ref{sec:pulverizer} to find
+a linear combination of $n$ and $k$ equal to 1:
+\[
+s n + t k = 1,
+\]
+and therefore
+\[
+s n + t k \equiv 1 \pmod{n}.
+\]
+But $n \equiv 0 \pmod{n}$, so
+\[
+k \cdot t = tk \equiv 0 + tk \equiv sn +tk \equiv 1 \pmod{n}.
+\]
+Thus, $t$ is a multiplicative inverse of $k$.
+\end{proof}
+
+So an inverse for any $k$ relatively prime to $n$ is simply the
+coefficient of $k$ in a linear combination of $k$ and $n$ that equals
+1.
+
+\subsection{\idx{Cancellation}}
+
+Another sense in which real numbers are nice is that one can cancel
+multiplicative terms.  In other words, if we know that $r t = s t$ for
+real numbers $r,s,t$, then as long as $t \neq 0$, we can cancel the
+$t$'s and conclude that $r = s$.  In general, cancellation is
+\emph{not} valid in modular arithmetic.  For example,
+\[
+4 \cdot 10 \equiv 1 \cdot 10 \pmod{15},
+\]
+but cancelling the 10's leads to the \emph{false} conclusion that
+\textcolor{red}{$4 \equiv 1 \pmod{15}$}.  The fact that multiplicative
+terms cannot be canceled is the most significant way in which
+congruences differ from ordinary equations.  
+
+\begin{definition}
+A number $k$ is \term{cancellable} modulo $n >1$ iff
+\[
+a k \equiv b k \pmod{n} \qimplies a \equiv b \pmod{n}
+\]
+for all numbers $a,b$.
+\end{definition}
+
+The reason why 10 is not cancellable modulo 15 is that it is not
+relatively prime to 15.  If a number is relatively prime to 15, it can
+be cancelled by multiplying by its inverse.  So cancelling obviously
+works for numbers that have inverses:
+
+\begin{lemma}\label{lem:cancellation-arb}
+For $n>1$, if $k$ has an inverse modulo $n$, then $k$ is cancellable
+modulo $n$.
+\end{lemma}
+
+\iffalse
+\begin{proof}
+In the left hand congruence, multiply both sides by an inverse $j$ of $k$ to obtain
+\[
+(ak)j \equiv (bk)j \pmod{n}.
+\]
+Since $kj \equiv 1 \pmod{n}$, this immediately simplifies to $a \equiv
+b \pmod{n}$.
+\end{proof}
+\fi
+
+Conversely, it's easy to see that if $k$ is not relatively prime to
+$n$, then it isn't cancellable modulo $n$.  Namely, suppose $\gcd(k,n)
+= m >1$.  Then
+\begin{align*}
+(n/m)k & = n (k/m)\\
+       & \equiv 0 (k/m)
+       & = 0 = 0 \cdot k \pmod n.
+\end{align*}
+Now $k$ can't be canceled or we would reach the false conclusion
+that $n/m \equiv 0 \pmod n$.
+
+To summarize, we have
+\begin{theorem}\label{thm:mod_inverses}
+The following are equivalent for $n >1$,
+\begin{align}
+\gcd(k, n)& = 1\\
+k & \text{ has an inverse modulo } n\\
+k & \text{ is cancellable modulo } n.
+\end{align}
+\end{theorem}
+
+\subsection{Decrypting (Version 2.0)}
+
+Multiplicative inverses are the key to decryption in Turing's code.  Specifically, we can
+recover the original message by multiplying the encoded message by an inverse, $j$, of
+the key:
+\begin{align*}
+m^* \cdot j
+  & = \rem{mk}{n} \cdot j & \text{(def.~\eqref{eq:turing-code} of $m^*$)}\\
+  & \equiv (mk)j \pmod{n} & \text{(Cor.~\ref{aran})}\\
+  & = m \cdot (kj)\\
+  & \equiv m \cdot 1 \pmod{n} & \text{(def. of $j$)}\\
+  & \equiv m \pmod{n}.
+\end{align*}
+
+This shows that $m^* j$ is congruent to the original message $m$.  Since $m$ was in
+$[0,n)$, we can recover it exactly by taking a remainder:
+\[
+m = \rem{m^* j}{n}.
+\]
+So all we need to decrypt the message is to find an inverse of the
+secret key $k$, which will be easy using the Pulverizer ---providing
+$k$ has an inverse.  But $k$ is positive and less than the modulus
+$n$, so we can ensure that $k$ is relatively prime to the modulus by
+choosing $n$ to be a prime number.
+
+\subsection{Breaking \index{Turing's code}Turing's Code (Version 2.0)}
+
+The Germans didn't bother to encrypt their weather reports with the
+highly-secure Enigma system.  After all, so what if the Allies learned
+that there was rain off the south coast of Iceland?  But, amazingly,
+this practice provided the British with a critical edge in the
+Atlantic naval battle during 1941.
+
+The problem was that some of those weather reports had originally been
+transmitted using Enigma from U-boats out in the Atlantic.  Thus, the
+British obtained both unencrypted reports and the same reports
+encrypted with Enigma.  By comparing the two, the British were able to
+determine which key the Germans were using that day and could read all
+other Enigma-encoded traffic.  Today, this would be called a
+\term{known-plaintext attack}.
+
+Let's see how a known-plaintext attack would work against Turing's
+code.  Suppose that the Nazis know both the plain text, $m$, and it
+encrypted form, $m^*$.  Now in Version 2.0,
+\[
+m^* \equiv mk \pmod{n},
+\]
+and since $m$ is also positive and less than $n$, the Nazis can use
+the Pulverizer to find an inverse $j$ of $m$ modulo $n$.  Now
+\begin{align*}
+j \cdot m^*
+  & = j \cdot \rem{mk}{n}
+     & \text{(def.~\eqref{eq:turing-code} of $m^*$)}\\
+  & \equiv j \cdot mk \pmod{n}
+     & \text{(by Cor~\ref{aran})}\\
+  & \equiv 1 \cdot k = k \pmod{n}
+\end{align*}
+So by computing $k = \rem{j \cdot m^*}{n}$, the Nazis get the secret
+key and can then decrypt any message!
+
+This is a huge vulnerability, so ersion 2.0 of Turing's hypothetical
+code has no practical value.  Fortunately, Turing got better at
+cryptography after devising this code; his subsequent deciphering of
+Enigma messages surely saved thousands of lives, if not the whole of
+Britain.
+
+%  I could insert a bit about public-key cryptography here as introduction to the
+%  recitation.
+
+\subsection{Turing Postscript}
+
+A few years after the war, Turing's home was robbed.  Detectives soon determined that a
+former homosexual lover of Turing's had conspired in the robbery.  So they arrested him
+---that is, they arrested Alan Turing ---because homosexuality was a British crime
+punishable by up to two years in prison at that time.  Turing was sentenced to a hormonal
+``treatment'' for his homosexuality: he was given estrogen injections.  He began to develop
+breasts.
+
+Three years later, Alan \idx{Turing}, the founder of computer science, was dead.  His
+mother explained what happened in a biography of her own son.  Despite her repeated
+warnings, Turing carried out chemistry experiments in his own home.  Apparently, her worst
+fear was realized: by working with potassium cyanide while eating an apple, he poisoned
+himself.
+
+However, Turing remained a puzzle to the very end.  His mother was a
+devout woman who considered suicide a sin.  And, other biographers
+have pointed out, Turing had previously discussed committing suicide
+by eating a poisoned apple.  Evidently, Alan Turing, who founded
+computer science and saved his country, took his own life in the end,
+and in just such a way that his mother could believe it was an
+accident.
+
+Turing's last project before he disappeared from public view in 1939 involved the
+construction of an elaborate mechanical device to test a mathematical conjecture called the
+Riemann Hypothesis.  This conjecture first appeared in a sketchy paper by Bernhard Riemann
+in 1859 and is now one of the most famous unsolved problems in mathematics.
+
+\floatingtextbox{ \textboxtitle{The \idx{Riemann Hypothesis}}
+
+The formula for the sum of an infinite geometric series says:
+\[
+1 + x + x^2 + x^3 + \cdots = \frac{1}{1-x}
+\]
+Substituting $x = \frac{1}{2^s}$, $x = \frac{1}{3^s}$, $x = \frac{1}{5^s}$, and so on for
+each prime number gives a sequence of equations:
+\begin{align*}
+1 + \frac{1}{2^s} + \frac{1}{2^{2s}} + \frac{1}{2^{3s}} + \cdots & = \frac{1}{1 - 1 / 2^s}
+\\ 1 + \frac{1}{3^s} + \frac{1}{3^{2s}} + \frac{1}{3^{3s}} + \cdots & = \frac{1}{1 - 1 /
+  3^s} \\ 1 + \frac{1}{5^s} + \frac{1}{5^{2s}} + \frac{1}{5^{3s}} + \cdots & = \frac{1}{1 -
+  1 / 5^s} \\ & \text{etc.}
+\end{align*}
+Multiplying together all the left sides and all the right sides gives:
+\[
+\sum_{n=1}^{\infty} \frac{1}{n^s} = \prod_{p \in \text{primes}} \paren{\frac{1}{1 - 1 /
+    p^s}}
+\]
+The sum on the left is obtained by multiplying out all the infinite series and applying
+the Fundamental Theorem of Arithmetic.  For example, the term $1 / 300^s$ in the sum is
+obtained by multiplying $1 / 2^{2s}$ from the first equation by $1 / 3^s$ in the second and
+$1 / 5^{2s}$ in the third.  Riemann noted that every prime appears in the expression on the
+right.  So he proposed to learn about the primes by studying the equivalent, but simpler
+expression on the left.  In particular, he regarded $s$ as a complex number and the left
+side as a function, $\zeta(s)$.  Riemann found that the distribution of primes is related
+to values of $s$ for which $\zeta(s) = 0$, which led to his famous conjecture:
+\begin{definition}\label{RiemannHyp}
+  The \term{Riemann Hypothesis}: Every nontrivial zero of the zeta function $\zeta(s)$ lies
+  on the line $s = 1/2 + c i$ in the complex plane.
+\end{definition}
+A proof would immediately imply, among other things, a strong form of the \idx{Prime Number
+  Theorem}.
+
+Researchers continue to work intensely to settle this conjecture, as they have for over a
+century.  It is another of the \href{http://www.claymath.org/millennium/}{Millennium
+  Problems} whose solver will earn \$1,000,000 from the Clay Institute.}
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_Fermats_Little_Theorem}
+%\pinput{TP_inverse_by_Fermat}
+\pinput{MQ_modular_arithmetic}
+\pinput{TP_Relative_Primality}
+\pinput{TP_Multiplicative_Inverses}
+
+\classproblems
+\pinput{CP_calculating_inverses_fermat}
+\pinput{CP_Sk_equiv_-1_mod_p}
+\pinput{CP_totient_for_pq}
+\pinput{CP_chinese_remainder}
+
+\homeworkproblems
+\pinput{PS_Euler_function_multiplicativity}
 \pinput{PS_chinese_remainder_general}
+%draft: CP_fermat_probable_prime
 
-\examproblems \pinput{FP_numbers_short_answer} \pinput{PS_Euler_theorem_calculation}
-\pinput{PS_congruent_modulo_1000} \pinput{FP_Euler_theorem_calculation}
+\examproblems
+\pinput{FP_numbers_short_answer}
+\pinput{PS_Euler_theorem_calculation}
+\pinput{PS_congruent_modulo_1000}
+\pinput{FP_Euler_theorem_calculation}
 \pinput{FP_modular_powerful}
 \end{problems}
 
@@ -2081,16 +2377,6 @@ as inputs any strings $u$ and $v$ of length~$n$ \fi
 
 \begin{editingnotes}
 Notes for further revisions:
-
-drop separate mod a prime section: it's easy to do inverse iff rel prime in general, and
-the Fermat proof is not really any easier than Euler.  So just do, Euler, get Fermat as
-corollary.
-
-Simplify Euler proof to get rid of remainders, just using the fact that no two in the same
-list are congruent (as in Fall 2011 slides5f).
-
-Even better, prove Euler thm using group properties of $n^*$ to show that order of every
-element divides $\phi(n)$.
 
 Add summary of what's easy: exponentiating, gcd's, inverses, finding primes (elementary
 density argument plus fermat test probabilistic prime testing)
