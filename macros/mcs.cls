@@ -1284,13 +1284,13 @@
 
 \newcommand{\naturals}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
+\newcommand{\Zmod}[1]{\mathbb{Z}_{#1}}
 \newcommand{\rationals}{\mathbb{Q}}
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
 \newcommand{\posints}{\integers^+}
-\newcommand{\finbin}{\set{0,1}^*}
-\newcommand{\binw}{\set{0,1}^\omega}
-
+\newcommand{\finbin}{\strings{0,1}}
+\newcommand{\binw}{\infstrings{0,1}}
 
 %% Math -- Arithmetic
 
@@ -1303,6 +1303,10 @@
 
 \newcommand{\rem}[2]{\operatorname{rem}(#1,#2)}
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
+\newcommand{\powermod}[3]{#1^{#2\ang{\cdot_{#3}}}}
+\newcommand{\relpr}[1]{\operatorname{gcd1}[#1]}
+\newcommand{\ordmod}[2]{\operatorname{ord}(#1,#2)}
+
 \newcommand{\remainder}{\mopt{remainder}}
 \newcommand{\quotient}{\mopt{quotient}}
 \newcommand{\lcm}{\mopt{lcm}}
@@ -1325,10 +1329,10 @@
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
 
 \newcommand{\strings}[1]{#1^*}
+\newcommand{\infstrings}[1]{#1^\omega}
 \newcommand{\brkts}{\strings{\set{\rhtbrk, \lefbrk}}}    %{\text{brkts}}
 \newcommand{\cnt}[2]{\#_{#1}(#2)}
 \newcommand{\rev}[1]{\operatorname{rev}(#1)}
-
 
 \if@usecolor@
     \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
