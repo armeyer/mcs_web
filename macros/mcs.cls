@@ -1303,8 +1303,8 @@
 
 \newcommand{\rem}[2]{\operatorname{rem}(#1,#2)}
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
-\newcommand{\powermod}[3]{#1^{#2\ang{\cdot_{#3}}}}
-\newcommand{\relpr}[1]{\operatorname{gcd1}[#1]}
+\newcommand{\powermod}[3]{#1^{#2\ang{\Zmod{#3}}}}
+\newcommand{\relpr}[1]{\operatorname{gcd1}\set{#1}}
 \newcommand{\ordmod}[2]{\operatorname{ord}(#1,#2)}
 
 \newcommand{\remainder}{\mopt{remainder}}
