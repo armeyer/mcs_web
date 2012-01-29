@@ -1,6 +1,7 @@
 SOLUTIONSPOLICY = .solutionspolicy
 EDITNOTEPOLICY  = .editnotepolicy
 PROBLEMSPOLICY  = .problemspolicy
+PROBLEMSINBOOK  = .problemsinbook
 
 SUBDIRS = book problems spring12 fall11 spring11 spring10 fall09
 
@@ -73,3 +74,12 @@ togglesolutions:
 asksolutions:
 	-rm -f $(SOLUTIONSPOLICY)
 
+.PHONY: showinbook
+
+showinbook:
+	echo '\problemsinbooktrue' > $(PROBLEMSINBOOK)
+
+.PHONY: showinhandout
+
+showinhandout:
+	echo '\problemsinbookfalse' > $(PROBLEMSINBOOK)

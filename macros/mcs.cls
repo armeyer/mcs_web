@@ -22,6 +22,9 @@
 \newif\ifshoweditingnotes
 \showeditingnotesfalse
 
+\newif\ifproblemsinbook
+\problemsinbookfalse
+
 \let\@class@option@file\@empty
 
 \DeclareOption{book}{%

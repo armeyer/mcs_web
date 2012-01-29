@@ -38,10 +38,12 @@ veryclean: clean
 
 .PHONY: showpolicy showsolutions staffsolutions hidesolutions \
               togglesolutions asksolutions \
-              shownotes hidenotes togglenotes
+              shownotes hidenotes togglenotes \
+              showinbook showinhandout
 
 showpolicy showsolutions staffsolutions hidesolutions \
               hideproblems showproblems toggleproblems \
               togglesolutions asksolutions\
-              shownotes hidenotes togglenotes:
+              shownotes hidenotes togglenotes \
+              showinbook showinhandout:
 	$(MAKE) -C .. $@
