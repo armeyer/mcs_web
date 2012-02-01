@@ -3107,6 +3107,19 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \exampaper[#1]{cfe}{Conflict Final}
   \fi}
 
+\newcommand{\makeupfinal}[2][\stamp]{%
+    \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{mfes#2}{}{Staff Solutions to Makeup Final Exam #2}
+    \else
+  \ifshowsolutions
+    \paper[#1]{mfes#2}{}{Solutions to Makeup Final Exam #2}
+  \else
+    \exampaper[#1]{mfe#2}{Makeup Final Exam #2}
+  \fi
+  \fi}
+
+
 % Starts a Practice (Final) Exam, given its number. Asks whether
 % solutions should be included. If the answer is yes, the
 % corresponding solutions paper is started. (Use \showsolutions or
