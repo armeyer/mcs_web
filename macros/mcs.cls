@@ -3110,12 +3110,12 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 \newcommand{\makeupfinal}[2][\stamp]{%
     \theoremsunderproblems
     \ifshowstaffnotes
-    \paper[#1]{mfes#2}{}{Staff Solutions to Makeup Final Exam #2}
+    \paper[#1]{mfes#2}{}{Staff Solutions to Makeup Final Exam#2}
     \else
   \ifshowsolutions
-    \paper[#1]{mfes#2}{}{Solutions to Makeup Final Exam #2}
+    \paper[#1]{mfes#2}{}{Solutions to Makeup Final Exam#2}
   \else
-    \exampaper[#1]{mfe#2}{Makeup Final Exam #2}
+    \exampaper[#1]{mfe#2}{Makeup Final Exam#2}
   \fi
   \fi}
 
