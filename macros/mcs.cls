@@ -1292,8 +1292,8 @@
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
 \newcommand{\posints}{\integers^+}
-\newcommand{\finbin}{\strings{0,1}}
-\newcommand{\binw}{\infstrings{0,1}}
+\newcommand{\finbin}{\strings{\set{0,1}}}
+\newcommand{\binw}{\infstrings{\set{0,1}}}
 
 %% Math -- Arithmetic
 
