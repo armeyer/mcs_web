@@ -1142,13 +1142,11 @@
 \newcommand{\suchthat}{\mid}
 \newcommand{\eqdef}{\mathbin{::=}}
 
-\newcommand{\setcomp}{}
-\let\setcomp\bar
-
 %% This is ugly, but we'll argue about it later.
 
 \renewcommand{\bar}[1]{\overline{#1}}
 
+\newcommand{\setcomp}{}
 \let\setcomp\bar
 
 \newcommand{\mop}[1]{\mathop{#1}}
@@ -1294,6 +1292,7 @@
 \newcommand{\posints}{\integers^+}
 \newcommand{\finbin}{\strings{\set{0,1}}}
 \newcommand{\binw}{\infstrings{\set{0,1}}}
+\newcommand{\twdone}{\textbf{To1}}
 
 %% Math -- Arithmetic
 

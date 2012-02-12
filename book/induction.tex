@@ -947,13 +947,6 @@ for all $n \in \naturals$.
 
 \end{editingnotes}
 
-\begin{editingnotes}
-\begin{notesproblem}
-Use strong induction to prove the Well Ordering Principle. \hint Prove
-that if a set of nonnegative integers contains an integer, $n$, then it
-has a smallest element.
-\end{notesproblem}
-\end{editingnotes}
 
 %%%%%%%FTL
 \section{State Machines}\label{state_machine_sec}
@@ -1233,8 +1226,8 @@ program verification.  He remained at Stanford from 1968 until his
 death in September, 2001.  You can learn more about Floyd's life and
 work by reading the
 \href{http://courses.csail.mit.edu/6.042/spring11/floyd-eulogy-by-knuth.pdf}{eulogy}
-(see\texttt{http://oldwww.acm.org/pubs/membernet/stories/floyd.pdf})
-written by his closest colleague, Don Knuth.
+at http://oldwww.acm.org/pubs/membernet/stories/floyd.pdf written by
+his closest colleague, Don Knuth.
 
  \iffalse
    \href{http://oldwww.acm.org/pubs/membernet/stories/floyd.pdf}
@@ -1727,8 +1720,6 @@ We expect that the Extended Euclidean Algorithm presented above
 illustrates this point.
 \fi
 
-\iffalse
-
 \subsection{Derived Variables}\label{derived_var_subsec}
 
 The preceding termination proofs involved finding a nonnegative
@@ -1739,36 +1730,49 @@ the size can't decrease indefinitely, so when a minimum size state is
 reached, there can't be any transitions possible: the process has
 terminated.
 
-\hyperdef{derived}{vars}{More} generally, the technique of assigning
-values to states ---not necessarily nonnegative integers and not necessarily
-decreasing under transitions--- is often useful in the analysis of
-algorithms.  \emph{Potential functions} play a similar role in physics.
-In the context of computational processes, such value assignments for
-states are called \emph{derived variables}.
+More generally, the technique of assigning values to states ---not
+necessarily nonnegative integers and not necessarily decreasing under
+transitions ---is often useful in the analysis of algorithms.
+\emph{Potential functions} play a similar role in physics.  In the
+context of computational processes, such value assignments for states
+are called \term{derived variables}.
 
 For example, for the Die Hard machines we could have introduced a derived
-variable, $f: \text{states } \to \reals$, for the amount of water in both
+variable, $f:\text{states} \to \reals$, for the amount of water in both
 buckets, by setting $f((a, b)) \eqdef a + b$.  Similarly, in the robot
 problem, the position of the robot along the $x$-axis would be given by
 the derived variable $x\text{-coord}$, where $x\text{-coord}((i, j))
 \eqdef~i$.
 
-We can formulate our general termination method as follows:
+%\subsubsection{Weakly Decreasing Variables}
+
+There a few standard properties of derived variables that are handy in
+analyzing state machines.
 
 \begin{definition}
-  Let $\prec$ be a strict partial order on a set, $A$.  A derived variable
-  $f : \text{states } \to A$ is \emph{strictly decreasing} iff
+  A derived variable $f:\text{states} \to \reals$ is \term{strictly
+    decreasing} iff
 \[
-q \movesto q' \text{  implies  } f(q') \prec f(q).
+q \movesto q' \QIMP\ f(q') < f(q).
 \]
+It is \term{weakly decreasing} iff
+\[
+q \movesto q' \QIMP\ f(q') \leq f(q).
+\]
+
+\term{Strictly increasing} and \term{weakly increasing} derived
+variables are defined similarly.\footnote{Weakly increasing variables
+  are often also called \emph{nondecreasing}.  We will avoid this
+  terminology to prevent confusion between nondecreasing variables and
+  variables with the much weaker property of \emph{not} being a
+  decreasing variable.}
 \end{definition}
 
 We confirmed termination of the GCD and Extended GCD procedures by finding
 derived variables, $y$ and \texttt{Y}, respectively, that were nonnegative
 integer-valued and strictly decreasing.  We can summarize this approach to
 proving termination as follows:
-\begin{theorem}
-\label{th:decr}
+\begin{theorem}\label{th:decr}
 If $f$ is a strictly decreasing $\naturals$-valued derived variable of a
 state machine, then the length of any execution starting at state $q$ is
 at most $f(q)$.
@@ -1779,87 +1783,27 @@ of $f(q)$, but think about what it says: ``If you start counting down at
 some nonnegative integer $f(q)$, then you can't count down more than
 $f(q)$ times.''  Put this way, it's obvious.
 
-\subsubsection{Weakly Decreasing Variables}
+Theorem~\ref{th:decr} generalizes straightforwardly to derived
+variables taking values in a well ordered set.
 
-In addition being strictly decreasing, it will be useful to have derived
-variables with some other, related properties.
-
-\begin{definition}
-Let $\preceq$ be a weak partial order on a set, $A$.  A derived variable
-$f : Q \to A$ is \emph{weakly decreasing} iff
-\[
-q \movesto q' \text{  implies  } f(q') \preceq f(q).
-\]
-
-\emph{Strictly increasing} and \emph{weakly increasing} derived variables
-are defined similarly.\footnote{Weakly increasing variables are often also
-called \emph{nondecreasing}.  We will avoid this terminology to prevent
-confusion between nondecreasing variables and variables with the much
-weaker property of \emph{not} being a decreasing variable.}
-\end{definition}
-\fi
-
-\begin{editingnotes}
-\section*{Well-founded termination}
-omitted
-
-\iffalse
-
-There are cases where it's easier to prove termination based on more
-general partial orders than ``less-than'' on $\naturals$.  Termination is
-guaranteed whenever there is a derived variable that strictly decreases with
-respect to any well-founded partial order.
-
-\iffalse
-We now define some other useful flavors of derived variables taking values
-over partial ordered sets.  We'll use the notational convention that when
-$\prec$ denotes a strict partial order on some set, then $\preceq$ is the
-corresponding \emph{weak} partial order
-\[
-a\preceq a' \ \eqdef\quad a \prec a' \lor a = a'.
-\]
-\fi
-
-\begin{definition}
-Let $\prec$ be a strict partial order on a set, $A$.  A derived variable
-$f : Q \to A$ is \emph{strictly decreasing} with respect to $\prec$ iff
-\[
-q \movesto q' \text{ implies } f(q') \prec f(q).
-\]
-Also, $f$ is \emph{weakly decreasing} iff
-\[
-q \movesto q' \text{  implies  } f(q') \preceq f(q).
-\]
-where $\preceq$ is the weak partial order corresponding to $\prec$,
-namely,
-\[
-[a_1 \preceq a_2] \eqdef [(a_1 \prec a_2) \text{ or } (a_1=a_2)].
-\]
-
-\emph{Strictly increasing} and \emph{weakly increasing} derived variables
-are defined similarly.\footnote{Weakly increasing variables are often also
-called \emph{nondecreasing}.  We will avoid this terminology to prevent
-confusion between nondecreasing variables and variables with the much
-weaker property of \emph{not} being a decreasing variable.}
-\end{definition}
-
-\begin{theorem}\label{well-founded-decreasing}
-  If there exists a derived variable for a state machine that is strictly
-  decreasing with respect to some well-founded partial order, then every
-  execution terminates.
+\begin{theorem}\label{well_order_decreasing}
+  If there exists a strictly decreasing derived variable whose range
+  is a well ordered set, then every execution terminates.
 \end{theorem}
 
-Theorem~\ref{well-founded-decreasing} follows immediately from the
-\href{http://courses.csail.mit.edu/6.042/spring08/ln3.pdf#infinite.decreasing}
-{observation in Notes 3} that a well-founded partial order has no infinite
-decreasing sequences.
+Theorem~\ref{well_order_decreasing} follows immediately from the
+observation that a set of numbers is well ordered iff it has no
+infinite decreasing sequences
+(Problem~\ref{CP_well_order_decreasing}).
 
-Note that the existence of a nonnegative integer-valued \emph{weakly}
-decreasing derived variable does not guarantee that every execution
-terminates.  That's because an infinite execution could proceed through
-states in which a weakly decreasing variable remained constant.
+Note that the existence of a \emph{weakly} decreasing derived variable
+does not guarantee that every execution terminates.  That's because an
+infinite execution could proceed through states in which a weakly
+decreasing variable remained constant.
+
 
 \subsubsection{A Southeast Jumping Robot}
+\begin{optional}
 
 \iffalse Begin by defining the trivial ``pick how long'' game: P1 picks $n
 \in \naturals$, the P2 and P1 alternate making forced moves.  The game
@@ -1870,8 +1814,8 @@ but no bound on number of steps...'' used below.
 May also tell the ``guess a bigger number game''joke.
 \fi
 
-Here's a contrived but simple example of proving termination based on a
-variable that is strictly decreasing over a well-founded order.  Let's
+Here's a contrived, simple example of proving termination based on a
+variable that is strictly decreasing over a well ordered set.  Let's
 think about a robot positioned at an integer lattice-point in the
 Northeast quadrant of the plane, that is, at $(x,y) \in \naturals^2$.
 
@@ -1902,17 +1846,22 @@ Theorem~\ref{th:decr}.
 
 So does Claim~\ref{robotcl} still seem obvious?
 
-Well it is if you see the trick: if we reverse the coordinates, then every
-robot move goes to a position that is smaller under lexicographic order.
-More precisely, let $f:\naturals^2 \to \naturals^2$ be the derived variable
-mapping a robot state ---its position $(x,y)$ ---to $(y,x) \in
-\naturals^2$.  Now $(x,y)\movesto (x',y')$ is a legitimate robot move iff
-$f((x',y')) \lex< f((x,y))$.  In particular, $f$ is a strictly
-$\lex<$-decreasing derived variable, so
-Theorem~\ref{well-founded-decreasing} proves that the robot always get
-stuck as claimed.
-\fi
+Well it is if you see the trick.  Define a derived variable, $v$, mapping
+robot states to the numbers in the well ordered set $\naturals + \twdone$
+of Definition~\ref{to1_well-order}.  In particular, define
+$v:\naturals^2 \to \naturals + \twdone$ as follows
+\[
+v(x,y) \eqdef y + \frac{x}{x+1}.
+\]
 
+Now it's easy to check that $(x,y)\movesto (x',y')$ is a legitimate
+robot move iff $v((x',y')) < v((x,y))$.  In particular, $v$ is a
+strictly-decreasing derived variable, so
+Theorem~\ref{well_order_decreasing} implies that the robot always get
+stuck ---even though we can't say how many moves it will take until it
+does.
+
+\end{optional}
 
 \iffalse
 
@@ -1974,9 +1923,6 @@ But since lexicographic order is well-founded, it is impossible for a
 lexicographically-ordered value to be decreased an infinite number of
 times.  That's just what we need to finish verifying Claim~\ref{robotcl}.
 \fi
-
-\end{editingnotes}
-
 
 \begin{problems}
 
