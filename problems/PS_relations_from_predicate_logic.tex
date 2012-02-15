@@ -1,5 +1,7 @@
 \documentclass[problem]{mcs}
 
+\newcommand{\discrs}{\ensuremath{\mathcal{D}}}
+
 \begin{pcomments}
   \pcomment{PS_relations_from_predicate_logic}
   \pcomment{created by adamc for S12:ps2}
@@ -16,110 +18,199 @@
 
 \begin{problem}
 
-Many mathematical concepts can be expressed with roughly similar effort either via sets or predicate formulas.  One might wonder whether there are concepts that can be expressed only with one of the approaches and not the other.  It may be easy to believe that any description via sets can be written as a predicate formula as well, since, as we will see in Chapter \ref{set_theory_chap}, the axioms of ZF set theory show how the concepts of set theory can be defined via predicate formulas.  Less obviously, we can re-express any predicate formula via set theory operations.  In this problem, you will invent a strategy for this translation, dealing with a subset of the usual predicate formula constructs.
+Many mathematical concepts can be expressed with roughly similar
+effort either via sets or predicate formulas.  One might wonder
+whether there are concepts that can be expressed only with one of the
+approaches and not the other.  It may be easy to believe that any
+description via sets can be written as a predicate formula as well,
+since, as we will see in Chapter \ref{set_theory_chap}, the axioms of
+ZF set theory show how the concepts of set theory can be defined via
+predicate formulas.  Less obviously, we can re-express any predicate
+formula via set theory operations.  In this problem, you will invent a
+strategy for this translation, dealing with a subset of the usual
+predicate formula constructs.
 
-In particular, consider predicate formulas built only with the following constructs:
+In particular, consider predicate formulas built only with the
+following constructs:
 \begin{itemize}
-\item $R(x, y)$, for any binary relation symbol $R$ and variables $x$ and $y$
-\item $\QNOT{} \phi$ (where $\phi$ is a predicate formula)
-\item $\phi_1 \QAND{} \phi_2$ and $\phi_1 \QOR{} \phi_2$ (where $\phi_1$ and $\phi_2$ are predicate formulas)
-\item $\forall x. \; \phi$ and $\exists x. \; \phi$ (where $x$ is a variable and $\phi$ is a formula that may mention $x$)
+
+\item $R(x, y)$, for any binary relation symbol $R$ and variables $x$ and $y$,
+
+\item $\QNOT(\varphi)$, where $\varphi$ is a predicate formula,i
+
+\item $\varphi_1 \QAND \varphi_2$ and $\varphi_1 \QOR \varphi_2$,
+  where $\varphi_1$ and $\varphi_2$ are predicate formulas,
+
+\item $\forall x. \, \varphi$ and $\exists x. \, \varphi$, where $x$
+  is a variable, and $\varphi$ is a formula that may mention $x$.
 \end{itemize}
+
+An \term{environment} is what computer scientists call an object that
+assigns values to variables; logicians call them \term{variable
+  assignments}.  So an environment can be represented as a
+function from the set of variables to their values.  For example, let
+\[
+\varphi \eqdef x + y = z,
+\]
+be a predicate formula, and let $\nu_1$ and $\nu_2$ be environments
+where
+\[\begin{array}{l}
+\nu_1(x) = 2, \nu_1(y) = 3, \nu_1(z) = 5,\\
+\nu_2(x) = 0, \nu_1(y) = 1, \nu_1(z) = 2,
+\end{array}\]
+then $\varphi$ is true in environment $\nu_1$ and false in $\nu_2$.
+
+From now on, let's assume there is a fixed domain of discourse,
+\discrs, that all variables range over.  So an environment is a
+function from variables to \discrs.  Let $\Env$ be set of all such
+environments.  We will take the relation symbol $R$ that appears in
+formulas as the name of an actual binary relation $R_\discrs$ on the
+domain \discrs. 
+
+Now we can say that the meaning
 
 \bparts
 
-\ppart Describe a procedure for translating any such predicate formula into a set theory expression standing for the set of \emph{variable assignments} that make the formula true.  In more detail, let $\mathcal V$ be the set of all variables; the details of which elements belong to $\mathcal V$ are not important.  Let $\mathcal D$ be the domain of discourse (i.e., the set of fundamental objects that predicate quantifiers consider).  We define a variable assignment to be a function $a : \mathcal V \to \mathcal D$; that is, an assignment $a$ \emph{assigns} to each variable $x$ a value $a(x)$.
+\ppart Describe a procedure for translating any such predicate formula
+into a set theory expression standing for the set of
+\term{environments}
+\iffalse
+\emph{variable assignments}
+\fi
+that make the formula true.  In more detail, let
+$\mathcal V$ be the set of all variables; the details of which
+elements belong to $\mathcal V$ are not important.  Let $\mathcal D$
+be the domain of discourse, that is, the set of fundamental objects
+that all the variables range over.  
 
-To start you off, here is a rule for encoding the predicate formula $R(x, y)$ as a set of variable assignments.  We use the name $\mathcal A$ for the set of variable assignments.
+To start you off, here is a rule for encoding the predicate formula
+$R(x, y)$ as a set of variable assignments.  We use the name $\mathcal
+A$ for the set of variable assignments.
 
 $$R(x, y) ::= \{ a \in \mathcal A | R(a(x), a(y)) \}$$
 
-Complete a description of a translation from predicate formulas to set theory expressions, such that any output expression does not use any of the predicate logic features that we allow in the input language beside direct relation applications like $R(x, y)$.
+Complete a description of a translation from predicate formulas to set
+theory expressions, such that any output expression does not use any
+of the predicate logic features that we allow in the input language
+beside direct relation applications like $R(x, y)$.
 
 Two more notational conventions will be useful:
 \begin{itemize}
-\item Use the notation $a[x \leftarrow v]$ to indicate the assignment that maps $x$ to $v$ and maps any other variable $y$ to $a(y)$.
+\item Use the notation $a[x \leftarrow v]$ to indicate the assignment
+  that maps $x$ to $v$ and maps any other variable $y$ to $a(y)$.
 
-\item You are probably used to the notation $\Sigma_{i=1}^n e$ to denote the sum of all values of $e$ while variable $i$ ranges from 1 to $n$.  An alternate notation using set theory is $\Sigma_{i \in S} e$ for some set $S$, where we take the sum of $e$ with $i$ substituted by every element of $S$.  Similar notation $\bigcup_{x \in S} e$ and $\bigcap_{x \in S} e$ will be useful for taking the union or intersection, respectively, of all values of $e$ obtained by subsituting elements of $S$ for variable $x$.
+\item You are probably used to the notation $\Sigma_{i=1}^n e$ to
+  denote the sum of all values of $e$ while variable $i$ ranges from 1
+  to $n$.  An alternate notation using set theory is $\Sigma_{i \in S}
+  e$ for some set $S$, where we take the sum of $e$ with $i$
+  substituted by every element of $S$.  Similar notation $\bigcup_{x
+    \in S} e$ and $\bigcap_{x \in S} e$ will be useful for taking the
+  union or intersection, respectively, of all values of $e$ obtained
+  by subsituting elements of $S$ for variable $x$.
 \end{itemize}
 
 \begin{solution}
-  The translation is easily expressed as a \emph{recursive function}, which you may be familiar with from programming.  We define the translation of each formula in terms of the translations of its immediate subformulas.
+  The translation is easily expressed as a \emph{recursive function},
+  which you may be familiar with from programming.  We define the
+  translation of each formula in terms of the translations of its
+  immediate subformulas.
   \begin{eqnarray*}
     T(R(x, y)) &::=& \{ a \in \mathcal A \mid R(a(x), a(y)) \} \\
-    T(\QNOT{} \phi) &::=& \mathcal A - T(\phi) \\
-    T(\phi_1 \QAND{} \phi_2) &::=& T(\phi_1) \cap T(\phi_2) \\
-    T(\phi_1 \QOR{} \phi_2) &::=& T(\phi_1) \cup T(\phi_2) \\
-    T(\forall x. \; \phi) &::=& \bigcap_{v \in \mathcal D} \{ a \in \mathcal A \mid a[x \leftarrow v] \in T(\phi) \} \\
-    T(\exists x. \; \phi) &::=& \bigcup_{v \in \mathcal D} \{ a \in \mathcal A \mid a[x \leftarrow v] \in T(\phi) \}
+    T(\QNOT{} \varphi) &::=& \mathcal A - T(\varphi) \\
+    T(\varphi_1 \QAND{} \varphi_2) &::=& T(\varphi_1) \cap T(\varphi_2) \\
+    T(\varphi_1 \QOR{} \varphi_2) &::=& T(\varphi_1) \cup T(\varphi_2) \\
+    T(\forall x. \; \varphi) &::=& \bigcap_{v \in \mathcal D} \{ a \in \mathcal A \mid a[x \leftarrow v] \in T(\varphi) \} \\
+    T(\exists x. \; \varphi) &::=& \bigcup_{v \in \mathcal D} \{ a \in \mathcal A \mid a[x \leftarrow v] \in T(\varphi) \}
   \end{eqnarray*}
 \end{solution}
 
-\ppart Prove that a predicate formula $\phi$ is true under some variable assignment $a$ iff $a$ belongs to the set that your translation outputs for $\phi$.
+\ppart Prove that a predicate formula $\varphi$ is true under some
+variable assignment $a$ iff $a$ belongs to the set that your
+translation outputs for $\varphi$.
 
-\hint Consider the set of nonnegative integers $n$ such that some formula $\phi$ exists where (a) $\phi$ is $n$ characters long and (b) $\phi$ is a counterexample to the claim above.  Derive a contradiction via the Well Ordering Principle.
+\hint Consider the set of nonnegative integers $n$ such that some
+formula $\varphi$ exists where (a) $\varphi$ is $n$ characters long
+and (b) $\varphi$ is a counterexample to the claim above.  Derive a
+contradiction via the Well Ordering Principle.
 
 \begin{solution}
-  Let $C$ be the set of nonnegative integers described in the hint.  Assume for a contradiction that $C$ is nonempty.  By the WOP, there exists a minimal $n \in C$.
+  Let $C$ be the set of nonnegative integers described in the hint.
+  Assume for a contradiction that $C$ is nonempty.  By the WOP, there
+  exists a minimal $n \in C$.
 
-  Since $n \in C$, there exist $\phi$ and $a$ such that $\phi$ is $n$ characters long and where we do not have that $a$ satisfies $\phi$ iff $a \in T(\phi)$.  We proceed with a proof by cases over the ways $\phi$ might be constructed:
+  Since $n \in C$, there exist $\varphi$ and $a$ such that $\varphi$
+  is $n$ characters long and where we do not have that $a$ satisfies
+  $\varphi$ iff $a \in T(\varphi)$.  We proceed with a proof by cases
+  over the ways $\varphi$ might be constructed:
 
   \begin{itemize}
-  \item Case $\phi = R(x, y)$:
+
+  \item Case $\varphi = R(x, y)$:
+
+\[\begin{array}{rcll}
+a \textrm{ satisfies } \varphi &\QIFF{}& R(a(x), a(y))
+       & \textrm{(definition of relation formulas)}\\
+&\QIFF{}& a \in \set{ a \in \mathcal A \suchthat R(a(x), a(y)) }
+       & \textrm{(definition of set builder notation)}\\
+&\QIFF{}& a \in T(R(x, y))
+       & \textrm{(definition of $T$)}
+\end{array}\]
+
+  \item Case $\varphi = \QNOT(\varphi')$:
+
+    Since $\varphi'$ is a subformula of $\varphi$, and since $\varphi$
+    contains the character $\QNOT{}$ and $\varphi'$ doesn't, we know
+    that $\varphi'$ has a lower character length $n'$ than $\varphi$
+    does.  This implies that $n' \not\in C$, since we chose $n$ to be
+    the minimum element of $C$.  Therefore, the required equivalence
+    holds for $\varphi'$ and any $a$, which we can use to derive the
+    equivalence for $\varphi$:
     $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& R(a(x), a(y)) & \textrm{(definition of relation formulas)} \\
-      &\QIFF{}& a \in \{ a \in \mathcal A \mid R(a(x), a(y)) \} & \textrm{(definition of set builder notation)} \\
-      &\QIFF{}& a \in T(R(x, y)) & \textrm{(definition of $T$)}
+      a \textrm{ satisfies } \varphi &\QIFF{}& \QNOT{} (a \textrm{ satisfies } \varphi') & \textrm{(definition of $\QNOT{}$)} \\
+      &\QIFF{}& \QNOT{} (a \in T(\varphi')) \} & \textrm{(equivalence holds for $\varphi'$)} \\
+      &\QIFF{}& a \in \mathcal A - T(\varphi') & \textrm{(definition of $-$)} \\
+      &\QIFF{}& a \in T(\QNOT{} \varphi') & \textrm{(definition of $T$)} \\
     \end{array}$$
 
-  \item Case $\phi = \QNOT{} \phi'$: \\
-    Since $\phi'$ is a subformula of $\phi$, and since $\phi$ contains the character $\QNOT{}$ and $\phi'$ doesn't, we know that $\phi'$ has a lower character length $n'$ than $\phi$ does.  This implies that $n' \not\in C$, since we chose $n$ to be the minimum element of $C$.  Therefore, the required equivalence holds for $\phi'$ and any $a$, which we can use to derive the equivalence for $\phi$:
+  \item Case $\varphi = \varphi_1 \QAND{} \varphi_2$: \\
+    By similar reasoning to above, both $\varphi_1$ and $\varphi_2$ are shorter than $\varphi$, so the equivalence holds for them.
     $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& \QNOT{} (a \textrm{ satisfies } \phi') & \textrm{(definition of $\QNOT{}$)} \\
-      &\QIFF{}& \QNOT{} (a \in T(\phi')) \} & \textrm{(equivalence holds for $\phi'$)} \\
-      &\QIFF{}& a \in \mathcal A - T(\phi') & \textrm{(definition of $-$)} \\
-      &\QIFF{}& a \in T(\QNOT{} \phi') & \textrm{(definition of $T$)} \\
+      a \textrm{ satisfies } \varphi &\QIFF{}& (a \textrm{ satisfies } \varphi_1) \QAND{} (a \textrm{ satisfies } \varphi_2) & \textrm{(definition of $\QAND{}$)} \\
+      &\QIFF{}& (a \in T(\varphi_1)) \QAND{} (a \in T(\varphi_2)) \} & \textrm{(equivalence holds for $\varphi_1$ and $\varphi_2$)} \\
+      &\QIFF{}& a \in T(\varphi_1) \cap T(\varphi_2) & \textrm{(definition of $\cap$)} \\
+      &\QIFF{}& a \in T(\varphi_1 \QAND{} \varphi_2) & \textrm{(definition of $T$)}
     \end{array}$$
 
-  \item Case $\phi = \phi_1 \QAND{} \phi_2$: \\
-    By similar reasoning to above, both $\phi_1$ and $\phi_2$ are shorter than $\phi$, so the equivalence holds for them.
+  \item Case $\varphi = \varphi_1 \QOR{} \varphi_2$: \\
+    By similar reasoning to above, both $\varphi_1$ and $\varphi_2$ are shorter than $\varphi$, so the equivalence holds for them.
     $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& (a \textrm{ satisfies } \phi_1) \QAND{} (a \textrm{ satisfies } \phi_2) & \textrm{(definition of $\QAND{}$)} \\
-      &\QIFF{}& (a \in T(\phi_1)) \QAND{} (a \in T(\phi_2)) \} & \textrm{(equivalence holds for $\phi_1$ and $\phi_2$)} \\
-      &\QIFF{}& a \in T(\phi_1) \cap T(\phi_2) & \textrm{(definition of $\cap$)} \\
-      &\QIFF{}& a \in T(\phi_1 \QAND{} \phi_2) & \textrm{(definition of $T$)}
+      a \textrm{ satisfies } \varphi &\QIFF{}& (a \textrm{ satisfies } \varphi_1) \QOR{} (a \textrm{ satisfies } \varphi_2) & \textrm{(definition of $\QOR{}$)} \\
+      &\QIFF{}& (a \in T(\varphi_1)) \QOR{} (a \in T(\varphi_2)) \} & \textrm{(equivalence holds for $\varphi_1$ and $\varphi_2$)} \\
+      &\QIFF{}& a \in T(\varphi_1) \cup T(\varphi_2) & \textrm{(definition of $\cup$)} \\
+      &\QIFF{}& a \in T(\varphi_1 \QOR{} \varphi_2) & \textrm{(definition of $T$)}
     \end{array}$$
 
-  \item Case $\phi = \phi_1 \QOR{} \phi_2$: \\
-    By similar reasoning to above, both $\phi_1$ and $\phi_2$ are shorter than $\phi$, so the equivalence holds for them.
+  \item Case $\varphi = \forall x. \; \varphi'$: \\
+    By similar reasoning to above, $\varphi'$ is shorter than $\varphi$, so the equivalence holds for it.
     $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& (a \textrm{ satisfies } \phi_1) \QOR{} (a \textrm{ satisfies } \phi_2) & \textrm{(definition of $\QOR{}$)} \\
-      &\QIFF{}& (a \in T(\phi_1)) \QOR{} (a \in T(\phi_2)) \} & \textrm{(equivalence holds for $\phi_1$ and $\phi_2$)} \\
-      &\QIFF{}& a \in T(\phi_1) \cup T(\phi_2) & \textrm{(definition of $\cup$)} \\
-      &\QIFF{}& a \in T(\phi_1 \QOR{} \phi_2) & \textrm{(definition of $T$)}
+      a \textrm{ satisfies } \varphi &\QIFF{}& \forall v \in \mathcal D. \; a[x \leftarrow v] \textrm{ satisfies } \varphi' & \textrm{(definition of $\forall$)} \\
+      &\QIFF{}& \forall v \in \mathcal D. \; a[x \leftarrow v] \in T(\varphi') & \textrm{(equivalence holds for $\varphi'$)} \\
+      &\QIFF{}& a \in \bigcap_{v \in \mathcal D} \{ a' \in \mathcal A \mid a'[x \leftarrow v] \in T(\varphi') \} & \textrm{(definitions of $\bigcap$ and set builder notation)} \\
+      &\QIFF{}& a \in T(\forall x. \; \varphi') & \textrm{(definition of $T$)}
     \end{array}$$
 
-  \item Case $\phi = \forall x. \; \phi'$: \\
-    By similar reasoning to above, $\phi'$ is shorter than $\phi$, so the equivalence holds for it.
+  \item Case $\varphi = \exists x. \; \varphi'$: \\
+    By similar reasoning to above, $\varphi'$ is shorter than $\varphi$, so the equivalence holds for it.
     $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& \forall v \in \mathcal D. \; a[x \leftarrow v] \textrm{ satisfies } \phi' & \textrm{(definition of $\forall$)} \\
-      &\QIFF{}& \forall v \in \mathcal D. \; a[x \leftarrow v] \in T(\phi') & \textrm{(equivalence holds for $\phi'$)} \\
-      &\QIFF{}& a \in \bigcap_{v \in \mathcal D} \{ a' \in \mathcal A \mid a'[x \leftarrow v] \in T(\phi') \} & \textrm{(definitions of $\bigcap$ and set builder notation)} \\
-      &\QIFF{}& a \in T(\forall x. \; \phi') & \textrm{(definition of $T$)}
-    \end{array}$$
-
-  \item Case $\phi = \exists x. \; \phi'$: \\
-    By similar reasoning to above, $\phi'$ is shorter than $\phi$, so the equivalence holds for it.
-    $$\begin{array}{rcll}
-      a \textrm{ satisfies } \phi &\QIFF{}& \exists v \in \mathcal D. \; a[x \leftarrow v] \textrm{ satisfies } \phi' & \textrm{(definition of $\exists$)} \\
-      &\QIFF{}& \exists v \in \mathcal D. \; a[x \leftarrow v] \in T(\phi') & \textrm{(equivalence holds for $\phi'$)} \\
-      &\QIFF{}& a \in \bigcup_{v \in \mathcal D} \{ a' \in \mathcal A \mid a'[x \leftarrow v] \in T(\phi') \} & \textrm{(definitions of $\bigcup$ and set builder notation)} \\
-      &\QIFF{}& a \in T(\exists x. \; \phi') & \textrm{(definition of $T$)}
+      a \textrm{ satisfies } \varphi &\QIFF{}& \exists v \in \mathcal D. \; a[x \leftarrow v] \textrm{ satisfies } \varphi' & \textrm{(definition of $\exists$)} \\
+      &\QIFF{}& \exists v \in \mathcal D. \; a[x \leftarrow v] \in T(\varphi') & \textrm{(equivalence holds for $\varphi'$)} \\
+      &\QIFF{}& a \in \bigcup_{v \in \mathcal D} \{ a' \in \mathcal A \mid a'[x \leftarrow v] \in T(\varphi') \} & \textrm{(definitions of $\bigcup$ and set builder notation)} \\
+      &\QIFF{}& a \in T(\exists x. \; \varphi') & \textrm{(definition of $T$)}
     \end{array}$$
 
   \end{itemize}
 
-  Since every case shows that the desired equivalence holds for $\phi$, we have contradicted our assumption that $C$ is nonempty.  Therefore, $C$ is empty, and every formula $\phi$ of every character length satisfies the equivalence.
+  Since every case shows that the desired equivalence holds for $\varphi$, we have contradicted our assumption that $C$ is nonempty.  Therefore, $C$ is empty, and every formula $\varphi$ of every character length satisfies the equivalence.
 \end{solution}
 
 \eparts

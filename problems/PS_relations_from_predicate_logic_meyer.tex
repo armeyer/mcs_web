@@ -1,0 +1,274 @@
+\documentclass[problem]{mcs}
+
+\newcommand{\discrs}{\ensuremath{\mathcal{D}}}
+
+
+\begin{pcomments}
+  \pcomment{PS_relations_from_predicate_logic_meyer}
+  \pcomment{start of ARM edit of PS_relations_from_predicate_logic 2/14/12}
+  \pcomment{original by adamc for S12:ps2}
+\end{pcomments}
+
+
+\pkeywords{
+  relations
+  predicate_logic
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+Many mathematical concepts can be expressed with roughly similar
+effort either via sets or predicate formulas.  One might wonder
+whether there are concepts that can be expressed only with one of the
+approaches and not the other.  It may be easy to believe that any
+description via sets can be written as a predicate formula as well,
+since, as we will see in Chapter~\bref{set_theory_chap}, the axioms of
+ZF set theory show how the concepts of set theory can be defined via
+predicate formulas.  Less obviously, we can re-express any predicate
+formula via set theory operations.  In this problem, you will invent a
+strategy for this translation, dealing with a subset of the usual
+predicate formula constructs.
+
+In particular, we will work with the set of predicate formulas defined
+recursively as follows:
+\begin{itemize}
+
+\item $R(x, y)$ is a predicate formula, for any binary relation symbol
+  $R$ and variables $x$ and $y$,
+
+\item $\QNOT(\varphi)$, where $\varphi$ is a predicate formula,
+
+\item $\varphi_1 \QAND \varphi_2$ and $\varphi_1 \QOR \varphi_2$,
+  where $\varphi_1$ and $\varphi_2$ are predicate formulas,
+
+\item $\forall x. \, \varphi$ and $\exists x. \, \varphi$, where $x$
+  is a variable, and $\varphi$ is a formula that may mention $x$.
+\end{itemize}
+
+From now on, we'll assume there is a fixed domain of discourse,
+\discrs, that all variables range over and that each relation symbol
+$R$ that appears in a formula has an associated binary relation
+$R_\discrs$ on the domain \discrs.  For example, we might have
+$\discrs$ be the real numbers and $R$ stand for the less-than relation
+$\reals$.  Then the formula $R(x,y)$ would be true exactly when the
+value of $x$ was a real number less than the value of $y$.
+
+To determine whether or not a formula is true, you need to know the
+values of its variables.  An \term{environment} is what computer
+scientists call an object that assigns values to variables; logicians
+call them \term{variable assignments}.  An environment can be
+represented simply as a function from the set of variables to their
+values in \discrs.
+
+Now two formulas are equivalent iff the mean the same thing.  More
+precisely, they are equivalent iff they are true in the same
+environments.  So it's natural to define the \term{meaning},
+$\mean{\varphi}$, of a formula $\varphi$ to be the set of environments
+in which it is true.
+
+For example, suppose $\varphi_0$ is the formula $R(x,y) \QAND R(y,z)$,
+and we're taking the domain to be the real nmnbers $\reals$
+and $R$ to be the less-than relation, as above.  Then if $\nu_1$ and
+$\nu_2$ are environments with
+\[\begin{array}{l}
+\nu_1(x) = 0.1,\ \nu_1(y) = 0.2,\ \nu_1(z) = 0.3,\\ 
+\nu_2(x) = \nu_2(y) = \nu_1(z) = 0.4,
+\end{array}\]
+then $\varphi_0$ is true in $\nu_1$ and false in $\nu_2$.  More
+generally, $\varphi_0$ is true those environments, $\nu$, where
+$\nu(x) < \nu(y) < \nu(z)$.  We take the set of all such environments
+  to be the meaning of the formula.  Letting $\Env$ be set of all
+  environments, we can express this concisely using set notation:
+\[
+\mean{\varphi_0} = \set{\nu \in \Env \suchthat \nu(x) < \nu(y) < \nu(z)}.
+\]
+
+In this problem, we define the general meaning of predicate formulas.
+We can start with the base case $R(x,y)$:
+\begin{equation}\label{meanR}
+\mean{R(x,y)} \eqdef \set{\nu \in \Env \suchthat R_\discrs(\nu(x), \nu(y))}.
+\end{equation}
+
+\bparts
+
+\ppart  Complete a recursive definition of the meaning of
+predicate formulas.  The expression for the meaning of an expression
+should be expressed by applying set operations to the meanings of its
+component expressions.
+
+Two more notational conventions will be useful:
+\begin{itemize}
+\item  Use the notation $\patch{\nu}{x}{v}$ to indicate the assignment
+  that maps $x$ to $v$ and leaves any other variable $y$ with the same
+  value $\nu(y)$.
+\iffalse
+If $f:A \to B$ is a function and $a,b$ are arbitrary elements, define
+  \[
+\patch{f}{a}{b}
+\]
+to be the function $g$ such that
+\begin{equation*}
+g(u) = \begin{cases}
+         b & \text{ if } u = a.\\
+         f(u) & \text{otherwise.}
+       \end{cases}
+\end{equation*}
+\fi
+
+\item You are probably used to the notation $\sum_{i=1}^n e(i)$ to
+  denote the sum of all values of $e(i)$ while variable $i$ ranges
+  from 1 to $n$.  Another way to say this is $\sum_{i \in S} e(i)$
+  where $S$ is the set of values we want $i$ to take, in this case $S=
+  \set{1,\dots n}$.  Similar notation $\bigcup_{x \in S} e(x)$ and
+  $\bigcap_{x \in S} e(x)$ will be useful for taking the union or
+  intersection, respectively, of all values of $e$ obtained by
+  subsituting elements of $S$ for variable $x$.
+\end{itemize}
+
+\begin{solution}
+  The translation is easily expressed as a \emph{recursive function},
+  which you may be familiar with from programming.  We define the
+  translation of each formula in terms of the translations of its
+  immediate subformulas.
+\begin{align*}
+  \mean{R(x, y)} & \eqdef  \set{ a \in \Env \mid R(a(x), a(y)) } \\
+  \mean{\QNOT{} \varphi} & \eqdef  \Env - \mean{\varphi} \\
+  \mean{\varphi_1 \QAND{} \varphi_2} & \eqdef  \mean{\varphi_1} \cap \mean{\varphi_2} \\
+  \mean{\varphi_1 \QOR{} \varphi_2} & \eqdef  \mean{\varphi_1} \cup \mean{\varphi_2} \\
+  \mean{\forall x. \; \varphi} & \eqdef
+     \bigcap_{v \in \discrs} \set{a \in \Env \mid \patch{a}{x}{v} \in \mean{\varphi} } \\
+     \mean{\exists x. \; \varphi} & \eqdef
+     \bigcup_{v \in \discrs} \set{ a \in \Env \mid \patch{a}{x}{v} \in \mean{\varphi} }
+\end{align*}
+\end{solution}
+
+\ppart Prove that a predicate formula $\varphi$ is true under some
+variable assignment $a$ iff $a$ belongs to the set that your
+translation outputs for $\varphi$.
+
+\hint Consider the set of nonnegative integers $n$ such that some
+formula $\varphi$ exists where (a) $\varphi$ is $n$ characters long
+and (b) $\varphi$ is a counterexample to the claim above.  Derive a
+contradiction via the Well Ordering Principle.
+
+\begin{solution}
+  Let $C$ be the set of nonnegative integers described in the hint.
+  Assume for a contradiction that $C$ is nonempty.  By the WOP, there
+  exists a minimal $n \in C$.
+
+  Since $n \in C$, there exist $\varphi$ and $a$ such that $\varphi$
+  is $n$ characters long and where we do not have that $a$ satisfies
+  $\varphi$ iff $a \in \mean{\varphi}$.  We proceed with a proof by cases
+  over the ways $\varphi$ might be constructed:
+
+  \begin{itemize}
+
+  \item Case $\varphi = R(x, y)$:
+
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+&\QIFF R(a(x), a(y))
+       & \textrm{(definition of relation formulas)}\\
+&\QIFF a \in \set{ a \in \Env \suchthat R(a(x), a(y)) }
+       & \textrm{(definition of set builder notation)}\\
+&\QIFF a \in \mean{R(x, y)}
+       & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \item Case $\varphi = \QNOT(\mean{\varphi'})$:
+
+    Since $\varphi'$ is a subformula of $\varphi$, and since $\varphi$
+    contains the character $\QNOT{}$ and $\varphi'$ doesn't, we know
+    that $\varphi'$ has a lower character length $n'$ than $\varphi$
+    does.  This implies that $n' \not\in C$, since we chose $n$ to be
+    the minimum element of $C$.  Therefore, the required equivalence
+    holds for $\varphi'$ and any $a$, which we can use to derive the
+    equivalence for $\varphi$:
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+&\QIFF \QNOT(a \textrm{ satisfies } \varphi')
+      & \textrm{(definition of $\QNOT$)} \\
+&\QIFF \QNOT(a \in \mean{\varphi'})
+      & \textrm{(equivalence holds for $\varphi'$)} \\
+&\QIFF a \in \mathcal \Env - \mean{\varphi'}
+      & \textrm{(definition of $-$)} \\
+&\QIFF a \in \mean{\QNOT(\varphi')}
+      & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \item Case $\varphi = \varphi_1 \QAND \varphi_2$: \\
+
+    By similar reasoning to above, both $\varphi_1$ and $\varphi_2$
+    are shorter than $\varphi$, so the equivalence holds for them.
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+&\QIFF (a \textrm{ satisfies } \varphi_1) \QAND (a \textrm{ satisfies } \varphi_2)
+        & \textrm{(definition of $\QAND{}$)} \\
+&\QIFF (a \in \mean{\varphi_1}) \QAND (a \in \mean{\varphi_2})
+        & \textrm{(equivalence holds for $\varphi_1$ and $\varphi_2$)} \\
+&\QIFF a \in \mean{\varphi_1} \cap \mean{\varphi_2}
+        & \textrm{(definition of $\cap$)} \\
+&\QIFF a \in \mean{\varphi_1 \QAND{} \varphi_2}
+        & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \item Case $\varphi = \varphi_1 \QOR{} \varphi_2$: \\
+
+    By similar reasoning to above, both $\varphi_1$ and $\varphi_2$
+    are shorter than $\varphi$, so the equivalence holds for them.
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+&\QIFF (a \textrm{ satisfies } \varphi_1) \QOR{} (a \textrm{ satisfies } \varphi_2)
+        & \textrm{(definition of $\QOR{}$)} \\
+&\QIFF (a \in \mean{\varphi_1}) \QOR (a \in \mean{\varphi_2})
+        & \textrm{(equivalence holds for $\varphi_1$ and $\varphi_2$)} \\
+&\QIFF a \in \mean{\varphi_1} \cup \mean{\varphi_2}
+        & \textrm{(definition of $\cup$)} \\
+&\QIFF a \in \mean{\varphi_1 \QOR{} \varphi_2}
+        & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \item Case $\varphi = \forall x. \; \varphi'$: \\
+    By similar reasoning to above, $\varphi'$ is shorter than $\varphi$, so the equivalence holds for it.
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+ &\QIFF \forall v \in \mathcal D. \; \patch{a}{x}{v} \textrm{ satisfies } \varphi'
+     & \textrm{(definition of $\forall$)} \\
+&\QIFF \forall v \in \mathcal D. \; \patch{a}{x}{v} \in
+\mean{\varphi'}
+     & \textrm{(equivalence holds for $\varphi'$)} \\
+&\QIFF a \in \bigcap_{v \in \mathcal D} \set{a' \in \Env \mid \patch{a'}{x}{v} \in \mean{\varphi'}}
+     & \textrm{(definitions of $\bigcap$ and set builder notation)} \\
+&\QIFF a \in \mean{\forall x. \; \varphi'}
+     & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \item Case $\varphi = \exists x. \; \varphi'$: \\
+    By similar reasoning to above, $\varphi'$ is shorter than $\varphi$, so the equivalence holds for it.
+\begin{align*}
+\lefteqn{a \textrm{ satisfies } \varphi}\\
+ &\QIFF \exists v \in \mathcal D. \; \patch{a}{x}{v} \textrm{ satisfies } \varphi'
+      & \textrm{(definition of $\exists$)} \\
+ &\QIFF \exists v \in \mathcal D. \; \patch{a}{x}{v} \in \mean{\varphi'}
+      & \textrm{(equivalence holds for $\varphi'$)}\\
+ &\QIFF a \in \bigcup_{v \in \mathcal D}
+              \set{a' \in \Env \mid \patch{a'}{x}{v} \in \mean{\varphi'}}
+      & \textrm{(definitions of $\bigcup$ and set builder notation)} \\
+ &\QIFF a \in \mean{\exists x. \; \varphi'}
+      & \textrm{(definition of $\mean{}$)}
+\end{align*}
+
+  \end{itemize}
+
+  Since every case shows that the desired equivalence holds for $\varphi$, we have contradicted our assumption that $C$ is nonempty.  Therefore, $C$ is empty, and every formula $\varphi$ of every character length satisfies the equivalence.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput
