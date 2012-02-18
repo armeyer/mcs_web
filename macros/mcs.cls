@@ -3000,7 +3000,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \paper[#1]{cps#2}{}{Solutions to In-Class Problems Week #2}
     \else
     \paper[#1]{cp#2}{}{In-Class Problems Week #2}
-    \fi   
+    \fi  
     \fi}
 
 \newcommand{\recitationproblems}[2][\stamp]{%
@@ -3037,6 +3037,14 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \paper[#1]{qus#2}{}{Solutions to Quiz #2}
   \else
     \exampaper[#1]{qu#2}{Quiz #2}
+  \fi}
+
+\newcommand{\spotcheck}[2][\stamp]{%
+  \theoremsunderproblems
+  \ifshowsolutions
+  \paper[#1]{spchs#2}{}{Solutions to Spotcheck #2}
+  \else
+  \paper[#1]{spch#2}{}{Spot Check #2}
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
@@ -3087,15 +3095,22 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 %
 % Usage  : \final[revision info]
 % Example: \final[v1.1]  % for v1.1 of the Final Exam
+
+\iffalse   %FIX
 %
 \newcommand{\final}[1][\stamp]{%
-    \theoremsunderproblems
+  \theoremsunderproblems
   %\useexamproblems
-  \ifshowsolutions
-    \paper[#1]{fes}{}{Solutions to the Final Examination}
+  \ifshowstaffnotes
+  \paper[#1]{fes}{}{Staff Solutions to Final Exam}
   \else
-    \exampaper[#1]{fe}{Final Examination}
-  \fi}
+  \ifshowsolutions
+  \paper[#1]{fes}{}{Solutions to the Final Examination}
+  \else
+  \exampaper[#1]{fe}{Final Examination}
+  \fi
+  \fi
+   }
 
 \newcommand{\conflictfinal}[1][\stamp]{%
     \theoremsunderproblems
@@ -3107,17 +3122,18 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \fi}
 
 \newcommand{\makeupfinal}[2][\stamp]{%
-    \theoremsunderproblems
-    \ifshowstaffnotes
-    \paper[#1]{mfes#2}{}{Staff Solutions to Makeup Final Exam#2}
-    \else
-  \ifshowsolutions
-    \paper[#1]{mfes#2}{}{Solutions to Makeup Final Exam#2}
+  \theoremsunderproblems
+  \ifshowstaffnotes
+  \paper[#1]{mfes#2}{}{Staff Solutions to Makeup Final Exam#2}
   \else
-    \exampaper[#1]{mfe#2}{Makeup Final Exam#2}
+  \ifshowsolutions
+  \paper[#1]{mfes#2}{}{Solutions to Makeup Final Exam#2}
+  \else
+  \exampaper[#1]{mfe#2}{Makeup Final Exam#2}
   \fi
   \fi}
 
+\fi
 
 % Starts a Practice (Final) Exam, given its number. Asks whether
 % solutions should be included. If the answer is yes, the
