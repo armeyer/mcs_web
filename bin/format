@@ -189,13 +189,14 @@ sub copy_idx_entries($$;$) {
     my $aux_file = shift;
     my $idx_file = shift;
 
-    my $type     = shift || 'default';
+    my $type = shift || 'default';
 
-    return unless -e $aux_file;
+    return 0 unless -e $aux_file;
 
     open(my $aux, "<", $aux_file) or do {
         warn "Can't read $aux_file: $!\n";
-        return;
+
+        return 0;
     };
 
     my $num_entries = 0;
@@ -308,20 +309,21 @@ sub makeindex( $ ) {
 
     return unless -e $aux_file;
 
-    if ($chapter ne $DRIVER) {
+    if ($chapter ne $DRIVER && $chapter !~ m{\A part}smx) {
         my $idx_file = "$chapter.idx";
 
         open(my $idx, ">", $idx_file) or die "Can't write $idx_file: $!\n";
 
         my $num_entries = copy_idx_entries($aux_file, $idx);
+
         $num_entries += copy_idx_entries("$DRIVER.aux", $idx);
 
         close($idx) or die "Error writing $idx_file: $!\n";
 
-        if ($num_entries == 0) {
-            unlink $idx_file;
-            return;
-        }
+        # if ($num_entries == 0) {
+        #     unlink $idx_file;
+        #     return;
+        # }
     }
 
     munge_idx_file("$chapter.idx");
