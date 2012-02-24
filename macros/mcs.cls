@@ -1330,7 +1330,7 @@
 %\newcommand{\prns}{\set{\, \mtt{)},\, \mtt{(}\,}^*}
 
 \def\sg{\text{Sg}}   %fictitious currency: Strong's
-\newcommand{\cents}{\text{cents}}
+\newcommand{\mcents}{\text{\textcent}}
 
 \newcommand{\strings}[1]{#1^*}
 \newcommand{\infstrings}[1]{#1^\omega}
