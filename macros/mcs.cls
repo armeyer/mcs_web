@@ -1359,8 +1359,8 @@
 \newcommand{\msubst}[2]{\mopt{subst}(#1,#2)}  %#2[x \leftarrow #1]}
 
 \newcommand{\prodsym}{\ast}
-\newcommand{\minussym}{\mopt{-}}
-\newcommand{\sumsym}{\mbint{+}}
+\newcommand{\minussym}{\ensuremath{\mathop{\mathrm{\textbf{-}}}}}
+\newcommand{\sumsym}{\ensuremath{\mathbin{\mathrm{\textbf{+}}}}}
 
 \newcommand{\btg}{\text{binary-2PTG}}
 \newcommand{\tg}{\text{2PTG}}
