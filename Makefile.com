@@ -29,7 +29,7 @@ all:
 .PHONY: clean
 
 clean:
-	-rm -f $(DRIVER_FILE).pdf *.bbl *.blg *.cb *.cb2 *.lof *.toc *.dvi *.log *.ind *.idx *.idx.original *.gdx *.gdx.original *.gnd *.ilg *.out *.probs *-saved *~
+	-rm -f *.bbl *.blg *.cb *.cb2 *.lof *.toc *.dvi *.log *.ind *.idx *.idx.original *.gdx *.gdx.original *.gnd *.ilg *.out *.probs *-saved *~
 
 .PHONY: veryclean
 
