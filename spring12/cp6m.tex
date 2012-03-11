@@ -9,122 +9,84 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \pinput{CP_RSA_between_tables}
+\pinput{CP_findphi}
 \pinput{CP_RSA_proving_correctness}
 
 %\pinput{MQ_factoring_cracks_RSA}
 %\pinput{MQ_RSA_collision_probability_200}
 
-\iffalse
-\instatements{\newpage
+\examspace[0.5in]
 
-\section*{Appendix}
+\textbox{
+\begin{center}
+\textboxheader{\large The RSA Cryptosystem}
+\end{center}
 
-\subsection*{Inverses, Fermat, Euler}
+A \textbf{Receiver} who wants to be able to receive secret numerical
+messages creates a \emph{private key}, which they keep secret, and a
+\emph{public key} which they make publicly available.  Anyone with the
+public key can then be a \textbf{Sender} who can publicly send secret
+messages to the \textbf{Receiver} ---even if they have never
+communicated or shared any information besides the public key.
 
-\begin{lemma*}[Inverses mod $n$]
-If $k$ and $n$ are relatively prime, then there is integer
-$k'$ called the \emph{modulo $n$ inverse} of $k$, such that
-\[
-k \cdot k' \equiv 1 \pmod n.
-\]
-\end{lemma*}
+Here is how they do it:
 
-\textbf{Remark:} If $\gcd(k,n) =1$, then $sk+tn = 1$ for some $s,t$, so we
-can choose $k' \eqdef s$ in the previous Lemma.  So given $k$ and $n$, an
-inverse $k'$ can be found efficiently using the Pulverizer.
+\begin{description}
 
-\begin{theorem*}[Fermat's (Little) Theorem]
-If $p$ is prime and $k$ is not a multiple of $p$, then
-\[
-k^{p-1} \equiv 1 \pmod{p}
-\]
-\end{theorem*}
+\item[Beforehand] The \textbf{Receiver} creates a public key and a private key
+as follows.
 
-\begin{definition*}
-The value of \emph{Euler's totient function}, $\phi(n)$, is defined to be
-the number of positive integers less than $n$ that are relatively prime to
-$n$.
-\end{definition*}
+\begin{enumerate}
 
-\begin{lemma*}[Euler Totient Function Equations]
-\begin{align*}
-\phi(p^k)& = p^k - p^{k-1} & \text{for prime, $p$, and $k>0$},\\
-\phi(mn) & = \phi(m)\cdot \phi(n) &\text{ when } \gcd(m,n)=1.
-\end{align*}
-\end{lemma*}
+\item Generate two distinct primes, $p$ and $q$.  These are used to
+  generate the private key, and they must be kept hidden.  (In current
+  practice, $p$ and $q$ are chosen to be hundreds of digits long.)
 
-\begin{theorem*}[Euler's Theorem]
-If $k$ and $n$ are relatively prime, then
-\[
-k^{\phi(n)} \equiv 1 \pmod{n}
-\]
-\end{theorem*}
+\item Let $n \eqdef pq$.
+
+\item Select an integer $e \in [1,n)$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
+\emph{public key} is the pair $(e, n)$.  This should be distributed
+widely.
+
+\item Compute $d \in [1,n)$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.
+  This can be done using the Pulverizer.\\ The \emph{private key} is
+  the pair $(d, n)$.  This should be kept hidden!
+
+\end{enumerate}
+
+\item[Encoding]
 
 \iffalse
+Given a message~$m$, the sender first checks that $\gcd(m, n) =
+1$.
 
-\begin{corollary*}
-If $k$ and $n$ are relatively prime, then $k^{\phi(n)-1}$ is an inverse
-modulo $n$ of $k$.
-\end{corollary*}
 
-\textbf{Remark:} Using fast exponentiation to compute $k^{\phi(n)-1}$ is
-another efficient way to compute an inverse modulo $n$ of $k$.
+\footnote{It would be very bad if $\gcd(m, n)$ equals $p$ or $q$
+since then it would be easy for someone to use the encoded message to
+compute the private key  If $\gcd(m, n) = n$, then the encoded message
+would be~0, which is fairly useless.  For very large values of~$n$, it
+is extremely unlikely that $\gcd(m, n) \ne 1$.  If this does happen,
+you should get a new set of keys or, at the very least, add some bits
+to~$m$ so that the resulting message is relatively prime to~$n$.}
 \fi
 
-\subsection*{The Pulverizer}
-
-Euclid's algorithm for finding the GCD of two numbers relies on
-repeated application of the equation: 
+To transmit a message $m \in [0,n)$ to \textbf{Receiver}, a \textbf{Sender} uses the
+  public key to encrypt $m$ into a numerical message
 \[
-\gcd(a, b) = \gcd(b, \rem{a}{b})
+m^* \eqdef \rem{m^e}{n}.
 \]
-\iffalse
-For example, we can compute the GCD of 259 and 70 as follows:
+The \textbf{Sender} can then publicly transmit $m^*$ to the
+\textbf{Receiver}.
+
+
+\item[Decoding] The \textbf{Receiver} decrypts message $m^*$ back to
+  message $m$ using the private key:
 \[
-\begin{array}{rclcl}
-\gcd(259, 70)
-    & = & \gcd(70, 49) & \quad & \text{since $\rem{259}{70} = 49$}\\
-    & = & \gcd(49, 21) && \text{since $\rem{70}{49} = 21$} \\
-    & = & \gcd(21, 7) && \text{since $\rem{49}{21} = 7$} \\
-    & = & \gcd(7, 0) && \text{since $\rem{21}{7} = 0$} \\
-    & = & 7.
-\end{array}
+m = \rem{(m^*)^d}{n}.
 \]
-\fi
-The Pulverizer goes through the same steps, but requires some extra
-bookkeeping along the way: as we compute $\gcd(a, b)$, we keep track
-of how to write each of the remainders (49, 21, and 7, in the example)
-as a linear combination of $a$ and $b$ (this is worthwhile, because
-our objective is to write the last nonzero remainder, which is the
-GCD, as such a linear combination).  For our example, here is this
-extra bookkeeping:
-\[
-\begin{array}{ccccrcl}
-x & \quad & y & \quad & \rem{x}{y} & = & x - q \cdot y \\ \hline
-259 && 70 && 49 & = &   259 - 3 \cdot 70 \\
-70 && 49 && 21  & = &   70 - 1 \cdot 49 \\
-&&&&            & = &   70 - 1 \cdot (259 - 3 \cdot 70) \\
-&&&&            & = &   -1 \cdot 259 + 4 \cdot 70 \\
-49 && 21 && 7   & = &   49 - 2 \cdot 21 \\
-&&&&            & = &   (259 - 3 \cdot 70) -
-                                2 \cdot (-1 \cdot 259 + 4 \cdot 70) \\
-&&&&            & = &   \fbox{$3 \cdot 259 - 11 \cdot 70$} \\
-21 && 7 && 0
-\end{array}
-\]
-We began by initializing two variables, $x = a$ and $y = b$.  In the
-first two columns above, we carried out Euclid's algorithm.  At each
-step, we computed $\rem{x}{y}$, which can be written in the form $x -
-q \cdot y$. \iffalse (Remember that the Division Algorithm says $x = q
-\cdot y + r$, where $r$ is the remainder.  We get $r = x - q \cdot y$
-by rearranging terms.)\fi Then we replaced $x$ and $y$ in this
-equation with equivalent linear combinations of $a$ and $b$, which we
-already had computed.  After simplifying, we were left with a linear
-combination of $a$ and $b$ that was equal to the remainder as desired.
-The final solution is boxed.}\fi
 
-
-
+\end{description}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problems end here
