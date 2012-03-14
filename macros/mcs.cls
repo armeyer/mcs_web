@@ -3060,6 +3060,18 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \fi
     \fi}
 
+\newcommand{\midterm}[2][\stamp]{%
+    \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{midtrms#2}{}{Staff Solutions to Midterm Exam #2}
+    \else
+    \ifshowsolutions
+        \paper[#1]{midtrms#2}{}{Solutions to Midterm Exam #2}
+    \else
+        \exampaper[#1]{midtrm#2}{Midterm Exam #2}
+    \fi
+    \fi}
+
 % Starts a Practice Quiz, given its number. Asks whether solutions
 % should be included. If the answer is yes, the corresponding
 % solutions paper is started. (Use \showsolutions or \hidesolutions
