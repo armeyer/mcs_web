@@ -2820,6 +2820,11 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \end{tabular}
   \end{center}}
 
+
+\newcommand{\examtime}{%
+  Renew $\backslash$\texttt{examtime} to get the time here!!%  
+  \message{^^JExam time *INCORRECT*.^^J^^J}}
+
 \newcommand{\courseassistants}{%
   Renew $\backslash$\texttt{courseassistants} to get 
   the TAs' names here!%  
