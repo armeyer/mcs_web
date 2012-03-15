@@ -1243,7 +1243,8 @@
 \newcommand{\cross}{\times}
 \newcommand{\compose}{\circ}
 \newcommand{\composition}{\circ} 
-\newcommand{\power}{\mathcal{P}}
+%\newcommand{\power}{\mathcal{P}}
+\newcommand{\power}{\mopt{pow}}
 \newcommand{\restrict}{\upharpoonright}
 
 \newcommand{\embed}[1]{\mathcal{#1}}
@@ -2701,7 +2702,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \begin{itemize}
 
   \item
-   This quiz is \textbf{closed book}.  Total time is 15 minutes.
+   This exam is \textbf{closed book}.  Total time is \examtime.
 
   \item
    Write your solutions in the space provided.  If you need more
