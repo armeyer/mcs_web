@@ -18,6 +18,7 @@ showpolicy:
 	@ cat $(SOLUTIONSPOLICY)
 	@ cat $(EDITNOTEPOLICY)
 	@ cat $(PROBLEMSPOLICY)
+	@ cat $(PROBLEMSINBOOK)
 
 .PHONY: shownotes
 
