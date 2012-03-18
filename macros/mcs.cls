@@ -427,7 +427,13 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\let\inbook\@firstofone
+%% Originally \inbook was defined as \@firstofone, but that causes
+%% problems if a comment environment is put inside an \inbook, so I
+%% changed \inbook to \@empty.  This means the braces surrounding the
+%% argument are left in, so an extra level of grouping is introduced,
+%% but that shouldn't be a problem.
+
+\let\inbook\@empty
 \let\inhandout\gobble@text
 \let\inmcsprob\gobble@text
 
