@@ -1103,6 +1103,9 @@
 %\newcommand{\catv}[3]{#1\ang{#2}#3}
 \newcommand{\catv}[3]{#1\:\widehat{#2}\: #3}
 \newcommand{\merge}[2]{#1\;\widehat{\ }\: #2}
+\newcommand{\gprod}[2]{#1 \parallel #2}
+\newcommand{\conntd}[1]{\kappa(#1)}
+
 
 
 %% Text -- Abbreviations
