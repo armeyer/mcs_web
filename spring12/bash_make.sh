@@ -15,7 +15,8 @@ function internal_actions {
 	fi
 }
 function internal_versions {
-	previewfolder="ssol/previews"
+        previewfolder="ssol"
+#	previewfolder="ssol/previews"
 	if [ $2 -eq 1 ]; then
 		internal_actions $1 hidesolutions ${1}.pdf $previewfolder pub $5 $6 $7
 	fi
