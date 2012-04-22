@@ -2709,12 +2709,15 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \begin{itemize}
 
   \item
-   This exam is \textbf{closed book}.  Total time is \examtime.
+   This exam is \textbf{closed book}, but you may use one page of notes.  Total time is \examtime.
 
   \item
    Write your solutions in the space provided.  If you need more
    space, write on the back of the sheet containing the problem.
    Please keep your entire answer to a problem on that problem's page.
+
+   \item
+   You may use any of the results from class or text without proof.
 
   \item
    GOOD LUCK!
