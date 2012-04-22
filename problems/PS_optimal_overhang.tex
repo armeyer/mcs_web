@@ -1,0 +1,252 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_optimal_overhang}
+  \pcomment{from ftl book draft}
+\end{pcomments}
+
+\pkeywords{
+  stable_stack
+  overhang
+  optimal
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+\TBA{pending}
+
+\begin{editingnotes}
+\textbf{FROM FTL VERSION}
+
+In general, the overhang of a stack of blocks is maximized by sliding
+the entire stack rightward until its center of mass is at the edge of
+the table.  The overhang will then be equal to the distance between
+the center of mass of the stack and the rightmost edge of the
+rightmost block.  We call this distance the \term{spread} of the
+stack.  Note that the spread does not depend on the location of the
+stack on the table ---it is purely a property of the blocks in the
+stack.  Of course, as we just observed, the maximum possible overhang
+is equal to the maximum possible spread.  This relationship is
+illustrated in Figure~\ref{fig:overhang}.
+
+\begin{figure}
+
+\graphic{Bookstack-2}
+
+\caption{The overhang is maximized by maximizing the spread and then
+  placing the stack so that the center of mass is at the edge of the
+  table.}
+
+\label{fig:overhang}
+
+\end{figure}
+
+%\subsection{A Recursive Solution}
+
+Our goal is to find a formula for the maximum possible spread~$S_n$
+that is achievable with a stable stack of $n$~blocks.
+
+We already know that $S_1 = 1/2$ since the right edge of a single
+block with length~1 is always distance~$1/2$ from its center of mass.
+Let's see if we can use a recursive approach to determine~$S_n$ for
+all~$n$.  This means that we need to find a formula for~$S_n$ in terms
+of~$S_i$ where~$i < n$.
+
+Suppose we have a stable stack~$\mathcal{S}$ of $n$~blocks with
+maximum possible spread~$S_n$.  There are two cases to consider
+depending on where the rightmost block is in the stack.
+
+\subparagraph{Case 1:}
+
+\emph{The rightmost block in~$\mathcal{S}$ is the bottom block.}
+Since the center of mass of the top $n - 1$~blocks must be over the
+bottom block for stability, the spread is maximized by having the
+center of mass of the top $n - 1$~blocks be directly over the
+\emph{left} edge of the bottom block.  In this case the center of mass
+of~$\mathcal{S}$ is\footnote{The center of mass of a stack of blocks
+  is the average of the centers of mass of the individual blocks.}
+\[
+\frac{ (n - 1) \cdot 1 + (1) \cdot \frac{1}{2} }{ n }
+    = 1 - \frac{1}{2n}
+\]
+to the left of the right edge of the bottom block and so the spread
+for~$\mathcal{S}$ is
+\begin{equation}\label{eqn:9G15}
+    1 - \frac{1}{2n}.
+\end{equation}
+For example, see Figure~\ref{fig:9G14}.
+
+\begin{figure}
+
+\graphic{Fig_G14}
+
+\caption{The scenario where the bottom block is the rightmost block.
+  In this case, the spread is maximized by having the center of mass
+  of the top $n-1$~blocks be directly over the left edge of the bottom
+block.}
+
+\label{fig:9G14}
+
+\end{figure}
+
+In fact, the scenario just described is easily achieved by arranging
+the blocks as shown in Figure~\ref{fig:9G15}, in which case we have
+the spread given by equation~\ref{eqn:9G15}.  For example, the spread
+is $3/4$ for 2~blocks, $5/6$ for 3~blocks, $7/8$ for 4~blocks, etc.
+
+\begin{figure}
+
+\graphic{Fig_G15}
+
+\caption{A method for achieving spread (and hence overhang)~$1 - 1/2n$
+  with $n$~blocks, where the bottom block is the rightmost block.}
+
+\label{fig:9G15}
+
+\end{figure}
+
+Can we do any better?  The best spread in Case~1 is always less
+than~1, which means that we cannot get a block fully out over the edge
+of the table in this scenario.  \iffalse
+Maybe our intuition was right that we
+can't do better.  Before we jump to any false conclusions, however,
+let's see what happens in the other case.
+\fi
+
+\subparagraph{Case 2:}
+
+\emph{The rightmost block in~$\mathcal{S}$ is among the top $n -
+  1$~blocks.}  In this case, the spread is maximized by placing the
+top $n - 1$~blocks so that their center of mass is directly over the
+\emph{right} end of the bottom block.  This means that the center of
+mass for~$\mathcal{S}$ is at location
+\[
+    \frac{(n - 1) \cdot C + 1 \cdot \paren{C - \frac{1}{2}}}{n}
+    = C - \frac{1}{2n}
+\]
+where $C$~is the location of the center of mass of the top $n -
+1$~blocks.  In other words, the center of mass of~$\mathcal{S}$
+is~$1/2n$ to the left of the center of mass of the top $n - 1$~blocks.
+(The difference is due to the effect of the bottom block, whose center
+of mass is $1/2$ unit to the left of~$C$.)  This means that the spread
+of~$\mathcal{S}$ is $1/2n$ greater than the spread of the top $n -
+1$~blocks (because we are in the case where the rightmost block is
+among the top $n - 1$~blocks.)
+
+Since the rightmost block is among the top $n - 1$ blocks, the spread
+for~$\mathcal{S}$ is maximized by maximizing the spread for the top $n
+- 1$~blocks.  Hence the maximum spread for~$\mathcal{S}$ in this case
+is
+\begin{equation}\label{eqn:9G16}
+    S_{n - 1} + \frac{1}{2n}
+\end{equation}
+where $S_{n - 1}$~is the maximum possible spread for $n - 1$~blocks
+(using any strategy).
+
+We are now almost done.  There are only two cases to consider when
+designing a stack with maximum spread and we have analyzed both of
+them.  This means that we can combine equation~\ref{eqn:9G15} from
+Case~1 with equation~\ref{eqn:9G16} from Case~2 to conclude that
+\begin{equation}\label{eqn:9G17}
+    S_n = \max \paren{1 - \frac{1}{2n}, \; S_{n - 1} + \frac{1}{2n}}
+\end{equation}
+for any $n > 1$.
+
+Uh-oh. This looks complicated.  Maybe we are not almost done after
+all!
+
+Equation~\ref{eqn:9G17} is an example of a \term{recurrence}.  We will
+describe numerous techniques for solving recurrences in a later chapter,
+%Chapter~\ref{chap:recurrences},
+but, fortunately, equation~\ref{eqn:9G17} is simple enough that we can
+solve it directly.
+
+One of the first things to do when you have a recurrence is to get a
+feel for it by computing the first few terms.  This often gives clues
+about a way to solve the recurrence, as it will in this case.
+
+We already know that $S_1 = 1/2$.  What about~$S_2$?  From
+equation~\ref{eqn:9G17}, we find that
+\begin{align*}
+S_2
+    &= \max \left\{ 1 - \frac{1}{4}, \; \frac{1}{2} + \frac{1}{4} \right \} \\
+    &= 3/4.
+\end{align*}
+Both cases give the same spread, albeit by different approaches.  For
+example, see Figure~\ref{fig:9G20}.
+
+\begin{figure}
+
+\subfloat[]{\graphic{Fig_G20-a}}
+\qquad
+\subfloat[]{\graphic{Fig_G20-b}}
+
+\caption{Two ways to achieve spread (and hence overhang)~$3/4$ with $n
+  = 2$ blocks.  The first way~(a) is from Case~1 and the second~(b) is
+  from Case~2.}
+
+\label{fig:9G20}
+
+\end{figure}
+
+That was easy enough.  What about~$S_3$?
+\begin{align*}
+S_3 &= \max\left\{ 1 - \frac{1}{6}, \; \frac{3}{4} + \frac{1}{6} \right\} \\
+    &= \max\left\{ \frac{5}{6}, \; \frac{11}{12} \right\} \\
+    &= \frac{11}{12}.
+\end{align*}
+As we can see, the method provided by Case~2 is the best.  Let's check
+$n = 4$.
+\begin{align}
+S_4 &= \max\left\{ 1 - \frac{1}{8}, \; \frac{11}{12} + \frac{1}{8} \right\}
+    \notag \\
+    &= \frac{25}{24}. \label{eqn:9G21}
+\end{align}
+
+Wow!  This is a breakthrough---for two reasons.  First,
+equation~\ref{eqn:9G21} tells us that by using only 4~blocks, we can
+make a stack so that one of the blocks is hanging out completely over
+the edge of the table.  The two ways to do this are shown in
+Figure~\ref{fig:9G22}.
+
+\begin{figure}
+
+\subfloat[]{\graphic{Fig_G22-a}}
+\qquad
+\subfloat[]{\graphic{Fig_G22-b}}
+
+\caption{The two ways to achieve spread (and overhang)~$25/24$.  The
+  method in~(a) uses Case~1 for the top 2~blocks and Case~2 for the
+  others.  The method in~(b) uses Case~2 for every block that is added
+to the stack.}
+
+\label{fig:9G22}
+
+\end{figure}
+
+The second reason that equation~\ref{eqn:9G21} is important is that we
+now know that $S_4 > 1$, which means that we no longer have to worry
+about Case~1 for $n > 4$ since Case~1 never achieves spread greater
+than~1.  Moreover, even for~$n \le 4$, we have now seen that the
+spread achieved by Case~1 never exceeds the spread achieved by Case~2,
+and they can be equal only for $n = 1$ and $n = 2$.  This means that
+\begin{equation}\label{eqn:9G23}
+    S_n = S_{n - 1} + \frac{1}{2n}
+\end{equation}
+for all $n > 1$ since we have shown that the best spread can always be
+achieved using Case~2.
+\end{editingnotes}
+
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
