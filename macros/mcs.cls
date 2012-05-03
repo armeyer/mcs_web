@@ -1423,7 +1423,9 @@
 \newcommand{\heads}{\mathrm{H}}
 
 \newcommand{\prob}[1]{\Pr[#1]}
-\newcommand{\prsub}[2]{\Pr_{#2}[#1]}
+%\newcommand{\prsub}[2]{\Pr_{#2}[#1]}
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}}_{#2}\nolimits\left\[#1\right\]}
+%\newcommand{\prsub}[2]{\mathop{\text{Pr}}_{#2}\nolimits\left\[#1\right\]}
 
 \let\pr\prob
 
