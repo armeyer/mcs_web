@@ -2455,12 +2455,17 @@
 
 %% \examrule creates a \brule only in handouts without solutions.  If
 %%   no argument is passed then the default \hspace is 0.5in
-\newcommand{\examrule}[1][0.5in]{\inhandout{\instatements{\brule{#1}}}}
+\newcommand{\examrule}[1][]{}
+
+\newcommand{\@examrule}[1][0.5in]{\inhandout{\instatements{\brule{#1}}}}
 
 %% \exambox{W}{H}{D} creates a \fbox having width W, height H 
 %%   and at distance D from the bottom of the current line (only in 
 %%   handouts without solutions). 
-\newcommand{\exambox}[3]{\inhandout{\instatements{
+
+\newcommand{\exambox}[3]{}
+
+\newcommand{\@exambox}[3]{\inhandout{\instatements{
   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
