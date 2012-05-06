@@ -1,0 +1,92 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_discriminate_biased_coins_chernoff}
+  \pcomment{contrast to Chebyshev version PS_discriminate_biased_coins}
+  \pcomment{ARM 5/6/12}
+\end{pcomments}
+
+\pkeywords{
+  chernoff_bound
+  Chernoff
+  confidence
+  sampling
+  variance
+  binomial_distribution
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We have two coins: one is a fair coin, but the other produces heads
+with probability $3/4$.  One of the two coins is picked, and this coin
+is tossed $n$ times.  Use the Chernoff Bound to determine the smallest
+$n$ which allows determination.
+
+\begin{solution}
+To guess which coin was picked, set a threshold $t$ between $1/2$ and
+$3/4$.\footnote{This is same same approach as in
+  Problem~\bref{PS_discriminate_biased_coins}, but here we use the
+  Chernoff Bound and get a much smaller bound on $n$.}  If the proportion
+of heads is less than the threshold, guess that the fair coin had been
+picked; otherwise, guess the biased coin.  Let the random variable $F$
+be the number of heads that would appear in the first $n$ flips of the
+fair coin, and let $B$ denote the number of heads that would appear in
+the first $n$ flips of the biased coin.  We must flip the coin
+sufficiently many times to ensure that
+\begin{equation}\label{confreqF}
+\Prob{\frac{F}{n} \geq t} \leq 0.05
+\end{equation}
+and
+\begin{equation}\label{confreqB}
+\Prob{\frac{B}{n} \leq t} \leq 0.05
+\end{equation}
+A natural threshold is the midpoint between $1/2$ and $3/4$, namely,
+$t=5/8$.
+
+Now, $F$ has an $(n,1/2)$-binomial distribution, so its expectation
+is $n/2$.  Using Chernoff's Bound $F$, we have
+\begin{align*}
+\Prob{\frac{F}{n} \geq \frac{5}{8}} 
+& = \prob{F \geq \frac{5}{4} \cdot \expect{F}}\\
+& \leq e^{-\beta(5/4)\cdot (n/2)}\\
+& \leq (0.99)^n.
+\end{align*}
+
+The variable $B$, on the other hand, has an $(n,3/4)$-binomial
+distribution, so $C \eqdef n - B$ has an $(n,1/4)$-binomial
+distribution, and $B \leq k$ iff $C \geq n - k$ and $\expect{C} = n/4$.
+Using Chernoff's Bound for $C$, we have
+\begin{align*}
+\Prob{\frac{B}{n} \leq \frac{5}{8}} 
+& = \prob{B \leq \frac{5}{8}n\\
+& = \prob{C \geq \frac{3}{8}n}\\
+& = \prob{C \geq \frac{3}{2}\expect(C}\\
+& \leq e^{-\beta(3/2)\cdot (n/4)}\\
+& \leq (0.974)^n.
+\end{align*}
+
+So, for the required confidence level, we require that
+\[
+(0.99)^n \leq 0.05,
+\]
+namely, $n \geq 298$, which is only a little less than the estimate of
+$320$ flips obtained using the Chebyshev Bound.
+
+Because the variance of the biased coin is less than that of the fair
+coin, we can do slightly better if we increase our threshold a bit
+to
+about $0.634$, which gives 95\% confidence with 279 coin flips.
+
+\end{solution}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
