@@ -507,9 +507,7 @@ As with Markov's Theorem, Theorem~\ref{th:below} often gives weak
 results.  In fact, based on the data given, the entire class could
 have scored above 50.
 
-\end{editingnotes}
 
-\begin{editingnotes}
 \subsubsection*{Using Markov To Analyze Non-Random Events}
 
 In the previous examples, we used a theorem about a random variable to
@@ -1000,10 +998,6 @@ with the values of the two sums $\sum_{i=1}^n x_i$ and $\sum_{i=1}^n
 x_i^2$.  Then we just plug these two values into~\eqref{vn:alt} to find
 the sample variance.
 
-\end{editingnotes}
-
-\begin{editingnotes}
-
 \subsection{Expectation Squared}
 
 The alternate definition of variance given in Lemma~\ref{alt:var} has
@@ -1199,12 +1193,13 @@ terms, we find that
 \end{proof}
 
 It's easy to see that additivity of variance does not generally hold
-for dependent variables.  For example, if $R_1=R_2$, then
-equation~\eqref{vR+R} becomes $\variance{R_1 + R_1} = \variance{R_1} +
-\variance{R_1}$.  By the Square Multiple Rule,
+for variables that are not independent.  For example, if $R_1=R_2$,
+then equation~\eqref{vR+R} becomes $\variance{R_1 + R_1} =
+\variance{R_1} + \variance{R_1}$.  By the Square Multiple Rule,
 Theorem~\ref{var.const}, this holds iff $4 \variance{R_1} = 2
-\variance{R_1}$, which implies that $\variance{R_1}=0$.  But
-$\variance{R_1}>0$ unless $R_1$ is certain to be constant.
+\variance{R_1}$, which implies that $\variance{R_1}=0$.  So
+equation~\eqref{vR+R} fails when $R_1=R_2$ and $R_1$ has nonzero
+variance.
 
 The proof of Theorem~\ref{indvar} carries over straightforwardly to
 the sum of any finite number of variables.  So we have:
@@ -1719,6 +1714,19 @@ variables~$T_1$, $T_2$, \dots, $T_n$ where $0 \le T_i \le 1$.  A
 random variable with a binomial distribution is just one of many
 examples of such a~$T$.  Here is another.
 
+\begin{editingnotes}
+Incorporate more of Lehman's Weird Happenings notes of December 7,
+2004 (appended at end of this LateX source):
+
+discussion of weirdness
+
+three Chernoff inequalities
+
+replacing $\mu$ by upper bound on $\mu$.
+
+\end{editingnotes}
+
+
 \subsection{A Motivating Example}
 
 Fussbook is a new social networking site oriented toward unpleasant
@@ -1810,6 +1818,663 @@ no direct dependence on the number of random variables in the sum or
 their expectations.  In short, the Chernoff bound gives strong results
 for lots of problems based on little information ---no wonder it is
 widely used!
+
+\subsection{Chernoff Bound for Binomial Tails}
+
+The Chernoff bound is pretty easy to apply, though the details can be
+daunting at first.  Let's walk through a simple example to get the
+hang of it: getting bounds on the tail of a binomial distribution, for
+example, bounding the probability that the number of heads that come up in
+1000~independent tosses of a coin exceeds the expectation by 20\%
+or more?  Let $T_i$ be an indicator variable for the event that the
+$i$th coin is heads.  Then the total number of heads is
+\begin{equation*}
+    T = T_1 + \cdots + T_{1000}.
+\end{equation*}
+The Chernoff bound requires that the random variables~$T_i$ be
+\idx{mutually independent} and take on values in the range $[0, 1]$.
+Both conditions hold here.  In this example the $T_i$'s only take the two
+values 0 and 1, since they're indicators.
+
+The goal is to bound the probability that the number of heads exceeds
+its expectation by 20\% or more; that is, to bound $\prob{T \geq c
+  \expect{T}}$ where c = $1.2$.  To that end, we compute $\beta(c)$ as
+defined in the theorem:
+\[
+\beta(c) = c \ln(c) - c + 1 = 0.0187\dots.
+\]
+If we assume the coin is fair, then $\expect{T} = 500$.
+Plugging these values into the Chernoff bound gives:
+\begin{align*}
+\Prob{T \geq 1.2 \expect{T}} & \leq  e^{- \beta(c). \expect{T}} \\
+  & = e^{- (0.0187\dots) \cdot 500} <  0.0000834.
+\end{align*}
+So the probability of getting 20\% or more extra heads on 1000 coins
+is less than 1 in 10,000.
+
+\begin{editingnotes}
+Put this footnote\footnote{Since we are analyzing a binomial
+  distribution here, we can get somewhat better bounds using the
+  methods from Section~\ref{binomial_distribution_section}, but it is
+  much easier to use the Chernoff bounds, and they provide results
+  that are nearly as good.} back in if we put back the section on binomial estimation
+via Stirling.
+
+Might be better to insert Section~\ref{binomial_distribution_section}
+here as an optional section and comparing those estimates to
+Chernoff.
+\end{editingnotes}
+
+The bound becomes much stronger as the number of coins increases,
+because the expected number of heads appears in the exponent of the
+upper bound.  For example, the probability of getting at least 20\%
+extra heads on a million coins is at most
+\[
+e^{- (0.0187\dots) \cdot 500000} < e^{-9392},
+\]
+which is an inconceivably small number.  %pretty darn
+
+Alternatively, the bound also becomes stronger for larger deviations.
+For example, suppose we're interested in the odds of getting 30\% or
+more extra heads in 1000 tosses, rather than 20\%.  In that case,
+$c= 1.3$ instead of $1.2$.  Consequently, the parameter $\beta(c)$ rises from
+$0.0187$ to about $0.0410$, which may not seem significant, but because
+$\beta(c)$ appears in the exponent of the upper bound, the final probability
+decreases from around 1 in 10,000 to about 1 in a billion!
+
+\subsection{Chernoff Bound for a Lottery Game}
+
+\idx{Pick-4} is a lottery game where you pay \$1 to pick a 4-digit
+number between 0000 and 9999.  If your number comes up in a random
+drawing, then you win~\$5,000.  Your chance of winning is 1 in 10,000.
+If 10 million people play, then the expected number of winners is
+1000.  When there are exactly 1000 winners, the lottery keeps \$5
+million of the \$10 million paid for tickets.  The lottery operator's
+nightmare is that the number of winners is much greater ---say at the
+2000 or greater point where the lottery has to pay out more than it
+received.  What is the probability that will happen?
+
+Let $T_i$ be an indicator for the event that the $i$th player wins.
+Then $T = T_1 + \cdots + T_n$ is the total number of winners.  If we
+assume\footnote{As we noted in Chapter~\ref{ran_var_chap}, human
+  choices are often not uniform and they can be highly dependent.  For
+  example, lots of people will pick an important date.  So the lottery
+  folks should not get too much comfort from the analysis that
+  follows, unless they assign random 4-digit numbers to each player.}
+that the players' picks and the winning number are random, independent
+and uniform, then the indicators $T_i$~are independent, as required by
+the Chernoff bound.
+
+Since 2000~winners would be twice the expected number, we choose $c =
+2$, compute $\beta(c) = 0.386\dots$, and plug these values
+into the Chernoff bound:
+\begin{align*}
+\prob{T \geq 2000} & = \Prob{T \geq 2 \expect{T}} \\
+  & \leq e^{-k \expect{T}} = e^{- (0.386\dots) \cdot 1000} \\
+  & < e^{-386}.
+\end{align*}
+So there is almost no chance that the lottery operator pays out
+double.  In fact, the number of winners won't even be 10\% higher than
+expected very often.  To prove that, let $c = 1.1$, compute $\beta(c)
+= 0.00484\dots$, and plug in again:
+\begin{align*}
+\Prob{T \geq 1.1 \expect{T}} & \leq e^{-k \expect{T}} \\
+  & = e^{- (0.00484)\cdot 1000} < 0.01.
+\end{align*}
+So the Pick-4 lottery may be exciting for the players, but the lottery
+operator has little doubt about the outcome!
+
+\subsubsection{Randomized Load Balancing}
+
+Now let's return to Fussbook and its \idx{load balancing} problem.
+Specifically, we need to determine how many machines suffice to ensure
+that no server is overloaded; that is, assigned to do more than 10
+minutes of work in a 10-minute interval.  So a server is overloaded if
+it gets assigned more than 600 seconds of work.
+
+To begin, let's find the probability that the first server is
+overloaded.  Letting $T$ be the number of seconds of work assigned to
+the first server, this means we want an upper bound on $\prob{T \geq
+  600}$.  Let $T_i$ be the number of seconds that the first server
+spends on the $i$th task: then $T_i$ is zero if the task is assigned
+to another machine, and otherwise $T_i$ is the length of the task.  So
+$T = \sum_{i = 1}^n T_i$ is the total length of tasks assigned to the
+first server, where~$n = 24{,}000$.
+
+The Chernoff bound is applicable only if the $T_i$ are mutually
+independent and take on values in the range $[0, 1]$.  The first
+condition is satisfied if we assume that task lengths and assignments
+are independent.  And the second condition is satisfied because
+processing even the most interminable harangue takes at most 1 second.
+
+In all, there are 24,000 tasks, each with an expected length of~1/4
+second.  Since tasks are assigned to computers at random, the expected
+load on the first server is:
+\begin{align}
+\expect{T} & = \frac{24{,}000 \mbox{ tasks} \cdot 1/4 \mbox{ second per task}}
+  {m \mbox{ machines}} \notag\\
+  & = 6000 / m\,\text{seconds}.
+\label{eqn:19XX}
+\end{align}
+For example, if there are fewer than $10$ machines, then the expected
+load on the first server is greater than its capacity, and we can
+expect it to be overloded.  If there are exactly 10 machines, then the
+server is expected to run for $6000/10 = 600$ seconds, which is 100\%
+of its capacity.
+
+Now we can use the Chernoff bound to upper bound the probability that
+the first server is overloaded.  We have from~\eqref{eqn:19XX}
+\[
+600 = c \expect{T}  \qquad \text{where } c \eqdef m/10,
+\]
+so by the Chernoff bound
+\begin{align*}
+\prob{T \geq 600} = \prob{T \geq c \expect{T}} \leq e^{-(c \ln(c) - c + 1) \cdot 6000 / m},
+\end{align*}
+
+The probability that \emph{some} server is overloaded is at most
+$m$~times the probability that the first server is overloaded, by the
+Union Bound in Section~\ref{sec:union_bound}.  So
+\begin{align*}
+\prob{\text{some server is overloaded}}
+    &\le \sum_{i = 1}^m \prob{\text{server $i$ is overloaded}} \\
+    &= m \prob{\text{the first server is overloaded}} \\
+    &\leq m e^{-(c \ln(c) - c + 1) \cdot 6000 / m},
+\end{align*}
+where $c = m/10$.  Some values of this upper bound are tabulated below:
+\[
+\begin{array}{rcll}
+m & = & 11: & 0.784\dots \\
+m & = & 12: & 0.000999\dots \\
+m & = & 13: & 0.0000000760\dots
+\end{array}
+\]
+These values suggest that a system with $m = 11$ machines might suffer
+immediate overload, $m = 12$ machines could fail in a few days, but $m
+= 13$ should be fine for a century or two!
+
+\subsection{Proof of the Chernoff Bound}\label{sec:chernoff_proof}
+
+The proof of the Chernoff bound is somewhat involved.  Heck, even
+\emph{Chernoff} didn't come up with it!  His friend, \idx{Herman
+  Rubin}, showed him the argument.  Thinking the bound not very
+significant, Chernoff did not credit Rubin in print.  He felt pretty
+bad when it became famous!\footnote{See ``A Conversation with Herman
+  Chernoff,'' \emph{Statistical Science} 1996, Vol.~11, No.~4, pp
+  335--350.}
+
+\iffalse
+
+Here is the theorem again, for reference:
+
+\begin{theorem}[\idx{Chernoff Bound}]
+Let $T_1, \dots, T_n$ be mutually independent random variables such
+that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
+Then for all $c \geq 1$,
+\begin{equation}
+\prob{T \geq c \expect{T}} \leq e^{-k \expect{T}}
+\tag{\ref{chernoff-leq}}
+\end{equation}
+where $\beta(c) \eqdef c \ln(c) - c + 1$.
+\end{theorem}
+\fi
+
+\begin{proof} (of Theorem~\ref{thm:chernoff})
+
+For clarity, we'll go through the proof ``top down.''  That is, we'll
+use facts that are proved immediately afterward.
+
+The key step is to exponentiate both sides of the inequality $T \ge c
+\expect{T}$ and then apply the Markov bound:
+\begingroup
+\openup\jot
+\begin{align*}
+\prob{T \geq c \expect{T}} & = \prob{c^T \geq c^{c \expect{T}}} \\
+  & \leq \frac{\expect{c^T}}{c^{c \expect{T}}} & \text{(Markov Bound)}\\
+  & \leq \frac{e^{(c-1) \expect{T}}}{c^{c \expect{T}}}
+         & \text{(Lemma~\ref{chernoff-lemma1} below)}\\
+  & = \frac{e^{(c-1) \expect{T}}}{e^{c \ln(c) \expect{T}}} = e^{- (c \ln(c) - c + 1) \expect{T}}.
+\end{align*}
+\endgroup
+\end{proof}
+
+Algebra aside, there is a brilliant idea in this proof: in this
+context, exponentiating somehow supercharges the \idx{Markov bound}.
+This is not true in general!  One unfortunate side-effect is that we
+have to bound some nasty expectations involving exponentials in order
+to complete the proof.  This is done in the two lemmas below, where
+variables take on values as in Theorem~\ref{thm:chernoff}.
+
+\begin{lemma}\label{chernoff-lemma1}
+\[
+    \Expect{c^T} \leq e^{(c-1) \expect{T}}.
+\]
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+    \Expect{c^T} & = \Expect{c^{T_1 + \cdots + T_n}}
+                 & \text{(def of $T$)}\\
+            & = \Expect{c^{T_1} \cdots c^{T_n}} \\
+            & = \Expect{c^{T_1}}  \cdots \expect{c^{T_n}}
+                 & \text{(independent product Cor~\ref{cor:indep_prod})}\\
+            & \leq e^{(c-1) \expect{T_1}} \cdots  e^{(c-1) \expect{T_n}}
+               & \text{(Lemma~\ref{chernoff-lemma2} below)}\\
+            & = e^{(c-1) (\expect{T_1} + \cdots + \expect{T_n})} \\
+            & = e^{(c-1) \expect{T_1 + \cdots + T_n}}
+                   & \text{(linearity of $\expect{\cdot}$)}\\
+            & = e^{(c-1) \expect{T}}.
+\end{align*}
+The third equality depends on the fact that functions of independent
+variables are also independent (see Lemma~\ref{lem:function-indep}).
+\end{proof}
+
+\begin{lemma}
+\label{chernoff-lemma2}
+\[
+    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
+\]
+\end{lemma}
+
+\begin{proof}
+All summations below range over values $v$ taken by the random
+variable~$T_i$, which are all required to be in the interval~$[0, 1]$.
+\begin{align*}
+\expect{c^{T_i}}
+     & = \sum c^v \prob{T_i = v}
+              & \text{(def of $\expect{\cdot}$)}\\
+     & \leq \sum (1 + (c-1) v) \prob{T_i = v} 
+          & \text{(convexity ---see below)}\\
+     & = \sum \prob{T_i = v} + (c-1) v \prob{T_i = v} \\
+     & = \sum \prob{T_i = v} +  (c-1) \sum v \prob{T_i = v} \\
+     & = 1 + (c - 1) \expect{T_i} \\
+     & \leq e^{(c - 1) \expect{T_i}}
+           & \text{(since $1 + z \leq e^z$)}.
+\end{align*}
+The second step relies on the inequality
+\[
+c^v \leq 1 + (c-1) v,
+\]
+which holds for all $v$ in~$[0,1]$ and~$c \geq 1$.  This follows from
+the general principle that a \idx{convex function}, namely $c^v$, is
+less than the linear function, $1 + (c-1) v$, between their points of
+intersection, namely $v = 0$ and $1$.  This inequality is why the
+variables $T_i$ are restricted to the interval $[0, 1]$.
+\end{proof}
+
+\subsection{Comparing the Bounds}
+
+Suppose that we have a collection of mutually independent events $A_1$,
+$A_2$, \dots, $A_n$, and we want to know how many of the events are
+likely to occur.
+
+Let $T_i$ be the indicator random variable for~$A_i$ and define
+\begin{equation*}
+    p_i = \prob{T_i = 1} = \Prob{A_i}
+\end{equation*}
+for $1 \le i \le n$.  Define
+\begin{equation*}
+    T = T_1 + T_2 + \dots + T_n
+\end{equation*}
+to be the number of events that occur.
+
+We know from Linearity of Expectation that
+\begin{align*}
+\expect{T}
+    &= \expect{T_1} + \expect{T_2} + \dots + \expect{T_n} \\
+    &= \sum_{i = 1}^n p_i.
+\end{align*}
+This is true even if the events are \emph{not} independent.
+
+By Theorem~\ref{thm:variance_additivity}, we also know that
+\begin{align*}
+\variance{T}
+     &= \variance{T_1} + \variance{T_2} + \dots + \variance{T_n} \\
+     &= \sum_{i = 1}^n p_i (1 - p_i),
+\end{align*}
+and thus that
+\begin{equation*}
+    \sigma_T = \sqrt{ \sum_{i = 1}^n p_i (1 - p_i) }.
+\end{equation*}
+This is true even if the events are only pairwise independent.
+
+Markov's Theorem tells us that for any~$c > 1$,
+\begin{equation*}
+    \prob{ T \ge c \expect{T} } \le \frac{1}{c}.
+\end{equation*}
+
+Chebyshev's Theorem gives us the stronger result that
+\begin{equation*}
+    \prob{ \abs{T - \expect{T}} \ge c \sigma_T } \le \frac{1}{c^2}.
+\end{equation*}
+
+The Chernoff Bound gives us an even stronger result, namely, that for
+any~$c > 0$,
+\begin{equation*}
+\prob{T - \expect{T} \ge c \expect{T}}
+    \le e^{-(c \ln(c) - c + 1) \expect{T}}.
+\end{equation*}
+In this case, the probability of exceeding the mean by~$c \expect{T}$
+decreases as an exponentially small function of the deviation.
+
+By considering the random variable~$n - T$, we can also use the
+Chernoff Bound to prove that the probability that $T$~is much lower
+than~$\expect{T}$ is also exponentially small.  
+
+\subsection{Murphy's Law}
+
+If the expectation of a random variable is much less than 1, then
+Markov's Theorem implies that there is only a small probability that
+the variable has a value of 1 or more.  On the other hand, a result
+that we call \term{Murphy's Law}\footnote{This is in reference and
+  deference to the famous saying that ``If something can go wrong, it
+  will go wrong.''} says that if a random variable is an independent
+sum of 0-1-valued variables and has a large expectation, then there is
+a huge probability of getting a value of at least 1.
+
+%\label{thm:18ML}
+
+\begin{theorem}[Murphy's Law]\label{th:murphy}
+Let $A_1$, $A_2$, \dots, $A_n$ be mutually independent events.  Let
+$T_i$ be the indicator random variable for~$A_i$ and define
+\begin{equation*}
+    T \eqdef T_1 + T_2 + \dots + T_n
+\end{equation*}
+to be the number of events that occur.  Then
+\begin{equation*}
+    \prob{T = 0} \le e^{- \expect{T}}.
+\end{equation*}
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+\prob{T = 0}
+    &= \prob{ \bar{A}_1 \land \bar{A}_2 \land \dots \land \bar{A}_n } \\
+    &= \prod_{i = 1}^n \prob{\bar{A}_i}
+        && \text{(independence of $A_i$)} \\
+    &= \prod_{i = 1}^n (1 - \prob{A_i}) \\
+    &\le \prod_{i = 1}^n e^{-\prob{A_i}}
+        && \text{(since $1 - x \le e^{-x}$)} \\
+    &= e^{-\sum_{i = 1}^n \prob{A_i}} \\
+    &= e^{-\sum_{i = 1}^n \expect{T_i}} 
+        && \text{(since $T_i$ is an indicator for $A_i$)} \\
+    &= e^{-\expect{T}}
+        && \text{(linearity of expectation)}
+        & \qedhere
+\end{align*}
+\end{proof}
+
+For example, given any set of mutually independent events, if you
+expect 10 of them to happen, then at least one of them will happen
+with probability at least~$1 - e^{-10}$.  The probability that none of
+them happen is at most~$e^{-10} < 1/22000$.
+
+So if there are a lot of independent things that can go wrong and their
+probabilities sum to a number much greater than~1, then
+Theorem~\ref{th:murphy} proves that some of them surely will go wrong.
+
+This result can help to explain ``coincidences,'' ``miracles,'' and
+crazy events that seem to have been very unlikely to happen.  Such
+events do happen, in part, because there are so many possible unlikely
+events that the sum of their probabilities is greater than~one.  For
+example, someone \emph{does} win the lottery.
+
+In fact, if there are 100,000 random tickets in Pick-4,
+Theorem~\ref{th:murphy} says that the probability that there is no
+winner is less than~$e^{-10} < 1/22000$.  More generally, there are
+literally millions of one-in-a-million possible events and so some of
+them will surely occur.
+
+\begin{problems}
+\classproblems
+\pinput{CP_chernoff_hash}
+\pinput{CP_dressing_chernoff}
+\pinput{CP_financial_crisis}
+
+\homeworkproblems
+\pinput{PS_borel_cantelli}
+
+\end{problems}
+
+\section{Really Great Expectations}\label{infinite_expect_sec}
+
+Making independent tosses of a fair coin until some desired pattern
+comes up is a simple process you should feel solidly in command of by
+now, right?  So how about a bet about the simplest such process
+---tossing until a head comes up?  Ok, you're wary of betting with us,
+but how about this: we'll let \emph{you set the odds}.
+
+\subsection{Repeating Yourself}\label{infinite_repeat_subsec}
+Here's the bet: you make independent tosses of a fair coin until a
+head comes up.  Then you will repeat the process.  If a second head
+comes up in the same or fewer tosses than the first, you have to start
+over yet again.  You keep starting over until you finally toss a run
+of tails longer than your first one.  The payment rules are that you
+will pay me 1 cent each time you start over.  When you win by finally
+getting a run of tails longer than your first one, I will pay you some
+generous amount.  And by the way, you're certain to win ---whatever
+your initial run of tails happened to be, a longer run will occur
+again with probability 1!
+
+For example, if your first tosses are \texttt{TTTH}, then you will
+keep tossing until you get a run of 4 tails.  So your winning
+flips might be
+\[
+\texttt{TTTHTHTTHHTTHTHTTTHTHHHTTTT}.
+\]
+In this run there are 10 heads, which means you had to start over 9
+times.  So you would have paid me 9 cents by the time you finally won
+by tossing 4 tails.  Now you've won, and I'll pay you generously
+---how does 25 cents sound?  Maybe you'd rather have \$1?  How about
+\$10?
+
+Of course there's a trap here.  Let's calculate your expected
+winnings.
+
+Suppose your initial run of tails had length $k$.  After that, each
+time a head comes up, you have to start over and try to get $k+1$ tails
+in a row.  If we regard your getting $k+1$ tails in a row as a
+``failed'' try, and regard your having to start over because a head
+came up too soon as a ``successful'' try, then the number of times you
+have to start over is the number of tries till the first failure.  So
+the expected number of tries will be the mean time to failure, which is
+$2^{k+1}$, because the probability of tossing $k+1$ tails in a row is
+$2^{-(k+1)}$.
+
+Let $T$ be the length of your initial run of tails.  So $T = k$ means
+that your initial tosses were $\texttt{T}^k\texttt{H}$.  Let $R$ be
+the number of times you repeat trying to beat your original run of
+tails.  The number of cents you expect to finish with is the number of
+cents in my generous payment minus $\expect{R}$.  It's now easy to
+calculate $\expect{R}$ by conditioning on the value of $T$:
+\[
+\expect{R}
+     = \sum_{k \in \naturals} \expcond{R}{T=k} \cdot \prob{T=k}
+     = \sum_{k \in \naturals}  2^{k+1} \cdot 2^{-(k+1)}
+     = \sum_{k \in \naturals} 1 = \infty.
+\]
+
+\iffalse
+\begin{align*}
+\expect{R}
+    & = \sum_{k \in \naturals} \expcond{R}{T=k} \cdot \prob{T=k}\\
+    & = \sum_{k \in \naturals}  2^{k+1} \cdot 2^{-(k+1)}\\
+    & = \sum_{k \in \naturals} 1 = \infty.
+\end{align*}
+\fi
+
+So you can expect to pay me an infinite number of cents before winning
+my ``generous'' payment.  No amount of generosity can make this bet
+fair!
+
+We haven't faced infinite expectations until now, but they just popped
+up in a very simple way.  In fact this particular example is a special
+case of an astonishingly general one worked out in
+Problem~\ref{PS_infinite_repeat_expectation}: the expected waiting
+time for \emph{any} random variable to achieve a larger value is
+infinite.
+
+\subsection{The \idx{St. Petersburg Paradox}}
+
+One of the simplest casino bets is on ``red'' or ``black'' at the roulette
+table.  In each play at roulette, a small ball is set spinning around a
+roulette wheel until it lands in a red, black, or green colored slot.
+The payoff for a bet on red or black matches the bet; for example, if you bet
+$\$10$ on red and the ball lands in a red slot, you get back your original
+$\$10$ bet plus another matching $\$10$.
+
+In the US, a roulette wheel has two green slots among 18 black and 18 red
+slots, so the probability of red is $18/38 \approx 0.473$.  In
+Europe, where roulette wheels have only one green slot, the odds for red
+are a little better ---that is, $18/37 \approx 0.486$ ---but still less
+than even.
+
+There is a notorious gambling strategy allegedly used against the
+casino in St. Peterburg way back in czarist days: bet $\$10$ on red,
+and keep doubling the bet until a red comes up.  This strategy implies
+that a player will leave the game as a net winner of $\$10$ as soon as
+the red first appears.
+
+Suppose you had the good fortune to gamble against a fair roulette
+wheel.  Then whatever your bet on a spin of the wheel, you are equally
+likely to win or lose, and your expected win is 0.  This also means
+that the expected win after any given number of spins remains zero, so
+even playing the St. Peterburg strategy it seems your expected win
+would be 0.
+
+But wait a minute.  As long as there is a fixed, positive probability
+of red appearing on each spin of the wheel, it's \emph{certain} that
+red will eventually come up.  That is, you can be certain of leaving
+the casino having won $\$10$.  This implies that even against an
+\emph{unfair} roulette wheel, your expected win is $\$10$,
+contradicting the idea that you can't expect to win in a game that's
+biased against you.
+
+This is paradoxical and something's obviously wrong here.  In fact,
+there are two things wrong.
+
+The first thing that's wrong is the argument claiming that the
+expectation is 0.  It would be 0 if the number of bets had a fixed
+bound.  If you could only make $n$ bets, then your expectation in the
+fair game would be the sum of your expected wins on each of the bets,
+namely, $n \cdot 0 = 0$.  But there is no such fixed bound, and that
+changes things.
+
+To explain this carefully, let $C_i$ be the number of dollars won on
+the $i$th spin.  So $C_i = 2^{i-1}$ when red comes up for the first time
+on the $i$th spin, and $C_i = -2^{i-1}$, when the first red spin comes up
+after the $i$th spin.  We can define $C_i$ to be 0 if the first red
+comes up before the $i$th spin.  This means
+\[
+\expect{C_i} = 0.
+\]
+Also, the total of your winnings is 
+\[
+C \eqdef \sum_{i \in \integers^+} C_i.
+\]
+The conclusion that $\expect{C} = 10$ follows from Total
+Expectation, conditioning on the number of spins till a red first
+occurs.  Namely, if the first red occurs on the $i$th spin, the amount
+won is
+\[
+-10 \cdot (1 + 2 + 2^2 + \dots + 2^{i - 2}) + 10 \cdot 2^{i-1}   = 10.
+\]
+Then by Total Expectation,
+\begin{align*}
+\expect{C}
+  & = \sum_{i  \in \integers^+}
+      \expcond{C}{\text{first red on $i$th spin}}
+      \cdot \prob{\text{first red on $i$th spin}}\\
+  & = \sum_{i  \in \integers^+} 10 \cdot 2^{-i}
+    = 10 \cdot \sum_{i  \in \integers^+} 2^{-i} = 10 \cdot 1 = 10.
+\end{align*}
+
+So sure enough,
+\begin{equation}\label{expCsum10}
+\expect{C} \eqdef \Expect{\sum_{i \in \integers^+} C_i} = 10.
+\end{equation}
+
+But since $\expect{C_i} = 0$,
+\begin{equation}\label{sumCi0}
+\sum_{i \in \integers^+} \expect{C_i} = \sum_{i \in \integers^+} 0 = 0.
+\end{equation}
+It seems that~\eqref{sumCi0} and~\eqref{expCsum10} contradict each
+other, but they don't.  The apparent contradiction comes from applying
+infinite linearity to conclude
+\begin{falseclm*}
+\[
+\Expect{\sum_{i \in \integers^+} C_i} = \sum_{i \in \integers^+} \expect{C_i}.
+\]
+\end{falseclm*}
+But this is a case where the convergence conditions required for
+infinite linearity don't hold.  Even though the left hand sum
+\idx{converges} (to 10) and the right hand sum converges (to 0), the
+infinite linearity Theorem~\eqref{linexp} requires that the sum of
+expectations of \emph{\idx{absolute value}s} converges.  That is,
+infinite linearity would follow if the sum
+\begin{equation}\label{sumabsC}
+\sum_{i \in \integers^+} \expect{\, \abs{C_i}\, }
+\end{equation}
+converged.  But
+\begin{align*}
+\expect{\, \abs{C_i}\, }
+  & = (|10 \cdot 2^{i-1}|) \cdot \prob{\text{1st red in $i$th spin}}\\
+  &\quad  + (|-10 \cdot 2^{i-1}|) \cdot \prob{\text{1st red after $i$th spin}}\\
+  &\quad  + 0 \cdot \prob{\text{1st red before the $i$th spin}}\\
+  & = (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
+       + (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
+       + 0 = 10,
+\end{align*}
+so the sum~\eqref{sumabsC} diverges ---rapidly.
+
+Probability theory truly leads to this absurd conclusion: a game
+entailing an unbounded number of fair bets may not be fair in the end.
+In fact, even against an \emph{unfair} wheel, as long as there is some
+fixed positive probability of red on each spin, you are certain to win
+$\$10$ playing the St. Petersburg strategy!
+
+This brings us to the second thing that's wrong here: you may wind up
+losing a lot of money before you catch up with your net win of \$10.
+Let $L$ be the number of dollars you need to have in order to keep
+betting until the wheel finally spins red.  If red first comes up on
+the $i$th spin, then $L$ would equal
+\[
+10(1 + 2 + 4 + \cdots + 2^i) = 10(2^{i+1}- 1)
+\]
+By Total Expectation,
+\begin{align*}
+\expect{L} 
+& = \sum_{i \in \integers^+} \expcond{L}{\text{1st red in $i$th spin}} \cdot
+       \prob{\text{1st red in $i$th spin}}\\
+& = \sum_{i \in \integers^+} (10 \cdot (2^{i+1} -1)) \cdot 2^{-i}
+       \geq \sum_{i \in \integers^+} 10 = \infty.
+\end{align*}
+That is, you can expect to lose an infinite amount of money before
+finally winning \$10 ---giving you a 0\% profit.
+
+So yes, probability theory leads to the absurd conclusion that, even
+with the odds heavily against you, you're certain to win playing
+roulette, but only if you make the absurd assumption that you have an
+infinite bankroll.  We can't fault the theory for reaching an absurd
+conclusion from an absurd assumption.
+
+%\subsection{$\sqrt{\infty} = 2$}
+
+\begin{problems}
+\practiceproblems
+\pinput{CP_infinite_variance}
+\pinput{CP_sqrt_infinite_expectation}
+
+\classproblems
+\pinput{TP_infinite_repeat}
+\pinput{PS_infinite_repeat_expectation}
+
+\examproblems
+\pinput{FP_infinite_repeat}
+\end{problems}
+
+\endinput
+
 
 \begin{editingnotes}
 
@@ -2219,8 +2884,8 @@ more new students come to MIT using the second inequality:
     & = e^{-40/3} \approx 0.0000016
 \end{align*}
 %
-If we want to estimate the probability of a complete disaster--- say,
-3000 or more students accept--- then we can no longer use the second
+If we want to estimate the probability of a complete disaster ---say,
+3000 or more students accept ---then we can no longer use the second
 inequality; that holds only for deviations up to twice the
 expectation.  We must use the third inequality instead.  (Actually,
 the third Chernoff inequality always give an answer at least as good
@@ -2278,12 +2943,12 @@ up, but it works like a charm.
 The next task is to find a convenient upper bound on the numerator
 in~\eqref{eqn:chernoffbase}.  There are roughly three steps: break the
 expression into little pieces, analyze each little piece, and then
-assemble them back together again.  Let $I_1, \ldots, I_n$ be
-indicators for the events $E_1, \ldots, E_n$.  In these terms, the
+assemble them back together again.  Let $I_1, \dots, I_n$ be
+indicators for the events $E_1, \dots, E_n$.  In these terms, the
 number of events that happen is:
 %
 \[
-X = I_1 + \ldots + I_n
+X = I_1 + \cdots + I_n
 \]
 %
 We'll use this as our starting point:
@@ -2321,7 +2986,7 @@ Plugging this upper bound into~\eqref{eqn:chernoffbase} gives:
    & = e^{\textstyle -(c \ln c - c + 1) \expect{X}} \\
 \end{align*}
 %
-This is the second Chernoff inequality.  The third inequality follows
+This is the third Chernoff inequality.  The second inequality follows
 by setting $c = 1 + \delta$ and using an approximation based on the
 Taylor series of the exponent.  The proof of the first inequality has
 a similar structure, but differs in a few details.
@@ -2491,658 +3156,3 @@ bin.
 
 Unless something weird happens.
 \end{editingnotes}
-
-
-\subsection{Chernoff Bound for Binomial Tails}
-
-The Chernoff bound is pretty easy to apply, though the details can be
-daunting at first.  Let's walk through a simple example to get the
-hang of it: getting bounds on the tail of a binomial distribution, for
-example, bounding the probability that the number of heads that come up in
-1000~independent tosses of a coin exceeds the expectation by 20\%
-or more?  Let $T_i$ be an indicator variable for the event that the
-$i$th coin is heads.  Then the total number of heads is
-\begin{equation*}
-    T = T_1 + \cdots + T_{1000}.
-\end{equation*}
-The Chernoff bound requires that the random variables~$T_i$ be
-\idx{mutually independent} and take on values in the range $[0, 1]$.
-Both conditions hold here.  In this example the $T_i$'s only take the two
-values 0 and 1, since they're indicators.
-
-The goal is to bound the probability that the number of heads exceeds
-its expectation by 20\% or more; that is, to bound $\prob{T \geq c
-  \expect{T}}$ where c = $1.2$.  To that end, we compute $\beta(c)$ as
-defined in the theorem:
-\[
-\beta(c) = c \ln(c) - c + 1 = 0.0187\dots.
-\]
-If we assume the coin is fair, then $\expect{T} = 500$.
-Plugging these values into the Chernoff bound gives:
-\begin{align*}
-\Prob{T \geq 1.2 \expect{T}} & \leq  e^{- \beta(c). \expect{T}} \\
-  & = e^{- (0.0187\dots) \cdot 500} <  0.0000834.
-\end{align*}
-So the probability of getting 20\% or more extra heads on 1000 coins
-is less than 1 in 10,000.
-
-\begin{editingnotes}
-Put this footnote\footnote{Since we are analyzing a binomial
-  distribution here, we can get somewhat better bounds using the
-  methods from Section~\ref{binomial_distribution_section}, but it is
-  much easier to use the Chernoff bounds, and they provide results
-  that are nearly as good.} back in if we put back the section on binomial estimation
-via Stirling.
-
-Might be better to insert Section~\ref{binomial_distribution_section}
-here as an optional section and comparing those estimates to
-Chernoff.
-\end{editingnotes}
-
-The bound becomes much stronger as the number of coins increases,
-because the expected number of heads appears in the exponent of the
-upper bound.  For example, the probability of getting at least 20\%
-extra heads on a million coins is at most
-\[
-e^{- (0.0187\dots) \cdot 500000} < e^{-9392},
-\]
-which is an inconceivably small number.  %pretty darn
-
-Alternatively, the bound also becomes stronger for larger deviations.
-For example, suppose we're interested in the odds of getting 30\% or
-more extra heads in 1000 tosses, rather than 20\%.  In that case,
-$c= 1.3$ instead of $1.2$.  Consequently, the parameter $\beta(c)$ rises from
-$0.0187$ to about $0.0410$, which may not seem significant, but because
-$\beta(c)$ appears in the exponent of the upper bound, the final probability
-decreases from around 1 in 10,000 to about 1 in a billion!
-
-\subsection{Chernoff Bound for a Lottery Game}
-
-\idx{Pick-4} is a lottery game where you pay \$1 to pick a 4-digit
-number between 0000 and 9999.  If your number comes up in a random
-drawing, then you win~\$5,000.  Your chance of winning is 1 in 10,000.
-If 10 million people play, then the expected number of winners is
-1000.  When there are exactly 1000 winners, the lottery keeps \$5
-million of the \$10 million paid for tickets.  The lottery operator's
-nightmare is that the number of winners is much greater ---say at the
-2000 or greater point where the lottery has to pay out more than it
-received.  What is the probability that will happen?
-
-Let $T_i$ be an indicator for the event that the $i$th player wins.
-Then $T = T_1 + \cdots + T_n$ is the total number of winners.  If we
-assume\footnote{As we noted in Chapter~\ref{ran_var_chap}, human
-  choices are often not uniform and they can be highly dependent.  For
-  example, lots of people will pick an important date.  So the lottery
-  folks should not get too much comfort from the analysis that
-  follows, unless they assign random 4-digit numbers to each player.}
-that the players' picks and the winning number are random, independent
-and uniform, then the indicators $T_i$~are independent, as required by
-the Chernoff bound.
-
-Since 2000~winners would be twice the expected number, we choose $c =
-2$, compute $\beta(c) = 0.386\dots$, and plug these values
-into the Chernoff bound:
-\begin{align*}
-\prob{T \geq 2000} & = \Prob{T \geq 2 \expect{T}} \\
-  & \leq e^{-k \expect{T}} = e^{- (0.386\dots) \cdot 1000} \\
-  & < e^{-386}.
-\end{align*}
-So there is almost no chance that the lottery operator pays out
-double.  In fact, the number of winners won't even be 10\% higher than
-expected very often.  To prove that, let $c = 1.1$, compute $\beta(c)
-= 0.00484\dots$, and plug in again:
-\begin{align*}
-\Prob{T \geq 1.1 \expect{T}} & \leq e^{-k \expect{T}} \\
-  & = e^{- (0.00484)\cdot 1000} < 0.01.
-\end{align*}
-So the Pick-4 lottery may be exciting for the players, but the lottery
-operator has little doubt about the outcome!
-
-\subsubsection{Randomized Load Balancing}
-
-Now let's return to Fussbook and its \idx{load balancing} problem.
-Specifically, we need to determine how many machines suffice to ensure
-that no server is overloaded; that is, assigned to do more than 10
-minutes of work in a 10-minute interval.  So a server is overloaded if
-it gets assigned more than 600 seconds of work.
-
-To begin, let's find the probability that the first server is
-overloaded.  Letting $T$ be the number of seconds of work assigned to
-the first server, this means we want an upper bound on $\prob{T \geq
-  600}$.  Let $T_i$ be the number of seconds that the first server
-spends on the $i$th task: then $T_i$ is zero if the task is assigned
-to another machine, and otherwise $T_i$ is the length of the task.  So
-$T = \sum_{i = 1}^n T_i$ is the total length of tasks assigned to the
-first server, where~$n = 24{,}000$.
-
-The Chernoff bound is applicable only if the $T_i$ are mutually
-independent and take on values in the range $[0, 1]$.  The first
-condition is satisfied if we assume that task lengths and assignments
-are independent.  And the second condition is satisfied because
-processing even the most interminable harangue takes at most 1 second.
-
-In all, there are 24,000 tasks, each with an expected length of~1/4
-second.  Since tasks are assigned to computers at random, the expected
-load on the first server is:
-\begin{align}
-\expect{T} & = \frac{24{,}000 \mbox{ tasks} \cdot 1/4 \mbox{ second per task}}
-  {m \mbox{ machines}} \notag\\
-  & = 6000 / m\,\text{seconds}.
-\label{eqn:19XX}
-\end{align}
-For example, if there are fewer than $10$ machines, then the expected
-load on the first server is greater than its capacity, and we can
-expect it to be overloded.  If there are exactly 10 machines, then the
-server is expected to run for $6000/10 = 600$ seconds, which is 100\%
-of its capacity.
-
-Now we can use the Chernoff bound to upper bound the probability that
-the first server is overloaded.  We have from~\eqref{eqn:19XX}
-\[
-600 = c \expect{T}  \qquad \text{where } c \eqdef m/10,
-\]
-so by the Chernoff bound
-\begin{align*}
-\prob{T \geq 600} = \prob{T \geq c \expect{T}} \leq e^{-(c \ln(c) - c + 1) \cdot 6000 / m},
-\end{align*}
-
-The probability that \emph{some} server is overloaded is at most
-$m$~times the probability that the first server is overloaded, by the
-Union Bound in Section~\ref{sec:union_bound}.  So
-\begin{align*}
-\prob{\text{some server is overloaded}}
-    &\le \sum_{i = 1}^m \prob{\text{server $i$ is overloaded}} \\
-    &= m \prob{\text{the first server is overloaded}} \\
-    &\leq m e^{-(c \ln(c) - c + 1) \cdot 6000 / m},
-\end{align*}
-where $c = m/10$.  Some values of this upper bound are tabulated below:
-\[
-\begin{array}{rcll}
-m & = & 11: & 0.784\dots \\
-m & = & 12: & 0.000999\dots \\
-m & = & 13: & 0.0000000760\dots
-\end{array}
-\]
-These values suggest that a system with $m = 11$ machines might suffer
-immediate overload, $m = 12$ machines could fail in a few days, but $m
-= 13$ should be fine for a century or two!
-
-\subsection{Proof of the Chernoff Bound}\label{sec:chernoff_proof}
-
-The proof of the Chernoff bound is somewhat involved.  Heck, even
-\emph{Chernoff} didn't come up with it!  His friend, \idx{Herman
-  Rubin}, showed him the argument.  Thinking the bound not very
-significant, Chernoff did not credit Rubin in print.  He felt pretty
-bad when it became famous!\footnote{See ``A Conversation with Herman
-  Chernoff,'' \emph{Statistical Science} 1996, Vol.~11, No.~4, pp
-  335--350.}
-
-\iffalse
-
-Here is the theorem again, for reference:
-
-\begin{theorem}[\idx{Chernoff Bound}]
-Let $T_1, \dots, T_n$ be mutually independent random variables such
-that $0 \leq T_i \leq 1$ for all $i$.  Let $T = T_1 + \cdots + T_n$.
-Then for all $c \geq 1$,
-\begin{equation}
-\prob{T \geq c \expect{T}} \leq e^{-k \expect{T}}
-\tag{\ref{chernoff-leq}}
-\end{equation}
-where $\beta(c) \eqdef c \ln(c) - c + 1$.
-\end{theorem}
-\fi
-
-\begin{proof} (of Theorem~\ref{thm:chernoff})
-
-For clarity, we'll go through the proof ``top down.''  That is, we'll
-use facts that are proved immediately afterward.
-
-The key step is to exponentiate both sides of the inequality $T \ge c
-\expect{T}$ and then apply the Markov bound:
-\begingroup
-\openup\jot
-\begin{align*}
-\prob{T \geq c \expect{T}} & = \prob{c^T \geq c^{c \expect{T}}} \\
-  & \leq \frac{\expect{c^T}}{c^{c \expect{T}}} & \text{(Markov Bound)}\\
-  & \leq \frac{e^{(c-1) \expect{T}}}{c^{c \expect{T}}}
-         & \text{(Lemma~\ref{chernoff-lemma1} below)}\\
-  & = \frac{e^{(c-1) \expect{T}}}{e^{c \ln(c) \expect{T}}} = e^{- (c \ln(c) - c + 1) \expect{T}}.
-\end{align*}
-\endgroup
-\end{proof}
-
-Algebra aside, there is a brilliant idea in this proof: in this
-context, exponentiating somehow supercharges the \idx{Markov bound}.
-This is not true in general!  One unfortunate side-effect is that we
-have to bound some nasty expectations involving exponentials in order
-to complete the proof.  This is done in the two lemmas below, where
-variables take on values as in Theorem~\ref{thm:chernoff}.
-
-\begin{lemma}\label{chernoff-lemma1}
-\[
-    \Expect{c^T} \leq e^{(c-1) \expect{T}}.
-\]
-\end{lemma}
-
-\begin{proof}
-\begin{align*}
-    \Expect{c^T} & = \Expect{c^{T_1 + \cdots + T_n}}
-                 & \text{(def of $T$)}\\
-            & = \Expect{c^{T_1} \cdots c^{T_n}} \\
-            & = \Expect{c^{T_1}}  \cdots \expect{c^{T_n}}
-                 & \text{(independent product Cor~\ref{cor:indep_prod})}\\
-            & \leq e^{(c-1) \expect{T_1}} \cdots  e^{(c-1) \expect{T_n}}
-               & \text{(Lemma~\ref{chernoff-lemma2} below)}\\
-            & = e^{(c-1) (\expect{T_1} + \cdots + \expect{T_n})} \\
-            & = e^{(c-1) \expect{T_1 + \cdots + T_n}}
-                   & \text{(linearity of $\expect{\cdot}$)}\\
-            & = e^{(c-1) \expect{T}}.
-\end{align*}
-\end{proof}
-
-\begin{lemma}
-\label{chernoff-lemma2}
-\[
-    \expect{c^{T_i}} \leq e^{(c - 1) \expect{T_i}}
-\]
-\end{lemma}
-
-\begin{proof}
-All summations below range over values $v$ taken by the random
-variable~$T_i$, which are all required to be in the interval~$[0, 1]$.
-\begin{align*}
-\expect{c^{T_i}}
-     & = \sum c^v \prob{T_i = v}
-              & \text{(def of $\expect{\cdot}$)}\\
-     & \leq \sum (1 + (c-1) v) \prob{T_i = v} 
-          & \text{(convexity ---see below)}\\
-     & = \sum \prob{T_i = v} + (c-1) v \prob{T_i = v} \\
-     & = \sum \prob{T_i = v} +  (c-1) \sum v \prob{T_i = v} \\
-     & = 1 + (c - 1) \expect{T_i} \\
-     & \leq e^{(c - 1) \expect{T_i}}
-           & \text{(since $1 + z \leq e^z$)}.
-\end{align*}
-The second step relies on the inequality
-\[
-c^v \leq 1 + (c-1) v,
-\]
-which holds for all $v$ in~$[0,1]$ and~$c \geq 1$.  This follows from
-the general principle that a \idx{convex function}, namely $c^v$, is
-less than the linear function, $1 + (c-1) v$, between their points of
-intersection, namely $v = 0$ and $1$.  This inequality is why the
-variables $T_i$ are restricted to the interval $[0, 1]$.
-\end{proof}
-
-\subsection{Comparing the Bounds}
-
-Suppose that we have a collection of mutually independent events $A_1$,
-$A_2$, \dots, $A_n$, and we want to know how many of the events are
-likely to occur.
-
-Let $T_i$ be the indicator random variable for~$A_i$ and define
-\begin{equation*}
-    p_i = \prob{T_i = 1} = \Prob{A_i}
-\end{equation*}
-for $1 \le i \le n$.  Define
-\begin{equation*}
-    T = T_1 + T_2 + \dots + T_n
-\end{equation*}
-to be the number of events that occur.
-
-We know from Linearity of Expectation that
-\begin{align*}
-\expect{T}
-    &= \expect{T_1} + \expect{T_2} + \dots + \expect{T_n} \\
-    &= \sum_{i = 1}^n p_i.
-\end{align*}
-This is true even if the events are \emph{not} independent.
-
-By Theorem~\ref{thm:variance_additivity}, we also know that
-\begin{align*}
-\variance{T}
-     &= \variance{T_1} + \variance{T_2} + \dots + \variance{T_n} \\
-     &= \sum_{i = 1}^n p_i (1 - p_i),
-\end{align*}
-and thus that
-\begin{equation*}
-    \sigma_T = \sqrt{ \sum_{i = 1}^n p_i (1 - p_i) }.
-\end{equation*}
-This is true even if the events are only pairwise independent.
-
-Markov's Theorem tells us that for any~$c > 1$,
-\begin{equation*}
-    \prob{ T \ge c \expect{T} } \le \frac{1}{c}.
-\end{equation*}
-
-Chebyshev's Theorem gives us the stronger result that
-\begin{equation*}
-    \prob{ \abs{T - \expect{T}} \ge c \sigma_T } \le \frac{1}{c^2}.
-\end{equation*}
-
-The Chernoff Bound gives us an even stronger result, namely, that for
-any~$c > 0$,
-\begin{equation*}
-\prob{T - \expect{T} \ge c \expect{T}}
-    \le e^{-(c \ln(c) - c + 1) \expect{T}}.
-\end{equation*}
-In this case, the probability of exceeding the mean by~$c \expect{T}$
-decreases as an exponentially small function of the deviation.
-
-By considering the random variable~$n - T$, we can also use the
-Chernoff Bound to prove that the probability that $T$~is much lower
-than~$\expect{T}$ is also exponentially small.  
-
-\subsection{Murphy's Law}
-
-If the expectation of a random variable is much less than 1, then
-Markov's Theorem implies that there is only a small probability that
-the variable has a value of 1 or more.  On the other hand, a result
-that we call \term{Murphy's Law}\footnote{This is in reference and
-  deference to the famous saying that ``If something can go wrong, it
-  will go wrong.''} says that if a random variable is an independent
-sum of 0-1-valued variables and has a large expectation, then there is
-a huge probability of getting a value of at least 1.
-
-%\label{thm:18ML}
-
-\begin{theorem}[Murphy's Law]\label{th:murphy}
-Let $A_1$, $A_2$, \dots, $A_n$ be mutually independent events.  Let
-$T_i$ be the indicator random variable for~$A_i$ and define
-\begin{equation*}
-    T \eqdef T_1 + T_2 + \dots + T_n
-\end{equation*}
-to be the number of events that occur.  Then
-\begin{equation*}
-    \prob{T = 0} \le e^{- \expect{T}}.
-\end{equation*}
-\end{theorem}
-
-\begin{proof}
-\begin{align*}
-\prob{T = 0}
-    &= \prob{ \bar{A}_1 \land \bar{A}_2 \land \dots \land \bar{A}_n } \\
-    &= \prod_{i = 1}^n \prob{\bar{A}_i}
-        && \text{(independence of $A_i$)} \\
-    &= \prod_{i = 1}^n (1 - \prob{A_i}) \\
-    &\le \prod_{i = 1}^n e^{-\prob{A_i}}
-        && \text{(since $1 - x \le e^{-x}$)} \\
-    &= e^{-\sum_{i = 1}^n \prob{A_i}} \\
-    &= e^{-\sum_{i = 1}^n \expect{T_i}} 
-        && \text{(since $T_i$ is an indicator for $A_i$)} \\
-    &= e^{-\expect{T}}
-        && \text{(linearity of expectation)}
-        & \qedhere
-\end{align*}
-\end{proof}
-
-For example, given any set of mutually independent events, if you
-expect 10 of them to happen, then at least one of them will happen
-with probability at least~$1 - e^{-10}$.  The probability that none of
-them happen is at most~$e^{-10} < 1/22000$.
-
-So if there are a lot of independent things that can go wrong and their
-probabilities sum to a number much greater than~1, then
-Theorem~\ref{th:murphy} proves that some of them surely will go wrong.
-
-This result can help to explain ``coincidences,'' ``miracles,'' and
-crazy events that seem to have been very unlikely to happen.  Such
-events do happen, in part, because there are so many possible unlikely
-events that the sum of their probabilities is greater than~one.  For
-example, someone \emph{does} win the lottery.
-
-In fact, if there are 100,000 random tickets in Pick-4,
-Theorem~\ref{th:murphy} says that the probability that there is no
-winner is less than~$e^{-10} < 1/22000$.  More generally, there are
-literally millions of one-in-a-million possible events and so some of
-them will surely occur.
-
-\begin{problems}
-\classproblems
-\pinput{CP_chernoff_hash}
-\pinput{CP_dressing_chernoff}
-\pinput{CP_financial_crisis}
-
-\homeworkproblems
-\pinput{PS_borel_cantelli}
-
-\end{problems}
-
-\section{Really Great Expectations}\label{infinite_expect_sec}
-
-Making independent tosses of a fair coin until some desired pattern
-comes up is a simple process you should feel solidly in command of by
-now, right?  So how about a bet about the simplest such process
----tossing until a head comes up?  Ok, you're wary of betting with us,
-but how about this: we'll let \emph{you set the odds}.
-
-\subsection{Repeating Yourself}\label{infinite_repeat_subsec}
-Here's the bet: you make independent tosses of a fair coin until a
-head comes up.  Then you will repeat the process.  If a second head
-comes up in the same or fewer tosses than the first, you have to start
-over yet again.  You keep starting over until you finally toss a run
-of tails longer than your first one.  The payment rules are that you
-will pay me 1 cent each time you start over.  When you win by finally
-getting a run of tails longer than your first one, I will pay you some
-generous amount.  And by the way, you're certain to win ---whatever
-your initial run of tails happened to be, a longer run will occur
-again with probability 1!
-
-For example, if your first tosses are \texttt{TTTH}, then you will
-keep tossing until you get a run of 4 tails.  So your winning
-flips might be
-\[
-\texttt{TTTHTHTTHHTTHTHTTTHTHHHTTTT}.
-\]
-In this run there are 10 heads, which means you had to start over 9
-times.  So you would have paid me 9 cents by the time you finally won
-by tossing 4 tails.  Now you've won, and I'll pay you generously
----how does 25 cents sound?  Maybe you'd rather have \$1?  How about
-\$10?
-
-Of course there's a trap here.  Let's calculate your expected
-winnings.
-
-Suppose your initial run of tails had length $k$.  After that, each
-time a head comes up, you have to start over and try to get $k+1$ tails
-in a row.  If we regard your getting $k+1$ tails in a row as a
-``failed'' try, and regard your having to start over because a head
-came up too soon as a ``successful'' try, then the number of times you
-have to start over is the number of tries till the first failure.  So
-the expected number of tries will be the mean time to failure, which is
-$2^{k+1}$, because the probability of tossing $k+1$ tails in a row is
-$2^{-(k+1)}$.
-
-Let $T$ be the length of your initial run of tails.  So $T = k$ means
-that your initial tosses were $\texttt{T}^k\texttt{H}$.  Let $R$ be
-the number of times you repeat trying to beat your original run of
-tails.  The number of cents you expect to finish with is the number of
-cents in my generous payment minus $\expect{R}$.  It's now easy to
-calculate $\expect{R}$ by conditioning on the value of $T$:
-\[
-\expect{R}
-     = \sum_{k \in \naturals} \expcond{R}{T=k} \cdot \prob{T=k}
-     = \sum_{k \in \naturals}  2^{k+1} \cdot 2^{-(k+1)}
-     = \sum_{k \in \naturals} 1 = \infty.
-\]
-
-\iffalse
-\begin{align*}
-\expect{R}
-    & = \sum_{k \in \naturals} \expcond{R}{T=k} \cdot \prob{T=k}\\
-    & = \sum_{k \in \naturals}  2^{k+1} \cdot 2^{-(k+1)}\\
-    & = \sum_{k \in \naturals} 1 = \infty.
-\end{align*}
-\fi
-
-So you can expect to pay me an infinite number of cents before winning
-my ``generous'' payment.  No amount of generosity can make this bet
-fair!
-
-We haven't faced infinite expectations until now, but they just popped
-up in a very simple way.  In fact this particular example is a special
-case of an astonishingly general one worked out in
-Problem~\ref{PS_infinite_repeat_expectation}: the expected waiting
-time for \emph{any} random variable to achieve a larger value is
-infinite.
-
-\subsection{The \idx{St. Petersburg Paradox}}
-
-One of the simplest casino bets is on ``red'' or ``black'' at the roulette
-table.  In each play at roulette, a small ball is set spinning around a
-roulette wheel until it lands in a red, black, or green colored slot.
-The payoff for a bet on red or black matches the bet; for example, if you bet
-$\$10$ on red and the ball lands in a red slot, you get back your original
-$\$10$ bet plus another matching $\$10$.
-
-In the US, a roulette wheel has two green slots among 18 black and 18 red
-slots, so the probability of red is $18/38 \approx 0.473$.  In
-Europe, where roulette wheels have only one green slot, the odds for red
-are a little better ---that is, $18/37 \approx 0.486$ ---but still less
-than even.
-
-There is a notorious gambling strategy allegedly used against the
-casino in St. Peterburg way back in czarist days: bet $\$10$ on red,
-and keep doubling the bet until a red comes up.  This strategy implies
-that a player will leave the game as a net winner of $\$10$ as soon as
-the red first appears.
-
-Suppose you had the good fortune to gamble against a fair roulette
-wheel.  Then whatever your bet on a spin of the wheel, you are equally
-likely to win or lose, and your expected win is 0.  This also means
-that the expected win after any given number of spins remains zero, so
-even playing the St. Peterburg strategy it seems your expected win
-would be 0.
-
-But wait a minute.  As long as there is a fixed, positive probability
-of red appearing on each spin of the wheel, it's \emph{certain} that
-red will eventually come up.  That is, you can be certain of leaving
-the casino having won $\$10$.  This implies that even against an
-\emph{unfair} roulette wheel, your expected win is $\$10$,
-contradicting the idea that you can't expect to win in a game that's
-biased against you.
-
-This is paradoxical and something's obviously wrong here.  In fact,
-there are two things wrong.
-
-The first thing that's wrong is the argument claiming that the
-expectation is 0.  It would be 0 if the number of bets had a fixed
-bound.  If you could only make $n$ bets, then your expectation in the
-fair game would be the sum of your expected wins on each of the bets,
-namely, $n \cdot 0 = 0$.  But there is no such fixed bound, and that
-changes things.
-
-To explain this carefully, let $C_i$ be the number of dollars won on
-the $i$th spin.  So $C_i = 2^{i-1}$ when red comes up for the first time
-on the $i$th spin, and $C_i = -2^{i-1}$, when the first red spin comes up
-after the $i$th spin.  We can define $C_i$ to be 0 if the first red
-comes up before the $i$th spin.  This means
-\[
-\expect{C_i} = 0.
-\]
-Also, the total of your winnings is 
-\[
-C \eqdef \sum_{i \in \integers^+} C_i.
-\]
-The conclusion that $\expect{C} = 10$ follows from Total
-Expectation, conditioning on the number of spins till a red first
-occurs.  Namely, if the first red occurs on the $i$th spin, the amount
-won is
-\[
--10 \cdot (1 + 2 + 2^2 + \dots + 2^{i - 2}) + 10 \cdot 2^{i-1}   = 10.
-\]
-Then by Total Expectation,
-\begin{align*}
-\expect{C}
-  & = \sum_{i  \in \integers^+}
-      \expcond{C}{\text{first red on $i$th spin}}
-      \cdot \prob{\text{first red on $i$th spin}}\\
-  & = \sum_{i  \in \integers^+} 10 \cdot 2^{-i}
-    = 10 \cdot \sum_{i  \in \integers^+} 2^{-i} = 10 \cdot 1 = 10.
-\end{align*}
-
-So sure enough,
-\begin{equation}\label{expCsum10}
-\expect{C} \eqdef \Expect{\sum_{i \in \integers^+} C_i} = 10.
-\end{equation}
-
-But since $\expect{C_i} = 0$,
-\begin{equation}\label{sumCi0}
-\sum_{i \in \integers^+} \expect{C_i} = \sum_{i \in \integers^+} 0 = 0.
-\end{equation}
-It seems that~\eqref{sumCi0} and~\eqref{expCsum10} contradict each
-other, but they don't.  The apparent contradiction comes from applying
-infinite linearity to conclude
-\begin{falseclm*}
-\[
-\Expect{\sum_{i \in \integers^+} C_i} = \sum_{i \in \integers^+} \expect{C_i}.
-\]
-\end{falseclm*}
-But this is a case where the convergence conditions required for
-infinite linearity don't hold.  Even though the left hand sum
-\idx{converges} (to 10) and the right hand sum converges (to 0), the
-infinite linearity Theorem~\eqref{linexp} requires that the sum of
-expectations of \emph{\idx{absolute value}s} converges.  That is,
-infinite linearity would follow if the sum
-\begin{equation}\label{sumabsC}
-\sum_{i \in \integers^+} \expect{\, \abs{C_i}\, }
-\end{equation}
-converged.  But
-\begin{align*}
-\expect{\, \abs{C_i}\, }
-  & = (|10 \cdot 2^{i-1}|) \cdot \prob{\text{1st red in $i$th spin}}\\
-  &\quad  + (|-10 \cdot 2^{i-1}|) \cdot \prob{\text{1st red after $i$th spin}}\\
-  &\quad  + 0 \cdot \prob{\text{1st red before the $i$th spin}}\\
-  & = (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
-       + (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
-       + 0 = 10,
-\end{align*}
-so the sum~\eqref{sumabsC} diverges ---rapidly.
-
-Probability theory truly leads to this absurd conclusion: a game
-entailing an unbounded number of fair bets may not be fair in the end.
-In fact, even against an \emph{unfair} wheel, as long as there is some
-fixed positive probability of red on each spin, you are certain to win
-$\$10$ playing the St. Petersburg strategy!
-
-This brings us to the second thing that's wrong here: you may wind up
-losing a lot of money before you catch up with your net win of \$10.
-Let $L$ be the number of dollars you need to have in order to keep
-betting until the wheel finally spins red.  If red first comes up on
-the $i$th spin, then $L$ would equal
-\[
-10(1 + 2 + 4 + \cdots + 2^i) = 10(2^{i+1}- 1)
-\]
-By Total Expectation,
-\begin{align*}
-\expect{L} 
-& = \sum_{i \in \integers^+} \expcond{L}{\text{1st red in $i$th spin}} \cdot
-       \prob{\text{1st red in $i$th spin}}\\
-& = \sum_{i \in \integers^+} (10 \cdot (2^{i+1} -1)) \cdot 2^{-i}
-       \geq \sum_{i \in \integers^+} 10 = \infty.
-\end{align*}
-That is, you can expect to lose an infinite amount of money before
-finally winning \$10 ---giving you a 0\% profit.
-
-So yes, probability theory leads to the absurd conclusion that, even
-with the odds heavily against you, you're certain to win playing
-roulette, but only if you make the absurd assumption that you have an
-infinite bankroll.  We can't fault the theory for reaching an absurd
-conclusion from an absurd assumption.
-
-%\subsection{$\sqrt{\infty} = 2$}
-
-\begin{problems}
-\practiceproblems
-\pinput{CP_infinite_variance}
-\pinput{CP_sqrt_infinite_expectation}
-
-\classproblems
-\pinput{TP_infinite_repeat}
-\pinput{PS_infinite_repeat_expectation}
-
-\examproblems
-\pinput{FP_infinite_repeat}
-\end{problems}
-
-\endinput
