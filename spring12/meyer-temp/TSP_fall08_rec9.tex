@@ -1,0 +1,212 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+
+\hidesolutions
+%\showsolutions
+
+\newcommand{\edge}[2]{#1\text{---}#2}
+\newcommand{\mfigure}[3]{\bigskip\centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}\bigskip}
+\newcommand{\eqdef}{\mathbin{::=}}
+
+\begin{document}
+
+\recitation{9}{October 3, 2008}
+%\section{BFS and DFS}
+%In the last lecture we discussed properties of trees, and today we're going to get into a few more. Recall that given a tree, we can think of it as rooted at any given vertex $v$. Define the {\it level} of a vertex $w$, denoted $level(w)$, to be the distance $d(v,w)$ from $v$ to $w$. For a vertex $w$ in some level $i$, we define $w$'s {\it children}, denoted $children(w)$, to be those vertices $c$ for which $\{w,c\}$ is an edge and $c$ is in level $i+1$. So, for example, $v$'s children are in level $1$. The vertices which don't have children are exactly the leaves of the tree, excluding $v$ (if it is a leaf).
+
+%We define $w$'s {\it parents}, if any, to be those vertices $p$ for which $w \in children(p)$. The only vertex which doesn't have a parent is the root $v$. It is easy to see that since the graph is a tree, $w$ can have at most one parent, as otherwise the graph would contain a cycle. 
+
+%Define $w$'s {\it siblings} to be those vertices $s$ which have the same parent as $w$.
+
+%\mfigure{!}{2in}{rootedBFS}
+
+%For example, in this graph $a$ is the root, $b, c, d, $ and $e$ are its children, and $f$ is the parent of $g$. There are $5$ leaves: $b, c, e, g, $ and $h$. Vertices $c$ and $d$ are siblings. 
+
+%Suppose we are interested in visiting all the vertices in the tree $G$ by walking along edges starting from $v$. There are many different ways to do this, but we'll concentrate on two particularly common ones known as depth-first-search (DFS) and breadth-first-search (BFS). In DFS the idea is to visit all of a node's children before any of its siblings. In BFS the idea is to visit all of a node's siblings before any of its children. These are formalized on the next page.
+%\newpage
+
+%\noindent {\bf DFS}$(G, v)$:
+%\begin{enumerate}
+%\item Initialize an ordered list $L$ of vertices to $(v)$.
+%\item Initialize $W$ to an empty walk.
+%\item While $L$ is non-empty,
+%\begin{enumerate}
+%\item Remove the first vertex $y$ from $L$.
+%\item Let $x$ be the last vertex visited by $W$ (if one exists), and append the shortest path $P(x,y)$ from $x$ to $y$ to $W$. If $W$ is empty, just append $y$ to $W$. 
+%\item Prepend children($y$) to $L$ (in any order).
+%\end{enumerate}
+%\item Output $W$.
+%\end{enumerate}
+
+%So on our example graph $G$, DFS$(G, a)$ would visit vertices in the order $a, b, c, d, f, g, h, e$ and the walk produced would be
+%$$a, \{a, b\}, \{b, a\}, \{a, c\}, \{c, a\}, \{a, d\}, \{d, f\}, \{f, g\}, \{g, f\}, \{f, h\}, \{h, f\}, \{f, d\}, \{d, a\}, \{a, e\}.$$
+%The following lemma will be useful in the next section. 
+%\begin{enumerate}
+%\item Show that no vertex is ever added more than once to $L$ in $DFS(G, v)$.
+%
+%\solution{Suppose there were such a vertex added more than once to $L$, and let $w$ be a vertex with smallest level amongst all such vertices. Then $w$ can only be added to $L$ when $parent(w)$ is removed from $L$. Thus the root $v$ can never be added to $L$ (other than during initialization of $L$). Consider the first iteration when $w$ is added to $L$. Then $parent(w)$ was removed from $L$ in that iteration. The only way for $w$ to be added again to $L$ is if $parent(w)$ were to occur in $L$ again, that is, $parent(w)$ would have to be added more than once to $L$. But $parent(w)$ has smaller level than $w$, which is a contradiction.}
+%\end{enumerate}
+%Now let's consider an alternative searching strategy, BFS.\\\\
+%{\bf BFS}$(G,v)$:
+%\begin{enumerate}
+%\item Initialize an ordered list $L$ of vertices to $(v)$.
+%\item Initialize $W$ to an empty walk.
+%\item While $L$ is non-empty
+%\begin{enumerate}
+%\item Remove the first vertex $y$ from $L$.
+%\item Let $x$ be the last vertex visited by $W$ (if one exists), and append the shortest path $P(x,y)$ from $x$ to $y$ to $W$. If $W$ is empty, just append $y$ to $W$.
+%\item Append children($y$) to $L$ (in any order). 
+%\end{enumerate}
+%\item Output $W$.
+%\end{enumerate}
+
+%Notice that the only difference between BFS and DFS is in how the children of a node removed from $L$ are added to $L$. In this case they are appended to $L$, as opposed to prepended in DFS. In this case the vertices are visited in the order $a,b,c,d,e,f,g,h$. Observe that vertices are visited in order from their distance from the root.
+
+%It is easy to see that in both DFS and BFS all vertices of $G$ occur in $L$ in some iteration, and are thus visited by $W$. Indeed, if not, we could consider the vertex $w$ of smallest level not occurring in $L$. We know that $w$ is not the root, so $w$ has a parent $parent(w)$ of smaller level than $w$. But then $parent(w)$ occurs in $L$, and when it is removed, $w$ is added to $L$, which is a contradiction. 
+
+%Define the {\it descendants} of a vertex $w$ in the tree $T$ rooted at $A$, as all vertices $w'$ for which there exist vertices $w = w_0, w_1, \ldots, w_r = w'$ for which $w_i = parent(w_{i+1})$ for all $i$. That is, $w$ is the parent of the parent of the parent of the $\ldots$ of the parent of $w'$. Then the {\it rooted subtree} at $B$ is the tree rooted at $B$ containing all the descendants of $B$ and the edges between them in the tree $T$ rooted at $A$. This concept will be used in the next section.
+
+\section{Traveling Salesperson Problem}
+Now we're going to talk about a famous optimization problem known as the Traveling Salesperson Problem\footnote{Note that this is sometimes referred to as the Traveling Salesman Problem, but we take a gender-neutral stance.} (TSP). Given a number of cities and the costs of traveling from any city to any other city, what is the cheapest round-trip route that visits each city exactly once, and returns to the starting city?
+
+One special, though very natural, case of this problem is when the costs of traveling between cities obey the {\it triangle inequality}. That is, if $a,b,$ and $c$ are distinct cities, then $d(a,c) \leq d(a,b) + d(b,c)$. This corresponds to our intuitive notion that the distance of traveling to $a$ from $c$ should be no larger than that of first traveling to $a$ from $b$, and then from $b$ to $c$. The triangle inequality holds if the cities correspond to points in the plane, since in this case the line segments joining $a$ to $b$, $b$ to $c$, and $a$ to $c$ form a triangle, and in high school we learned that the sum of any two edges of a triangle is larger than the third edge. 
+
+Let us abstract away the distractions and formulate the problem as follows. The cities will be vertices of a graph. We will then consider the complete graph on these vertices, and give edge $(a,b)$ a weight of $d(a,b)$. We want an ordering of the vertices $(v_1, \ldots, v_n)$ that minimizes $$COST = \sum_{i=1}^{n-1} d(v_i, v_{i+1}) + d(v_n, v_1).$$
+
+Consider the following greedy algorithm for TSP. This might be the first thing you'd think of. It is called greedy since at each step we are choosing the locally-optimal best way to continue, though our overall actions may not be collectively optimal.
+\begin{enumerate}
+\item Start at an arbitrary city.
+\item While there is still an unvisited city, go to the city with smallest distance from the current city. If there are no more unvisited cities, return to the starting city.
+\end{enumerate}
+
+Even when the cities are points in the plane, the greedy algorithm sometimes outputs a suboptimal solution.
+
+
+For example, take $4N$ points on the perimeter of an $N\times N$ square (each at distance one from the next along the perimeter) and add one point at distance $2$ (outwards) from the perimeter at each of the corners (for a total of $4N+4$ points). (To make it consistent with our abstraction, one would take these points on the plane and consider the complete graph with their pairwise distances as weights, but its easier to think of it directly in this case).  The Greedy Algorithm will go around the perimeter and then have to go
+around again to pick up the four corners (which will be skipped the
+first time around).  For large $N$, this will be nearly a factor of $2$ from optimal
+(which will pick up the corners as it goes around the first time). 
+
+
+
+%The following figure on twelve vertices shows that the greedy algorithm is not optimal, no matter which city it starts at and no matter how it breaks ties in the second step.
+
+%\mfigure{!}{1.5in}{greedyNotOpt}
+
+%Observe that by walking along the perimeter of the object, the route has length $16$, so the optimal solution is at most $16$.
+
+%There are three unit squares, $ABCD$, $EFGH$, and $IJKL$. By symmetry, we may assume the greedy algorithm starts in square $ABCD$ or $EFGH$. Suppose first that it starts in $EFGH$. Then it will choose three edges of $EFGH$, and then go to either $ABCD$ or $IJKL$. By symmetry, we may assume it goes to $ABCD$. Then it will choose $3$ edges of $ABCD$, and now it must go to $IJKL$. Then it will choose three edges of $IJKL$, and then return to $EFGH$. The distance is at least $3 + 2 + 3 + 5 + 3 + 2 = 18$, which is worse than the optimal solution. 
+
+%Now suppose the greedy algorithm starts in $ABCD$. Then it chooses three unit edges there. Then it goes to $EFGH$, and chooses three unit edges there. Then it goes to $IJKL$ and chooses three unit edges there. Now it must return to $ABCD$. The total distance is at least $3 + 2 + 3 + 2 + 3 + 5 = 18$, which again is larger than the optimal solution.
+
+
+It turns out that if you can design an efficient algorithm which solves TSP on every possible input, you can win a million dollars. Many researchers believe that in fact this is impossible, though no proof of this fact is known (this proof would also get you a million dollars). Thus, researchers have contented themselves with finding a good {\it approximation algorithm} to TSP. More precisely, if $OPT$ is the cost of the optimal solution (the total distance traveled on an optimal route), then an algorithm outputs an $\alpha$-approximation to TSP provided its output, on any input, is a valid round-trip route visiting each city once, and has cost at most $\alpha \cdot OPT$.
+
+%It can be shown that the greedy algorithm for TSP in the plane always outputs a route whose cost is at most $2$ times that of the optimal route: i.e., the greedy algorithm outputs a 2-approximation to TSP.
+
+In what follows, we will describe a $3/2$-approximation algorithm ALG for TSP, in the case where the triangle inequality holds and the distances are non-negative.
+
+\noindent {\bf 3/2-Approximation Algorithm ALG}
+\begin{enumerate}
+\item Construct a graph $G$ whose vertices are the $N$ cities with an edge between every pair of cities $A \neq B$ with corresponding weight $d(A,B)$, where $d(A,B)$ is the distance between $A$ and $B$ in the plane. 
+\item Compute an MST $T$ of $G$ (Recall that a {\it minimum spanning tree} (MST) of a graph $G$ is a spanning tree whose sum of edge weights is as small as possible).
+\item Compute, for each city $A \in G$, the degree $d_A$ of $A$ in $T$.
+\item Let $S = \{ A \in G: d_A \mbox{ is odd}\}$.
+\item Compute a minimum weight perfect matching $M$ on the vertices in
+  $S$ (using the distances $d(\cdot, \cdot)$ as weights).
+\item Compute a new set of edges $E' = M \cup T$. Note that the
+  resulting graph $G' = (V, E')$ is not necessarily a simple graph
+  since it might contain multiple edges.
+\item Take the subgraph $G' = (V, E')$, and compute an Euler circuit on it.
+\item Use the Euler circuit to give an induced ordering of the vertices (i.e., the order in which the vertices appear for the first time), and do a TSP tour on this order.
+\end{enumerate}
+
+Try to run this on the $4N+4$ vertex example and see what it gives.
+
+Note that this algorithm is reasonably efficient, even for large
+graphs, since computing an MST, computing a minimum weight perfect
+matching, and computing Euler circuits can be done efficiently. Since
+the Euler circuit visits all vertices and then returns to the starting
+vertex, the output of our algorithm visits every city once, and
+returns to the starting city, as needed. Now let's show that the
+algorithm is a $3/2$-approximation.
+
+Let $OPT$ be the optimum TSP tour cost.
+
+\begin{enumerate}
+\item 
+
+Show that the cost of any tour is at least the cost of an MST of
+$G$. Hence conclude that the cost of an MST is at most $OPT$.
+
+\solution{
+
+Consider any route of the traveler. It corresponds to a cycle $C$ in
+$G$ containing every vertex once, since every city must be visited and
+the traveler must end in the city in which they started. The cost of the
+route is then just the sum of the weights of edges along $C$. Now if
+we delete any edge of $C$, we are left with a spanning tree of $G$,
+and the cost cannot increase. Therefore, the cost of a minimum
+spanning tree (MST) is a lower bound on the cost of any route $C$.}
+
+\item Prove that the size of $S$ is even. 
+
+%\solution{By the handshake lemma, the number of vertices with odd degree in any graph is even.}
+\solution{Since an edge connects two vertices, every edge added to a graph increases the total degree over all vertices by exactly two. Therefore, the total degree in any graph must be even. By definition, $S$ contains vertices with odd degree. Since the total degree in $G$ is equal to the sum of the total degree of even-degree vertices and odd-degree vertices, we have that the total degree of odd-degree vertices is even (since the total degree of even-degree vertices is even). The total degree of odd-degree vertices is the sum of $|S|$ odd numbers, so to have it be even requires that $|S|$ be even.}
+
+
+\item Prove that the weight of the min weight perfect matching is at most $OPT/2$. {\em Hint: Consider a minimum cost TSP tour on just the vertices in $S$.}
+
+\solution{
+We will use the following lemma.
+\begin{lemma}
+If the triangle inequality holds in a graph with positive weights, then $d(a,b)$ is at most the weight of any path from $a$ to $b$.
+\end{lemma}
+\begin{proof}
+%By induction on the length of the path.
+We prove the lemma by induction. Let the inductive hypothesis $P(n)$ be the statement ``If $n$ is the length of a path $p$ from $a$ to $b$, for any vertices $a$ and $b$, then $d(a,b)$ is at most the weight of $p$.''
+
+This holds for the base case of $n=1$, since the minimum cost of traveling from $a$ to $b$ cannot be strictly greater than the weight of the direct path from $a$ to $b$ (otherwise, we could simply take the direct path for a smaller cost).
+
+For the induction step, we assume that $P(n)$ holds for an arbitrary $n\geq 1$. Then, for $n+1$, we have an $(n+1)$-length path from $a$ to $b$. Let $b'$ be the vertex preceding $b$ on this path. By our inductive assumption, we know that $d(a,b')$ is at most the weight of this path. Then by the triangle inequality, we have $d(a,b) \leq d(a,b') + d(b',b)$, which is less than or equal to the weight of the path from $a$ to $b'$ added to the cost of the $b'$-to-$b$ edge, which is the weight of the path from $a$ to $b$. So the inequality holds for the $n+1$ case.
+\end{proof}
+
+Consider the optimal TSP tour on the entire graph $G$. This has cost $OPT$. This is also a tour on the vertices in $S$. ``Shortcut'' this tour by using the lemma: i.e., for every segment of the tour between vertices $s_1, s_2 \in S$ with no other vertices of $S$ en route, substitute in the edge from $s_1$ to $s_2$. By the lemma, these substitutions can only decrease the length of the tour, and thus it now has cost at most $OPT$. Now, since there are an even number of vertices in the tour, one can consider 2 perfect matchings formed by taking alternate edges of this tour. Clearly, the sum of their costs is at most $OPT$, so one of them must have a cost of at most $OPT/2$. Thus the min weight perfect matching on $S$ has weight at most $OPT/2$.
+}
+
+\item Prove that $G'$ has an Euler circuit, and its cost is at most $3OPT/2$. 
+
+\solution{Every vertex has even degree in $G'$ (by choice of $S$ and $M$). Thus it has an Euler circuit. Every edge of $T\cup M$ is traversed once, and so the total cost is $cost(T) + cost (M) \leq OPT + OPT/2 = 3OPT/2$.
+}
+
+\item Show that the length of the TSP tour is at most $3OPT/2$.
+
+\solution{The induced TSP tour from is a "shortcutting" of the Euler circuit (replacing paths by single edges), and hence, by the triangle inequality lemma from above, its length is at most the length of the Euler circuit.}
+%n{figure}[h]
+  % Requires \usepackage{graphicx}
+%  \includegraphics[width=8in]{trinagulatepentagon.eps}\\
+%  \caption{Triangulating the Pentagon}\label{b2}
+%\end{figure}
+
+
+
+\item Conclude that our algorithm outputs a $3/2$-approximation.
+
+\solution{ Indeed it does.}
+\end{enumerate}
+
+
+In fact, for any constant $\epsilon > 0$, it is known how to efficiently achieve a $(1+\epsilon)$-approximation in the plane, but it is a {\bf lot} more complicated. 
+
+
+%R8 (same as old R7): define depth first and breadth first searche orders
+%        for a tree.  define TSP with special case of triangle inequality (i.e.,
+%        in the plane).  P1: show greedy algorithm does not give optimal solution
+%        even in the plane (if they show it actually does give opt solution, be
+%        sure to tell your TA so they can claim the $1M Millenium Prize :)).  P2:
+%        design an algorithm that gets within a factor of 2 of OPT for the plane
+%        as follows: compute an MST on the points and then traverse the MST with
+%        DFS algorithm to get TSP solution.  Show MST gives a lower bound and DFS
+%        at most doubles the cost of the MST if there is triangle inequality.
+
+\end{document}

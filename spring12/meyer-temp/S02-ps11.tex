@@ -1,0 +1,534 @@
+\documentclass[11pt,twoside]{article}   
+\usepackage{latex-macros/course}
+
+\def\bparts{\begin{problemparts}}
+\def\eparts{\end{problemparts}}
+\def\ppart{\problempart}
+
+\renewcommand{\reading}
+{\href{http://theory.lcs.mit.edu/classes/6.042/spring02/handouts/lectures/ln11.pdf}
+{Week 11 Notes}, Rosen \S4.5}
+\renewcommand{\coursecopyrightnames}{Dr.~Radhika~Nagpal}
+
+%\hidesolutions         
+%\showsolutions
+
+\begin{document}
+\problemset{11}
+
+% SOURCE:  Probability-Expectation.tex in problemrepository
+% Prepared by Eric Ho
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem} Eight men and seven women, all single, happen randomly to have
+purchased single seats in the same 15-seat row of a theater.
+
+\begin{problemparts}
+
+\problempart
+What is the probability that the first two seats contain a marriageable
+couple, i.e., a single man next to a single woman?
+
+\solution{Here's one way to do it.  There are $\binom{15}{2} = 105$
+possible pairs that could occupy the first two seats, but only
+$8\cdot7 = 56$ of them are marriageable couples.  So the probability
+is $56/105 = 8/15$.
+}
+
+\problempart What is the expected number of pairs of adjacent seats which
+contain marriageable couples?  (For example, if the sequence of men and
+women in the seats is
+\begin{center}
+MMMWMMMMWWWWWWM,
+\end{center}
+then there are four possible couples sitting in the pairs of adjacent
+seats that start at the 3rd, 4th, 7th and 14th seats, respectively.)
+
+\solution{The approach that we are going to use is to assign an
+indicator random variable (i.e. value 0 or 1) to each event that we
+want to count, and then use the expectation of sum formula to compute
+the expected number of events that occur.
+
+Let the random variable S be the number of pairs of seats
+containing a marriageble couple; we want to find $\expect{S}$.  We can
+solve this problem by introducing an indicator random variable $S_i$,
+where $S_i = 1$ if there is a marriageable couple in seats $i$ and
+$i+1$, and $S_i = 0$ otherwise.  So we have $S = \sum_{i=1}^{14} S_i$.
+
+Since each seat is like any other, the probability that seats $i$ and
+$i+1$ contain a marriageable couple is the same as in the first
+part, $8/15$.  Thus
+\[
+\expect{S_i} = 1\cdot\Pr(S_i=1) + 0\cdot\Pr(S_i=0) = \frac{8}{15}.
+\]
+Finally, because expectation is linear,
+\[
+\expect{S} =  \sum_{i=1}^{14} \expect{S_i}  =  14\cdot \frac{8}{15}.
+\]
+Note that this approach works despite the fact that the indicator random
+variables $S_i$ are not independent.  That's the beauty of linearity of
+expectation!
+
+}
+
+\iffalse
+\problempart Use a similar approach to calculate the expected number
+of ``triples'' of people having the same birthdate\footnote{By
+birthdate we mean born on the same day of the same month. Assume that
+all birthdates are equally likely and independently chosen (by a
+higher force).} in a classroom with $m$ people on a planet with $N$
+days in a year. How many such triples would you expect to see in this
+class ($m=100,N=365$)?
+
+\solution{
+The probability that a triple of students has the same birthday is
+$1/N^2$. The number of possible triples is $\binom{m}{3}$ which is
+$\frac{m(m-1)(m-2)}{6}$. Problem is that these triples are not
+independent of each other, so computing the probability of $i$ triples
+is very hard. However if we use the linearity of expectations, then we
+get to ignore this thorny issue. As in the part(b), each triple gets
+assigned an indicator random variable and the expected value of that
+variable is $1/N^2$ (feel free to verify rigorously). Let $T$ be the
+random variable representing the number of triples with the same
+birthdate. Then,
+
+$$\expect{T} = \frac{m(m-1)(m-2)}{6N^2}$$
+
+For this class that is $100.99.98/6.365.365 = 1.2 (approx)$
+}
+\fi
+
+\end{problemparts}
+\end{problem}
+
+
+%nikos
+%PSET11 - last used Spring 99, pset 11
+%LEARNING OUTCOMES:7 (calculate numbers of possible outcomes)
+%                  8  (calculate probabilities)
+%New problem added this term
+\begin{problem} 
+\begin{problemparts}
+
+\problempart Suppose that I roll a 4-sided die, a 6-sided die, an
+8-sided die, a 10-sided die, a 12-sided die, and a 20-sided die.  What
+is the expected number of 6's that come up?  (Assume that all of the
+dice are fair.)
+
+\solution{
+\begin{eqnarray*}
+\Ex(\text{6's on all dice})
+        & = &   \Ex(\text{6's on 4-sided die}) + \Ex(\text{6's on 6-sided die}\
+) + \ldots \\
+        &   &   \mbox{} \quad + \Ex(\text{6's on 20-sided die}) \\
+        & = &   \frac{0}{4} + \frac{1}{6} + \frac{1}{8} + \frac{1}{10} +
+        \frac{1}{12} + \frac{1}{20} \\
+        & = &   \frac{21}{40}
+\end{eqnarray*}
+
+The first step uses linearity of expectation, and the second step is
+simplification.  
+}
+
+\problempart Suppose that I roll $n$ dice that are 6-sided, fair, and
+mutually independent.  What is the expected value of the largest
+number that comes up?
+
+\solution{Let the random variable $M$ be the largest number that comes
+up.  We will use the identity
+
+\begin{eqnarray*}
+\Ex(M)  & = &   \sum_{i=0}^{\infty} \Pr(M > i)
+\end{eqnarray*}
+
+We must compute the probability of the event $M > i$; that is, the
+event that some die shows a value greater than $i$.
+
+\begin{eqnarray*}
+\Ex(M > i)
+        & = &   \sum_{i=0}^5 \Pr(M > i) \\
+        & = &   \sum_{i=0}^5 1 - \Pr(\text{every die $\leq i$}) \\
+        & = &   \sum_{i=0}^5 1 - (\Pr(\text{one die $\leq i$}))^n \\
+        & = &   \sum_{i=0}^5 1 - \left(\frac{i}{6}\right)^n \\
+        & = &   6 - \frac{1^n + 2^n + 3^n + 4^n + 5^n}{6^n}
+\end{eqnarray*}
+}
+\end{problemparts}
+\end{problem}
+
+
+\begin{problem} Suppose we construct a simple $n$-node graph,
+$G=(V,E)$, randomly as follows:
+
+For every set of two distinct vertices $\set{v,v'}$, toss a biased
+coin whose probability of coming up heads is $p$.  The undirected edge
+between $v$ and $v'$ is included in $E$ iff the coin comes up heads.
+Assume that all coin tosses are mutually independent.
+
+A \emph{simple $k$-cycle} in a simple graph is an undirected path
+going through each of $k>2$ vertices exactly once and ending where it
+started.  A simple $k$-cycle can be represented by the sequence of $k$
+vertices $v_1, v_2, \ldots, v_k$ along the path. Note that every
+$k$-cycle can be represented by many sequences. For example, the
+4-cycle represented by $1234$ is as the same cycle represented by
+$2341$ or $3412$ because a cycle does not have to start at any
+particular vertex.  It is also represented by $4321$, because the
+cycle is undirected.
+
+\begin{problemparts}
+\problempart What is the probability that the $k$-cycle represented by
+a the sequence $v_1, v_2, \dots, v_k$ exists in $G$?
+
+\solution{A particular $k$-cycle (call it $e$) will occur only if all of
+the edges in that cycle exist in the randomly constructed $G=(V,E)$.  Since
+each edge is independently added with probability $p$, we have $\pr{e \in
+E} = p^k$.}
+
+\problempart What is the total number of distinct possible $k$-cycles?
+
+\solution{ There are $P(n,k)$ ways to choose the elements within the
+cycle.  Since it is a cycle, the starting position does not matter,
+which means we need to divide the answer by $k$.  In addition, we need
+to further divide by two because the orderings of the set of two
+vertices $\set{v,v'}$ does not matter.  The result yields $P(n,k)/2k$.
+}
+
+\problempart What is the expected number of $k$-cycles in $G$?  (You
+may let $X$ denote the answer to part (b) and express your answer in
+terms of $X$, $k$, and $p$).
+
+\solution{ Let $I_e$ be the indicator random variable of the event
+that a particular $k$-cycle, $e$, occurs.  So the number, $N$, of
+$k$-cycles is $\sum_e I_e$ where $e$ ranges over all possible
+$k$-cycles, \ie all $k$-cycles in the complete graph on $V$.
+
+We know from a previous part that $\pr{I_e = 1} = p^k$, which means that
+$\expect{I_e} = p^k$.  Also, the total number of distinct possible
+$k$-cycles is $X \eqdef P(n,k)/2k$.
+
+Therefore
+\[
+\expect{N} = \sum_e \expect{I_e} = X p^k.
+\]
+}
+
+\end{problemparts}
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%pset11 problem6 spring98; from fall 97 pset11 problem7
+\begin{problem}
+
+The Fellowship of the Ring is lost in the underground mines of Moira.
+They find themselves in a chamber containing three doors.  Door 1
+leads them to freedom after one hour of travel; door 2 returns them to
+the same room after four hours travel, and door 3 returns them to the
+room after seven hours travel. Each time they find themselves in the
+room, they pick a door with equal probability.
+
+\begin{problemparts}
+
+\problempart Let $T$ be the total number of hours before they find the
+exit.  Define a sequence of independent identically distributed random
+variables $R_i$ and a stopping time $Q$ such that
+
+\begin{displaymath}
+T = \sum_{i=1}^{Q}{R_i}
+\end{displaymath}
+
+\solution{FIX SOLUTION We view this an experiment where at each step
+the student makes a choice between three equally likely outcomes.  We
+define $R_i$ as the number of hours to return to the same room, or to
+escape, starting at the $i$th step.  The experiment does not end.
+That is, as soon as the student escapes, he is doomed, like Sisyphus,
+to be stuck back in the room and start trying to escape again.  This
+ensures that there is an $i$th step for all $i \ge 0$, and that the
+$R_i$ are identically distributed (they are also independent, though
+this fact is not needed in applying Wald's Theorem).  In particular,
+$\pr{R_i=1}=\pr{R_i=4}=\pr{R_i =7}=1/3$, and $\expect{R_i} =
+(1+4+7)/3=4$.
+
+Define $Q$ to be the number of steps from the first step until the escape
+door is selected \emph{for the first time}.  Now $Q$ is geometrically
+distributed with probability $1/3$ and $\expect{Q}=3$.
+}
+
+
+\problempart Use Wald's Theorem to find $\expect{T}$.
+
+\solution{
+Since Wald's Theorem is applicable, we conclude
+\[\expect{T} = \expect{\sum_{i=1}^Q R_i}  = 3 \times 4 = 12.\]
+}
+
+
+\problempart Gandalf decides to take over, and he never chooses the
+same door twice.  What is $\expect{T}$ now?
+
+\solution{ The problem can be solved by complete enumeration; call $A$
+the door that leads out, $B$ the door that leads back in four hours,
+and $C$ the door that leads back in seven hours. The possible events
+are
+
+\begin {itemize}
+
+\item
+$A$ with probability $1/3$, in which case $T=1$
+
+\item
+$BA$ with probability $\frac 12 \cdot \frac 13 = \frac 16$, in which
+case $T=5$;
+
+\item
+$BCA$ with probability $\frac 12 \cdot \frac 13 \cdot 1 = \frac 16$,
+in which case $T=12$;
+
+\item
+$CA$ with probability $\frac 12 \cdot \frac 13  = \frac 16$, in which case $T=8$;
+
+\item
+$CBA$ with probability $\frac 12 \cdot \frac 13 \cdot 1 = \frac 16$, in which
+case $T=12$.
+
+\end {itemize}
+
+The average of $T$ this time is $\expect{T} = 39/6 = 6.5$.
+}
+\end{problemparts}
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}6.042 TA Eric has offered to play a
+``fun game'' with Theory Pig, who rarely comes out of his drawer
+anymore after all the abuse that he has suffered this term.
+
+\begin{problemparts}
+\problempart The game is as follows: Suppose that Eric rolls a fair,
+6-sided die.  He offers to pat Theory Pig for the number of days
+indicated on the die. If Theory Pig rejects the offer, then Eric rolls
+again and pats Theory Pig for the number of days shown on the second
+roll. Theory Pig decides to use the following strategy - he accepts
+the initial offer with probability $p_k$, given that $k$ is rolled.
+What is expected number of patting-days, if Theory Pig uses an optimal
+strategy? (Hint: find a formula that yields the expected payoff of any
+strategy. Then find out what values for $p_k$ maximize the equation.)
+
+\solution{If Theory Pig always declines the initial offer, then his
+expected payoff is $\frac{7}{2}$, the expected roll on a fair, 6-sided
+die.  Let $p_k$ be the probability that Theory Pig accepts the initial
+offer, given that $k$ is rolled.  Then Theory Pig's expected payoff is
+
+\begin{eqnarray*}
+\Ex(\text{patting days})
+        & = & \sum_{i=1}^6 \frac{1}{6}\left(p_i \cdot i +
+                (1 - p_i) \cdot \frac{7}{2}\right)
+\end{eqnarray*}
+
+This sum is maximized by maximizing each term.  Consequently, we
+should choose $p_1 = p_2 = p3 = 0$ and $p_4 = p_5 = p_6 = 1$.  That
+is, Theory Pig should decline an offer of 3 or less and accept an
+offer of 4 or more.  In this case, his expected payoff is
+$\frac{17}{4}$.
+
+We can also deduce Theory Pig's strategy directly.  Since his expected
+payoff from the second offer is $\frac{7}{2}$, he should accept any
+initial offer higher than this and reject any initial offer that is
+lower.  
+}
+
+\problempart Eric now proposes a different game. Eric flips a coin
+until he gets a heads.  Let $n$ be the number of tails preceding the
+first heads.  For example, if he flips $TTTH$, then $n = 3$, and if he
+flips just $H$, then $n = 0$.  Now Eric offers to pat Theory Pig on
+each of the next $3^n$ days.  If Theory Pig declines the offer, then
+Eric repeats the coin-tossing experiment and instead pats Theory Pig
+on each of next $3^m$ days where $m$ is the number of tails before the
+first heads in the second trial. What is the expected number of
+patting days if Theory pig decides to (i) always accept the initial
+offer (ii) always decline the initial offer?
+
+% As usual, this game sounds great, but Theory Pig is understandably
+% nervous.  He wants to determine his best strategy.
+
+\solution{If Theory Pig declines the initial offer, then his expected
+payoff is
+
+\begin{eqnarray*}
+\Ex(\text{patting days if decline})
+        & = & \sum_{i=0}^\infty \frac{1}{2^{i+1}} \cdot 3^i.
+\end{eqnarray*}
+
+This summation is infinite.  Therefore, if there is a positive
+probability that Theory Pig decines the initial offer, his expected
+payoff is infinite.  On the other hand, suppose that there is zero
+probability that Theory Pig declines the initial offer; that is, he
+always accepts.  Then his expected payoff is
+
+\begin{eqnarray*}
+\Ex(\text{patting days if accept})
+        & = & \sum_{i=0}^\infty \frac{1}{2^{i+1}} \cdot 3^i.
+\end{eqnarray*}
+
+This is the same infinite sum.  Therefore, every strategy is optimal
+and gives an infinite expected number of patting days.
+%We are still tallying up the precentage of students that solved this
+%problem correctly.
+}
+\end{problemparts}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\iffalse
+\begin{problem}
+
+Theorem: If X and Y are two random variables, such that
+$$
+\forall x\neq 0, y\neq 0,~~\prob{X=x\wedge Y=y}=\prob{X=x}\prob{Y=y}
+$$
+then
+$$
+\expect{XY}=\expect{X}\expect{Y}
+$$
+
+\begin{proof}
+$$
+\forall x\neq 0, y\neq 0,~~\prob{X=x\wedge Y=y}=\prob{X=x}\prob{Y=y}
+$$
+implies that
+\begin{eqnarray}
+\expect{XY}&=&\sum_{x, y} xy\prob{X=x \wedge Y=y}\\
+&=&\sum_{x, y\neq 0} xy\prob{X=x \wedge Y=y}\\
+&=&\sum_{x, y\neq 0} xy\prob{X=x}\prob{Y=y}\\
+&=&\sum_{x, y\neq 0} x\prob{X=x}y\prob{Y=y}\label{frombug}\\
+&=&\sum_{x\neq 0}\sum_{y\neq 0}x\prob{X=x}y\prob{Y=y}\\
+&=&\sum_{x\neq 0} x\prob{X=x} \sum_{y\neq 0} y\prob{Y=y}\label{tobug} \\
+&=&\sum_{x\neq 0} x\prob{X=x} \expect{Y} \\
+&=&\expect{Y}\sum_{x\neq 0} x\prob{X=x}  \\
+&=&\expect{Y}\expect{X}
+\end{eqnarray}
+\end{proof}
+
+\begin{problemparts}
+\problempart For each line in the proof, briefy justify its correctness. 
+
+\solution{
+(1) - definition of expectation.
+(2) - term is zero when $x$ or $y$ is zero.
+(3) - by hypothesis.
+(4) - multiplication is commutative.
+(5) - reordering sums.
+(6) - factorization.
+(7) - definition of expectation.
+(8) - factorization.
+(9) - definition of expectation.
+}
+
+\problempart 
+One of the TAs thought that the theorem was incorrect and proposed the following
+counter-example (see below). What is wrong with this counter-example?
+
+\begin{eqnarray*}
+X&=&\left\{
+\begin{array}{ll}
+0&\textrm{  with probability }1/2\\
+1&\textrm{  with probability }1/2
+\end{array}\right.\\
+Y&=&1-X
+\end{eqnarray*}
+Then $\expect{X}=\expect{Y}=1/2$, but $\expect{XY}=\expect{0}=0$.
+
+\solution{At $x=1$ and $y=1$, $\prob{X=x\wedge Y=y} = 0$ while
+$\prob{X=x}\prob{Y=y} = \frac{1}{2}*\frac{1}{2} = \frac{1}{4}$.  The
+TA's example therefore does not fit the requirements for the random
+variables $X,Y$.}
+\end{problemparts} 
+\end{problem}
+
+%% OLD VERSION
+\begin{problem}
+\begin{problemparts}
+\problempart
+The TA's solution to the following problem is wrong.  Identify the error.
+
+\textbf{Problem}
+Describe two random variables $X, Y$ such that
+$$
+\forall x\neq 0, y\neq 0,~~\prob{X=x\wedge Y=y}=\prob{X=x}\prob{Y=y}
+$$
+but
+$$
+\expect{XY}\neq\expect{X}\expect{Y}
+$$
+\textbf{TA's Solution}
+
+Many obvious examples, here's one:
+\begin{eqnarray*}
+X&=&\left\{
+\begin{array}{ll}
+0&\textrm{  with probability }1/2\\
+1&\textrm{  with probability }1/2
+\end{array}\right.\\
+Y&=&1-X
+\end{eqnarray*}
+Then $\expect{X}=\expect{Y}=1/2$, but $\expect{XY}=\expect{0}=0$.
+
+\solution{ At $x=1$ and $y=1$, $\prob{X=x\wedge Y=y} = 0$ while
+$\prob{X=x}\prob{Y=y} = \frac{1}{2}*\frac{1}{2} = \frac{1}{4}$.  The
+TA's example therefore does not fit the requirements for the random
+variables $X,Y$.  }
+
+\problempart The TA wrongly points out that the following proof is
+wrong.  Idenfity what is wrong with his counterexample.
+
+\begin{proof}
+$$
+\forall x\neq 0, y\neq 0,~~\prob{X=x\wedge Y=y}=\prob{X=x}\prob{Y=y}
+$$
+implies that
+\begin{eqnarray}
+\expect{XY}&=&\sum_{x, y} xy\prob{X=x \wedge Y=y}\\
+&=&\sum_{x, y\neq 0} xy\prob{X=x \wedge Y=y}\\
+&=&\sum_{x, y\neq 0} xy\prob{X=x}\prob{Y=y}\\
+&=&\sum_{x, y\neq 0} x\prob{X=x}y\prob{Y=y}\label{frombug}\\
+&=&\sum_{x\neq 0}\sum_{y\neq 0}x\prob{X=x}y\prob{Y=y}\\
+&=&\sum_{x\neq 0} x\prob{X=x} \sum_{y\neq 0} y\prob{Y=y}\label{tobug} \\
+&=&\sum_{x\neq 0} x\prob{X=x} \expect{Y} \\
+&=&\expect{Y}\sum_{x\neq 0} x\prob{X=x}  \\
+&=&\expect{Y}\expect{X}
+\end{eqnarray}
+\end{proof}
+
+\textbf{TA's Counterexample}
+The bug arises in going from step \ref{frombug} to step \ref{tobug}.
+The steps upto \ref{frombug} involve \emph{at most one} of $x$ and $y$
+being nonzero, while step \ref{tobug} requires them \emph{both} to be
+nonzero. 
+
+\solution{
+The sign $\sum_{x, y\neq 0}$ means \emph{both} $x$ and $y$ to be nonzero.  The TA's argument about step 4
+is simply wrong. 
+}
+
+\problempart
+The proof in (b) is actually correct. For each line in the proof, briefy justify its correctness. 
+
+\solution{
+(1) - definition of expectation.
+(2) - term is zero when $x$ or $y$ is zero.
+(3) - by hypothesis.
+(4) - multiplication is commutative.
+(5) - reordering sums.
+(6) - factorization.
+(7) - definition of expectation.
+(8) - factorization.
+(9) - definition of expectation.
+}
+\end{problemparts} 
+\end{problem}
+\fi
+\end{document}                            
+
+

@@ -1,0 +1,471 @@
+\documentclass[11pt,twoside]{article}   
+\usepackage{latex-macros/course}
+
+\renewcommand{\coursecopyrightnames}{Prof.~Albert~R.~Meyer}
+
+\renewcommand{\reading}
+{\href{http://theory.lcs.mit.edu/classes/6.042/spring02/handouts/lectures/ln12.pdf}
+{Week 12 Notes}, Rosen \S4.5}
+
+%\hidesolutions         
+%\showsolutions
+
+\begin{document}
+\problemset{12}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{\bf Waiting for Godot}  
+
+A couple plans to have children until they have a boy, whom they'd
+like to name Godot.  What is the expected number of children that they
+will have, and what is the variance? (Hint: You may need to reread
+Section 2.6 in Lecture Notes 6 on how to sum a series using
+differentiation.)
+
+
+\solution{ Let $C$ be the expected number of children up to and
+including the first boy.  Each time the couple has a child, the
+probability that it is a boy is $1/2$.  Thus
+$$\expect{C} = 2$$
+as shown in lecture.
+We can compute the variance as follows:
+\[
+\variance{C}
+         = \expect{C^2} - \expectsq{C}
+         = \sum_{k=1}^{\infty} k^2 \cdot \left(\frac{1}{2}\right)^k - 2^2 
+         = \frac{\frac{1}{2} + (\frac{1}{2})^2}{(1 - \frac{1}{2})^3} - 4 
+         = 6 - 4
+         = 2
+\]
+The sum is computed by differentiating the
+formula for the sum of an infinite geometric sequence.
+}
+\end{problem}
+
+
+
+\begin{problem} %source: spring00 ps10-5
+We have two coins: one is a fair coin and the other is a coin that
+produces heads with probability 3/4.  One of the two coins is picked,
+and this coin is tossed $n$ times.
+
+\bparts
+
+\ppart Does the Weak Law of Large Numbers allow us to \emph{predict}
+what limit, if any, is approached by the expected proportion of heads
+that turn up as $n$ approaches infinity?  Briefly explain.
+
+\solution{ The Weak Law of Large Numbers tells us that the proportion
+of heads will approach $1/2$ if the fair coin was picked, and it will
+approach $3/4$ if the other coin was picked.  But it does not tell us
+anything about which of these two numbers it will approach, as we have
+no information about which coin is picked.  }
+
+\ppart How many tosses suffice to make us 95\% confident which coin
+was chosen?  Explain.
+
+\solution{
+
+To guess which coin was picked, set a threshold $t$ between $1/2$ and
+$3/4$.  If the proportion of heads is less than the threshold, guess
+it was the fair coin; otherwise, guess the biased coin.  Let the
+random variable $H_n$ be the number of heads in the first $n$ flips.
+We need to flip the coin enough times so that $\Pr(H_n/n > t) \leq
+0.05$ if the fair coin was picked, and $\Pr(H_n/n < t) \leq 0.05$ if
+the biased coin was picked.  A natural threshold to choose is $5/8$,
+exactly in the middle of $1/2$ and $3/4$.
+
+$H_n$ is the sum of independent Bernoulli variables, which each have
+variance $1/4$ for the fair coin and $3/16$ for the biased coin.
+Using Chebyshev's Inequality for the fair coin,
+\begin{align*}
+\Pr\left(\frac{H_n}{n} > \frac{5}{8} \right) 
+        & = \Pr\left(\frac{H_n}{n} - \frac{1}{2} > \frac{5}{8} - \frac{1}{2}\right) 
+          = \Pr\left(H_n - \frac{n}{2} > \frac{n}{8} \right) \\
+        & = \Pr\left(H_n - \expect{H_n} > \frac{n}{8} \right) 
+          \leq \Pr\left(|H_n - \expect{H_n}| > \frac{n}{8} \right) \\
+        & \leq \frac{\variance{H_n}}{(n/8)^2} 
+          = \frac{n/4}{n^2/64} 
+          = \frac{16}{n}
+\end{align*}
+For the biased coin, we have
+\begin{align*}
+\Pr\left(\frac{H_n}{n} < \frac{5}{8} \right) 
+        & = \Pr\left(\frac{3}{4} - \frac{H_n}{n} > \frac{3}{4} - \frac{5}{8}\right) 
+          = \Pr\left(\frac{3n}{4} - H_n > \frac{n}{8} \right) \\
+        & = \Pr\left(\expect{H_n} - H_n > \frac{n}{8} \right) 
+          \leq \Pr\left(|H_n - \expect{H_n}| > \frac{n}{8} \right) \\
+        & \leq \frac{\variance{H_n}}{(n/8)^2} 
+          = \frac{3n/16}{n^2/64} 
+          = \frac{12}{n}
+\end{align*}
+We are 95\% confident if these are at most $0.05$, 
+which is satisfied if $n \geq 320$. 
+
+Because the variance of the biased coin is less that of the fair coin, 
+we can do slightly better if make our threshold 
+a bit bigger, to about $0.634$, 
+which gives 95\% confidence with 279 coin flips. 
+
+Because $H_n$ has a binomial distribution, 
+we can get a much better bound using the estimates 
+from Lecture 21, 
+giving 95\% confidence when $n > 42$. 
+}
+
+\eparts
+
+\end{problem}
+
+
+% Problem: Hearts
+% Topics: Variance, Expectation
+% Variants of this problem appeared in:
+% SP 2000, PS 10.5, problem 3
+% FA 2000, PS 11.5
+
+\begin{problem}
+Suppose you are playing the game ``Hearts'' with three of your friends.
+In Hearts, all the cards are dealt to the players, in this case the four
+of you will each have 13 cards.
+
+\begin{problemparts}
+
+\problempart
+What is the expectation of the number of hearts in your hand?
+
+\solution{
+Let $H$ be the number of hearts in your hand, and let $X_i$ be the
+indicator random variable for the event that the $i$th card in your
+hand is a heart.  Then $H = \sum_{i=1}^{13} X_i$.  So
+\[
+\expect{H}  = \sum_{i=1}^{13} \expect{X_i}
+        = \sum_{i=1}^{13} \Pr(\text{$i$th card is a heart}) 
+        = \sum_{i=1}^{13} \frac{1}{4} = \frac{13}{4}.
+\]
+}
+
+\problempart
+What is the variance of the number of hearts in your hand?
+
+\solution{
+To compute variance, 
+we first compute $\expect{H^2}$, 
+following the solution to the Random Hat Check Problem.
+\[
+\expect{H^2} = \expect{\left(\sum_{i=1}^{13} X_i\right)^2} 
+        = \sum_i \expect{X_i} + \sum_i \sum_{j \neq i} \expect{X_i X_j} 
+\]
+Note that $X_i^2 = X_i$, so $\expect{X_i^2} = 1/4$.  
+When $i \neq j$,
+$X_i X_j = 1$ if cards $i$ and $j$ are both hearts, and 0 otherwise.  The
+probability that both cards are hearts is $\binom{13}{2}/\binom{52}{2}$, 
+so 
+$\expect{X_iX_j} = \binom{13}{2}/\binom{52}{2} = 3/51$.  
+In the summation above, there
+are 13 $\expect{X_i^2}$ terms, and $13 \cdot 12 = 156$ terms of the
+form $\expect{X_i X_j}$ with $i \neq j$.  Thus,
+\[
+\variance{H} = \expect{H^2} - \expectsq{H}
+        = 13 \cdot \frac{1}{4} + 156 \cdot \frac{3}{51} - (\frac{13}{4})^2 
+        \approx 1.864. 
+\]
+}
+
+\problempart What is the expectation of the number of suits in your
+hand?
+
+\solution{ Let $N$ denote the number of suits in a hand.  Let $X_s$ be
+the indicator random variable for the event that there is a spade in
+the hand.  Define $X_h, X_d, X_c$ analogously for the three remaining
+suits: hearts, diamonds, and clubs.  Then $N = X_s + X_h + X_d + X_c$.
+
+The expectation of each of the indicator variables is the probability
+that a hand contains the corresponding suit.  Thus, for $i \in \set{s,h,d,c}$
+\[
+\expect{X_i} = 1 -  \frac{\binom{52-13}{13}}{\binom{52}{13}} \approx 0.9872,
+\]
+because $\binom{52-13}{13}$ is the number of hands that are missing the
+particular suit, and $\binom{52}{13}$ is the total number of hands.
+\[
+\expect{N}=\expect{X_s + X_h + X_d + X_c} = \expect{X_s} + \expect{X_h} +
+\expect{X_d} + \expect{X_c} \approx 4 \cdot 0.9872 = 3.9488.
+\]
+
+}
+
+\problempart What is the variance of the number of suits in your hand?
+
+\solution{
+
+To compute variance, we compute $\expect{N^2}$ directly, and then
+$\variance{N} = \expect{N^2} - \expectsq{N}$.  We first calculate
+$\Pr(N=i)$ for $i = 1,2,3,4$.
+\[
+\Pr(N=1) = \frac{4} {\binom{52}{13}} \approx 6.299 \times 10^{-12},
+\]
+because there are four possible hands of all one suit out of
+$\binom{52}{13}$ possible hands of 13 cards.
+\[
+\Pr(N=2) = \frac{\binom{4}{2}\left[\binom{26}{13} - 2\right]}{\binom{52}{13}}
+         \approx 9.827 \times 10^{-5},
+\] 
+because there are $\binom{4}{2}$ ways to choose which two suits.
+There are $\binom{26}{13}$ ways to choose 13 cards from the 26
+possible cards of those two suits.  Two of those $\binom{26}{13}$
+hands actually contain only one suit.
+\[
+\Pr(N=3) = \frac{\binom{4}{3}
+                    \left[\binom{39}{13} - \binom{3}{2}\binom{26}{13} 
+                                + 3\right]}
+                {\binom{52}{13}} \approx 0.05097,
+\]
+because there are $\binom{4}{3}$ ways to choose the three suits, and
+$\binom{39}{13}$ ways to choose $13$ cards from the $39$ cards of
+those three suits.  But that includes hands with only one or two
+suits.  So, using Inclusion-Exclusion, we subtract the
+$\binom{3}{2}\binom{26}{13}$ ways to choose two of the three suits and
+then choose $13$ cards from the $26$ cards of those suits.  This
+subtracts out the three hands with only one suit twice, so we add
+these back.
+
+Of course, 
+\[
+\Pr(N=4) = 1 - (\Pr(N=1) +\Pr(N=2) + \Pr(N=3)) \approx 0.9489.
+\]
+Thus, 
+\begin{align*}
+\expect{N^2} & = 1 \cdot \Pr(N=1) + 4 \cdot \Pr(N=2) 
+                + 9 \cdot \Pr(N=3) + 16 \cdot \Pr(N=4) \\
+        & \approx 0 + 0.0004 + 0.4587 + 15.1824 = 15.6415
+\end{align*}
+This allows us to complete the calculation of the variance:
+\[
+\variance{N} \approx 15.6415 - (3.9488)^2 \approx 0.0485.
+\]
+}
+
+\end{problemparts}
+
+\end{problem}
+
+
+\begin{problem}%{\bf fall96 }
+
+For each of the following, bound the probability using (i) Markov's Theorem,
+(ii) Chebyshev's Theorem, and (iii) Binomial Approximation (Lecture Notes
+10, Section 4.2)
+
+\begin{problemparts}
+
+\problempart
+In 1000 independent coin flips, what is the probability of getting 
+at least 600 heads?
+
+\solution{ 
+(i) Markov's Theorem
+
+
+Let $X$ be the random variable representing the number of tails.
+\[
+\prob{X\geq 600}\leq\frac{\expect{X}}{600} = \frac{500}{600} = \frac {5}{6}
+\]
+
+(ii) Chebyshev's Theorem
+
+Let $X$ be the random variable representing the number of tails.
+We can think of $X$ as the sum of $n$ independent Bernoulli variables.
+Formally, we can write $X = X_1 + X_2 + \cdots + X_n$ where
+\begin{displaymath}
+  X_i = \begin{cases}
+    1 & \text{ if head. with probability }\frac{1}{2}, \\
+    0 & \text{ if tail. with probability }\frac{1}{2}.
+  \end{cases}
+\end{displaymath}
+
+We can compute the $\variance{X_i}$ by working ``from the inside out'' as
+follows:
+\begin{eqnarray*}
+X_i - \expect{X_i}
+        & = &   \left\{
+                \begin{array}{cl}
+                     1 - \frac{1}{2} = \frac{1}{2} & \text{ with probability } \frac{1}{2} \\
+                     0 - \frac{1}{2} = -\frac{1}{2} & \text{ with probability } \frac{1}{2}
+                \end{array}
+                \right. \\
+(X_i - \expect{X_i})^2
+        & = &   \left\{
+                \begin{array}{cl}
+                        \frac{1}{4} & \text{ with probability } \frac{1}{2} \\
+                        \frac{1}{4} & \text{ with probability } \frac{1}{2}
+                \end{array}
+                \right. \\
+\expect{(X_i - \expect{X_i})^2}
+        & = &   \frac{1}{4} \cdot \frac{1}{2} + \frac{1}{4} \cdot \frac{1}{2} \\
+\variance{X_i} & = & \frac{1}{4}.
+\end{eqnarray*}
+
+\begin{align*}
+\variance{X}
+   & =  \variance{X_1} + \variance{X_2} + \cdots + \variance{X_n}
+              & \text{(Independent Additivity of Variance)}\\
+   & =  n \cdot \frac{1}{4}\\
+   & = 1000 \cdot \frac{1}{4} = 250.
+\end{align*}
+
+Finally, we apply Chebychev's Theorem with $x$ = 100. 
+\[
+\pr{\abs{X - \expect{X}} \geq x} \leq \frac{\variance{X}}{x^2} = \frac{250}{100 \cdot 100} = \frac{1}{40}.
+\]
+
+\iffalse
+
+But since the probability of the distribution is symmetric:
+
+\[
+\pr{X- \expect{X} \geq 100} = \frac{\pr{\abs{X - \expect{X}} \geq 100}}{2}
+& = \frac{1}{40} \cdot \frac{1}{2}
+& = \frac{1}{80}
+\]
+\fi
+
+
+(iii) Binomial Approximation
+\[
+\prob{\geq 600} = 1-\prob{< 600}(n=1000,\alpha=3/5)\leq 1 -
+2^{-1000}{\binom{1000}{600}}{\frac{1-3/5}{1-6/5}}
+\]
+}
+
+
+\problempart
+In a noisy communication channel with $10\%$ error rate, what is the
+probability that out of 1000 transmitted bits, at least 200 bits are 
+wrongly transmitted ({\em i.e.}, {\tt 1} is received as {\tt 0} and 
+vice versa)? Assume that errors in each of the bits are independent.
+
+\solution{
+(i) Markov's Theorem
+
+
+Let $X$ be the random variable representing the number of error bits.
+\begin{displaymath}
+\prob{X\geq 200}\leq\frac{\expect{X}}{200} = \frac{100}{200} = \frac {1}{2}
+\end{displaymath}
+
+
+(ii) Chebyshev's Theorem
+
+
+Let $X$ be the random variable representing the number of error bits.
+We can think of $X$ as the sum of $n$ independent Bernoulli variables.
+Formally, we can write $X = X_1 + X_2 + \cdots + X_n$ where
+\begin{displaymath}
+  X_i = \begin{cases}
+    1 & \text{ if bit has an error. with probability }\frac{1}{10}, \\
+    0 & \text{ otherwise. with probability }\frac{9}{10}.
+  \end{cases}
+\end{displaymath}
+
+We can compute the $\variance{X_i}$ by working ``from the inside out'' as
+follows:
+\begin{eqnarray*}
+X_i - \expect{X_i}
+        & = &   \left\{
+                \begin{array}{cl}
+                        0.9 & \text{ with probability } \frac{1}{10} \\
+                        -0.1 & \text{ with probability } \frac{9}{10}
+                \end{array}
+                \right. \\
+(X_i - \expect{X_i})^2
+        & = &   \left\{
+                \begin{array}{cl}
+                        0.81 & \text{ with probability } \frac{1}{10} \\
+                        0.01 & \text{ with probability } \frac{9}{10}
+                \end{array}
+                \right. \\
+\expect{(X_i - \expect{X_i})^2}
+        & = &  0.81  \cdot \frac{1}{10} + 0.01 \cdot \frac{9}{10} \\
+\variance{X_i} & = & 0.09.
+\end{eqnarray*}
+
+\begin{align*}
+\variance{X}
+   & =  \variance{X_1} + \variance{X_2} + \cdots + \variance{X_n}
+              & \text{(Independent Additivity of Variance)}\\
+   & =  n \cdot 0.09
+   & = 1000 \cdot 0.09
+   & = 90
+\end{align*}
+
+Finally, we apply Chebychev's Theorem with $x$ = 100. 
+\[
+\pr{\abs{X - \expect{X}} \geq x} \leq \frac{\variance{X}}{x^2} = \frac{90}{100 \cdot 100} = 0.009.
+\]
+
+
+
+
+(iii) Binomial Approximation
+\[
+\prob{\geq 200} = 1-\prob{< 200}(n=1000,\alpha=1/5)\leq 1 - 
+2^{-1000}{\binom{1000}{200}}{\frac{1-1/5}{1-2/5}}
+\]
+}
+
+\end{problemparts}
+\end{problem}
+
+%Rosen 4.5 50,51
+
+\begin{problem}
+The covariance, $\covariance{X}{Y}$, of two random variables, $X$ and $Y$,
+is defined to be the expected value of the random variable
+$(X-\expect{X})(Y-\expect{Y})$.  That is,
+\[
+\covariance{X}{Y} \eqdef \expect{(X- \expect{X})(Y- \expect{Y})}.
+\]
+
+\begin{problemparts}
+\problempart
+Show that
+\begin{equation}\label{altcovar1}
+\covariance{X}{Y} = \expect{XY} - \expect{X}\expect{Y},
+\end{equation}
+and use this result to conclude that $\covariance{X}{Y} = 0$ if $X$ and
+$Y$ are independent random variables.
+
+\solution{
+\begin{align*}
+\covariance{X}{Y} & \eqdef \expect{(X-\expect{X})(Y-\expect{Y})}\\
+ & = \expect{XY-Y\expect{X} - X\expect{Y} +
+     \expect{X}\expect{Y}}\\
+ & = \expect{XY} - \expect{Y}\expect{X} - \expect{X}\expect{Y} +
+ \expect{X} \expect{Y} & \text{(linearity of expectation)}\\
+ & = \expect{XY} - \expect{X}\expect{Y}.
+\end{align*}
+If $X$ and $Y$ are independent, then the last two terms are equal, so
+their difference is 0.}
+
+\problempart
+
+Show that 
+\[
+\variance{X + Y} = \variance{X} + \variance{Y} + 2\covariance{X}{Y}.
+\]
+  
+\solution{
+\begin{align*}
+\variance{X+Y} & = \expect{(X+Y)^2}-\expectsq{X+Y} & \text{(by~(\ref{altcovar1}))}\\
+&= \expect{X^2+2XY+Y^2}-(\expect{X}+\expect{Y})^2\\
+& = \expect{X^2}+2\expect{XY}+\expect{Y^2} - \expect{X}^2 - 2\expect{X}\expect{Y} - \expect{Y}^2 \\
+& = \expect{X^2} - \expectsq{X} + 2(\expect{XY} - \expect{X}\expect{Y}) + \expect{Y^2} - \expectsq{Y} \\
+& = \variance{X} + 2\covariance{X}{Y} + \variance{Y}.
+\end{align*}
+}
+\end{problemparts}
+\end{problem}
+
+
+\end{document}                            

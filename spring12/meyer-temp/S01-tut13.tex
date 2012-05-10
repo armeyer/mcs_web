@@ -1,0 +1,589 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{psfig}  
+\input{../handouts/macros-course}
+%change it back!
+%\input{../macros-course}
+%\newcommand{\ssl}{
+%\medskip
+%\textbf{Solution:}
+%\medskip
+%}
+\newcommand{\comp}[1]{\overline{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\cross}{\times}
+\newcommand{\eqdef}{\mathbin{::=}}
+\newcommand{\Intersect}{\bigcap}
+\newcommand{\Union}{\bigcup}
+
+
+%\def\cent{{\not\!\mathrm{c}}}
+\renewcommand{\implies}{\longrightarrow}
+\renewcommand{\labelenumi}{\arabic{enumi})}  
+\setlength{\itemsep}{0cm}
+%\newcommand{\solution}[1]{}
+%\newcommand{\solution}[1]{\bigskip {\bf Solution:}\\ #1\bigskip}
+\askaboutsolutions
+
+\begin{document}
+
+\handout{tut13}{Tutorial 13 Problems}{May 11, 2001}
+
+\begin{problems}
+
+\problem  %S99 Tut12
+
+The St.\ Petersburg Casino offers the following game: the gambler bets a
+fixed wager, and then the dealer flips a fair coin (dealers do not flip
+coins in US casinos, but they do in St.\ Petersburg) until it comes up
+heads. The gambler receives \$1 if the coin shows heads the first time,
+\$2 if it shows the first head at second toss, and in general $\$2^{k-1}$
+if the dealer tosses the coin $k$ times to get the first head.
+
+\bparts
+
+\ppart Suppose the fixed wager is \$10.  What is the expected amount of
+money that the gambler will win in this game?  Suppose the fixed wager is
+\$10,000?
+
+\solution{\ssl
+Let $V$ be the random variable corresponding to the amount of money
+that the gambler is paid by the dealer. The distribution of
+$V$ is as follows: for any $n\geq 1$,
+\[
+\prob{V= 2^{n-1}} = 2^{-n},
+\]
+where the probability refers to the event that the dealer
+tosses $n-1$ tails followed by a head.
+The average of $V$ is
+\[
+\expect{V} = \sum_{n=1}^{\infty} [2^{-n} 2^{n-1}]
+= \sum_{n=1}^{\infty} 1/2 = \infty.
+\]
+So whatever the fixed wager, the gambler expects to win an infinite
+amount.
+}
+
+\ppart What is the probability that the gambler does not lose money in a
+game when the fixed wager is \$10,000?
+
+\solution{\ssl
+The probability of recovering the
+money of the wager is only
+\begin {eqnarray*}
+\prob{V \geq 10,000} & = & \prob{V \geq 2^{14}}\\
+&=& \prob{\mbox{dealer flips at least 14 consecutive tails}}\\
+& = & 2^{-14} = \frac{1}{16,384}
+\end {eqnarray*}
+}
+
+\ppart In reality, it would not be reasonable for the gambler to play the
+game with the fixed wager at \$10,000.  Why?
+
+\solution{\ssl
+The model ignores the fact the both the casino and the player can lose
+only bounded amounts of money before going bankrupt.  Truncating the game
+when either party goes bankrupt can completely change the expected
+winnings.
+
+For example, since the probability of the gambler coming out ahead by any
+amount in a single game with the \$10,000 entry fee is $2^{-14}$, the
+expected number of games that must be played before this happens is
+$2^{14}$, so if the player has less than $\$2^{14} \cdot 10^5 =
+\$163,840,000$, he can expect to go bankrupt before coming out ahead in
+even one game.
+
+%\textbf{Optional exercise}: What should the casino's and the gambler's net
+%worths be in order for the gambler's expectation to be positive when the
+%fixed wager is $\$10$?  How about $\$10,000$?
+}
+\eparts
+
+\problem %Peter Winkler Seminar 2001
+
+Consider the following game.  I start with $X$ dollars, you start with $Y$
+dollars.  In a round, we each wager any amount of dollars up to what we have.
+Then we flip a biased coin.  If I wager $x$ and you wager $y$, then I win with
+probability $\frac{x}{x+y}$, while you win with probability
+$\frac{y}{x+y}$. Whoever wins a coin flip gets all the money wagered on that
+flip.  The game ends when someone goes broke.  Calculate the probability that I
+win.
+
+(Hint: This question does not specify a particular wagering strategy.)
+
+\solution{\ssl
+In a particular round, I win $y$ dollars with probability $\frac{x}{x+y}$ and
+lose  $x$ dollars with probability $\frac{y}{x+y}$.  Therefore, my expected 
+return on a particular wager is 
+\[
+\Ex[\mathrm{Return\ on\ 1\ wager}] =\Pr[\mathrm{win}] \cdot \mathrm{profit} -
+\Pr[\mathrm{loss}] \cdot \mathrm{loss} =
+\frac{x}{x+y}\cdot y - \frac{y}{x+y}\cdot x = 0
+\]
+Therefore, after each wager, I expect to have the same number of
+dollars as I had before it.  Intuitively, if our expected profit is
+invariantly 0 for every wager, we can use linearity of expectations to
+conclude that the expected profit for the whole game is 0.
+
+However, a game will continue for a random number of rounds before concluding.
+So formalizing this intuition becomes slightly more complicated.
+Let $Q$ be a random variable for the length of the game in rounds.
+($Q$ will depend on a number of things including the players'
+strategies and the results of each wager until the game ends.)
+
+Let $X_i$, be a random variable for the number of dollars I have before
+round $i$.  Let $p_i$ be the profit for round $i$. So
+$X_i = X + p_1 + p_2 + \ldots p_{i-1}$
+and my profit at the end of the game is
+\[
+X_{Q+1} - X = \sum_{i=1}^Q p_i
+\]
+By the law of total probability, my expected profit is 
+\[
+\Ex[X_{Q+1}] - X = \Ex \left [\sum_{i=1}^Q p_i \right ] = \sum_{q=1}^\infty \left(\Ex \left[
+\sum_{i=1}^q p_i \biggm| \{Q=q\} \right ] \Pr[Q=q] \right)
+\]
+But we just proved above that
+\[ \Ex \left[ \sum_{i=1}^q p_i \biggm| \{Q=q\} \right ] = 0 \]
+(this follows since we proved above that the expected return on any
+wager is 0 given that the game is still running before the wager is
+made).  So the whole sum and, thus, my total expected profit, is equal
+to~0.
+
+We can now use the expected return on the game to calculate the probability of
+winning. If I win the game, I win $Y$ dollars.  If I lose the game, I lose $X$
+dollars.  So, by the definition of expectation
+\[\Ex[\mathrm{Return\ on\ game}] = \Pr[\mathrm{win}] \cdot
+\mathrm{profit} - \Pr[\mathrm{loss}] \cdot \mathrm{loss} = 
+ p \cdot Y - (1-p) \cdot X = 0.
+\]
+Solving for $p$ yields my probability of winning: $p = \frac{X}{X+Y}$.
+}
+
+\problem
+
+Suppose we have a calculation that will require $n$~operations to
+complete, and our computer has an mean time to failure of
+$f$~operations where the failure process is memoryless.  When the
+computer fails, it loses all state, so the calculation has to be
+restarted from the beginning.
+
+\bparts
+
+\ppart Louis Reasoner decides to just run the calculation over and
+over until it eventually completes without failing. If the calculation
+ever fails, Louis restarts the entire calculation. Give a lower bound
+on the time that Louis can expect to wait for his code to complete
+successfully on a typical gigahertz processor, with $n = 10^{13}$ and
+$f = 10^{12}$? (Hint: $(1-p)^n \leq e^{-pn}$ for all $p \in [0,1]$ and
+$(1-p)^n \geq e^{-(p-p^2)n}$ for all $p \in [0,1/\sqrt{2}]$.)
+
+\solution{\ssl From Lecture 22, we know that the MTTF in a Bernoulli process is
+  $1/p$, where~$p$ is the probability of a failure on a given trial.
+  Therefore, $p = 1/f = 10^{-12}$ in our case. From Lecture 23, we
+  know that we can calculate the expected number of operations required
+  to complete the system
+  \begin{eqnarray*} \Ex(T) & = & \Ex(Q) \cdot \Ex(R) \\
+    & = & \frac{1}{(1-p)^n} \cdot \frac{1 - (1-p)^n}{p} \\
+    & = & \frac{1 - (1-p)^n}{p (1-p)^n} \\
+    & = & \frac{1}{p}\biggl(\frac{1}{(1-p)^n} - 1\biggr)
+  \end{eqnarray*}
+  The hint now tells us that
+  \begin{displaymath}
+    \Ex(T) \geq \frac{e^{pn}-1}{p} = 10^{12} \cdot (e^{10} - 1),
+  \end{displaymath}
+  so the expected \emph{time} to complete the task is at least $e^{10}
+  - 1$ seconds, or roughly 6~hours. Since the operation should only
+  take 10~seconds in the absence of failures, this is quite a penalty.
+  }
+
+\ppart Alyssa P. Hacker decides to divide the Louis's calculation into
+10 equal-length parts, and has each part save its state when it
+completes successfully. Saving state takes time~$s$. When a failure
+occurs, Alyssa restarts the program from the latest saved state. How
+long can Alyssa expect to wait for her code to complete successfully
+on Louis's system? You can assume that $s < 10^{-4}$~seconds.
+
+\solution{\ssl Now we have to do 10 calculations each of which can be computed
+  without regard to previous failures. So by the previous analysis,
+  Alyssa expects the $i$th component to take
+  \begin{displaymath}
+    \Ex(T_i) \geq \frac{e^{pn}-1}{p} = 10^{12} (e - 1)
+  \end{displaymath}
+  operations (note that $n = 10^{12}$). So, the expected number of
+  operations for the entire computation is
+  \begin{displaymath}
+    \Ex\biggl(\sum_{i=1}^{10} T_i\biggr) = 
+    \sum_{i=1}^{10} \Ex(T_i) = 10^{13} (e - 1),
+  \end{displaymath}
+  giving an expected total computing time of roughly 17~seconds. The
+  state saves take negligible time. }
+
+\ppart Alyssa tries to further optimize the expected total computing
+time by dividing the calculation into 10\,000 parts instead of~10.
+How long can Alyssa expect to wait for her code to complete
+successfully? (Hint $e^x = 1 + x + O(x^2)$.)
+
+\solution{\ssl As before,
+  \begin{displaymath}
+    \Ex(T_i) \geq \frac{e^{pn}-1}{p} = \frac{1 + pn + O((pn)^2) - 1}{p}
+    = n(1 + O(pn))
+  \end{displaymath}
+  with $n = 10^{13} / 10000 = 10^9$. So, the expected number of
+  operations for the entire computation, excluding state saves, is
+  roughly $10^{13}$ (since $p = 10^{-12}$ and $n = 10^9$, we ignore
+  the $O(pn)$ term). The state saves take more or less one second,
+  giving a total time of 11~seconds.
+}
+\eparts
+
+\problem 
+\bparts
+
+\ppart Suppose we flip a fair coin until two heads in a row come up.  What
+is the expected number, $F$, of flips we perform?  \hint Let
+$F_{\text{T}}$ be the expected number of further flips until two heads
+comes up, given that the previous flip was T, and likewise let
+$F_{\text{H}}$ be the expected number of further flips until two heads
+comes up given that the previous flip was H.  Argue that $F_{\text{T}}$
+will equal 1 plus the average of $F_{\text{T}}$ and $F_{\text{H}}$.
+
+\solution{\ssl
+$F=F_{\text{T}}$, since the initial condition has no chance
+of achieving two heads on the first flip and is thus the same as if the
+previous flip had been tails. 
+
+To calculate the expected number of flips, we take $1$ for the first 
+flip and then consider the two equally-likely outcomes: the first flip
+is tails, or the first flip is heads. The remaining flips we can expect
+are simply $F_{\text{T}}$ and $F_{\text{H}}$, respectively.
+This gives us a total expectation of:
+\[
+F_{\text{T}} = 1 + \frac{1}{2}F_{\text{T}} + \frac{1}{2}F_{\text{H}}
+\]
+If the previous flip was heads, we get a similar calculation. The biggest
+difference is that if the first flip is heads, we have no more flips
+beyond the current one (we are done).
+\[
+F_{\text{H}} = 1 + \frac{1}{2}F_{\text{T}}+ \frac{1}{2}(0)
+\]
+Solving for $F_{\text{T}}$ (by substitution) yields $F=6$.
+
+This can also be solved using a single equation formed by examining
+that cases for the first and second flips, but it is not as clean.
+
+%Clearly $F=F_{\text{T}}$.  Assuming the hint
+%\[
+%F_{\text{T}} = 1 + \frac{F_{\text{T}}+ F_{\text{H}}}{2}.
+%\]
+%Similarly,
+%\[
+%F_{\text{H}} = 1 + \frac{F_{\text{T}}+ 0}{2}.
+%\]
+%Solving for $F_{\text{T}}$ yields $F=6$.
+
+}
+
+\ppart Suppose we flip a fair coin until a head followed by a tail come
+up.  What is the expected number, $G$, of flips we perform?
+
+\solution{\ssl
+Clearly $G=G_{\text{T}}$.  As above
+\begin{eqnarray*}
+G_{\text{T}} &=& 1 + \frac{G_{\text{T}}+ G_{\text{H}}}{2},\\
+G_{\text{H}} &=& 1 + \frac{0+G_{\text{H}}}{2}.
+\end{eqnarray*}
+So $G=G_{\text{T}}=4$.
+}
+
+\ppart Suppose we now play a game: flip a fair coin until either HH or HT
+first occurs.  You win if HT comes up first, lose if HH comes up first.
+What odds should you offer an opponent to make this a fair game?
+
+\solution{\ssl
+Even money odds.  Although the expected time for HH is larger
+than for HT, the game of waiting for one or the other to come up first is
+fair!
+
+To prove this, let W be the probability of winning.  Clearly,
+\[
+W = (1/2)\prob{W \mid \text{first roll is }T} + (1/2)\prob{W \mid \text{first
+roll is }
+H} = (1/2)W + (1/2)(1/2)
+\]
+so $W = 1/2$.
+}
+\eparts
+
+\end{problems}
+\end{document}
+
+
+\problem
+%[[[Markov, Chebyshev, Chernoff]]]
+
+The U.S. Supreme Court has mandated a re-vote in Florida.
+All 6,000,000 people who voted earlier will get to vote again.
+They are going to vote randomly, using a strategy that guarantees that
+the expected value of the number of votes for Bush is exactly
+3,000,000.
+We don't know what the strategy is, though.  
+(For example, \\
+1. Each voter might toss a fair coin independently.\\
+2. The Florida Supreme Court may toss one fair coin, and give all the
+votes to one candidate or the other based on the result.\\
+3. 1/4 of the voters decide to vote for Bush, 1/4 for Gore, and the other
+half toss independent fair coins.\\
+Etc.)
+
+(a) What do Markov bounds tell us about the probability that Bush gets
+at least 6,000 more votes than Gore?
+
+\solution{\ssl
+Let R be the random variable which is equal to the number of votes that Bush gets.  Note that for Bush to get at least 6,000 more votes than Gore, Bush only needs to increase his vote total to 3,000 above the expected value.  Then, by Markov, $\Pr{(R \geq 3,003,000)} \leq \frac{Ex[R]}{3,000} = \frac{3,000,000}{3,003,000} = .9990$
+}
+
+(b) Now assume also that the standard deviation of the experiment is 2000.
+What do Chebyshev bounds tell us about the probability that Bush gets
+at least 6,000 more votes than Gore?
+
+\solution{\ssl
+According to Mr. Chebyshev, $\Pr{(|R-Ex[R]| \geq x)} \leq \frac{Var(R)}{x^2}$.  Let R be the same random variable as in part a.  Plugging in $x=3,000$, $Ex[R]=3,000,000$, \\
+and $Var[R]$ = (standard dev)$^2=4,000,000$ we get:
+\begin{eqnarray*}
+Pr{(R-3,000,000 \geq 3,000)} & \leq &   \frac{4,000,000}{3,000^2}\\
+        & = &   \frac{4}{9} =  .444444
+\end{eqnarray*}
+}
+
+(c) Now assume that we know the experiment.  Specifically, one quarter of the
+voters decide ahead of time on Gore, one quarter decide on Bush, and the other half
+flip fair coins, independently.
+(This doesn't have a standard deviation of 2000.)
+What do Chernoff bounds tell us about the probability that Bush gets
+at least 6,000 more votes than Gore?
+
+\solution{\ssl
+This time we'll need to compute the variance on our own before we can apply Mr. Chernoff.  Let $R$ be defined as above.   Then, let's let $R_1$ be the random variable corresponding to the number of people who vote for Bush non-randomly, and let $R_2$ correspond to the number of votes for Bush obtained by the coin-flipping half.  These two random variables are independent, so $Var(R)=Var(R_1+R_2)=Var(R_1) + Var(R_2)$. Additionally, $Var(R_1)=0$, since $R_1=Ex(R_1)$ for all possible outcomes of this experiment.  
+\\
+Since $R_2$ represents a binomial distribution, we know from last tutorial and from Rosen that it has a variance $npq = \frac{n}{4}$.  In this case, $n$ is the number of coin-flippers = $3,000,000$.  Putting this all together, we have:
+
+\begin{eqnarray*}
+Pr{(R-Ex[R] \geq x)} & \leq & \frac{Var(R)}{x^2}\\
+Pr{(R-Ex[R] \geq 3,000)} & \leq & \frac{Var(R_1)}{3,000^2} + \frac{Var(R_2)}{3,000^2}\\
+        & = &   0 + \frac{3,000,000}{4}*\frac{1}{9,000,000}\\
+        & = & .083333   
+\end{eqnarray*}
+}
+
+\problem 
+
+[Make up story here.]  Let the average temperature for each year be randomly a
+distributed real variable.  Suppose that these variables are independent and
+identically distributed over the the last 100 years (for which we have
+records).
+What is the chance that the 5 record high temperatures have been
+recorded in the last 10 years? Do we need any additional assumptions?
+
+\solution{\ssl
+\[\frac{\Choose{10}{5}}{\Choose{100}{5}}}\]
+}
+
+\problem
+% [[[The Probability of at Least One Event]]]
+In lecture, we computed upper and lower bounds on the probability that 
+at least one event out of a set $A_1,\ldots,A_N$ occurs.
+The upper bound was: 
+\begin{fact}
+\label{fact:union}
+Let $A_1, A_2, \ldots, A_N$ be events over the same sample space, and
+let the random variable $T$ be the number of these events that occur.
+Then
+\begin{eqnarray*}
+\Pr(T \geq 1) & \leq & \sum_{i=1}^N \Pr(A_i).
+\end{eqnarray*}
+\end{fact}
+The lower bound was:
+\begin{fact}
+Let $A_1, A_2, \ldots, A_N$ be events over the same sample space, and
+let the random variable $T$ be the number of these events that occur.
+Then
+\[
+\Pr(T \geq 1) \geq \max_{1 \leq i \leq N} \Pr(A_i).
+\]
+\end{fact}
+Now assume that the events $A_i$ are mutually independent.  
+In this case, we can obtain a much better upper bound on the
+probability no events occur:
+\begin{theorem}
+\label{th:none}
+Let $A_1, A_2, \ldots A_N$ be independent events, and let $T$ be the
+number of these events that occur.  The probability that none of the
+events occur is at most $e^{-Ex(T)}$.
+\end{theorem}
+
+(a) Prove this.
+
+Hint: The proof of the theorem is surprisingly simple.  The main trick is to
+use the fact that $1 - x \leq e^{-x}$ for all $x$.  This inequality
+follows from the Taylor expansion $e^{-x} = 1 - x +
+\frac{x^2}{2!} - \frac{x^3}{3!} + \ldots$.
+
+\solution{\ssl
+\begin{proof}
+\begin{eqnarray*}
+\Pr(T = 0)
+        & = & \Pr(\bar{A_1} \cap \bar{A_2} \cap \ldots \cap \bar{A_N}) \\
+        & = & \prod_{i=1}^n \Pr(\bar{A_i}) \\
+        & = & \prod_{i=1}^n 1 - \Pr(A_i) \\
+        & \leq & \prod_{i=1}^n e^{ - \Pr(A_i)} \\
+        & = & e^{-\sum_{i=1}^n \Pr(A_i)}
+        \\ & = & e^{-Ex(T)}
+\end{eqnarray*}
+
+In the first step, we reason that if zero of the events $A_i$ occur,
+then all of the complementary events $\bar{A_i}$ must occur.  Equality
+holds in the second step because the events are independent.  The
+third step uses the fact that the probability of an event is one minus
+the probability of the complementary event.  The fourth step relies on
+the inequality $1 - x \leq e^{-x}$ mentioned above.  The remainder is
+simplification.
+\end{proof}
+
+Interestingly, this theorem does not depend on $N$, the number of
+events.  The theorem gives the same bound whether there are 100 events
+each with probability 0.1 or 1000 events each with probability 0.01.
+In both cases, the expected number of events is 10, and so the
+probability of no event occurring is at most $e^{-10}$ or about 1 in
+22,000.  (Though the bounds given by the theorem are equal, the actual
+probabilities are somewhat different in these two cases.)
+
+This theorem can be interpreted as a sort of ``Murphy's Law'': if we
+expect some things to go wrong, then something probably will.  For
+example, suppose that we are building a microprocessor, and the
+fabrication process is such that each transistor is faulty mutually
+independently with a probability of one in a million.  This sounds
+good.  However, microprocessors now contain about ten million
+transistors, so the expected number of faulty transistors is 10 per
+chip.  Since we expect some things to go wrong, something probably
+will.  In fact, Theorem~\ref{th:none} implies that the probability of a
+defect-free a chip is less than 1 in 22,000!
+
+%Independence is crucial in this analysis.  If we allow dependence,
+%consider the possibility that all the events $A_i$ are in fact the same
+%event. Then $Pr(\Cup A_i)=Pr(A_i)$ can be extremely small, even if
+%$\sum Pr(A_i) = 1$.
+}
+
+(b) A Mind-Reading Trick
+%[[[Example to apply the previous result]]]
+
+For this trick, every card has a ``value''.  The value of a number
+card less than 10 is just the number, and the value of a 10, face
+card, ace, or joker is 1.  For example, $8 \clubsuit$ has value 8, $Q
+\spadesuit$ has value 1, and $10 \diamondsuit$ has value 1.
+
+A volunteer shuffles the deck and secretly chooses a number from 1 to
+9.  She deals this number of cards minus one from the top of the deck
+and looks at the new top card.  For example, if she chooses the number
+4, then she deals off 3 cards and looks at the 4th card.
+
+She then takes the value of this top card, deals off that number of
+cards minus one, and again looks at the new top card.  For example if
+she sees a $6 \diamondsuit$, then she deals off 5 more cards and looks
+at the next one.
+
+She repeats this procedure until she runs out of cards.  ``Her card''
+is the last card that she looked at to determine the number to deal
+off.  For example, suppose that the deck is as follows:
+
+\[
+Q \heartsuit \ 
+4 \spadesuit \ 
+\underline{2 \spadesuit} \ 
+J \clubsuit \
+\underline{K \spadesuit} \ 
+\underline{5 \heartsuit} \ 
+3 \heartsuit \ 
+A \clubsuit \
+7 \diamondsuit \ 
+7 \heartsuit \ 
+\underline{3 \clubsuit} \ 
+K \clubsuit
+\]
+
+If the volunteer chooses 3 as her secret number, then she deals off $3
+- 1 = 2$ cards and looks at the $2 \spadesuit$.  Since the value of
+this card is 2, she deals off $2 - 1 = 1$ more card and looks at the
+$K \spadesuit$.  This card has value 1, so she deals off $1 - 1 = 0$
+more cards and looks at the $5 \heartsuit$. Since this card has value
+5, she deals of $5 - 1 = 4$ more cards and looks at the $3 \clubsuit$.
+This card has value 3, so she tries to deal off $3 - 1 = 2$ more
+cards.  However, she then runs out of cards, so ``her card'' is $3
+\clubsuit$.
+
+After the volunteer completes the procedure, the magician is able to
+name her card!
+
+%\remove{
+The secret is that the magician performs the same procedure as the
+volunteer, starting with the number 1.  When he guesses ``her card'',
+he is actually naming ``his card''!  Remarkably, the two are almost
+certain to be the same!  The reason is that if the magician and
+volunteer ever land on the same card, then they will finish with the
+same card.  In the example, the magician lands on the underlined
+sequence of cards:
+
+\[
+\underline{Q \heartsuit} \ 
+\underline{4 \spadesuit} \ 
+2 \spadesuit \ 
+J \clubsuit \
+K \spadesuit \ 
+\underline{5 \heartsuit} \ 
+3 \heartsuit \ 
+A \clubsuit \
+7 \diamondsuit \ 
+7 \heartsuit \ 
+\underline{3 \clubsuit} \ 
+K \clubsuit
+\]
+
+Even though the volunteer and the magician start with different
+numbers, they both coincidentally land on the $5 \heartsuit$.  After
+this point, they both continue in the same way and both end up with $3
+\clubsuit$.
+
+All that remains is to prove that the magician and the volunteer are
+likely to land on the same card at some point.  An exact analysis of
+this probability is difficult, but Theorem~\ref{th:none} gives some
+intuition.
+
+Let $A_i$ be the event that on his $i$-th jump the magician lands on a
+card also visited by the volunteer.  If the volunteer's next card is 1
+away, then the magician has a $\frac{1}{3}$ chance of landing on it
+(12 face cards, 4 10's, and 2 jokers gives $\frac{18}{54} =
+\frac{1}{3}$).  If the volunteer's next card is more than 1 away, then
+the magician has a $\frac{2}{27}$ chance of landing on it (4 correct
+number cards gives $\frac{4}{54} = \frac{2}{27}$).
+
+Since the magician takes 10-15 jumps through the deck, the sum of
+these probabilities is rather high; that is, $Ex(T)$ is around 3 or
+so.  Consequently, Theorem~\ref{th:none} suggests that the magician is
+likely to eventually jump on a card visited by the volunteer.  (As a
+ball-park estimate, the probability might be around $1-e^{-3}$.)  In
+this case, the magician and volunteer end up with the same final card
+and the trick works.
+
+Of course, Theorem~\ref{th:none} does not really apply, because the
+events $A_i$ are not at all independent.  For example, event $A_i$
+implies event $A_{i+1}$; once the magician and volunteer match, they
+always agree.  This means that our probability estimates are bogus.
+However, computer tests suggest that for a full deck with jokers, the
+trick works more than 90\% of the time.
+ 
+%}  end remove
+
