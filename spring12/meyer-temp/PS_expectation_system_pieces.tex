@@ -1,0 +1,93 @@
+        \problemdata       % Takes 5 *mandatory* arguments
+        {variance-6}             % latex-friendly label for the prob.
+        {variance}               % The topic of the problem content.
+        {Velleman}               % Source (if known)
+        {S98 PS11-7; F97 PS11-8} % Usage (list ones you are aware of).
+        {Theory Pig, S02}        % Last revision info (author, date).
+% fall 01, pset 12, problem 4
+\begin{problem}
+
+Suppose we have a calculation that will require $n$~operations to
+complete, and our computer has a mean time to failure of
+$f$~operations where the failure process is memoryless.  When the
+computer fails, it loses all state, so the calculation has to be
+restarted from the beginning.
+
+\begin{problemparts}
+
+\problempart Louis Reasoner decides to just run the calculation over and
+over until it eventually completes without failing. If the calculation
+ever fails, Louis restarts the entire calculation. Give a lower bound
+on the time that Louis can expect to wait for his code to complete
+successfully on a typical gigahertz processor ($10^{12}$ operations per
+second), with $n = 10^{13}$ and 
+$f = 10^{12}$? 
+%\hint $(1-p)^n \leq e^{-pn}$ for all $p \in [0,1]$ and
+%$(1-p)^n \geq e^{-(p-p^2)n}$ for all $p \in [0,1/\sqrt{2}]$.
+
+\hint $e^{-(p-p^2)n}\leq (1-p)^n \leq e^{-pn}$ for all $p \in [0,1/\sqrt{2}]$.
+
+\solution{
+This part and the next were discussed in
+\href{http://theory.lcs.mit.edu/classes/6.042/fall01/lectures/l13.pdf}{Notes
+13.3}, where Wald's Theorem is used to show that
+\begin{equation*}
+\expect{T} = \frac{1}{p}(\frac{1}{(1-p)^n} - 1).
+\end{equation*}
+
+The hint now tells us that
+  \begin{displaymath}
+    \expect{T} \geq \frac{e^{pn}-1}{p} = 10^{12} \cdot (e^{10} - 1),
+  \end{displaymath}
+so the expected \emph{time} to complete the task is at least $e^{10}
+- 1$ seconds, or roughly 6~hours. Since the operation should only
+take 10~seconds in the absence of failures, this is quite a penalty.}
+
+\problempart Alyssa P. Hacker decides to divide Louis's calculation into
+10 equal-length parts, and has each part save its state when it
+completes successfully. Saving state takes time~$s$. When a failure
+occurs, Alyssa restarts the program from the latest saved state. How
+long can Alyssa expect to wait for her code to complete successfully
+on Louis's system? You can assume that $s < 10^{-4}$~seconds.
+
+\solution{Now we have to do 10 calculations each of which can be
+computed without regard to previous failures.  So by the previous
+analysis, Alyssa expects the $i$th component to take
+\[
+    \expect{T_i} \geq \frac{e^{pn}-1}{p} = 10^{12} (e - 1)
+\]
+operations (note that $n = 10^{12}$). So, the expected number of
+operations for the entire computation is
+\[
+\expect{\sum_{i=1}^{10} T_i} = 
+\sum_{i=1}^{10} \expect{T_i} = 10^{13} (e - 1),
+\]
+giving an expected total computing time of roughly 17~seconds.  The 10
+state saves take time $10 \cdot 10^{-4} = 10^{-3}$ seconds, which is
+negligible.}
+
+\problempart Alyssa tries to further optimize the expected total computing
+time by dividing the calculation into 10\,000 parts instead of~10.
+How long can Alyssa expect to wait for her code to complete
+successfully? 
+
+\hint $1+np\leq (1-p)^{-n}<1 + np + 2n^2p^2$ for all $np \in
+[0,1], n>3$.
+
+\solution{
+As before,
+%\geq \frac{e^{pn}-1}{p} = \frac{1 + pn + O((pn)^2) - 1}{p}
+\begin{eqnarray*} 
+  \expect{T_i} &=& \frac{1}{p}\biggl(\frac{1}{(1-p)^n} - 1\biggr)\\
+  &=& \frac{1 + pn + \delta(pn)^2 - 1}{p}\\
+  &=& n(1 + \delta pn) 
+\end{eqnarray*} 
+with $0\leq\delta<2, n = 10^{13} / 10000 = 10^9$. So, the expected
+number of operations for the entire computation, excluding state saves,
+is roughly $10^{13}$ (since $p = 10^{-12}$ and $n = 10^9$, we ignore the
+$\delta pn$ term).  This time the $10^{4}$ state saves are not
+negligible, but only take one second, giving a total time of 11~seconds.}
+
+\end{problemparts}
+\end{problem}
+
