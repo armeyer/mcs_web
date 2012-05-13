@@ -11,6 +11,8 @@ use File::Copy;
 
 use File::Spec::Functions qw(rel2abs catdir catfile);
 
+use File::Temp qw(tempfile);
+
 use Getopt::Long qw(:config no_ignore_case);
 
 ######################################################################
@@ -522,6 +524,68 @@ sub summarize_errors( $ ) {
     return ($has_solutions, $has_staffnotes, $has_editnotes);
 }
 
+sub get_temp_file($;@) {
+    (my $suffix = shift) =~ s/^\.?/\./;
+
+    my %opt = @_;
+
+    my $program_name = "mcs";
+
+    my $unlink = exists $opt{UNLINK} ? $opt{UNLINK} : 1;
+
+    my $dir = $opt{DIR} || $ENV{TMPDIR} || "/tmp";
+
+    my ($fh, $file) = tempfile("$program_name-XXXXXX",
+                               DIR => $dir,
+                               SUFFIX => $suffix,
+                               UNLINK => $unlink)
+      or do {
+          warn "Could not create temporary $suffix file: $!\n";
+
+          return;
+      };
+
+    if (wantarray) {
+        return ($fh, $file);
+    } else {
+        close($fh);
+        return $file;
+    }
+}
+
+sub unlock_pdf( $ ) {
+    my $pdf_file = shift;
+
+    my $password = "mcs";
+
+    print "Enabling commenting for PDF file $pdf_file\n";
+
+    my $tmp_pdf = get_temp_file("pdf") or do {
+        die "temp file error\n";
+    };
+
+    my @perms = qw(allow AllFeatures);
+
+    # pdftk fail.pdf output fail.pdf owner_pw FOO allow Printing allow DegradedPrinting allow CopyContents allow ScreenReaders
+
+    my @cmd = (pdftk    => $pdf_file,
+               output   => $tmp_pdf,
+               owner_pw => $password,
+               @perms );
+
+    # print STDERR "pdftk command: @cmd\n";
+
+    my $status = system @cmd;
+
+    die "pdftk failed: $!\n" if $status;
+
+    copy($tmp_pdf, $pdf_file) or do {
+        die "Unable to overwrite $pdf_file: $!\n";
+    };
+
+    return;
+}
+
 sub process_chapter($) {
     my $chapter = shift;
 
@@ -685,6 +749,12 @@ sub process_chapter($) {
                 }
             }
         }
+    }
+
+    eval { unlock_pdf($target_pdf) };
+
+    if ($@) {
+        warn "Unable to enable commenting to $target_pdf: $@\n";
     }
 
     if (-d $VIEW_DIR) {
