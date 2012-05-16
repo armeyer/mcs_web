@@ -751,18 +751,22 @@ sub process_chapter($) {
         }
     }
 
-    eval { unlock_pdf($target_pdf) };
+    if (-e $target_pdf) {
+        eval { unlock_pdf($target_pdf) };
 
-    if ($@) {
-        warn "Unable to enable comments to $target_pdf: $@\n";
+        if ($@) {
+            warn "Unable to enable comments to $target_pdf: $@\n";
+        } else {
+            print "Successfully enabled comments to $target_pdf\n";
+        }
+
+        if (-d $VIEW_DIR) {
+            copy($target_pdf, $VIEW_DIR) or do {
+                warn "Couldn't copy $target_pdf to $VIEW_DIR: $!\n";
+            };
+        }
     } else {
-        print "Successfully enabled comments to $target_pdf\n";
-    }
-
-    if (-d $VIEW_DIR) {
-        copy($target_pdf, $VIEW_DIR) or do {
-            warn "Couldn't copy $target_pdf to $VIEW_DIR: $!\n";
-        };
+        warn "No file '$target_pdf' to unlock or install in $VIEW_DIR\n";
     }
 
     return;
