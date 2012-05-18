@@ -1286,45 +1286,6 @@ On the other hand, summing over all outcomes as in
 equation~\eqref{eqn:expectation} sometimes yields easier proofs about
 general properties of expectation.
 
-\begin{editingnotes}
-It is especially useful when the range of the random variable
-is~$\naturals$, as we will see from the following corollary.
-
-\begin{corollary}\label{cor:17A4}
-If the range of a random variable~$R$ is~$\naturals$, then
-\begin{align*}
-\expect{R}
-    = \sum_{i = 1}^\infty i \prob{R = i} % \notag\\
-    = \sum_{i = 0}^\infty \prob{R > i}. % \label{eqn:17A6}
-\end{align*}
-\end{corollary}
-
-\begin{proof}
-The first equality follows directly from Theorem~\ref{thm:altexpdef}
-and the fact that $\range{R} = \naturals$.  The second equality
-is derived by adding the following equations:
-\begin{equation*}
-\begin{array}{c@{}r@{\;}c@{\;}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c@{\,}c}
-      & \prob{R > 0} &=&
-            \prob{R = 1} &+& \prob{R = 2} &+& \prob{R = 3} &+& \cdots\\
-      & \prob{R > 1} &=&
-                         && \prob{R = 2} &+& \prob{R = 3} &+& \cdots\\
-{}{} & \prob{R > 2} &=&
-                         &&              && \prob{R = 3} &+&
-            \cdots\\[\jot]
-      & &&&\vdots \\
-\hline\noalign{\vskip\jot}
-      & \llap{$\displaystyle\sum_{i = 0}^\infty \prob{R > i}$} &=&
-            1 \cdot \prob{R = 1} &+& 2 \cdot \prob{R = 2}
-                &+& 3 \cdot \prob{R = 3} &+& \cdots\\[\jot]
-      & &=& \multicolumn{7}{l}{\displaystyle\sum_{i = 1}^\infty i \prob{R = i}.}
-\qedhere
-\end{array}
-\end{equation*}
-\end{proof}
-
-\end{editingnotes}
-
 \subsubsection{Medians}
 The mean of a random variable is not the same as the \term{median}.
 The median is the \emph{midpoint} of a distribution.
@@ -1474,6 +1435,13 @@ and thus
 \[
 \expect{C} = 1/p.
 \]
+
+\begin{editingnotes}
+We will use this sort of analysis extensively in
+Chapter~\ref{ran_process_chap} when we examine the expected behavior
+of random walks.
+\end{editingnotes}
+
 The general principle here is well-worth remembering.
 
 \textbox{
@@ -1485,13 +1453,62 @@ If a system independently fails at each time step with probability
 $p$, then the expected number of steps up to the first failure is
 $1/p$.}
 
-\begin{editingnotes}
-We will use this sort of analysis extensively in
-Chapter~\ref{ran_process_chap} when we examine the expected behavior
-of random walks.
+So, for example, if there is a 1\% chance that the program crashes at
+the end of each hour, then the expected time until the program crashes
+is $1 / 0.01 = 100$ hours.  
 
-There is a useful trick for
-calculating expectations of nonnegative integer valued variables:
+As a further example, suppose a couple wants to have a baby girl.
+For simplicity assume there is a 50\% chance that each child they have
+is a girl, and the genders of their children are mutually independent.
+If the couple insists on having children until they get a girl, then
+how many baby boys should they expect first?
+
+This is really a variant of the previous problem.  The question, ``How
+many hours until the program crashes?'' is mathematically the same as
+the question, ``How many children must the couple have until they get
+a girl?''  In this case, a crash corresponds to having a girl, so we
+should set $p = 1/2$.  By the preceding analysis, the couple
+should expect a baby girl after having $1/p = 2$ children.  Since the
+last of these will be the girl, they should expect just one boy.
+
+Something to think about: If every couple follows the strategy of having
+children until they get a girl, what will eventually happen to the
+fraction of girls born in this world?
+
+
+\begin{editingnotes}
+
+\subsubsection*{Alternative Derivations for Mean Time to Failure}
+Using the Law of Total Expectation to find expectations is a worthwhile
+approach to keep in mind, but it's good review to derive the same
+formula directly from the definition of expectation.  Namely, the
+probability that the first crash occurs in the $i$th hour for some $i
+>0$ is the probability, $(1-p)^{i-1}$, that it does not crash in each
+of the first $i-1$ hours, times the probability, $p$, that it does
+crash in the $i$th hour.  So
+\begin{align}
+\expect{C} & = \sum_{i \in \naturals} i \cdot \pr{C=i}
+               & \text{(by~\eqref{eqn:altexpdef})}\notag\\
+           & = \sum_{i \in \naturals} i (1-p)^{i-1}p\notag\\
+           &= \frac{p}{1-p} \cdot \sum_{i \in \naturals} i (1-p)^i.\label{meantimefailsum}
+\end{align}
+But we've already seen a sum like this last one (you did remember
+this, right?), namely, equation~\eqref{eqn:inf_ixi}:
+\[
+%\begin{equation}\label{Notes11form}
+\sum_{i \in \naturals} ix^i =\frac{x}{(1-x)^2}.
+%\end{equation}
+\]
+Combining~\eqref{eqn:inf_ixi} with~\eqref{meantimefailsum} gives
+\[
+\expect{C} = \frac{p}{1-p} \cdot \frac{1-p}{(1-(1-p))^2} = \frac{1}{p}
+\]
+as expected.
+
+A useful formula for calculating expectations of nonnegative integer
+valued variables is given in the next lemma.  It yields still another
+simple way to derive mean time to failure.
+
 \begin{lemma}
 If $R$ is a nonnegative integer-valued random variable, then:
 %
@@ -1501,7 +1518,7 @@ If $R$ is a nonnegative integer-valued random variable, then:
 \end{lemma}
 
 \begin{proof}
-Consider the sum:
+Look at the layout of the following sum:
 %
 \[
 \begin{array}{ccccccc}
@@ -1538,60 +1555,7 @@ happens with probability $(1-p)^i$.  Plugging this into~\eqref{R>i} gives:
        & = \frac{1}{1 - (1-p)} & \text{(sum of geometric series)}\\
        & = \frac{1}{p}
 \end{align*}
-
-The general principle here is well-worth
-remembering: if a system fails at each time step with probability $p$,
-then the expected number of steps up to the first failure is $1 / p$.
-
 \end{editingnotes}
-
-So, for example, if there is a 1\% chance that the program crashes at
-the end of each hour, then the expected time until the program crashes
-is $1 / 0.01 = 100$ hours.  
-
-As a further example, suppose a couple wants to have a baby girl.
-For simplicity assume there is a 50\% chance that each child they have
-is a girl, and the genders of their children are mutually independent.
-If the couple insists on having children until they get a girl, then
-how many baby boys should they expect first?
-
-This is really a variant of the previous problem.  The question, ``How
-many hours until the program crashes?'' is mathematically the same as
-the question, ``How many children must the couple have until they get
-a girl?''  In this case, a crash corresponds to having a girl, so we
-should set $p = 1/2$.  By the preceding analysis, the couple
-should expect a baby girl after having $1/p = 2$ children.  Since the
-last of these will be the girl, they should expect just one boy.
-
-Something to think about: If every couple follows the strategy of having
-children until they get a girl, what will eventually happen to the
-fraction of girls born in this world?
-
-Using the Law of Total Expectation to find expectations is a worthwhile
-approach to keep in mind, but it's good review to derive the same
-formula directly from the definition of expectation.  Namely, the
-probability that the first crash occurs in the $i$th hour for some $i
->0$ is the probability, $(1-p)^{i-1}$, that it does not crash in each
-of the first $i-1$ hours, times the probability, $p$, that it does
-crash in the $i$th hour.  So
-\begin{align}
-\expect{C} & = \sum_{i \in \naturals} i \cdot \pr{C=i}
-               & \text{(by~\eqref{eqn:altexpdef})}\notag\\
-           & = \sum_{i \in \naturals} i (1-p)^{i-1}p\notag\\
-           &= \frac{p}{1-p} \cdot \sum_{i \in \naturals} i (1-p)^i.\label{meantimefailsum}
-\end{align}
-But we've already seen a sum like this last one (you did remember
-this, right?), namely, equation~\eqref{eqn:inf_ixi}:
-\[
-%\begin{equation}\label{Notes11form}
-\sum_{i \in \naturals} ix^i =\frac{x}{(1-x)^2}.
-%\end{equation}
-\]
-Combining~\eqref{eqn:inf_ixi} with~\eqref{meantimefailsum} gives
-\[
-\expect{C} = \frac{p}{1-p} \cdot \frac{1-p}{(1-(1-p))^2} = \frac{1}{p}
-\]
-as expected.
 
 For the record, we'll state a formal version of this result.  A random
 variable like $C$ that counts steps to first failure is said to have a
@@ -1605,7 +1569,7 @@ parameter $p$ iff $\codomain{C} = \integers^+$ and
 \end{definition}
 
 \begin{lemma}\label{lem:exp_time_to_fail}
-If a random variable $C$ had a \idx{geometric distribution} with
+If a random variable $C$ has a \idx{geometric distribution} with
 parameter $p$, then
 \begin{equation}\label{exp_time_to_fail}
     \expect{C} = \frac{1}{p}.
@@ -1631,9 +1595,8 @@ and you lose~\$1 for tails, then your expected winnings are
 In such cases, the game is said to be \term{fair} since your expected
 return is zero.
 
-Some gambling games are more complicated and thus more interesting.
-The following game where the winners split a pot is representative of
-many poker games, betting pools, and lotteries.
+Now let's look at another apparently fair game that turns out not to
+be so fair.
 
 \subsubsection{Splitting the Pot}
 
@@ -1644,9 +1607,10 @@ drop by your old hangout, where you encounter two of your former TAs,
 Eric and Nick.  Eric and Nick propose that you join them in a simple
 wager. Each player will put~\$2 on the bar and secretly write
 ``heads'' or ``tails'' on their napkin.  Then one player will flip a
-fair coin.   The \$6 on the bar will then be divided
-equally among the players who correctly predicted the outcome of the
-coin toss.
+fair coin.  The \$6 on the bar will then be ``split'' ---that is, be
+divided equally ---among the players who correctly predicted the
+outcome of the coin toss.  Pot splitting like this is a familiar
+feature in poker games, betting pools, and lotteries.
 
 After your life-altering encounter with strange dice, you are more
 than a little skeptical.  So Eric and Nick agree to let you be the one
@@ -1702,33 +1666,34 @@ break your solemn vow to never ever engage in strange gambling games.
 Needless to say, things are not turning out well for you.  The more
 times you play the game, the more money you seem to be losing.  After
 1000~wagers, you have lost over~\$500.  As Nick and Eric are consoling
-you on your ``bad luck,'' you remember how rapidly the tails
-of the binomial distribute decrease,
+you on your ``bad luck,'' you do a back-of-the-envelope calculation
+and decide that the probability of losing \$500 in 1000 fair
+\$2~wagers is very very small.
+
+\begin{editingnotes}
+Add pset problem on this.
+\end{editingnotes}
+
 \iffalse
-do a back-of-the-napkin calculation
 using the bounds on the tails of the binomial distribution from
-Section~\ref{binomial_distribution_section} that
-\fi
-suggesting that the probability of losing \$500 in 1000 fair \$2~wagers
-is less than the probability of being struck by lightning while
-playing poker and being dealt four Aces.
-\iffalse
- Vietnamese Monk waltzing in and handing you
-one of those golden disks.
-\fi
-How can this be?
+Section~\ref{binomial_distribution_section} NOT BINOMIAL
 
-It is possible that you are truly very very unlucky.  But it is more
-likely that something is wrong with the tree diagram in
-Figure~\ref{fig:17E1} and that ``something'' just might have
-something to do with the possibility that Nick and Eric are colluding
-against you.
+less than the probability of being being dealt four Aces in poker at
+the same moment you are struck by lightning.  Vietnamese Monk waltzing
+in and handing you one of those golden disks.  How can this be?
+\fi
 
-To be sure, Nick and Eric can only guess the outcome of the coin toss
-with probability~$1/2$, but what if Nick and Eric always guess
-differently?  In other words, what if Nick always guesses ``tails''
-when Eric guesses ``heads,'' and vice-versa?  This would result in a
-slightly different tree diagram, as shown in Figure~\ref{fig:17E2}.
+Now it is possible of course that you are very very unlucky.  But it
+is more likely that something fishy is going on, and the tree diagram
+in Figure~\ref{fig:17E1} is not a good model of the game.
+
+The ``something'' that's fishy turns out to be the possibility for
+Nick and Eric to collude against you.  To be sure, Nick and Eric can
+only guess the outcome of the coin toss with probability~$1/2$, but
+what if Nick and Eric always guess differently?  In other words, what
+if Nick always guesses ``tails'' when Eric guesses ``heads,'' and
+vice-versa?  This would result in a slightly different tree diagram,
+as shown in Figure~\ref{fig:17E2}.
 
 \begin{figure}
 
