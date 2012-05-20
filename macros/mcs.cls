@@ -3132,8 +3132,6 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 % Usage  : \final[revision info]
 % Example: \final[v1.1]  % for v1.1 of the Final Exam
 
-\iffalse   %FIX
-%
 \newcommand{\final}[1][\stamp]{%
   \theoremsunderproblems
   %\useexamproblems
@@ -3157,6 +3155,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \exampaper[#1]{cfe}{Conflict Final}
   \fi}
 
+\iffalse   %FIX
 \newcommand{\makeupfinal}[2][\stamp]{%
   \theoremsunderproblems
   \ifshowstaffnotes
