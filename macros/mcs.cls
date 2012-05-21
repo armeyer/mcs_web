@@ -3146,14 +3146,33 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \fi
    }
 
-\newcommand{\conflictfinal}[1][\stamp]{%
-    \theoremsunderproblems
+\newcommand{\conflictfinalone}[1][\stamp]{%
+  \theoremsunderproblems
   %\useexamproblems
-  \ifshowsolutions
-    \paper[#1]{cfes}{}{Solutions to the Conflict Final}
+  \ifshowstaffnotes
+  \paper[#1]{cfes1}{}{Staff Solutions to Conflict Final 1}
   \else
-    \exampaper[#1]{cfe}{Conflict Final}
-  \fi}
+  \ifshowsolutions
+  \paper[#1]{cfes1}{}{Solutions to Conflict Final 1}
+  \else
+  \exampaper[#1]{cfe1}{Conflict Final 1}
+  \fi
+  \fi
+}
+
+\newcommand{\conflictfinaltwo}[1][\stamp]{%
+  \theoremsunderproblems
+  %\useexamproblems
+  \ifshowstaffnotes
+  \paper[#1]{cfes2}{}{Staff Solutions to Conflict Final 2}
+  \else
+  \ifshowsolutions
+  \paper[#1]{cfes2}{}{Solutions to Conflict Final 2}
+  \else
+  \exampaper[#1]{cfe2}{Conflict Final 2}
+  \fi
+  \fi
+}
 
 \iffalse   %FIX
 \newcommand{\makeupfinal}[2][\stamp]{%
