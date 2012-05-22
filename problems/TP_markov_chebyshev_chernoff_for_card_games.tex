@@ -1,0 +1,137 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{TP_markov_chebyshev_chernoff_for_card_games}
+  \pcomment{same TP_markov_chebyshev_for_card_games plus last part on Chernoff}
+  \pcomment{from: S09.cp14t}
+  \pcomment{same as FP_gambling_man but numbers doubled there}
+\end{pcomments}
+
+\pkeywords{
+  probability
+  expectation
+  variance
+  Markov
+  Chebyshev
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  A gambler plays 120 hands of draw poker, 60 hands of black jack, and 20
+  hands of stud poker per day.  He wins a hand of draw poker with
+  probability 1/6, a hand of black jack with probability 1/2, and a hand
+  of stud poker with probability 1/5.  %He hopes to win 108 hands per day.
+
+\bparts
+
+\ppart What is the expected number of hands the gambler wins in a day?
+
+\begin{center}
+\exambox{1.0in}{0.4in}{0.0in}
+\end{center}
+\examspace[0.5in]
+
+\begin{solution}
+$120(1/6)+60(1/2)+20(1/5)=54$.
+\end{solution}
+
+\ppart What would the Markov bound be on the probability that the
+gambler will win at least 108 hands on a given day?
+
+\begin{center}
+\exambox{0.5in}{0.4in}{0.0in}
+\end{center}
+\examspace[0.5in]
+
+\begin{solution}
+The expected number of games won is 54, so
+by Markov, $\pr{R \geq 108} \leq 54/108 = 1/2$.
+\end{solution}
+
+\ppart Assume the outcomes of the card games are \emph{pairwise}, but
+possibly \emph{not} mutually, independent.  What is the variance in
+the number of hands won per day?  You may answer with a
+numerical expression that is not completely evaluated.
+
+\begin{center}
+\exambox{2.0in}{0.4in}{0.0in}
+\end{center}
+\examspace[0.5in]
+
+
+\begin{solution}
+Pairwise independence is sufficient to ensure additivity of variance.
+For an individual hand the variance is $p(1-p)$ where $p$ is the
+probability of winning.  Therefore the variance is
+\[
+120(1/6)(5/6) + 60(1/2)(1/2) + 20(1/5)(4/5) = 523/15 = 34\ \tfrac{13}{15}.
+\]
+
+\iffalse
+It is important to note that in this problem part and the previous
+one, all hands must be treated individually; we cannot lump the hands
+of the same game together because we are only given that the hands are
+pairwise independent, not mutually independent.  If they were, we
+would be able to use the formulas for binomial distribution with mean
+$np$ and variance $np(1-p)$, where the values of $n$ and $p$ depend on
+which game you are analyzing.  The individual means and variances for
+each game type could then be summed together respectively, which would
+give us the same result.  However, this is NOT a valid way to approach
+this problem, again, because we are dealing with pairwise
+independence, not mutual.
+\fi
+
+\end{solution}
+
+\ppart\label{chernoff108hands} What would the Chebyshev bound be on the probability that the
+gambler will win at least 108 hands on a given day?  You may answer with a
+numerical expression that is not completely evaluated.
+
+\begin{center}
+\exambox{2.0in}{0.4in}{0.0in}
+\end{center}
+\examspace[0.5in]
+
+\begin{solution}
+\[
+\pr{R \geq 108} = \pr{R - 54 \geq 54} \leq \pr{\abs{R - 54} \geq 54} \leq
+\frac{\variance{R}}{54^2} = \frac{523}{15(54)^2} \approx 0.01196.
+\]
+
+\end{solution}
+
+
+\ppart Assuming outcomes of the card games are \emph{mutually}
+independent, show that the probability that the gambler will win at
+least 108 hands on a given day is much smaller than the bound in
+part~\eqref{chernoff108hands}.  \hint $e^{1 - 2 \ln 2} \leq 0.7$
+
+\examspace[2.0in]
+
+\begin{solution}
+Use the Chernoff Bound
+\begin{align*}
+\prob{R \geq 108}
+  &  = \prob{R \geq 2\expect{R}}\\
+  & \leq e^{-\beta(2) \expect{T}}\\
+  & = \paren{e^{-\beta(2)}}^{54}
+\end{align*}
+where $\beta(c) \eqdef c \ln c - c + 1$.  Using the hint, we have
+\[
+\prob{R \geq 108} \leq \paren{e^{-(2\ln2 -2 +1)}}^{54} =
+\paren{e^{1- 2\ln2}}^{54} \leq (0.7)^{54}.
+\]
+This last term is much smaller than the bound of 0.01 from
+part~\eqref{chernoff108hands}.  In fact, it is less than 1 in 90
+billion.
+
+%$9\cdot %10^{-10}$
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
