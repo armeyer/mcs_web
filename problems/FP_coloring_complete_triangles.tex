@@ -5,6 +5,7 @@
   \pcomment{variation of FP_coloring_triangles from F03 final}
   \pcomment{from S06.final}
   \pcomment{minor edit ARM 5/20/12}
+  \pcomment{soln to last part need rewrite ala Drew Minnear}
 \end{pcomments}
 
 \pkeywords{
@@ -83,19 +84,35 @@ Let $T$ and $U$ be distinct triangles.
 \exambox{0.5in}{0.4in}{0in}
 \end{center}
 
+\begin{solution}
+\[
+\frac{1}{3^4}.
+\]
+
+If $T$ and $U$ do not share an edge, then the three edges of $T$
+match, and independently, the three edges of $U$ must match, so both
+match with probability $(1/3)^2~\cdot~(1/3)^2$.  If they do share an
+edge, the the five edges among them must all match, which happens
+with probability $(1/3)^4$ as well.
+\end{solution}
+
 \ppart Show that $I_T$ and $I_U$ are independent random variables.
 
 \examspace[2.0in]
 \begin{solution}
 Since $I_T$ and $I_U$ are indicators for events, it suffices to verify that
 \[
-\pr{I_T = 1}\cdot \pr{I_U = 1} = \pr{I_T\cdot I_U =1}.
+\prob{I_T = 1}\cdot \prob{I_U = 1} = \prob{I_T\cdot I_U =1}.
 \]
 There are two cases depending on whether $T$ and $U$ share an edge.  In each
-case, $\pr{I_T = 1}\cdot \pr{I_U = 1} = \pr{I_T\cdot I_U =1} = 1/3^4$.
+case,
+\[
+\prob{I_T = 1}\cdot \prob{I_U = 1} = \paren{\frac{1}{3}}^2 \cdot \paren{\frac{1}{3}}^2 =
+\paren{\frac{1}{3}}^4 = \prob{I_T\cdot I_U =1}.
+\]
 \end{solution}
 
-\ppart Let $M$ be the number of monochromatic triangles.  Write simple
+\ppart\label{part:exMvarM} Let $M$ be the number of monochromatic triangles.  Write simple
 formulas in terms of $n, m,r,b,$ and $g$ for $\expect{M}$ and
 $\variance{M}$.
 
@@ -107,50 +124,53 @@ $\variance{M}$.
 \examspace[1.0in]
 
 \begin{solution}
-\begin{align*}
-\expect{M} & =  m \cdot \text{(\# triangles)}\\
-           & = m\binom{n}{3},\\
-\variance{M} & = \variance{I_T} \cdot \text{(\# triangles)}\\
-           & = m(1-m)\binom{n}{3}.
-\end{align*}
+\begin{align}
+\expect{M}   & = m \cdot \text{(\# triangles)}\notag\\
+             & = m\binom{n}{3},\label{expMmsh}\\
+\variance{M} & = \variance{I_T} \cdot \text{(\# triangles)}\notag\\
+             & = m(1-m)\binom{n}{3} = (1-m)\expect{M}.\label{varMITsh}
+\end{align}
 \end{solution}
 
 \ppart  Let $\mu \eqdef \expect{M}$.  Prove that
 \[
-\pr{\abs{M - \mu} > \sqrt{\mu \log \mu}} = O \paren{\frac{1}{\log n}}
+\Prob{\abs{M - \mu} > \sqrt{\mu \log \mu}} = O \paren{\frac{1}{\log n}}
 \]
 
 \examspace[2.5in]
 
 \begin{solution}
-By Chebyshev,
-\begin{equation}\label{C}
-\pr{\abs{M - \mu} > c \sigma} \leq \frac{1}{c^2}
-\end{equation}
-But
+According to Chebyshev's Bound:
+\[%\label{CMmucsig}
+\prob{\abs{M - \mu} > c \sigma} \leq \frac{1}{c^2}
+\]
+So
+\begin{align*}
+\Prob{\abs{M - \mu} > \sqrt{\mu \log \mu}}
+  & = \Prob{\abs{M - \mu} > \sqrt{\log \mu} \sqrt{\mu}}\\
+  & \leq \Prob{\abs{M - \mu} > \sqrt{\log \mu} \sqrt{(1-m)\mu}}
+       & (0 \leq 1- m \leq 1)\\
+  & = \Prob{\abs{M - \mu} > \sqrt{\log \mu}\ \sigma}
+       & \text{(by~\eqref{varMITsh})}\\
+  & \leq \frac{1}{\log \mu}
+       & \text{(by Chebyshev)}\\%~\eqref{CMmucsig}
+  & = O \paren{\frac{1}{\log n}}
+       & \text{(by~\eqref{expMmsh}).}
+\end{align*}
+The last step follows because according to~\eqref{expMmsh},
 \[
-\sigma = \sqrt{(1-m)\mu} < \sqrt{\mu}
+\mu = m\binom{n}{3} = \Theta(n^3),
 \]
 so
-\begin{align*}
-\pr{\abs{M - \mu} > \sqrt{\mu \log \mu}}
- & = \pr{\abs{M - \mu} > \paren{\sqrt{\log \mu}} \sqrt{\mu}}\\
- & \leq \pr{\abs{M - \mu} > \paren{\sqrt{\log \mu}} \sigma}\\
- & \leq \frac{1}{\log \mu}  & \text{(by~\eqref{C})}\\
- & = O \paren{\frac{1}{\log n}}.
-\end{align*}
-The last step follows from the fact that
 \[
-\log \mu = \log \paren{m\binom{n}{3}} = \log m + \log n + \log (n-1) +
-\log (n-2) - \log 6 = \Theta(\log n).
+\frac{1}{\log \mu} = \Theta\paren{\frac{1}{\log n^3}} = \Theta\paren{\frac{1}{\log n}}.
 \]
 \end{solution}
 
 \iffalse
-
 \ppart Conclude that
 \[
-\lim_{n\to \infty} \pr{\abs{M - \mu} > \sqrt{\mu \log \mu}} = 0
+\lim_{n\to \infty} \prob{\abs{M - \mu} > \sqrt{\mu \log \mu}} = 0
 \]
 
 \begin{solution}
