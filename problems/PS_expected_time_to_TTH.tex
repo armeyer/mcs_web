@@ -6,21 +6,22 @@
 \end{pcomments}
 
 \pkeywords{
-  infinite_sample_space
-  total_expectation
-  subtree
+  expectation
   tree_diagram
+  subtree
+  expected_time
+  coin_flip
 }
 
 \begin{problem}
 A coin will be flipped repeatedly until the sequence tail/tail/head
 (\texttt{TTH}) comes up.  Successive flips are independent, and the coin has
 probability $p$ of coming up heads.  Let $N_\mathtt{\texttt{TTH}}$ be the
-number of coin tosses until \texttt{TTH} first appears.  What value of $p$
+number of coin flips until \texttt{TTH} first appears.  What value of $p$
 minimizes $\expect{N_\texttt{TTH}}$?
 
 \begin{solution}
-We can describe the event tree, $D$, for the coin tosses as follows:
+We can describe the event tree, $D$, for the coin flips as follows:
 \[
 D = \texttt{H}\cdot D + \texttt{T}\cdot (\texttt{H}\cdot D + \texttt{T}\cdot G). 
 \]
@@ -35,25 +36,26 @@ D = H\cdot D + T\cdot H\cdot D + T\cdot T\cdot G.
 Now we compute $\expect{N_\mathtt{TTH}}$:
 \[
 \expect{N_\mathtt{TTH}} = p\paren{1 + \expect{N_\mathtt{TTH}}}  + 
-(1-p)p \left( 2 + \expect{N_\mathtt{TTH}} \right) + 
-\left( 1-p \right)^2 \left( 2 + \expect{N_\mathtt{H}}  \right)
+(1-p)p ( 2 + \expect{N_\mathtt{TTH}}) + 
+ (1-p)^2 (2 + \expect{N_\mathtt{H}})
 \]
 
 We know $\expect{N_\mathtt{H}} = 1/p$, so we can focus on the rest of the tree.
-
 \[ 
 \expect{N_\mathtt{TTH}} = (p + (1-p)p) \expect{N_\mathtt{TTH}} + p + 2(1-p)p + (1-p)^2( 2 + 1/p)
 \]
 
+\iffalse
 Notice how the $2 + 1/p$ term corresponds to the mean time to failure
 of the variable given we see \texttt{TT} at the start. Also, if $p =
 0$ the $1/p$ term grows infinite, whereas if $p = 1$ the $(1-p)^2$
 term grows infinite.
+\fi
 
 \begin{align*}
 \lefteqn{\expect{N_\mathtt{TTH}}}\\
 & = \frac{p + 2(1-p)p + (1-p)^2( 2 + 1/p)}{1 - p - (1-p)p}\\
-& = \frac{p(3 - 2p)}{(1-p)^2} + 2 + \frac1p
+& = \frac{p(3 - 2p)}{(1-p)^2} + 2 + \frac1p = \frac{1}{p(1-p)^2}
 \end{align*}
 
 Now that we have $\expect{N_\mathtt{TTH}}$ in terms of $p$, we can
@@ -63,9 +65,20 @@ $\expect{N_\mathtt{TTH}}$ with respect to $p$ is
 \frac{1 - 3p }{(p-1)^3p^2}
 \]
 
-So the function is minimized at $p = 1/3$. In this case, the expected
-time to see TTH is $27/4 = 6\frac{3}{4}$. Compare this to when $p = 1/2$,
-in which case the expected time is $8$.
+So the function is minimized at $p = 1/3$, giving an expected time of
+$27/4 < 7$ flips to see \texttt{TTH}, in contrast to the expected 8
+flips when $p = 1/2$.
+
+\begin{staffnotes}
+This generalizes to $\mathtt{T}^n\mathtt{H}}$ with 
+\[
+\expect{N_\mathtt{T}^n\mathtt{H}} = \frac{1}{p(1-p)^n}
+\]
+which is minimized when $p = 1/(n+1)$, giving an expected number of flips equal to
+\[
+\frac{(n+1)^{n+1}}{n^n}.
+\]
+\end{staffnotes}
 
 \end{solution}
 \end{problem}
