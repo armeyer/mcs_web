@@ -1572,7 +1572,7 @@ birthdays, we have $\expect{M} \approx 12.23$ and $\variance{M} \approx 12.23 (1
 Letting $x=7$, we conclude that there is a better than 75\% chance
 that in a class of 95 students, the number of pairs of students with
 the same birthday will be within 7 of 12.23, that is, the number of
-pairs will be between 6 and 19.
+pairs will be between 6 and 20.
 
 %In fact, there turned out to be
 %\emph{exactly} the 16 matches expected in the class this term!
@@ -1803,19 +1803,22 @@ a randomized approach to a problem is worth considering when a
 deterministic solution is hard to compute or requires unavailable
 information.
 
-Specifically, Fussbook receives 24,000 forum posts every 10
-minutes.  Each post is assigned to one of $m$ computers for
-processing, and each computer works sequentially through its assigned
-tasks.  Processing an average post takes a computer $1/4$ second.
-Some posts, such as pointless grammar critiques and snide witticisms,
-are easier.  But the most protracted harangues require 1 full second.
+Specifically, Fussbook receives 24,000 forum posts in every 10 minutes
+interval.  Each post is assigned to one of several servers for
+processing, and each server works sequentially through its assigned
+tasks.  It takes a server an average of $1/4$ second to process a
+post.  Some posts, such as pointless grammar critiques and snide
+witticisms, are easier, but no post---not even the most protracted
+harangues---takes more than one full second.
 
-Some arithmetic shows that Fussbook's traffic is sufficient to keep $m
-= 10$ computers running at 100\% capacity with perfect load balancing.
-Surely, more than 10 servers are needed to cope with random
-fluctuations in task length and imperfect load balance.  But would 11
-be enough? \dots or 15, 20, 100?  We'll answer that question with a
-new mathematical tool.
+Measuring workload in seconds, this means a server is overloaded when
+it is assigned more than 600 units of work in a given 600 second
+interval.  Fussbook's average processing load of $24{,}000 \cdot 1/4 =
+6000$ seconds per interval would keep $10$ computers running at 100\%
+capacity with perfect load balancing.  Surely, more than 10 servers
+are needed to cope with random fluctuations in task length and
+imperfect load balance.  But would 11 be enough? \dots or 15, 20, 100?
+We'll answer that question with a new mathematical tool.
 
 \subsection{The \idx{Chernoff Bound}}\label{chernoff_sec}
 
@@ -1968,25 +1971,24 @@ operator has little doubt as to the outcome!
 
 Now let's return to Fussbook and its \idx{load balancing} problem.
 Specifically, we need to determine a number, $m$, of servers that
-makes it very unlikely that any server is overloaded in a given ten
-minute period.  Measuring workload in seconds, this means a server is
-overloaded when it is assigned more than 600 units of work.
+makes it very unlikely that any server is overloaded by being assigned
+more than 600 seconds of work in a given interval.
 
 To begin, let's find the probability that the first server is
-overloaded.  Letting $T$ be the number of work units assigned to the
-first server, this means we want an upper bound on $\prob{T \geq
+overloaded.  Letting $T$ be the number of seconds of work assigned to
+the first server, this means we want an upper bound on $\prob{T \geq
   600}$.  Let $T_i$ be the number of seconds that the first server
 spends on the $i$th task: then $T_i$ is zero if the task is assigned
 to another machine, and otherwise $T_i$ is the length of the task.  So
-$T = \sum_{i = 1}^n T_i$ is the total amount of work assigned to the
-first server, where~$n = 24{,}000$.
+$T = \sum_{i = 1}^n T_i$ is the total number of seconds of work
+assigned to the first server, where~$n = 24{,}000$.
 
 The Chernoff bound is applicable only if the $T_i$ are mutually
 independent and take on values in the range $[0, 1]$.  The first
 condition is satisfied if we assume that assignment of a post to a
 server is independent of the time required to process the post.  The
 second condition is satisfied because we know that no post takes more
-than 1 second to process; that's why we chose work units to be
+than 1 second to process; this is why we chose to measure work in
 seconds.
 
 In all, there are 24,000 tasks, each with an expected length of~1/4
