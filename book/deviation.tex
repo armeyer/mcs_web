@@ -82,29 +82,31 @@ that a random variable takes a value \emph{much larger} than its mean.
 It is an almost trivial result by itself, but it actually leads fairly
 directly to much stronger results.
 
-The idea behind \idx{Markov's Theorem} can be explained with a simple
-example of \emph{intelligence quotient}, \idx{\IQ}.  This quantity was
-devised so that the average \IQ\ measurement would be 100.  Now from
-this fact alone we can conclude that at most 1/3 of the population can
-have an \IQ\ of 300 or more, because if more than a third had an
-\IQ\ of 300, then the average would have to be \emph{more} than
-$(1/3)\cdot 300 = 100$, contradicting the fact that the average is
-100.  So, the probability that a randomly chosen person has an \IQ\ of
-300 or more is at most 1/3.  Of course, this is not a very strong
-conclusion; in fact, no \IQ\ of over 300 has ever been recorded.  By
-the same logic, we can also conclude that at most 2/3 of the
-population can have an \IQ\ of 150 or more.  \IQ's of over 150 have
-certainly been recorded, though again, a much smaller fraction than
-2/3 of the population actually has an \IQ\ that high.
+The idea behind \idx{Markov's Theorem} can be explained by considering
+the quantity known as \emph{intelligence quotient}, \idx{\IQ}, which
+remains in wide use despite doubts about its legitimacy.  \IQ\ was
+devised so that its average measurement would be 100.  This
+immediately implies that at most 1/3 of the population can have an
+\IQ\ of 300 or more, because if more than a third had an \IQ\ of 300,
+then the average would have to be \emph{more} than $(1/3)\cdot 300 =
+100$.  So, the probability that a randomly chosen person has an
+\IQ\ of 300 or more is at most 1/3.  By the same logic, we can also
+conclude that at most 2/3 of the population can have an \IQ\ of 150 or
+more.
 
-Although these conclusions about \IQ\ are weak, they are actually the
-strongest general conclusions that can be reached about a random
-variable using \emph{only} the fact that it is nonnegative and its mean is
-100.  For example, if we choose a random variable equal to 300 with
-probability 1/3 and 0 with probability 2/3, then its mean is 100, and the
-probability of a value of 300 or more really is 1/3.  So, we can't hope to
-get a better upper bound based solely on this limited amount of
-information.
+Of course, these are not very strong conclusions.  No \IQ\ of over 300
+has ever been recorded; while many \IQ's of over 150 have been
+recorded, the fraction of the population that actually has an
+\IQ\ that high is very much smaller than 2/3.  But though these
+conclusions are weak, we reached them using just the fact that the
+average \IQ\ is 100---along with another fact we took for granted:
+\IQ\ is never negative.  We can't get derive smaller fractions using
+\emph{only} the facts that the mean of a nonnegative random variable
+is 100, because there are nonnegative random variables with mean 100
+that achieve these fractions.  For example, if we choose a random
+variable equal to 300 with probability 1/3 and 0 with probability 2/3,
+then its mean is 100, and the probability of a value of 300 or more
+really is 1/3.
 
 \begin{editingnotes}
 
@@ -1570,7 +1572,7 @@ birthdays, we have $\expect{M} \approx 12.23$ and $\variance{M} \approx 12.23 (1
 Letting $x=7$, we conclude that there is a better than 75\% chance
 that in a class of 95 students, the number of pairs of students with
 the same birthday will be within 7 of 12.23, that is, the number of
-pairs will be between 6 and 20.
+pairs will be between 6 and 19.
 
 %In fact, there turned out to be
 %\emph{exactly} the 16 matches expected in the class this term!
@@ -1768,23 +1770,15 @@ replacing $\mu$ by upper bound on $\mu$.
 \subsection{A Motivating Example}
 
 Fussbook is a new social networking site oriented toward unpleasant
-people.
+people.  Like all major web services, Fussbook has a \idx{load
+  balancing} problem: it receives lots forum posts that computer
+servers have to process.  If any server is assigned more work than it
+can complete in a given interval, then it is overloaded and system
+performance suffers.  That would be bad, because Fussbook users are
+\emph{not} a tolerant bunch.  So balancing the work load across
+mutliple servers is vital.
 
-Like all major web services, Fussbook has a \idx{load balancing}
-problem.  Specifically, Fussbook receives 24,000 forum posts every 10
-minutes.  Each post is assigned to one of $m$ computers for
-processing, and each computer works sequentially through its assigned
-tasks.  Processing an average post takes a computer $1/4$ second.
-Some posts, such as pointless grammar critiques and snide witticisms,
-are easier.  But the most protracted harangues require 1 full second.
-
-Balancing the work load across the $m$ computers is vital; if any
-computer is assigned more than 10 minutes of work in a 10-minute
-interval, then that computer is overloaded and system performance
-suffers.  That would be bad, because Fussbook users are \emph{not} a
-tolerant bunch.
-
-An early idea was to assign each computer an alphabetic range of forum
+An early idea was to assign each server an alphabetic range of forum
 topics.  (``That oughta work!'', one programmer said.)  But after the
 computer handling the ``\emph{pr}ivacy'' and ``\emph{pr}eferred text
 editor'' threads melted from overload, the drawback of an \emph{ad
@@ -1808,6 +1802,13 @@ well, but also permits provable performance guarantees.  In general,
 a randomized approach to a problem is worth considering when a
 deterministic solution is hard to compute or requires unavailable
 information.
+
+Specifically, Fussbook receives 24,000 forum posts every 10
+minutes.  Each post is assigned to one of $m$ computers for
+processing, and each computer works sequentially through its assigned
+tasks.  Processing an average post takes a computer $1/4$ second.
+Some posts, such as pointless grammar critiques and snide witticisms,
+are easier.  But the most protracted harangues require 1 full second.
 
 Some arithmetic shows that Fussbook's traffic is sufficient to keep $m
 = 10$ computers running at 100\% capacity with perfect load balancing.
@@ -1967,25 +1968,26 @@ operator has little doubt as to the outcome!
 
 Now let's return to Fussbook and its \idx{load balancing} problem.
 Specifically, we need to determine a number, $m$, of servers that
-makes it very unlikely that any server is overloaded with more than
-ten minutes of work in a ten minute period.
+makes it very unlikely that any server is overloaded in a given ten
+minute period.  Measuring workload in seconds, this means a server is
+overloaded when it is assigned more than 600 units of work.
 
 To begin, let's find the probability that the first server is
-overloaded.  A server is overloaded when it is assigned more than 600
-seconds of work.  Letting $T$ be the number of seconds of work
-assigned to the first server, this means we want an upper bound on
-$\prob{T \geq 600}$.  Let $T_i$ be the number of seconds that the
-first server spends on the $i$th task: then $T_i$ is zero if the task
-is assigned to another machine, and otherwise $T_i$ is the length of
-the task.  So $T = \sum_{i = 1}^n T_i$ is the total length of tasks
-assigned to the first server, where~$n = 24{,}000$.
+overloaded.  Letting $T$ be the number of work units assigned to the
+first server, this means we want an upper bound on $\prob{T \geq
+  600}$.  Let $T_i$ be the number of seconds that the first server
+spends on the $i$th task: then $T_i$ is zero if the task is assigned
+to another machine, and otherwise $T_i$ is the length of the task.  So
+$T = \sum_{i = 1}^n T_i$ is the total amount of work assigned to the
+first server, where~$n = 24{,}000$.
 
 The Chernoff bound is applicable only if the $T_i$ are mutually
 independent and take on values in the range $[0, 1]$.  The first
 condition is satisfied if we assume that assignment of a post to a
 server is independent of the time required to process the post.  The
 second condition is satisfied because we know that no post takes more
-than 1 second to process.
+than 1 second to process; that's why we chose work units to be
+seconds.
 
 In all, there are 24,000 tasks, each with an expected length of~1/4
 second.  Since tasks are assigned to the $m$ servers at random, the
@@ -2002,8 +2004,9 @@ expect it to be overloaded.  If there are exactly 10 servers, then the
 server is expected to run for $6000/10 = 600$ seconds, which is 100\%
 of its capacity.
 
-Now we can use the Chernoff bound to upper bound the probability that
-the first server is overloaded.  We have from~\eqref{eqn:19XX}
+Now we can use the Chernoff bound based on the number of servers to
+bound the probability that the first server is overloaded.  We have
+from~\eqref{eqn:19XX}
 \[
 600 = c \expect{T}  \qquad \text{where } c \eqdef m/10,
 \]
