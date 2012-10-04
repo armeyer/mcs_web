@@ -84,9 +84,9 @@ functions, we regard infinite series as formal algebraic objects and
 equations such as~\eqref{eq:G1/1-x} and~\eqref{eq:N1/1-x2} as symbolic
 identities that hold for purely algebraic reasons.  In fact, good use
 can be made of generating functions determined by infinite series that
-don't converge anywhere.  We'll explain this further at the end of the
-chapter, but for now it's enough to know that we needn't worry about
-convergence.
+don't converge anywhere.  We'll explain this further at the end of
+this chapter, but for now, take it on faith that we needn't worry
+about convergence.
 
 \section{Counting with Generating Functions}\label{sec:gf_counting}
 Generating functions are particularly useful for representing and
@@ -951,12 +951,199 @@ Problems~\ref{CP_Fibonacci_and_bunnies},~\ref{FP_linear_recur},~\ref{MQ_gen_2} a
 \end{problems}
 
 \section{Formal Power Series}
-\TBA{to appear}
+
+\subsection{Divergent Generating Functions}
+Let $F(x)$ be the generating function for $n!$, that is,
+\[
+F(x) \eqdef 1 + 1x + 2x^2 + \cdots + n! x^n + \cdots.
+\]
+Because $x^n = o(n!)$ for all $x \neq 0$, this generating function
+converges only at $x=0$.\footnote{This section is based on an example
+from ``Use of everywhere divergent generating
+function,'' \texttt{math}\textbf{overflow}, response 8,147 by Aaron
+Meyerowitz, Nov. 12, 2010.}
+
+Next, let $H(x)$ be the generating function for $n
+\cdot n!$, that is, 
+\[
+H(x) \eqdef 0 + 1x + 4x^2 + \cdots + n\cdot n! x^n + \cdots.
+\]
+Again, $H(x)$ converges only for $x = 0$, so $H(x)$ and $F(x)$
+  describe the same, trivial, partial function on the reals.
+
+On the other hand, $F(x)$ and $H(x)$ have different coefficients for
+  all powers of $x$ greater than 1, and we can usefully distinguish
+  them as formal, symbolic objects.
+
+To illustrate this, note than by subtracting 1 from $F(x)$ and then
+dividing each of the remaining terms by $x$, we get a series where the
+coefficient if $x^n$ is $(n+1)!$.  That is
+\begin{equation}\label{xnFx1}
+[x^n]\frac{F(x) - 1}{x} = (n+1)!\, .
+\end{equation}
+
+Now a little further formal reasoning about $F(x)$ and $H(x)$ will
+allow us to deduce the following identity for $n!$:\footnote{A
+combinatorial proof of~\eqref{n!sumagain} is given in
+Problem~\ref{CP_factorial_sum}}
+\begin{equation}\label{n!sumagain}
+n! = 1 + \sum_{i=1}^{n} (i-1) \cdot (i-1)!
+\end{equation}
+
+To prove this identity, note that from~\eqref{xnFx1}, we have
+\[
+[x^n]H(x) \eqdef n \cdot n! = (n+1)! - n! = [x^n]\frac{F(x) - 1}{x} - [x^n]F(x).
+\]
+In other words,
+\begin{equation}\label{HF-1}
+H(x) = \frac{F(x) - 1}{x} - F(x),
+\end{equation}
+Solving~\eqref{HF-1} for $F(x)$, we get
+\begin{equation}\label{FxH1}
+F(x) = \frac{xH(x)+1}{1-x}.
+\end{equation}
+But $[x^n](xH(x)+1)$ is $(n-1) \cdot (n-1)!$ for $n \geq 1$ and is 1
+for $n=0$, so by the convolution formula,
+\[
+[x^n]\frac{xH(x)+1}{1-x} = 1 + \sum_{i=1}^{n} (i-1) \cdot (i-1)! \, .
+\]
+The identity~\eqref{n!sumagain} now follows immediately
+from~\eqref{FxH1}.
+
+\subsection{The Ring of Power Series}
+So why don't we have to worry about series whose radius of convergence
+is zero, and how do we justify the kind of manipulation of such series
+in the previous section?  The answer comes from thinking abstractly
+about infinite sequences of numbers and operations that can be
+performed on them.
+
+For example, one basic operation combining two infinite sequences is
+adding them coordinatewise.  That is, if we let
+\begin{align*}
+G & \eqdef (g_0,g_1,g_2,\dots),\\
+H & \eqdef (h_0,h_1,h_2,\dots),
+\end{align*}
+then we can define the sequence sum, $\oplus$, by the rule:
+\[
+G \oplus H \eqdef (g_0+h+0, g_1+h_1, \dots, g_n+h_n, \dots).
+\]
+Another basic operation is sequence multiplication, $\otimes$, defined
+by the convolution rule (\emph{not} coordinatewise):
+\[
+G \otimes H \eqdef \paren{g_0+h_0, g_0h_1+g_1h_0, \dots, \sum_{i=0}^n g_ih_{n-i}, \dots}.
+\]
+These operations on infinite sequences have lots of nice properties.
+For example, it's easy to check that sequence addition and
+multiplication are commutative:
+\begin{align*}
+G \oplus H & = H \oplus G,\\
+G \otimes H & = H \otimes G.
+\end{align*}
+If we let
+\begin{align*}
+Z & \eqdef (0,0,0,\dots),\\
+I & \eqdef (1,0,0,\dots,0,\dots),
+\end{align*}
+then it's equally easy to check that $Z$ acts like a zero for
+sequences and $I$ acts like the number one:
+\begin{align}
+Z \oplus G & = G,\notag\\
+Z \otimes G & = Z,\label{ZoGZ}\\
+I \otimes G & = G.\notag
+\end{align}
+Now if we define
+\[
+-G \eqdef (-g_0, -g_1, -g_2,\dots)
+\]
+then
+\[
+G \oplus (-G) = Z.
+\]
+In fact, the operations $\oplus$ and $\otimes$ satisfy all the
+\emph{\idx{commutative ring}} axioms described in
+Section~\ref{subsec:ringZn}.  The set of infinite sequences of
+numbers together with these operations is called the \term{ring of
+  formal power series} over these numbers.\footnote{The elements in
+  the sequences may be the real numbers, complex numbers, or, more
+  generally, may be the elements from any given commutative ring.}
+
+\begin{editingnotes}
+We can also define a ``derivative'' operator, $D$, and
+``anti-derivative'' operator, $A$:
+\begin{align*}
+D(G) & \eqdef (g_1, 2g_2, \dots, ng_{n},\dots)\, .
+A(G) & \eqdef (0, g_0, g_1/2, \dots, \frac{g_{n-1}}{n}, \dots)\,
+\end{align*}
+and verify that
+\begin{align*}
+D(A(G)) & = G\\
+A(D(G)) & = G - g_0.
+\end{align*}
+\end{editingnotes}
+
+A sequence $H$ is the \term{reciprocal} of a sequence $G$ when
+\[
+G \otimes H = I.
+\]
+A reciprocal of $G$ is also called a \term{multiplicative inverse} or
+simply an ``inverse'' of $G$.  The ring axioms imply that if there is
+a reciprocal, it is unique (see Problem~\ref{PS_ring_theory}), so the
+suggestive notation $1/G$ can be used unambiguously to denote this
+reciprocal, if it exists.  For example, letting
+\begin{align*}
+J & \eqdef (1,-1,0,0,\dots,0,\dots)\\
+K & \eqdef (1,-1,0,0,\dots,0,\dots)
+\end{align*}
+the definition of $\otimes$ implies that $K = 1/J$.
+
+In the ring of formal power series, equation~\eqref{ZoGZ} implies that
+the zero sequence $Z$ has no inverse, so $1/Z$ is undefined---just as
+the expression 1/0 is undefined over the real numbers or the ring
+$\Zmod{n}$ of Section~\ref{subsec:ringZn}.  In general, a series has
+an inverse iff its initial element is nonzero (see
+Problem~\ref{CP_series_inverse}).
+
+Now we can explain the proper way to understand a generating function
+definition
+\[
+G(x) \eqdef \sum_{n=0}^\infty g_n x^n.
+\]
+It simply means that $G(x)$ really refers to its infinite sequence of
+coefficient $(g_0,g_1,\dots)$ in the ring of formal power series.  The
+simple expression, $x$, can be understood as referring to the sequence
+\[
+X \eqdef (0,1,0,0,\dots,0,\dots).
+\]
+Likewise, $1-x$ abbreviates the sequence $J$ above, and the familiar
+equation
+\begin{equation}\label{inverse1-x}
+\frac{1}{1-x} = 1 + x + x^2 + x^3 + \cdots
+\end{equation}
+can be understood as a way of restating the assertion that $K$ is
+$1/J$.  In other words, the powers of the variable $x$ just serve as a
+place holders---and as reminders of the definition of convolution.
+The equation~\eqref{inverse1-x} has nothing to do with the values of
+$x$ or the convergence of the series.  Rather, it is stating a
+property that holds in the ring of formal power series.  The reasoning
+about the divergent series in the previous section can now be
+understood and completely justified in terms of properties of formal
+power series.
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_I_series}
+\pinput{TP_X_series}
+
+\classproblems
+\pinput{CP_series_inverse}
+\end{problems}
 
 \section{References}
-\begin{itemize}
-\item \cite{Wilf1990}
-\item \cite{GrahamKP1994}
-\end{itemize}
+\cite{Wilf1990}, \cite{GrahamKP1994}.
 \endinput
+
+
+
+
+
 
