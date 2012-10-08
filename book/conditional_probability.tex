@@ -1,0 +1,1641 @@
+\chapter{Conditional Probability}\label{cond_prob_sec}\label{chap:cond_prob}
+
+Suppose that we pick a random person in the world.  Everyone has an
+equal chance of being selected.  Let $A$ be the event that the person
+is an MIT student, and let $B$ be the event that the person lives in
+Cambridge.  What are the probabilities of these events?  Intuitively,
+we're picking a random point in the big ellipse shown in
+Figure~\ref{fig:15B1} and asking how likely that point is to fall into
+region $A$ or $B$.
+
+\begin{figure}[h]
+
+\graphic{cambridge-conditional}
+
+\caption{Selecting a random person.  $A$ is the event that the person
+  is an MIT student.  $B$ is the event that the person lives in
+  Cambridge.}
+
+\label{fig:15B1}
+
+\end{figure}
+
+The vast majority of people in the world neither live in Cambridge nor
+are MIT students, so events $A$ and $B$ both have low probability.
+But what about the probability that a person is an MIT student,
+\emph{given} that the person lives in Cambridge?  This should be
+much greater---but what is it exactly?
+
+What we're asking for is called a \term{conditional
+  probability}---that is, the probability that one event happens,
+given that some other event definitely happens.  Questions about
+conditional probabilities come up all the time:
+%
+\begin{itemize}
+\item What is the probability that it will rain this afternoon, given
+that it is cloudy this morning?
+\item What is the probability that two rolled dice sum to 10, given
+that both are odd?
+\item What is the probability that I'll get four-of-a-kind in Texas No
+Limit Hold 'Em Poker, given that I'm initially dealt two queens?
+\end{itemize}
+
+There is a special notation for conditional probabilities.  In
+general, $\prcond{A}{B}$ denotes the probability of event $A$, given
+that event $B$ happens.  So, in our example, $\prcond{A}{B}$ is the
+probability that a random person is an MIT student, given that he or
+she is a Cambridge resident.
+
+How do we compute $\prcond{A}{B}$?  Since we are \emph{given} that the
+person lives in Cambridge, we can forget about everyone in the world
+who does not.  Thus, all outcomes outside event $B$ are irrelevant.
+So, intuitively, $\prcond{A}{B}$ should be the fraction of Cambridge
+residents that are also MIT students; that is, the answer should be
+the probability that the person is in set $A \intersect B$ (the darkly
+shaded region in Figure~\ref{fig:15B1}) divided by the probability
+that the person is in set $B$ (the lightly shaded region).  This
+motivates the definition of conditional probability:
+\begin{definition}\label{LN12:prcond}
+\[
+\prcond{A}{B} \eqdef \frac{\pr{A \intersect B}}{\pr{B}}
+\]
+If $\pr{B} = 0$, then the conditional probability $\prcond{A}{B}$ is
+undefined.
+\end{definition}
+
+Pure probability is often counterintuitive, but conditional
+probability is even worse!  Conditioning can subtly alter
+probabilities and produce unexpected results in randomized algorithms
+and computer systems as well as in betting games.  Yet, the
+mathematical definition of conditional probability given above is very
+simple and should give you no trouble---provided that you rely on
+mathematical reasoning and not intuition.  The four-step method will
+also be very helpful as we will see in the next examples.
+
+\subsection{The Four-Step Method for Conditional
+  Probability: The ``Halting Problem''}
+
+The \emph{Halting Problem} was the first example of a property that
+could not be tested by any program.  It was introduced by Alan Turing
+in his seminal 1936 paper.  The problem is to determine whether a
+Turing machine halts on a given \dots yadda yadda yadda \dots more
+importantly, it was \emph{the name of the MIT EECS department's famed
+  C-league hockey team}.
+
+In a best-of-three tournament, the Halting Problem wins the first game
+with probability $1/2$.  In subsequent games, their
+probability of winning is determined by the outcome of the previous
+game.  If the Halting Problem won the previous game, then they are
+invigorated by victory and win the current game with probability
+$2/3$.  If they lost the previous game, then they are
+demoralized by defeat and win the current game with probability only
+$1/3$.  What is the probability that the Halting Problem wins
+the tournament, given that they win the first game?
+
+This is a question about a conditional probability.  Let $A$ be the
+event that the Halting Problem wins the tournament, and let $B$ be the
+event that they win the first game.  Our goal is then to determine the
+conditional probability $\prcond{A}{B}$.
+
+We can tackle conditional probability questions just like ordinary
+probability problems: using a tree diagram and the four step method.
+A complete tree diagram is shown in Figure~\ref{fig:15B2}.
+
+\begin{figure}[h]
+
+\graphic{hockey}
+
+\caption{The tree diagram for computing the probability that the
+  ``Halting Problem'' wins two out of three games given that they won
+  the first game.}
+
+\label{fig:15B2}
+
+\end{figure}
+
+\paragraph{Step 1:  Find the Sample Space}
+
+Each internal vertex in the tree diagram has two children, one
+corresponding to a win for the Halting Problem (labeled~$W$) and one
+corresponding to a loss (labeled~$L$).  The complete sample space is:
+%
+\[
+    \sspace = \set{ WW, \, WLW,\, WLL,\, LWW,\, LWL,\, LL }.
+\]
+
+\paragraph{Step 2:  Define Events of Interest}
+
+The event that the Halting Problem wins the whole tournament is:
+%
+\[
+    T = \set{WW,\, WLW,\, LWW}.
+\]
+%
+And the event that the Halting Problem wins the first game is:
+%
+\[
+    F = \set{WW,\, WLW,\, WLL }.
+\]
+%
+The outcomes in these events are indicated with check marks in the tree
+diagram in Figure~\ref{fig:15B2}.
+
+\paragraph{Step 3:  Determine Outcome Probabilities}
+
+Next, we must assign a probability to each outcome.  We begin by
+labeling edges as specified in the problem statement.  Specifically,
+The Halting Problem has a $1/2$ chance of winning the first game, so
+the two edges leaving the root are each assigned probability $1/2$.
+Other edges are labeled $1/3$ or $2/3$ based on the outcome of the
+preceding game.  We then find the probability of each outcome by
+multiplying all probabilities along the corresponding root-to-leaf
+path.  For example, the probability of outcome $WLL$ is:
+%
+\[
+    \frac{1}{2} \cdot \frac{1}{3} \cdot \frac{2}{3} = \frac{1}{9}.
+\]
+
+\subsubsection*{Step 4: Compute Event Probabilities}
+
+We can now compute the probability that The Halting Problem wins the
+tournament, given that they win the first game:
+%
+\begingroup
+\openup2pt
+\begin{align*}
+\prcond{A}{B}
+    & = \frac{\pr{A \intersect B}}{\pr{B}} \\
+    & = \frac{\pr{\set{WW, WLW}}}{\pr{\set{WW, WLW, WLL}}} \\
+    & = \frac{1/3 + 1/18}{1/3 + 1/18 + 1/9} \\
+    & = \frac{7}{9}.
+\end{align*}
+\endgroup
+%
+We're done!  If the Halting Problem wins the first game, then they win
+the whole tournament with probability $7 / 9$.
+
+
+\subsection{Why Tree Diagrams Work}\label{product_rule_subsec}
+
+We've now settled into a routine of solving probability problems using
+tree diagrams.  But we've left a big question unaddressed: what is the
+mathematical justification behind those funny little pictures?  Why do
+they work?
+
+The answer involves conditional probabilities.  In fact, the
+probabilities that we've been recording on the edges of tree diagrams
+\emph{are} conditional probabilities.  For example, consider the
+uppermost path in the tree diagram for the Halting Problem, which
+corresponds to the outcome $WW$.  The first edge is labeled $1/2$,
+which is the probability that the Halting Problem wins the first game.
+The second edge is labeled $2 / 3$, which is the probability that the
+Halting Problem wins the second game, \emph{given} that they won the
+first---that's a conditional probability!  More generally, on each
+edge of a tree diagram, we record the probability that the experiment
+proceeds along that path, given that it reaches the parent vertex.
+
+So we've been using conditional probabilities all along.  But why can
+we multiply edge probabilities to get outcome probabilities?  For
+example, we concluded that:
+%
+\begin{equation*}
+\pr{WW} = \frac{1}{2} \cdot \frac{2}{3}
+	= \frac{1}{3}.
+\end{equation*}
+%
+Why is this correct?
+
+The answer goes back to Definition~\ref{LN12:prcond} of conditional probability
+which could be written in a form called the \term{Product Rule} for
+probabilities:
+%
+\begin{rul*}[Product Rule: 2 Events]
+If $\pr{E_1} \neq 0$, then:
+%
+\[
+    \pr{E_1 \intersect E_2} = \pr{E_1} \cdot \prcond{E_2}{E_1}.
+\]
+\end{rul*}
+Multiplying edge probabilities in a tree diagram amounts to evaluating
+the right side of this equation.  For example:
+\begin{align*}
+\lefteqn{\pr{\text{win first game} \intersect \text{win second game}}}
+		\hspace{0.5in} \\[2pt]
+	& = \pr{\text{win first game}} \cdot
+            \prcond{\text{win second game}}{\text{win first game}} \\[2pt]
+	& = \frac{1}{2} \cdot \frac{2}{3}.
+\end{align*}
+So the Product Rule is the formal justification for multiplying edge
+probabilities to get outcome probabilities.  Of course, to justify
+multiplying edge probabilities along longer paths, we need a Product
+Rule for $n$ events.
+
+% \dmj{I need to have another go at formatting this equation.}
+\begin{rul*}[Product Rule: $n$ Events]
+\begin{align*}
+\pr{E_1 \intersect E_2 \intersect \dots \intersect E_n}
+   =& \pr{E_1}
+        \cdot \prcond{E_2}{E_1}
+        \cdot \prcond{E_3}{E_1 \intersect E_2}
+        \cdots \\
+    &\quad\cdot
+        \prcond{E_n}{E_1 \intersect E_2 \intersect \dots
+          \intersect E_{n - 1}}
+\end{align*}
+provided that %\prod_{i=1}^n \pr{E_i}{\lgintersect_{j=1}^i E_j} 
+\begin{equation*}
+    \pr{E_1 \intersect E_2 \intersect \cdots \intersect E_{n - 1}}
+    \neq 0.
+\end{equation*}
+\end{rul*}
+This rule follows by routine induction from the definition of
+conditional probability.
+
+\subsection{Medical Testing}\label{med_test-subsection}
+
+\dmj{Honestly, is this the most dignified example you could come up
+  with?}
+\ftl{Good point.  Let's flag it to be changed.}
+There is an unpleasant condition called \emph{BO} suffered by 10\% of the
+population.  There are no prior symptoms; victims just suddenly start to
+stink.  Fortunately, there is a test for latent \emph{BO} before things
+start to smell.  The test is not perfect, however:
+\begin{itemize}
+
+\item If you have the condition, there is a 10\% chance that the test
+  will say you do not have it.  These are called ``false negatives.''
+
+\item If you do not have the condition, there is a 30\% chance that the test
+will say you do.  These are ``false positives.''
+
+\end{itemize}
+
+Suppose a random person is tested for latent \emph{BO}.  If the test is
+positive, then what is the probability that the person has the condition?
+
+\subsubsection*{Step 1: Find the Sample Space}
+
+The sample space is found with the tree diagram in
+Figure~\ref{fig:15C1}.
+
+\begin{figure}[h]
+
+\graphic{BO}
+
+\caption{The tree diagram for the BO problem.}
+
+\label{fig:15C1}
+
+\end{figure}
+
+\subsubsection*{Step 2: Define Events of Interest}
+
+Let $A$ be the event that the person has \emph{BO}.  Let $B$ be the
+event that the test was positive.  The outcomes in each event are marked
+in the tree diagram.  We want to find $\prcond{A}{B}$, the probability
+that a person has \emph{BO}, given that the test was positive.
+
+\subsubsection*{Step 3: Find Outcome Probabilities}
+
+First, we assign probabilities to edges.  These probabilities are
+drawn directly from the problem statement.  By the Product Rule, the
+probability of an outcome is the product of the probabilities on the
+corresponding root-to-leaf path.  All probabilities are shown in
+Figure~\ref{fig:15C1}.
+
+\subsubsection*{Step 4: Compute Event Probabilities}
+
+From Definition~\ref{LN12:prcond}, we have
+\begin{equation*}
+\prcond{A}{B}	= \frac{\pr{A \intersect B}}{\pr{B}} %\\[2pt]
+		= \frac{0.09}{0.09 + 0.27} %\\[2pt]
+		= \frac{1}{4}.
+\end{equation*}
+%
+So, if you test positive, then there is only a 25\% chance that you
+have the condition!
+
+This answer is initially surprising, but makes sense on reflection.
+There are two ways you could test positive.  First, it could be that
+you have the condition and the test is correct.  Second, it could be that you
+are healthy and the test is incorrect.  The problem is that almost
+everyone is healthy; therefore, most of the positive results arise
+from incorrect tests of healthy people!
+
+We can also compute the probability that the test is correct for a
+random person.  This event consists of two outcomes.  The person could
+have the condition and test positive (probability $0.09$), or the person
+could be healthy and test negative (probability $0.63$).
+Therefore, the test is correct with probability $0.09 + 0.63 = 0.72$.
+This is a relief; the test is correct almost three-quarters of the
+time.
+
+But wait!  There is a simple way to make the test correct 90\% of the
+time: always return a negative result!  This ``test'' gives the right
+answer for all healthy people and the wrong answer only for the 10\%
+that actually have the condition.  So a better strategy by this
+measure is to completely ignore the test result!
+
+There is a similar paradox in weather forecasting.  During winter,
+almost all days in Boston are wet and overcast.  Predicting miserable
+weather every day may be more accurate than really trying to get it
+right!
+
+
+\subsection{\emph{A Posteriori} Probabilities}\label{aposteriori_subsec}
+
+If you think about it too much, the medical testing problem we just
+considered could start to trouble you.  The concern would be that by
+the time you take the test, you either have the BO condition or you
+don't---you just don't know which it is.  So you may wonder if a
+statement like ``If you tested positive, then you have the condition
+with probability~25\%'' makes sense.
+
+In fact, such a statement does make sense.  It means that 25\% of the
+people who test positive actually have the condition.  It is true that
+any particular person has it or they don't, but a \emph{randomly
+  selected} person among those who test positive will have the
+condition with probability~25\%.
+
+Anyway, if the medical testing example bothers you, you will
+definitely be worried by the following examples, which go even further
+down this path.
+
+\subsection{The ``Halting Problem,'' in Reverse}
+
+Suppose that we turn the hockey question around: what is the
+probability that the Halting Problem won their first game, given that
+they won the series?
+
+This seems like an absurd question!  After all, if the Halting Problem
+won the series, then the winner of the first game has already been
+determined.  Therefore, who won the first game is a question of fact,
+not a question of probability.  However, our mathematical theory of
+probability contains no notion of one event preceding another---there
+is no notion of time at all.  Therefore, from a mathematical
+perspective, this is a perfectly valid question.  And this is also a
+meaningful question from a practical perspective.  Suppose that you're
+told that the Halting Problem won the series, but not told the results
+of individual games.  Then, from your perspective, it makes perfect
+sense to wonder how likely it is that The Halting Problem won the
+first game.
+
+A conditional probability $\prcond{B}{A}$ is called  \term{a
+posteriori} if event $B$ precedes event $A$ in time.  Here are some
+other examples of a posteriori probabilities:
+%
+\begin{itemize}
+\item The probability it was cloudy this morning, given that it rained
+in the afternoon.
+\item The probability that I was initially dealt two queens in Texas
+No Limit Hold 'Em poker, given that I eventually got four-of-a-kind.
+\end{itemize}
+%
+Mathematically, a posteriori probabilities are \emph{no different}
+from ordinary probabilities; the distinction is only at a higher,
+philosophical level.  Our only reason for drawing attention to them is
+to say, ``Don't let them rattle you.''
+
+Let's return to the original problem.  The probability that the
+Halting Problem won their first game, given that they won the series
+is $\prcond{B}{A}$.  We can compute this using the definition of
+conditional probability and the tree diagram in Figure~\ref{fig:15B2}:
+%
+\begin{align*}
+\prcond{B}{A}  = \frac{\pr{B \intersect A}}{\pr{A}} %\\[2pt]
+               = \frac{1/3 + 1/18}{1/3 + 1/18 + 1/9} %\\[2pt]
+               = \frac{7}{9}.
+\end{align*}
+
+This answer is suspicious!  In the preceding section, we showed that
+$\prcond{A}{B}$ was also $7/9$.  Could it be true that $\prcond{A}{B}
+= \prcond{B}{A}$ in general?  Some reflection suggests this is
+unlikely.  For example, the probability that I feel uneasy, given that
+I was abducted by aliens, is pretty large.  But the probability that I
+was abducted by aliens, given that I feel uneasy, is rather small.
+
+Let's work out the general conditions under which $\prcond{A}{B} =
+\prcond{B}{A}$.  By the definition of conditional probability, this
+equation holds if an only if:
+%
+\[
+\frac{\pr{A \intersect B}}{\pr{B}} = \frac{\pr{A \intersect B}}{\pr{A}}
+\]
+%
+This equation, in turn, holds only if the denominators are equal or
+the numerator is~0; namely if
+%
+\[
+\pr{B} = \pr{A}
+\hspace{0.25in} \text{or} \hspace{0.25in}
+\pr{A \intersect B} = 0.
+\]
+%
+The former condition holds in the hockey example; the probability that
+the Halting Problem wins the series (event~$A$) is equal to the
+probability that it wins the first game (event~$B$) since both
+probabilities are~$1/2$.
+
+In general, such pairs of probabilities are related by \idx{Bayes'
+  Rule}:
+%
+\begin{theorem}[Bayes' Rule]
+If $\pr{A}$ and $\pr{B}$ are nonzero, then:
+%
+\begin{equation}\label{bayesrule}
+    \prcond{B}{A} = \frac{\prcond{A}{B} \cdot \pr{B}}{\pr{A}}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+When $\pr{A}$ and $\pr{B}$ are nonzero, we have
+\[
+\prcond{A}{B} \cdot \pr{B} = \prob{A \intersect B} = \prcond{B}{A} \cdot \pr{A}
+\]
+by definition of conditional probability.  Dividing by $\prob{A}$
+gives~\eqref{bayesrule}.
+\end{proof}
+
+\iffalse
+
+Next, let's look at a problem that even bothers us.
+
+\subsection{A Coin Problem}
+
+Suppose that someone hands you either a fair coin or a trick coin with
+heads on both sides.  You flip the coin 100 times and see heads every
+time.  What can you say about the probability that you flipped the
+fair coin?  Remarkably, nothing!
+
+In order to make sense out of this outrageous claim, let's formalize
+the problem.  The sample space is worked out in the tree diagram shown
+in Figure~\ref{fig:15C2}.  We do not know the probability~$p$ that you
+were handed the fair coin initially---you were just given one coin or
+the other.
+%
+\begin{figure}[h]
+
+\graphic{trick-coin}
+
+\caption{The tree diagram for the coin-flipping problem.}
+
+\label{fig:15C2}
+
+\end{figure}
+%
+Let $A$ be the event that you were handed the fair coin, and let $B$
+be the event that you flipped 100 straight heads.  We're looking
+for $\prcond{A}{B}$, the probability that you were handed the fair
+coin, given that you flipped 100 heads.  The outcome probabilities are
+worked out in Figure~\ref{fig:15C2}.  Plugging the results into the
+definition of conditional probability gives:
+%
+\begin{align*}
+\prcond{A}{B}	& = \frac{\pr{A \intersect B}}{\pr{B}} \\[2pt]
+		& = \frac{p / 2^{100}}{1 - p + p / 2^{100}} \\[2pt]
+		& = \frac{p}{2^{100} (1 - p) + p}.
+\end{align*}
+%
+This expression is very small for moderate values of $p$ because of
+the $2^{100}$ term in the denominator.  For example, if $p = 1/2$,
+then the probability that you were given the fair coin is essentially
+zero.
+
+But we \emph{do not know} the probability $p$ that you were given
+the fair coin.  And perhaps the value of $p$ is \emph{not} moderate;
+in fact, maybe $p = 1 - 2^{-100}$.  Then there is nearly an even
+chance that you have the fair coin, given that you flipped 100 heads.
+In fact, maybe you were handed the fair coin with probability $p = 1$.
+Then the probability that you were given the fair coin is, well,~1!
+
+Of course, it is extremely unlikely that you would flip 100 straight
+heads, but in this case, that is a given from the assumption of the
+conditional probability.  And so if you really did see 100 straight
+heads, it would be very tempting to also assume that $p$~is not close
+to~1 and hence that you are very likely to have flipped the trick
+coin.
+
+We will encounter a very similar issue when we look at methods for
+estimation by sampling in Section~\ref{sec:sampling}.
+\fi
+
+%\subsection{Conditional Identities}
+
+\subsection{The Law of Total Probability}\label{sec:total_probability}
+
+Breaking a probability calculation into cases simplifies many
+problems.  The idea is to calculate the probability of an event $A$ by
+splitting into two cases based on whether or not another event $E$
+occurs.  That is, calculate the probability of $A\nobreak
+\intersect\nobreak E$ and $A \intersect \setcomp{E}$.  By the Sum
+Rule, the sum of these probabilities equals $\pr{A}$.  Expressing the
+intersection probabilities as conditional probabilities yields:
+\begin{rul}[Law of Total Probability, single event]\label{total_prob_Ebar}
+If $\prob{E}$ and $\prob{\setcomp{E}}$~are nonzero, then
+\[
+\pr{A} = \prcond{A}{E} \cdot \pr{E} +
+         \prcond{A}{\setcomp{E}} \cdot \pr{\setcomp{E}}.
+\]
+\end{rul}
+
+For example, suppose we conduct the following experiment.  First, we
+flip a fair coin.  If heads comes up, then we roll one die and take the
+result.  If tails comes up, then we roll two dice and take the sum of
+the two results.  What is the probability that this process yields a
+2?  Let $E$ be the event that the coin comes up heads, and let $A$ be
+the event that we get a 2 overall.  Assuming that the coin is fair,
+$\pr{E} = \pr{\setcomp{E}} = 1/2$.  There are now two cases. If we
+flip heads, then we roll a 2 on a single die with probability
+$\prcond{A}{E} = 1/6$.  On the other hand, if we flip tails, then we
+get a sum of 2 on two dice with probability
+$\prcond{A}{\setcomp{E}} = 1/36$.  Therefore, the probability that
+the whole process yields a 2 is
+\[
+\pr{A} = \frac{1}{2} \cdot \frac{1}{6} + \frac{1}{2} \cdot \frac{1}{36} =
+  \frac{7}{72}.
+\]
+
+There is also a form of the rule to handle more than two cases.
+\begin{rul}[Law of Total Probability]
+If $E_1, \dots, E_n$ are disjoint events whose union is the whole
+sample space, then:
+\[
+\pr{A} = \sum_{i=1}^{n} \prcond{A}{E_i} \cdot \pr{E_i}.
+\]
+\end{rul}
+
+\subsection{Conditioning on a Single Event}\label{cond_ident_subsec}
+
+The probability rules that we derived in Section~\ref{sec:union_bound}
+extend to probabilities conditioned on the same event.  For example,
+the Inclusion-Exclusion formula for two sets holds when all
+probabilities are conditioned on an event $C$:
+\[
+\prcond{A \union B}{C} = \prcond{A}{C} + \prcond{B}{C} - \prcond{A \intersect B}{C}.
+\]
+This is easy to verify by plugging in the Definition~\ref{LN12:prcond}
+of conditional
+probability.\footnote{Problem~\ref{PS_conditional_space} explains why
+  this and similar conditional identities follow on general principles
+  from the corresponding unconditional identities.}
+
+\iffalse
+This follows from the fact that if $\pr{C} \neq 0$, then
+\begin{align*}
+\prcond{A \union B}{C}
+    &= \frac{\pr{(A \union B) \intersect C}}{\pr{C}} \\[3pt]
+    &= \frac{\pr{(A \intersect C) \union (B \intersect C)}}{\pr{C}} \\[3pt]
+    &= \frac{\pr{A \intersect C} + \pr{B \intersect C}
+             - \pr{A \intersect B \intersect C}}
+            {\pr{C}} \\[3pt]
+    &= \prcond{A}{C} + \prcond{B}{C} - \prcond{A \intersect B}{C}.
+\end{align*}
+\fi
+
+It is important not to mix up events before and after the conditioning
+bar.  For example, the following is \emph{not} a valid identity:
+%
+\begin{falseclm*}
+\begin{equation}\label{LN12:fc}
+\prcond{A}{B \union C} = \prcond{A}{B} + \prcond{A}{C} - \prcond{A}{B \intersect C}.
+\end{equation}
+\end{falseclm*}
+
+A simple counter-example is to let $B$ and $C$ be events over a
+uniform space with most of their outcomes in $A$, but not overlapping.
+This ensures that $\prcond{A}{B}$ and $\prcond{A}{C}$ are both close
+to 1.  For example,
+\begin{align*}
+B & \eqdef [0,9],\\
+C & \eqdef [10,18] \union \set{0},\\
+A & \eqdef [1,18],
+\end{align*}
+so
+\[
+\prcond{A}{B} = \frac{9}{10} = \prcond{A}{C}.
+\]
+Also, since 0 is the only outcome in $B \intersect C$ and $0 \notin
+A$, we have
+\[
+\prcond{A}{B \intersect C} = 0
+\]
+So the right hand side of~\eqref{LN12:fc} is 1.8, while the left hand
+side is a probability which can be at most 1---actually, it is 18/19.
+
+\iffalse
+
+A counterexample is shown in Figure~\ref{fig:15D2}.  In this case,
+$\prcond{A}{B} = 1/2$, $\prcond{A}{C} = 1/2$, $\prcond{A}{B \intersect
+  C} = 1$, and $\prcond{A}{B \union C} = 1/3$.  However, since
+$1/3 \ne 1/2 + 1/2 - 1$, equation~\eqref{LN12:fc} does not hold.
+%
+\begin{figure}
+
+\graphic{cx19}
+
+\caption{A counterexample to equation~\eqref{LN12:fc}.  Event~$A$ is
+  the dark-bordered rectangle, event~$B$ is the rectangle with
+  vertical stripes, and event~$C$ is the rectangle with horizontal
+  stripes.  $B \intersect C$ lies entirely within~$A$ while $B - C$
+  and $C - B$ are entirely outside of~$A$.}
+
+\label{fig:15D2}
+
+\end{figure}
+\fi
+
+
+\subsection{Discrimination Lawsuit}\label{discrimination_subsec}
+
+Several years ago there was a sex discrimination lawsuit against a
+famous university.  A woman math professor was denied tenure,
+allegedly because she was a woman.  She argued that in every one of
+the university's 22 departments, the percentage of men candidates
+granted tenure was greater than the percentage of women candidates
+granted tenure.  This sounds very suspicious!
+
+However, the university's lawyers argued that across the university as
+a whole, the percentage of male candidates granted tenure was actually
+\emph{lower} than the percentage for women candidates.  This suggests
+that if there was any sex discrimination, then it was against men!
+Surely, at least one party in the dispute must be lying.
+
+Let's clarify the problem by expressing both arguments in terms of
+conditional probabilities.  To simplify matters, suppose that there
+are only two departments, EE and CS, and consider the experiment where
+we pick a random candidate.  Define the following events:
+%
+\begin{itemize}
+\item $A \eqdef$ the candidate is granted tenure,
+\item $F_{EE} \eqdef$ the candidate is a woman in the EE department,
+\item $F_{CS} \eqdef$ the candidate is a woman in the CS department,
+\item $M_{EE} \eqdef$ the candidate is a man in the EE department,
+\item $M_{CS} \eqdef$ the candidate is a man in the CS department.
+\end{itemize}
+Assume that all candidates are either men or women, and that no
+candidate belongs to both departments.  That is, the events $F_{EE}$,
+$F_{CS}$, $M_{EE}$, and $M_{CS}$ are all disjoint.
+
+In these terms, the plaintiff is making the following argument:
+%
+\begin{align*}
+\prcond{A}{F_{EE}} & < \prcond{A}{M_{EE}} \quad\text{and}\\
+\prcond{A}{F_{CS}} & < \prcond{A}{M_{CS}}.
+\end{align*}
+That is, in both departments, the probability that a woman candidate
+is granted tenure is less than the probability for a man.
+
+The university retorts that \emph{overall}, a woman candidate is
+\emph{more} likely to be granted tenure than a man; namely that
+\[
+    \prcond{A}{F_{EE} \union F_{CS}} > \prcond{A}{M_{EE} \union M_{CS}}.
+\]
+
+It is easy to believe that these two positions are contradictory, and
+the phenomenon illustrated here is widely referred to as ``Simpson's
+Paradox.''  But there is no contradiction or paradox, and in fact,
+Table~\ref{fig:15D3} shows a set of candidate statistics for which the
+assertions of both the plaintiff and the university hold.  In this
+case, a higher percentage of men candidates were granted tenure in
+each department, but overall a higher percentage of women candidates
+were granted tenure!  How do we make sense of this?
+
+\begin{table}
+
+\begin{tabular}{crr}
+CS & 0 women granted tenure, 1 candidates      &   0\% \\
+   & 50 men granted tenure, 100 candidates     &  50\% \\
+EE & 70 women granted tenure, 100 candidates   &  70\% \\
+   & 1 man granted tenure, 1 candidates         & 100\% \\
+\hline
+Overall & 70 women granted tenure, 101 candidates & $\approx 70\%$ \\
+        & 51 men granted tenure, 101 candidates   & $\approx 51\%$
+\end{tabular}
+
+\caption{A scenario where women are less likely to be granted tenure
+  than men in each department, but more likely to be granted tenure
+  overall.}
+
+\label{fig:15D3}
+
+\end{table}
+
+With data like this showing that at the department level, women
+candidates were less likely to be granted tenure than men, university
+administrators would likely see an indication of bias against women,
+and the departments would be directed to reexamine their tenure
+procedures.
+
+But suppose we replaced ``the candidate is a man/woman in the EE
+department,'' by ``the candidate is a man/woman for whom a tenure
+decision was made during an odd-numbered day of the month,'' and
+likewise with CS and an even-numbered day of the month.  Since we
+don't think the parity of a date is a cause for the outcome of a
+tenure decision, we would ignore the ``coincidence'' that on both odd
+and even dates, men are more frequently granted tenure.  Instead, we
+would judge, based on the overall data showing women more likely to be
+granted tenure, that gender bias against women was \emph{not} an issue
+in the university.
+
+The point is that it's the \emph{same data} that we interpret
+differently based on our implicit causal beliefs.  It would be
+circular to claim that the gender correlation observed in the data
+corroborates our belief that there is discrimination, since our
+interpretation of the data correlation \emph{depends} on our beliefs
+about the causes of tenure decisions.\footnote{These issues are
+  thoughtfully examined in \emph{Causality: Models, Reasoning and
+    Inference}, Judea Pearl, Cambridge U. Press, 2001.}  This
+illustrates a basic principle in statistics which people constantly
+ignore: \emph{never assume that correlation implies causation}.
+
+%% Conditional Probability Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_six_shooter_probability}
+
+\classproblems
+\pinput{CP_missing_card_probability}
+\pinput{PS_conditional_aces}
+\pinput{CP_conditional_prob_says_so_bug}
+\pinput{FP_skywalker_prob_lin_recur_gen_func}
+\pinput{FP_directed_graphs_and_probability}
+
+\homeworkproblems
+\pinput{PS_levitating_LAs}
+\pinput{PS_conditional_probability_problem_errors}
+\pinput{PS_coin_flip_sequences}
+\pinput{PS_13_card_hand}
+\pinput{PS_conditional_space}
+
+\examproblems
+\pinput{FP_monty_hall_variant}
+\pinput{FP_conditional_prob_inequality}
+\pinput{MQ_conditional_prob_inequality}
+\pinput{FP_conditional_beaver_fever}
+\pinput{FP_red_and_blue_goats}
+\pinput{FP_neighborhood_census}
+\pinput{MQ_voldemort_returns}
+\end{problems}
+
+\section{Independence}
+Suppose that we flip two fair coins simultaneously on opposite sides
+of a room.  Intuitively, the way one coin lands does not affect the
+way the other coin lands.  The mathematical concept that captures
+this intuition is called \term{independence}.
+\begin{definition}\label{def:independence}
+An event with probability 0 is defined to be independent of every
+event (including itself).  If $\pr{B} \neq 0$, then
+event $A$ is independent of event $B$ iff
+\begin{equation}\label{eqn:independence}
+    \prcond{A}{B} = \pr{A}.
+\end{equation}
+\end{definition}
+In other words, $A$ and~$B$ are independent if knowing that $B$
+happens does not alter the probability that $A$~happens, as is the
+case with flipping two coins on opposite sides of a room.
+
+\subsubsection{Potential Pitfall}
+
+Students sometimes get the idea that disjoint events are independent.
+The \emph{opposite} is true: if $A \intersect B = \emptyset$, then
+knowing that $A$ happens means you know that $B$ does not happen.  So
+disjoint events are \emph{never} independent---unless one of them has
+probability zero.
+
+\subsection{Alternative Formulation}
+
+Sometimes it is useful to express independence in an alternate form
+which follows immediately from Definition~\ref{def:independence}:
+
+\begin{theorem}\label{thm:16A1}
+$A$ is independent of~$B$ if and only if
+\begin{equation}\label{eqn:15D3}
+    \pr{A \intersect B} = \pr{A} \cdot \pr{B}.
+\end{equation}
+\end{theorem}
+
+Notice that Theorem~\ref{thm:16A1} makes apparent the symmetry between
+$A$ being independent of $B$ and $B$ being independent of $A$:
+\begin{corollary}
+$A$ is independent of $B$ iff $B$ is independent of $A$.
+\end{corollary}
+
+
+\iffalse
+
+\begin{proof}
+There are two cases to consider depending on whether or not $\prob{B} =
+0$.
+\begin{description}
+
+\item[Case 1 $(\prob{B} = 0)$:]
+If $\prob{B} = 0$, $A$ and~$B$ are independent by
+Definition~\ref{def:independence}.  In addition,
+equation~\eqref{eqn:15D3} holds since both sides are~0.  Hence, the
+theorem is true in this case.
+
+\item[Case 2 $(\prob{B} > 0)$:]
+By Definition~\ref{LN12:prcond},
+\begin{equation*}
+    \prob{A \cap B} = \prcond{A}{B} \prob{B}.
+\end{equation*}
+So equation~\eqref{eqn:15D3} holds if
+\begin{equation*}
+    \prcond{A}{B} = \prob{A},
+\end{equation*}
+which, by Definition~\ref{def:independence}, is true iff $A$ and~$B$
+are independent.  Hence, the theorem is true in this case as well.
+\qedhere
+\end{description}
+\end{proof}
+\fi
+
+\subsection{Independence Is an Assumption}
+
+Generally, independence is something that you \emph{assume} in
+modeling a phenomenon.  For example, consider the experiment of
+flipping two fair coins.  Let $A$~be the event that the first coin
+comes up heads, and let $B$~be the event that the second coin is
+heads.  If we assume that $A$ and~$B$ are independent, then the
+probability that both coins come up heads is:
+%
+\begin{equation*}
+\pr{A \intersect B}  = \pr{A} \cdot \pr{B} %\\[2pt]
+               = \frac{1}{2} \cdot \frac{1}{2} %\\[2pt]
+               = \frac{1}{4}.
+\end{equation*}
+
+In this example, the assumption of independence is reasonable.  The
+result of one coin toss should have negligible impact on the outcome
+of the other coin toss.  And if we were to repeat the experiment many
+times, we would be likely to have~$A \cap B$ about~1/4 of the time.
+
+There are, of course, many examples of events where assuming
+independence is \emph{not} justified.  For example, let $C$~be the
+event that tomorrow is cloudy and $R$ be the event that tomorrow is
+rainy.  Perhaps $\pr{C} = 1/5$ and $\pr{R} = 1/10$ in Boston.  If
+these events were independent, then we could conclude that the
+probability of a rainy, cloudy day was quite small:
+%
+\begin{equation*}
+\pr{R \intersect C} = \pr{R} \cdot \pr{C} % \\[2pt]
+               = \frac{1}{5} \cdot \frac{1}{10} % \\[2pt]
+               = \frac{1}{50}.
+\end{equation*}
+%
+Unfortunately, these events are definitely not independent; in
+particular, every rainy day is cloudy.  Thus, the probability of a
+rainy, cloudy day is actually~$1/10$.
+
+Deciding when to \emph{assume} that events are independent is a tricky
+business.  In practice, there are strong motivations to assume
+independence since many useful formulas (such as
+equation~\eqref{eqn:15D3}) only hold if the events are independent.
+But you need to be careful:
+\iffalse
+ lest you end up deriving false conclusions.
+\fi
+we'll describe several famous examples where (false) assumptions of
+independence led to trouble.
+\iffalse
+ over the next several chapters
+\fi
+This problem gets even trickier when there are more than two events in
+play.
+
+\subsection{Mutual Independence}
+
+%\subsection{Definition}
+
+We have defined what it means for two events to be independent.  What
+if there are more than two events?  For example, how can we say that
+the flips of $n$~coins are all independent of one another?  A set of
+events is said to be \term{mutually independent} if the probability
+of each event in the set is the same no matter which of the other
+events has occurred.  We could formalize this with conditional
+probabilities as in Definition~\ref{def:independence}, but we'll jump
+directly to the cleaner definition based on products of probabilities
+as in Theorem~\ref{thm:16A1}:
+
+\iffalse
+
+\begin{definition}\label{def:mutual_independence}
+A set of events~$E_1, E_2, \dots, E_n$, is \term{mutually independent}
+if $\forall i \in [1, n]$ and $\forall S \subseteq [1, n] - \set{i}$,
+either
+\begin{equation*}
+    \Prob{\bigcap_{j \in S} E_j} = 0
+\quad
+\text{or}
+\quad
+    \prob{E_i} = \prcond{E_i}{\bigcap_{j \in S} E_j}.
+\end{equation*}
+\end{definition}
+
+\subsection{Alternative Formulation}
+
+Just as Theorem~\ref{thm:16A1} provided an alternative definition of
+independence for two events, there is an alternative definition for
+mutual independence.
+
+\fi
+
+%\begin{theorem}\label{thm:16A2}
+
+\begin{definition}\label{def:mutual_indep}
+A set of events~$E_1, E_2, \dots, E_n$ is mutually independent iff
+for all subsets $S \subseteq [1, n]$,
+\begin{equation*}
+    \Prob{\bigcap_{j \in S} E_j} = \prod_{j \in S} \prob{E_j}.
+\end{equation*}
+\end{definition}
+
+%\end{theorem}
+\iffalse
+The proof of Theorem~\ref{thm:16A2} uses induction and reasoning
+similar to the proof of Theorem~\ref{thm:16A1}.  We will not include
+the details here.
+\fi
+
+Definition~\ref{def:mutual_indep} says that $E_1, E_2, \dots, E_n$~are
+mutually independent if and only if all of the following equations
+hold for all distinct $i$, $j$, $k$, and~$l$:
+%
+\begin{align*}
+\pr{E_i \intersect E_j}
+    & = \pr{E_i} \cdot \pr{E_j}
+%    & \text{for all distinct $i$, $j$}
+ \\
+\pr{E_i \intersect E_j \intersect E_k}
+    & = \pr{E_i} \cdot \pr{E_j} \cdot \pr{E_k}
+%     & \text{for all distinct $i$, $j$, $k$}
+ \\
+\pr{E_i \intersect E_j \intersect E_k \intersect E_l}
+    & = \pr{E_i} \cdot \pr{E_j} \cdot \pr{E_k} \cdot \pr{E_l}
+%    & \text{for all distinct $i$, $j$, $k$, $l$}
+ \\
+    & \XasWideAsY{\vdots}{${}={}$} \\
+\pr{E_1 \intersect \cdots \intersect E_n} & = \pr{E_1} \cdots \pr{E_n}.
+\end{align*}
+
+For example, if we toss $n$~fair coins, the tosses are mutually
+independent iff for every subset of~$m$~coins, the probability that
+every coin in the subset comes up heads is~$2^{-m}$.
+
+\subsection{DNA Testing}
+
+Assumptions about independence are routinely made in practice.
+Frequently, such assumptions are quite reasonable.  Sometimes,
+however, the reasonableness of an independence assumption is not so
+clear, and the consequences of a faulty assumption can be severe.
+
+For example, consider the following testimony from the O. J. Simpson
+murder trial on May 15, 1995:
+\begin{description}
+
+\item[Mr. Clarke:] When you make these estimations of frequency---and
+I believe you touched a little bit on a concept called independence?
+
+\item[Dr. Cotton:] Yes, I did.
+
+\item[Mr. Clarke:] And what is that again?
+
+\item[Dr. Cotton:] It means whether or not you inherit one allele that
+you have is not---does not affect the second allele that you might
+get.  That is, if you inherit a band at 5,000 base pairs, that doesn't
+mean you'll automatically or with some probability inherit one at
+6,000.  What you inherit from one parent is what you inherit from the
+other.
+
+\item[Mr. Clarke:] Why is that important?
+
+\item[Dr. Cotton:] Mathematically that's important because if that
+were not the case, it would be improper to multiply the frequencies
+between the different genetic locations.
+
+\item[Mr. Clarke:] How do you---well, first of all, are these markers
+independent that you've described in your testing in this case?
+
+\end{description}
+
+Presumably, this dialogue was as confusing to you as it was for the
+jury.  Essentially, the jury was told that genetic markers in blood
+found at the crime scene matched Simpson's.  Furthermore, they were
+told that the probability that the markers would be found in a
+randomly-selected person was at most 1 in 170 million.  This
+astronomical figure was derived from statistics such as:
+%
+\begin{itemize}
+\item 1 person in 100 has marker $A$.
+\item 1 person in 50 marker $B$.
+\item 1 person in 40 has marker $C$.
+\item 1 person in 5 has marker $D$.
+\item 1 person in 170 has marker $E$.
+\end{itemize}
+%
+Then these numbers were multiplied to give the probability that a
+randomly-selected person would have all five markers:
+\begin{align*}
+\pr{A \intersect B \intersect C \intersect D \intersect E}
+    & = \pr{A} \cdot \pr{B} \cdot \pr{C} \cdot \pr{D} \cdot \pr{E}\\
+    & = \frac{1}{100} \cdot \frac{1}{50} \cdot \frac{1}{40}
+                     \cdot \frac{1}{5} \cdot \frac{1}{170}
+     = \frac{1}{170{,}000{,}000}.
+\end{align*}
+
+\iffalse
+\begin{align*}
+\pr{A \intersect B \intersect C \intersect D \intersect E}
+    & = \pr{A} \cdot \pr{B} \cdot \pr{C} \cdot \pr{D} \cdot \pr{E} \\[2pt]
+    & = \frac{1}{100} \cdot \frac{1}{50} \cdot \frac{1}{40}
+                      \cdot \frac{1}{5} \cdot \frac{1}{170} \\[2pt]
+    & = \frac{1}{170{,}000{,}000}.
+\end{align*}
+\fi
+%
+The defense pointed out that this assumes that the markers appear
+mutually independently.  Furthermore, all the statistics were based on
+just a few hundred blood samples.  
+
+After the trial, the jury was widely mocked for failing to
+``understand'' the DNA evidence.  If you were a juror, would
+\emph{you} accept the 1 in 170 million calculation?
+
+\subsection{Pairwise Independence}
+
+The definition of mutual independence seems awfully complicated
+---there are so many subsets of events to consider!  Here's an example
+that illustrates the subtlety of independence when more than two
+events are involved.  Suppose that we flip three fair,
+mutually-independent coins.  Define the following events:
+%
+\begin{itemize}
+\item $A_1$ is the event that coin 1 matches coin 2.
+\item $A_2$ is the event that coin 2 matches coin 3.
+\item $A_3$ is the event that coin 3 matches coin 1.
+\end{itemize}
+%
+Are $A_1$, $A_2$, $A_3$ mutually independent?
+
+The sample space for this experiment is:
+%
+\[
+    \set{HHH,\, HHT,\, HTH,\, HTT,\, THH,\, THT,\, TTH,\, TTT}.
+\]
+%
+Every outcome has probability $(1/2)^3 = 1/8$ by our assumption that
+the coins are mutually independent.
+
+To see if events $A_1$, $A_2$, and $A_3$ are mutually independent, we
+must check a sequence of equalities.  It will be helpful first to
+compute the probability of each event $A_i$:
+%
+\begin{align*}
+\pr{A_1} & = \pr{HHH} + \pr{HHT} + \pr{TTH} + \pr{TTT} \\[2pt]
+         & = \frac{1}{8} + \frac{1}{8} + \frac{1}{8} + \frac{1}{8}%\\[2pt]
+          = \frac{1}{2}.
+\end{align*}
+%
+By symmetry, $\pr{A_2} = \pr{A_3} = 1/2$ as well.  Now we can begin
+checking all the equalities required for mutual independence in
+Definition~\ref{def:mutual_indep}:
+\begin{align*}
+\pr{A_1 \intersect A_2}
+       & = \pr{HHH} + \pr{TTT}
+         = \frac{1}{8} + \frac{1}{8}
+         = \frac{1}{4}
+         = \frac{1}{2} \cdot \frac{1}{2}\\
+       & = \pr{A_1} \pr{A_2}.
+\end{align*}
+
+\iffalse
+\begin{align*}
+\pr{A_1 \intersect A_2}
+	& = \pr{HHH} + \pr{TTT} \\[2pt]
+        & = \frac{1}{8} + \frac{1}{8} \\[2pt]
+        & = \frac{1}{4} \\[2pt]
+        & = \frac{1}{2} \cdot \frac{1}{2}\\[2pt]
+        & = \pr{A_1} \pr{A_2}.
+\end{align*}\fi
+
+By symmetry, $\pr{A_1 \intersect A_3} = \pr{A_1} \cdot \pr{A_3}$ and
+$\pr{A_2 \intersect A_3} = \pr{A_2} \cdot \pr{A_3}$ must hold also.
+Finally, we must check one last condition:
+
+\begin{align*}
+\pr{A_1 \intersect A_2 \intersect A_3}
+        & = \pr{HHH} + \pr{TTT}
+          = \frac{1}{8} + \frac{1}{8}
+          = \frac{1}{4}\\
+        & \textcolor{red}{\mathbf{\neq}} \frac{1}{8} = \pr{A_1} \pr{A_2} \pr{A_3}.
+\end{align*}
+
+
+\iffalse
+\begin{align*}
+\pr{A_1 \intersect A_2 \intersect A_3}      & = \pr{HHH} + \pr{TTT} \\[2pt]
+                                & = \frac{1}{8} + \frac{1}{8} \\[2pt]
+                                & = \frac{1}{4} \\[2pt]
+                                & \neq \pr{A_1} \pr{A_2} \pr{A_3} = \frac{1}{8}.
+\end{align*}
+\fi
+%
+The three events $A_1$, $A_2$, and~$A_3$ are not mutually independent
+even though any two of them are independent!  This not-quite mutual
+independence seems weird at first, but it happens.  It even
+generalizes:
+
+\begin{definition}\label{kway_independent_events}
+  A set $A_1$, $A_2$, \dots, of events is \term{$k$-way independent}
+  iff every set of $k$ of these events is mutually independent.  The
+  set is \term{pairwise independent} iff it is 2-way independent.
+\end{definition}
+
+So the sets $A_1$, $A_2$, $A_3$ above are pairwise independent, but
+not mutually independent.  Pairwise independence is a much weaker
+property than mutual independence.
+
+For example, suppose that the prosecutors in the O.~J. Simpson trial
+were wrong and markers $A$, $B$, $C$, $D$, and $E$ appear only
+\emph{pairwise} independently.  Then the probability that a
+randomly-selected person has all five markers is no more than:
+%
+\begin{align*}
+\pr{A \intersect B \intersect C \intersect D \intersect E}
+    & \leq \pr{A \intersect E} = \pr{A} \cdot \pr{E}\\
+    & = \frac{1}{100} \cdot \frac{1}{170} = \frac{1}{17{,}000}.
+\end{align*}
+%
+The first line uses the fact that $A \intersect B \intersect C \intersect
+D \intersect E$ is a subset of $A \intersect E$.  (We picked out the $A$
+and $E$ markers because they're the rarest.)  We use pairwise independence
+on the second line.  Now the probability of a random match is 1 in
+17,000---a far cry from 1 in 170 million!  And this is the strongest
+conclusion we can reach assuming only pairwise independence.
+
+On the other hand, the 1 in 17,000 bound that we get by assuming
+pairwise independence is a lot better than the bound that we would
+have if there were no independence at all.  For example, if the
+markers are dependent, then it is possible that
+\begin{quote}
+everyone with marker~$E$ has marker~$A$,
+
+everyone with marker~$A$ has marker~$B$,
+
+everyone with marker~$B$ has marker~$C$, and
+
+everyone with marker~$C$ has marker~$D$.
+\end{quote}
+In such a scenario, the probability of a match is
+\begin{equation*}
+    \pr{E} = \frac{1}{170}.
+\end{equation*}
+
+So a stronger independence assumption leads to a smaller bound on the
+probability of a match.  The trick is to figure out what independence
+assumption is reasonable.  Assuming that the markers are
+\emph{mutually} independent may well \emph{not} be reasonable unless
+you have examined hundreds of millions of blood samples.  Otherwise,
+how would you know that marker~$D$ does not show up more frequently
+whenever the other four markers are simultaneously present?
+
+We will conclude our discussion of independence with a useful, and
+somewhat famous, example known as the Birthday Principle.
+
+\subsection{The Birthday Principle}\label{birthday_principle_sec}
+
+There are 95 students in a class.  What is the probability that some
+birthday is shared by two people?  Comparing 95 students to the 365
+possible birthdays, you might guess the probability lies somewhere
+around $1/4$---but you'd be wrong: the probability that there will be
+two people in the class with matching birthdays is actually more than
+$0.9999$.
+
+To work this out, we'll assume that the probability that a randomly
+chosen student has a given birthday is $1/d$, where $d= 365$ in this
+case.  We'll also assume that a class is composed of $n$ randomly and
+independently selected students, with $n=95$ in this case.  These
+randomness assumptions are not really true, since more babies are born
+at certain times of year, and students' class selections are typically
+not independent of each other, but simplifying in this way gives us a
+start on analyzing the problem.  More importantly, these assumptions
+are justifiable in important computer science applications of birthday
+matching.  For example, the birthday matching is a good model for
+collisions between items randomly inserted into a hash table.  So we
+won't worry about things like Spring procreation preferences that make
+January birthdays more common, or about twins' preferences to take
+classes together (or not).  \begin{editingnotes}
+or that fact that a student
+can't be selected twice in making up a class list.
+\end{editingnotes}
+
+Selecting a sequence of $n$ students for a class yields a sequence of
+$n$ birthdays.  Under the assumptions above, the $d^n$ possible
+birthday sequences are equally likely outcomes.  Let's examine the
+consequences of this probability model by focussing on the $i$th and
+$j$th elements in a birthday sequence, where $1 \leq i \neq j \leq n$.
+It makes for a better story if we refer to the $i$th birthday as
+``Alice's'' and the $j$th as ``Bob's.''
+
+Now if Alice, Bob, Carol, and Don are four different people, then
+whether Alice and Bob have matching birthdays is independent of
+whether Carol and Don do.  What's more interesting is that whether
+Alice and \emph{Carol} have the same birthday is independent of
+whether Alice and Bob do.  This follows because Carol is as likely to
+have the same birthday as Alice, independently of whatever birthdays
+Alice and Bob happen to have; a formal proof of this claim appears in
+Problem~\ref{PS_equal_birthdays}.  In short, the set of all events
+that a couple has matching birthdays is \index{pairwise independent}
+\emph{pairwise} independent, even for overlapping couples.  This will
+be important in Chapter~\ref{deviation_chap} because pairwise
+independence will be enough to justify some conclusions about the
+expected number of matches.  However, these matching birthday events
+are obviously \emph{not} even 3-way independent: if Alice and Bob
+match, and also Alice and Carol match, then Bob and Carol will match.
+
+\iffalse
+We could justify all these assertions of independence using the four
+step method, but it's pretty boring, and we'll skip it.
+\fi
+
+It turns out that as long as the number of students is noticeably
+smaller than the number of possible birthdays, we can get a pretty
+good estimate of the birthday matching probabilities by
+\emph{pretending} that the matching events are mutually independent.
+(An intuitive justification for this is that with only a small number
+of matching pairs, it's likely that none of the pairs overlap.)  Then
+the probability of \emph{no} matching birthdays would be the same as
+the $r$th power of the probability that a couple does \emph{not} have
+matching birthdays, where $r \eqdef \binom{n}{2}$ is the number of
+couples.  That is, the probability of no matching birthdays would be
+\begin{equation}\label{11dbinn2}
+(1-1/d)^{\binom{n}{2}}.
+\end{equation}
+Using the fact that $1+x < e^x$ for all $x$,\footnote{This
+  approximation is obtained by truncating the Taylor series $e^{-x} =
+  1 - x + x^2/2!  - x^3/3! + \cdots$.  The approximation $e^{-x}
+  \approx 1 - x$ is pretty accurate when $x$ is small.} we would conclude
+that the probability of no matching birthdays is at most
+\begin{equation}\label{bday-approx}
+e^{-\binom{n}{2}/d}.
+\end{equation}
+
+The matching birthday problem fits in here so far as a nice example
+illustrating pairwise and mutual independence, but it's actually not
+hard to justify the bound~\eqref{bday-approx} without any pretence of
+independence.  Namely, there are $d (d - 1) (d - 2) \cdots (d - (n -
+1))$ length $n$ sequences of distinct birthdays.  So the probability
+that everyone has a different birthday is:
+\begin{align*}
+\lefteqn{\frac{d (d - 1) (d - 2) \cdots (d - (n - 1))}{d^n}}\\
+   & = \frac{d}{d} \cdot \frac{d-1}{d} \cdot \frac{d-2}{d} \cdots \frac{d - (n - 1)}{d}\\
+   & = \paren{1 - \frac{0}{d}}
+             \paren{1 - \frac{1}{d}}
+             \paren{1 - \frac{2}{d}}
+             \cdots
+             \paren{1 - \frac{n - 1}{d}}\\
+   & < e^0 \cdot e^{-1/d} \cdot e^{-2/d} \cdots e^{-(n-1)/d} 
+             & \text{(since $1+x < e^x$)} \\
+   & = e^{-\paren{\sum_{i=1}^{n-1} i/d}}\\
+   & = e^{-\paren{n(n-1)/2d}}\\
+   & = \text{the bound~\eqref{bday-approx}}.
+\end{align*}
+
+For $n=95$ and $d = 365$, the value of~\eqref{bday-approx} is less
+than $1/200,000$, which means the probability of having some pair of
+matching birthdays actually is more than $1 - 1/200,000 > 0.99999$.  So
+it would be pretty astonishing if there were no pair of students in
+the class with matching birthdays.
+
+For $d \leq n^2/2$, the probability of no match turns out to be
+asymptotically equal to the upper bound~\eqref{bday-approx}.  For $d =
+n^2/2$ in particular, the probability of no match is asymptotically
+equal to $1/e$.  This leads to a rule of thumb which is useful in many
+contexts in computer science:
+
+\textbox{
+\begin{center}
+\large The \index{birthday principle} Birthday Principle
+\end{center}
+
+If there are $d$ days in a year and $\sqrt{2d}$ people in a
+room, then the probability that two share a birthday is about 
+$1 - 1/e \approx 0.632$.
+}
+
+For example, the Birthday Principle says that if you have $\sqrt{2
+  \cdot 365} \approx 27$ people in a room, then the probability that
+two share a birthday is about $0.632$.  The actual probability is
+about $0.626$, so the approximation is quite good.
+
+Among other applications, it implies that to use a hash function that
+maps $n$ items into a hash table of size $d$, you can expect many
+collisions unless $n^2$ is a small fraction of $d$.  The Birthday
+Principle also famously comes into play as the basis of ``birthday
+attacks'' that crack certain cryptographic systems.
+
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_Binomial_Board_Breaking}
+\pinput{TP_Practice_with_Bounds}
+%\pinput{FP_random_sampling}
+
+\examproblems
+\pinput{FP_college_probability}
+\pinput{FP_product_rule_and_independence}
+
+\classproblems
+\pinput{CP_mutual_independence}
+\pinput{CP_three_fair_coins}
+
+\homeworkproblems
+\pinput{PS_bogus_discrimination_contradiction}
+\pinput{FP_graph_logic_probability}
+
+\end{problems}
+
+
+\iffalse %ftl version
+
+\subsection{The Birthday Paradox}\label{birthday_principle_sec}
+
+Suppose that there are 100 students in a class.  What is the
+probability that some birthday is shared by two people?  Comparing 100
+students to the 365 possible birthdays, you might guess the
+probability lies somewhere around~$1/3$---but you'd be wrong: the
+probability that there will be two people in the class with matching
+birthdays is actually~$0.999999692\dots$.  In other words, the
+probability that all 100 birthdays are different is less than 1
+in~3,000,000.
+
+Why is this probability so small?  The answer involves a phenomenon
+known as the \term{Birthday Paradox} (or the \term{Birthday
+  Principle}), which is surprisingly important in computer science, as
+we'll see later.
+
+Before delving into the analysis, we'll need to make some modeling
+assumptions:
+\begin{itemize}
+
+\item
+For each student, all possible birthdays are equally likely.  The idea
+underlying this assumption is that each student's birthday is
+determined by a random process involving parents, fate, and, um, some
+issues that we discussed earlier in the context of graph theory.
+The assumption is not completely accurate, however; a disproportionate
+number of babies are born in August and September, for example.
+
+\item
+Birthdays are mutually independent.  This isn't perfectly accurate
+either.  For example, if there are twins in the class, then their
+birthdays are surely not independent.
+
+\end{itemize}
+We'll stick with these assumptions, despite their limitations.  Part
+of the reason is to simplify the analysis.  But the bigger reason is
+that our conclusions will apply to many situations in computer science
+where twins, leap days, and romantic holidays are not considerations.
+After all, whether or not two items collide in a hash table really has
+nothing to do with human reproductive preferences.  Also, in pursuit
+of generality, let's switch from specific numbers to variables.  Let
+$m$~be the number of people in the room, and let $N$~be the number of
+days in a year.
+
+We can solve this problem using the standard four-step method.
+However, a tree diagram will be of little value because the sample
+space is so enormous.  This time we'll have to proceed without the
+visual aid!
+
+\paragraph{Step 1: Find the Sample Space}
+
+Let's number the people in the room from 1 to~$m$.  An outcome of the
+experiment is a sequence $(b_1, \dots, b_m)$ where $b_i$~is the
+birthday of the $i$th person.  The sample space is the set of all such
+sequences:
+\begin{equation*}
+    \sspace = \{\, (b_1, \dots, b_m) \suchthat b_i \in \set{1, \dots
+      N} \,\}.
+\end{equation*}
+
+\paragraph{Step 2: Define Events of Interest}
+
+Our goal is to determine the probability of the event~$A$ in which
+some pair of people have the same birthday.  This event is a little
+awkward to study directly, however.  So we'll use a common trick,
+which is to analyze the \term{complementary} event~$\setcomp{A}$, in
+which all $m$~people have different birthdays:
+\begin{equation*}
+    \setcomp{A} = \set{\, (b_1, \dots, b_m) \in \sspace
+                    \suchthat \text{all $b_i$ are distinct} \,}.
+\end{equation*}
+If we can compute $\pr{\setcomp{A}}$, then we can compute what
+really want, $\pr{A}$, using the identity
+\begin{equation*}
+    \pr{A} + \pr{\setcomp{A}} = 1.
+\end{equation*}
+
+\paragraph{Step 3: Assign Outcome Probabilities}
+
+We need to compute the probability that $m$~people have a particular
+combination of birthdays ~$(b_1, \dots, b_m)$.  There are $N$~possible
+birthdays and all of them are equally likely for each student.
+Therefore, the probability that the $i$th person was born on day~$b_i$
+is~$1/N$.  Since we're assuming that birthdays are mutually
+independent, we can multiply probabilities.  Therefore, the
+probability that the first person was born on day~$b_1$, the second
+on~$b_2$, and so forth is~$(1/N)^m$.  This is the probability of every
+outcome in the sample space, which means that the sample space is
+uniform.  That's good news, because, as we have seen, it means that
+the analysis will be simpler.
+
+\paragraph{Step 4: Compute Event Probabilities}
+
+We're interested in the probability of the event~$\setcomp{A}$ in
+which everyone has a different birthday:
+\begin{equation*}
+    \setcomp{A} = \set{\, (b_1, \dots, b_n) \suchthat
+                            \text{all $b_i$ are distinct} \,}.
+\end{equation*}
+This is a gigantic set.  In fact, there are $N$~choices for~$b_i$,
+\ $N - 1$ choices for~$b_2$, and so forth.  Therefore, by the
+Generalized Product Rule,
+\begin{equation*}
+\card{\setcomp{A}}
+    = \frac{N!}{(N - m)!}
+    = N (N - 1) (N - 2) \cdots (N - m + 1).
+\end{equation*}
+Since the sample space is uniform, we can conclude that
+\begin{equation}\label{eqn:15E4}
+\pr{\setcomp{A}}
+    = \frac{\card{\setcomp{A}}}{N^m} \\
+    = \frac{N!}{N^m (N - m)!}.
+\end{equation}
+We're done!
+
+Or are we?  While correct, it would certainly be nicer to have a
+closed-form expression for equation~\eqref{eqn:15E4}.  That means
+finding an approximation for $N!$ and~$(N - m)!$.  But this is what we
+learned how to do in Section~\ref{sec:closed_products}.  In fact, since
+$N$ and~$N - m$ are each at least~100, we know from
+Corollary~\ref{cor:9A2} that
+\begin{equation*}
+    \stirling{N} \quad \text{and} \quad \stirling*{N - m}
+\end{equation*}
+are excellent approximations (accurate to within~.09\%) of~$N!$ and~$(N
+- m)!$, respectively.  Plugging these values into
+equation~\eqref{eqn:15E4} means that (to within~.2\%)\footnote{If there
+are two terms that can be off by~.09\%, then the ratio can be off by
+at most a factor of~$(1.0009)^2 < 1.002$.}
+\begingroup
+\openup2\jot
+\begin{align}
+\prob{\setcomp{A}}
+    &= \frac{ \stirling{N} }{ N^m \stirling*{N - m} } \notag\\
+    &= \sqrt{\frac{N}{N - m}}
+             \frac{ e^{N \ln(N) - N} }
+                  { e^{m \ln(N)} e^{(N - m) \ln(N - m) - (N - m) } }
+                  \notag\\
+    &= \sqrt{\frac{N}{N - m}}
+         e^{ (N - m)\ln(N) - (N - m) \ln(N - m) - m } \notag\\
+    &= \sqrt{\frac{N}{N - m}}
+         e^{ (N - m)\ln\paren{\frac{N}{N - m}} - m } \notag\\
+    &= e^{ \paren{N - m + \frac{1}{2}}\ln\paren{\frac{N}{N - m}} - m }.
+        \label{eqn:15E9}
+\end{align}
+\endgroup
+We can now evaluate equation~\eqref{eqn:15E9} for $m = 100$ and $N =
+365$ to find that the probability that all 100 birthdays are different
+is\footnote{The possible .2\%~error is so small that
+  it is lost in the \dots after 3.07.}
+\begin{equation*}
+    3.07\ldots \cdot 10^{-7}.
+\end{equation*}
+
+We can also plug in other values of~$m$ to find the number of people
+so that the probability of a matching birthday will be about~$1/2$.
+In particular, for $m = 23$ and $N = 365$, equation~\eqref{eqn:15E9}
+reveals that the probability that all the birthdays differ is
+0.49\dots.  So if you are in a room with 23 other people, the
+probability that some pair of people share a birthday will be a little
+better than~$1/2$.  It is because 23 seems like such a small number of
+people for a match that the phenomenon is called the \term{Birthday
+  Paradox}.
+
+\subsection{Applications to Hashing}
+
+Hashing is frequently used in computer science to map large strings of
+data into short strings of data.  In a typical scenario, you have a
+set of $m$~items and you would like to assign each item to a number
+from 1 to~$N$ where no pair of items is assigned to the same number
+and $N$~is as small as possible.  For example, the items might be
+messages, addresses, or variables.  The numbers might represent
+storage locations, devices, indices, or digital signatures.
+
+If two items are assigned to the same number, then a \term{collision}
+is said to occur.  Collisions are generally bad.  For example,
+collisions can correspond to two variables being stored in the same
+place or two messages being assigned the same digital signature.  Just
+imagine if you were doing electronic banking and your digital
+signature for a \$10~check were the same as your signature for a
+\$10~million dollar check.  In fact, finding collisions is a common
+technique in breaking cryptographic codes.\footnote{Such techniques
+  are often referred to as \term{birthday attacks} because of the
+  association of such attacks with the Birthday Paradox.}
+
+In practice, the assignment of a number to an item is done using a
+hash function
+\begin{equation*}
+    h: S \to [1, N],
+\end{equation*}
+where $S$~is the set of items and $m = \card{S}$.  Typically, the
+values of~$h(S)$ are assigned randomly and are assumed to be equally
+likely in~$[1, N]$ and mutually independent.
+
+For efficiency purposes, it is generally desirable to make~$N$ as
+small as necessary to accommodate the hashing of $m$~items without
+collisions.  Ideally, $N$~would be only a little larger than~$m$.
+Unfortunately, this is not possible for random hash functions.  To see
+why, let's take a closer look at equation~\eqref{eqn:15E9}.
+
+By Theorem~\ref{thm:stirling} and the derivation of
+equation~\eqref{eqn:15E9}, we know that the probability that there are
+no collisions for a random hash function is
+\begin{equation}\label{eqn:16K}
+    \sim e^{ \paren{N - m + \frac{1}{2}} \ln\paren{\frac{N}{N - m}} - m }.
+\end{equation}
+For any~$m$, we now need to find a value of~$N$ for which this
+expression is at least~1/2.  That will tell us how big the hash table
+needs to be in order to have at least a 50\%~chance of avoiding
+collisions.  This means that we need to find a value of~$N$ for which
+\begin{equation}\label{eqn:16P}
+    \paren{N - m + \frac{1}{2}} \ln\paren{\frac{N}{N - m}} - m 
+        \sim
+    \ln\paren{\frac{1}{2}}.
+\end{equation}
+
+To simplify equation~\eqref{eqn:16P}, we need to get rid of the
+$\ln\paren{\frac{N}{N - m}}$~term.  We can do this by using the Taylor
+Series expansion for
+\begin{equation*}
+    \ln(1 - x) = -x - \frac{x^2}{2} - \frac{x^3}{3} - \cdots
+\end{equation*}
+to find that\footnote{This may not look like a simplification, but
+  stick with us here.}
+\begin{align*}
+\ln\paren{\frac{N}{N - m}}
+    &= - \ln \paren{\frac{N - m}{N}} \\
+    &= - \ln \paren{1 - \frac{m}{N}} \\
+    &= - \paren{ -\frac{m}{N} - \frac{m^2}{2N^2} - \frac{m^3}{3N^3} - \cdots }\\
+    &= \frac{m}{N} + \frac{m^2}{2N^2} + \frac{m^3}{3N^3} + \cdots.
+\end{align*}
+Hence,
+\begin{align}
+\paren{N - m + \frac{1}{2}} \ln\paren{\frac{N}{N - m}} - m
+    &= \paren{N - m + \frac{1}{2}}
+        \paren{\frac{m}{N} + \frac{m^2}{2N^2} + \frac{m^3}{3N^3} + \cdots}
+        - m \notag\\
+    &= \paren{ m + \frac{m^2}{2N} + \frac{m^3}{3N^2} + \cdots }
+            \notag\\
+    &\phantom{=}\qquad - \paren{ \frac{m^2}{N} + \frac{m^3}{2N^2} +
+          \frac{m^4}{3N^3} + \cdots }
+            \notag\\
+    &\phantom{=}\qquad + \frac{1}{2} \paren{\frac{m}{N} +
+          \frac{m^2}{2N^2} + \frac{m^3}{3N^3} + \cdots} -m 
+            \notag\\
+    &= - \paren{ \frac{m^2}{2N} + \frac{m^3}{6N^2} + \frac{m^4}{12N^3}
+            + \cdots} \notag\\
+    &\phantom{=}\qquad
+        + \frac{1}{2}\paren{ \frac{m}{N} + \frac{m^2}{2N^2} +
+          \frac{m^3}{3N^3} + \cdots }.
+    \label{eqn:16Q}
+\end{align}
+
+If $N$~grows faster than~$m^2$, then the value in
+equation~\eqref{eqn:16Q} tends to~0 and equation~\eqref{eqn:16P}
+cannot be satisfied.  If $N$~grows more slowly than~$m^2$, then the
+value in equation~\eqref{eqn:16Q} diverges to negative infinity, and,
+once again, equation~\eqref{eqn:16P} cannot be satisfied.  This suggests
+that we should focus on the case where~$N = \Theta(m^2)$, when
+equation~\eqref{eqn:16Q} simplifies to
+\begin{equation*}
+    \sim \frac{-m^2}{2N}
+\end{equation*}
+and equation~\eqref{eqn:16P} becomes
+\begin{equation}\label{eqn:16R}
+    \frac{-m^2}{2N} \sim \ln\paren{\frac{1}{2}}.
+\end{equation}
+
+equation~\eqref{eqn:16R} is satisfied when
+\begin{equation}\label{eqn:16S}
+    N \sim \frac{m^2}{2 \ln(2)}.
+\end{equation}
+
+In other words, $N$~needs to grow quadratically with~$m$ in order to
+avoid collisions.  This unfortunate fact is known as the
+\term{Birthday Principle} and it limits the efficiency of hashing in
+practice---either $N$~is quadratic in the number of items being hashed
+or you need to be able to deal with collisions.
+
+\fi
