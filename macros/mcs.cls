@@ -764,13 +764,13 @@
 }
 
 \def\@spart#1{%
-    \addcontentsline{toc}{part}{{\thechapter}#1}
+    \addcontentsline{toc}{part}{#1}%
     \partmark{#1}
     \begingroup
         \parindent\z@
         \vspace*{16pt}
         {\fontsize{21}{23}\selectfont\hspace*{7pc}#1\par}
-        \cleardoublepage
+        %\cleardoublepage
     \endgroup
 }
 
@@ -1996,7 +1996,7 @@
         \immediate\write\@chapprobs{\the\verbatim@line}%
     }%
     % \immediate\write\@chapprobs{\noexpand\begin{realproblems}}%
-    \immediate\write\@chapprobs{\noexpand\subsection*{Problems for
+    \immediate\write\@chapprobs{\noexpand\section*{Problems for
         Section\noexpand~\thesection}}%
     \verbatim@start
 }{%
@@ -2005,12 +2005,12 @@
 }
 
 \newenvironment{realproblems}{%
-    \subsection{Problems}%
+    \section{Problems}%
 }{}
-\newcommand{\practiceproblems}{\subsubsection*{Practice Problems}}
-\newcommand{\classproblems}{\subsubsection*{Class Problems}}
-\newcommand{\homeworkproblems}{\subsubsection*{Homework Problems}}
-\newcommand{\examproblems}{\subsubsection*{Exam Problems}}
+\newcommand{\practiceproblems}{\subsection*{Practice Problems}}
+\newcommand{\classproblems}{\subsection*{Class Problems}}
+\newcommand{\homeworkproblems}{\subsection*{Homework Problems}}
+\newcommand{\examproblems}{\subsection*{Exam Problems}}
 
 %% pcomments is an itemized list environment that shows up only when
 %% the standalone version of the problem is compiled.
