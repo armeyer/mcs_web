@@ -1,0 +1,174 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_AkraB}
+  \pcomment{formatted, but unedited from fall04 pset7 rec11}
+\end{pcomments}
+
+\pkeywords{
+  recurrence
+  Akra-Bazzi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+We have devised an error-tolerant version of {\tt MergeSort}.  We call
+our exciting new algorithm {\tt OverSort}.
+
+Here is how the new algorithm works.  The input is a list of $n$
+distinct numbers.  If the list contains a single number, then there is
+nothing to do.  If the list contains two numbers, then we sort them
+with a single comparison.  If the list contains more than two numbers,
+then we perform the following sequence of steps.
+
+\begin{itemize}
+\item We make a list containing the first $\frac{2}{3}n$
+numbers and sort it recursively.
+
+\item We make a list containing the last $\frac{2}{3}n$ numbers
+and sort it recursively.
+
+\item We make a list containing the first $\frac{1}{3}n$ numbers and
+the last $\frac{1}{3}n$ numbers and sort it recursively.
+
+\item We merge the first and second lists, throwing out duplicates.
+
+\item We merge this combined list with the third list, again throwing out
+duplicates.
+\end{itemize}
+
+The final, merged list is the output.  What's great is that because
+multiple copies of each number are maintained, even if the sorter
+occasionally forgets about a number, {\tt OverSort} can still output a
+complete, sorted list.
+
+\bparts
+
+\ppart Let $T(n)$ be the maximum number of comparisons that {\tt OverSort}
+could use to sort a list of $n$ distinct numbers, assuming the sorter
+never forgets a number and $n$ is a power of 3.  What is $T(3)$?  Write a
+recurrence relation for $T(n)$.  (\hint Merging a list of $j$
+distinct numbers and a list of $k$ distinct numbers, and throwing out
+duplicates of numbers that appear in both lists, requires $j+k-d$
+comparisons, when $d>0$ is the number of duplicates.)
+
+\begin{solution}
+When $n=3$, we begin with a list $(a,b,c)$ of 3 distinct numbers.
+\texttt{OverSort} starts by forming the lists $(a,b)$, $(b,c)$, and
+sorts each of them.  Sorting a list of length two takes 1 comparison,
+so the total number of comparisons required to sort both lists is 2.
+Next it merges these two lists.  There must be exactly one duplicate
+in the two lists, so, using the Hint, we conclude that this takes
+$2+2-1= 3$ more comparisons and yields a sorted length three list of
+all the elements.
+
+\texttt{OverSort} then forms the list $(a,c)$, uses 1 comparison to
+sort it, and merges this sorted list of length two with the previous
+length three list.  However, merging these two lists takes only
+$2+3-2= 3$ comparisons, because there are two duplicates.  So $T(3)$,
+the worst case number of comparisons, is $2+3+1+3=9$.
+
+Now for $n>3$, \texttt{OverSort} will form and then sort three
+different lists of length $(2/3)n$.  The first two overlap by
+$(1/3)n$, so merging them takes $(2/3)n+(2/3)n -(1/3)n = n$
+comparisons and yields a list of length $n$.  This list and the
+remaining list of length $(2/3)n$ overlap by $(2/3)n$, so merging them
+requires only another $n$ comparisons.  So
+\[
+T(n) = 3 T\left(\frac{2}{3}n\right) + 2n.
+\]
+\end{solution}
+
+\ppart Now we're going to apply the \idx{Akra-Bazzi Theorem} to find a
+$\Theta$ bound on $T(n)$.  Begin by identifying the following
+constants and functions in the Akra-Bazzi
+recurrence~\eqref{A-B_recurrence}:
+
+\begin{itemize}
+
+\item The constant $k$.
+
+\begin{solution}
+$k = 1$
+\end{solution}
+
+\item The constants $a_i$.
+
+\begin{solution}
+$a_1 = 3$
+\end{solution}
+
+\item The constants $b_i$.
+
+\begin{solution}
+$b_1 = 2/3$
+\end{solution}
+
+\item The functions $h_i$.
+
+\begin{solution}
+$h_1(x) = 0$
+\end{solution}
+
+\item The function $g$.
+
+\begin{solution}
+$g(x) = 2x$
+\end{solution}
+
+\item The constant $p$.  You can leave $p$ in terms of logarithms, but
+you'll need a rough estimate of its value later on.
+
+\begin{solution}
+\begin{align*}
+3 \cdot \left(\frac{2}{3}\right)^p & = 1 \\
+\ln 3 + p (\ln 2 - \ln 3) & = 0 \\
+p & = \frac{\ln 3}{\ln 3 - \ln 2} = 2.7095\dots
+\end{align*}
+
+\end{solution}
+
+\end{itemize}
+
+\ppart Does the condition $\abs{g'(x)} = O(x^c)$ for some $c \in
+\naturals$ hold?
+
+\begin{solution}
+Yes.  $g'(x) = 2 = O(x^0)$.
+\end{solution}
+
+\ppart Does the condition $\abs{h_i(x)} = O(x / \log^2 x)$ hold?
+
+\begin{solution}
+Yes.  $0 = O(x / \log^2 x)$.
+\end{solution}
+
+\ppart Determine a $\Theta$ bound on $T(n)$ by integration.
+
+\begin{solution}
+\begin{align*}
+T(n)	& = \Theta\left(n^p \cdot \left(1 +
+		\int_1^n \frac{2u}{u^{1+p}} \ du \right)\right) \\
+        & = \Theta\left(n^p \cdot \left(1 +
+		2 \int_1^n \frac{1}{u^p} \ du \right)\right) \\
+	& = \Theta(n^p) \\
+	& = \Theta\left(n^{2.7095\dots}\right)
+\end{align*}
+%
+Note that since $p > 1$, the integral nonnegative and bounded above by a
+constant, no matter how large $n$ grows.  Thus, everything except $n^p$ is
+absorbed by the $\Theta$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\endinput
