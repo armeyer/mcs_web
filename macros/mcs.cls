@@ -1330,7 +1330,7 @@
 \newcommand{\posints}{\integers^+}
 \newcommand{\finbin}{\strings{\set{0,1}}}
 \newcommand{\binw}{\infstrings{\set{0,1}}}
-\newcommand{\twdone}{\textbf{To1}}
+\newcommand{\twdone}{\mathbb{F}}
 
 %% Math -- Arithmetic
 
