@@ -1,13 +1,176 @@
 \chapter{Conditional Probability}\label{chap:cond_prob} %\label{cond_prob_sec}
 
 \begin{editingnotes}
-\arm{DO MAJOR REVISION.} Replace MIT/Cambridge example by Monty Hall
+\arm{DO MAJOR REVISION.} Replace MIT/Cambridge example by Monty Python
 examples of conditioning on wrong events from ARM slides.  Introduce
 Strogatz article approach using natural frequencies to explain
 diagnosis probabilities.  Include OJ/Dershowitz/Paulos discussion of
 wife-battering.  Improve explanation of \emph{a posteriori}
 probability.
 \end{editingnotes}
+
+Remember how we said that the Monty Hall problem confused even
+professional mathematicians?  Based on the work we did with tree
+diagrams, this may seem surprising—the conclusion we reached was
+definitive.  So how could this problem be so confusing to so many
+people?  
+
+Well, one flawed argument goes as follows: let’s say the contestant
+picks door A.  And suppose that Carol, Monty’s assistant, opens door B
+and shows us a goat.  Now, let’s use what we know and the \href{}{tree
+  diagram} from Section 16.  The contestant chooses door $A$, and
+there’s a goat behind door $B$, in the following outcomes:
+\[
+(A, A, B),\ (A, A, C),\ (C, A, B).
+\]
+
+Now among those outcomes, switching doors wins on $(A, A, B)$ and $(A,
+A, C)$.  Each has a probability of 1/18, which means that
+\emph{together} they have the \emph{same} 1/9 probability as losing by
+swithching in $(C, A, B)$.  So in this situation, the probability that
+we win is the same as the probability that we lose.  Switching isn't
+any better than sticking!
+
+It’s hard to spot the hole in this reasoning, even though we know from
+our earlier results that it can’t be correct.  But before we pick
+apart this explanation, let's pin down the precise math behind it.
+What we’re asking for is a definition of \idx{conditional
+  probability}—the odds that one event (win by switching) happens,
+given some other event (pick A, goat at B) happens.
+
+\section{Behind the curtain}
+
+Like all probabilities, conditional probability is a ratio comparing
+the likelihood of a desired set of outcomes to a sample
+space. However, conditional probabilities do not concern themselves
+with all possible outcomes.  When something is ``given'' as a
+condition, that condition essentially limits our new sample space to a
+subset of possible outcomes.  In this particular example, we're given
+that the player chooses door A and that there is a goat behind B.  Our
+new sample space therefore consists solely of the three outcomes in
+which this occurs.  The conditional probability of winning by
+switching, given that the player chose door A and the a goat is behind
+door B, is the fraction of this new sample space that consists of
+``win-by-switching''; that is to say, it can be found by putting the
+probability of the two win-by-switching outcomes from the subset
+defined by our condition over the combined probability of all three
+outcomes in that subset. All we need to do is look at $(A, A, B), (A,
+A, C), and (C, A, B)$, and do some arithmetic.
+
+According to the tree diagram, $(A, A, B), (A,
+A, C), and (C, A, B)$ have respective probabilities
+1/18, 1/18, 1/9.  A Monty Hall game has a
+\[
+\frac{1}{18} + \frac{1}{18} + \frac{1}{9} = \frac{2}{9}
+\]
+chance of ending in one of these outcomes. Those 2/9 is all we need;
+we can ignore all other outcomes on the tree.
+
+As we mentioned earlier, the two winning outcomes have a total
+probability of 1/9.  We find the conditional probabilitiy by figuring
+out how that compares to the total probability of our condition:
+
+\[ 
+\frac{\pr{(C, A, B)}}{\pr{C, A, B}+\pr{A, A, B}+\pr{A, A, C}}=
+\frac{1/9}{2/9}=\frac{1}{2}
+\]
+is our chance of winning---50\%. Mathematically, at least, the logic in the introduction is sound. Curioser and curioser!
+
+\section{Definition and Notation}
+
+The expression $\prcond{A}{B}$ denotes the probability of event $A$,
+given that event $B$ happens.  In the example above, event $A$ is the
+event of winning on a switch, and event $B$ is the event that a goat
+is behind door B and the contestant chose door A..
+
+How did we compute $\prcond{A}{B}$?  Since we were \emph{given} that
+the goat was behind B, we limit ourselves to the outcomes where this
+occurs.  The conditional probability takes the form of the fraction of
+the given subset of outcomes with event $B$ in which event $A$ also
+occurs.  This motivates the definition of conditional probability:
+\begin{definition}\label{LN12:prcond}
+\[p
+\prcond{A}{B} \eqdef \frac{\pr{A \intersect B}}{\pr{B}}
+\]
+If $\pr{B} = 0$, then the conditional probability $\prcond{A}{B}$ is
+undefined.
+\end{definition}
+
+Pure probability is often counterintuitive, but conditional
+probability is even worse!  Conditioning can subtly alter
+probabilities and produce unexpected results in randomized algorithms
+and computer systems as well as in betting games.  In fact, the
+solution to the above problem appears to contradict what we already
+know about Monty Hall!  Yet, the mathematical definition of
+conditional probability given above is very simple and should give you
+no trouble---provided that you rely on mathematical reasoning and not
+naive intuition.  
+
+\section{What went wrong}
+
+So if everything at the beginning of this chapter was mathematically
+sound, why does it seem to contradict the results that we established
+in Chapter 16?  The problem is a common one: \emph{we chose the wrong
+  thing to condition upon}.  In our initial description of the
+scenario, we learned the location of the goat when Carol opened door
+B. But when we defined our condition as ``the contestant opens A and
+the goat is behind B,'' we included $(A, A, C)$, an outcome in which
+Carol opens door C!  The correct conditional probability should have
+been ``what are the odds of winning by switching given the contestant
+chooses door A and Carol opens door B.'' By misstating our condition,
+we inadvertently included extraneous outcomes in our calculation. With
+the correct consitioning, we still win by switching 1/9 of the time in
+case $(C, A, B)$, but the total probability is smaller: \pr{(A, A, B)}
++ \pr{(C, A, B)} = 1/18 + 1/9 = 3/18. The conditional probability
+would then be:
+\[
+\frac{1/9}{3/18} = \dfrac{2/3}
+\]
+Which is exactly what we expected!
+
+\subsection{O.J. Simpson}\label{OJ_NY_Times}
+
+In an opinion article in the \emph{New York Times}\begin{editingnotes}
+  insert link\end{editingnotes}, Steven Strogatz points to the O.J.
+  Simpson trial as an example of poor choice of conditions.  O.J.
+  Simpson was a retired football player who was accused, and later
+  acquitted, of the murder of his wife, Nicole Brown Simpson.  The
+  trial was widely publicized and called the ``trial of the century'';
+  racial tensions, allegations of police misconduct, and
+  new-at-the-time DNA evidence captured the public's attention.  But
+  Strogatz, citing mathemetician and author I.J. Good, focuses on a
+  less well-known aspect of the case: whether O.J.'s history of abuse
+  towards his wife was admissible into evidence.
+
+The prosecution argued that abuse is often a precursor to murder,
+pointing to statistics indicating that an abuser was as much as ten
+times more likely to commit murder than was a random indidual. The
+defense, however, countered with statistics indicating that the odds
+of an abusive husband murdering his wife were ``infinitesimal,''
+roughly 1 in 2500.  Based on those numbers, the actual relevance of a
+history of abuse to a murder case would appear limited at best---and
+therefore, according to the defense, introducing that history would
+make the jury hate Simpson but would lack any probitive value, and its
+discussion should be barred as prejudicial.
+
+In other words, both the defense and the prosecution were arguing
+conditional probability: the likelihood that a woman will be murdered
+by her husband, given that her husband abuses her.  But both defense
+and prosecution omitted a vital piece of data from their calculations:
+Nicole Brown Simpson \emph{was} murdered.  Strogatz points out that
+based on the defense's numbers and the crime statistics of the time,
+the probability that a woman was murdered by her abuser, given that she
+was abused \emph{and} murdered, is around 80\%! The math is spelled out in detail in \begin{editingnotes}
+  insert link to problem calculating exact values
+\end{editingnotes}
+
+
+
+
+\begin{editingnotes}
+
+
+%REVISE FROM HERE DOWN
 
 Suppose that we pick a random person in the world.  Everyone has an
 equal chance of being selected.  Let $A$ be the event that the person
@@ -37,7 +200,7 @@ much greater---but what is it exactly?
 
 What we're asking for is called a \term{conditional
   probability}---that is, the probability that one event happens,
-given that some other event happens.  Questions about
+given that some other event definitely happens.  Questions about
 conditional probabilities come up all the time:
 %
 \begin{itemize}
@@ -48,45 +211,10 @@ that both are odd?
 \item What is the probability that I'll get four-of-a-kind in Texas No
 Limit Hold 'Em Poker, given that I'm initially dealt two queens?
 \end{itemize}
+\end{editingnotes}
 
-\section{Definition and Notation}
 
-The expression $\prcond{A}{B}$ denotes the probability of event $A$,
-given that event $B$ happens.  So in the example above,
-$\prcond{A}{B}$ is the probability that a random person is an MIT
-student, given that he or she is a Cambridge resident.
 
-How do we compute $\prcond{A}{B}$?  Since we are \emph{given} that the
-person lives in Cambridge, we can forget about everyone in the world
-who does not.  Thus, all outcomes outside event $B$ are irrelevant.
-So, intuitively, $\prcond{A}{B}$ should be the fraction of Cambridge
-residents that are also MIT students; that is, the answer should be
-the probability that the person is in set $A \intersect B$ (the darkly
-shaded region in Figure~\ref{fig:15B1}) divided by the probability
-that the person is in set $B$ (the lightly shaded region).  This
-motivates the definition of conditional probability:
-\begin{definition}\label{LN12:prcond}
-Let $A$ and $B$ be events where $B$ has nonzero probability.  Then
-\[
-\prcond{A}{B} \eqdef \frac{\pr{A \intersect B}}{\pr{B}}\,.
-\]
-\end{definition}
-
-The conditional probability $\prcond{A}{B}$ is undefined when the
-probability of event $B$ is zero.  Assertions about conditional
-probability can get cluttered up with uninteresting hypotheses that
-conditioning events like $B$ have nonzero probability.  To avoid the
-clutter, we will \emph{implicitly} assume from now on that all such
-events have nonzero probability.
-
-Pure probability is often counterintuitive, but conditional
-probability is even worse!  Conditioning can subtly alter
-probabilities and produce unexpected results in randomized algorithms
-and computer systems as well as in betting games.  Yet, the
-mathematical definition of conditional probability given above is very
-simple and should give you no trouble---provided that you rely on
-mathematical reasoning and not naive intuition.  The four-step method
-will also be very helpful as we will see in the next examples.
 
 \subsection{The Four-Step Method for Conditional
   Probability: Best of Three Tournament}
@@ -224,10 +352,10 @@ Why is this correct?
 
 The answer goes back to Definition~\ref{LN12:prcond} of conditional probability
 which could be written in a form called the \term{Product Rule} for
-conditional probabilities:
+probabilities:
 %
-\begin{rul*}[Conditional Probability Product Rule: 2 Events]
-%If $\pr{E_1} \neq 0$, then:
+\begin{rul*}[Product Rule: 2 Events]
+If $\pr{E_1} \neq 0$, then:
 %
 \[
     \pr{E_1 \intersect E_2} = \pr{E_1} \cdot \prcond{E_2}{E_1}.
@@ -242,27 +370,12 @@ the right side of this equation.  For example:
             \prcond{\text{win second game}}{\text{win first game}} \\[2pt]
 	& = \frac{1}{2} \cdot \frac{2}{3}.
 \end{align*}
-So the Conditional Probability Product Rule is the formal
-justification for multiplying edge probabilities to get outcome
-probabilities.
-
-To justify multiplying edge probabilities along a path of length three, we need
-a rule for three events:
-\begin{rul*}[Conditional Probability Product Rule: 3 Events]
-%If $\pr{E_1} \neq 0$, then:
-%
-\[
-    \pr{E_1 \intersect E_2 \intersect E_3} = \pr{E_1} \cdot
-    \prcond{E_2}{E_1} \cdot
-\prcond{E_3}{E_1 \intersect E_2}.
-\]
-\end{rul*}
-Of course there is an $n$-event version of the Rule, given in
-Problem~\ref{PS_conditional_probability_product_rule}, but its form
-should be clear from the three event version.
+So the Product Rule is the formal justification for multiplying edge
+probabilities to get outcome probabilities.  Of course, to justify
+multiplying edge probabilities along longer paths, we need a Product
+Rule for $n$ events.
 
 % \dmj{I need to have another go at formatting this equation.}
-\iffalse
 \begin{rul*}[Product Rule: $n$ Events]
 \begin{align*}
 \pr{E_1 \intersect E_2 \intersect \dots \intersect E_n}
@@ -272,7 +385,7 @@ should be clear from the three event version.
         \cdots \\
     &\quad\cdot
         \prcond{E_n}{E_1 \intersect E_2 \intersect \dots
-          \intersect E_{n - 1}}\, .
+          \intersect E_{n - 1}}
 \end{align*}
 provided that %\prod_{i=1}^n \pr{E_i}{\lgintersect_{j=1}^i E_j} 
 \begin{equation*}
@@ -280,53 +393,8 @@ provided that %\prod_{i=1}^n \pr{E_i}{\lgintersect_{j=1}^i E_j}
     \neq 0.
 \end{equation*}
 \end{rul*}
-
 This rule follows by routine induction from the definition of
 conditional probability.
-\fi
-
-As a simple application, we can use the rule to calculate the number
-of size-$k$ subsets of the integers $[1,n]$.  Of course we already
-this number is $\binom{n}{k}$, but now the Conditional Probability Product Rule will give us
-new derivation of the formula for $\binom{n}{k}$.
-
-So suppose we choose a size-$k$ subset at random, with all subsets of
-$[1,n]$ equally likely to be chosen.  Now if $p$ is the probability of
-randomly choosing a given size-$k$ subset, $S$, then $1/p$ equals the number of
-such subsets.  So what's $p$?  Well, the probability
-that the \emph{smallest} number in the random set is one of the $k$
-numbers in $S$ is $k/n$.  Then, \emph{given} that the smallest number
-in the random set is in $S$, the probability that the \emph{second}
-smallest number in the random set is one of the remaining $k-1$
-elements in $S$ is $(k-1)/(n-1)$.  So by the product rule, the
-probability that the \emph{two} smallest numbers in the random set are
-both in $S$ is
-\[
-\frac{k}{n} \cdot \frac{k-1}{n-1}\, .
-\]
-Next, given that the two smallest numbers in the random set are in
-$S$, the probability that the third smallest number is one of the
-$k-2$ remaining elements in $S$ is $(k-2)/(n-2)$.  So by the product
-rule, the probability that the \emph{three} smallest numbers in the
-random set are all in $S$ is
-\[
-\frac{k}{n} \cdot \frac{k-1}{n-1} \cdot \frac{k-2}{n-2}.
-\]
-Continuing in this way, it follows that the probability that
-\emph{all} $k$ elements in the randomly chosen set are in $S$ is
-\begin{align*}
-p & = \frac{k}{n} \cdot \frac{k-1}{n-1} \cdot \frac{k-2}{n-2}
-              \cdots \frac{k-(k-1)}{n-(k-1)}\\
-  & = \frac{k \cdot (k-1) \cdot (k-1) \cdots 1}%
-           {n \cdot (n-1) \cdot (n-2) \cdots (n-(k-1))}\\
-  & = \frac{k!}{n!/(n-k)!}\\
-  & = \frac{k!(n-k)!}{n!}.
-\end{align*}
-So we have again shown the number of size-$k$ subsets of $[1,n]$,
-namely $1/p$, is
-\[
-\frac{n!}{k!(n-k)!}.
-\]
 
 \subsection{Medical Testing}\label{med_test-subsection}
 
@@ -411,28 +479,15 @@ time.
 But wait!  There is a simple way to make the test correct 90\% of the
 time: always return a negative result!  This ``test'' gives the right
 answer for all healthy people and the wrong answer only for the 10\%
-that actually have the condition.  So in terms of overall accuracy,
-completely ignoring the test result is a better strategy!
+that actually have the condition.  So a better strategy by this
+measure is to completely ignore the test result!
 
-\begin{editingnotes}
-Add a box or problem with an example where this test would be useful.
-For example, if you have only enough medicine to treat half the
-population, and you randomly choose people to treat, then the
-probability that you treat a sick person will be 1/2.  But if you
-first treat all the people who test positive, the probability that a
-sick person will be treated will be nearly 0.9.
-\end{editingnotes}
-
-
-\begin{editingnotes}
 There is a similar paradox in weather forecasting.  During winter,
 almost all days in Boston are wet and overcast.  Predicting miserable
 weather every day may be more accurate than really trying to get it
 right!
-\end{editingnotes}
 
-
-\subsection{\emph{A Posteriori} Probabilities}\label{aposteriori_subsec}
+\section{\emph{A Posteriori} Probabilities}\label{aposteriori_subsec}
 
 If you think about it too much, the medical testing problem we just
 considered could start to trouble you.  The concern would be that by
@@ -451,7 +506,7 @@ Anyway, if the medical testing example bothers you, you will
 definitely be worried by the following examples, which go even further
 down this path.
 
-\subsubsection{The Hockey Team in Reverse}
+\subsection{The Hockey Team in Reverse}
 
 Suppose that we turn the hockey question around: what is the
 probability that the local C-league hockey team won their first game,
@@ -529,7 +584,7 @@ In general, such pairs of probabilities are related by \idx{Bayes'
   Rule}:
 %
 \begin{theorem}[Bayes' Rule]
-%If $\pr{A}$ and $\pr{B}$ are nonzero, then:
+If $\pr{A}$ and $\pr{B}$ are nonzero, then:
 %
 \begin{equation}\label{bayesrule}
     \prcond{B}{A} = \frac{\prcond{A}{B} \cdot \pr{B}}{\pr{A}}
@@ -537,8 +592,7 @@ In general, such pairs of probabilities are related by \idx{Bayes'
 \end{theorem}
 
 \begin{proof}
-%When $\pr{A}$ and $\pr{B}$ are nonzero,
-We have
+When $\pr{A}$ and $\pr{B}$ are nonzero, we have
 \[
 \prcond{A}{B} \cdot \pr{B} = \prob{A \intersect B} = \prcond{B}{A} \cdot \pr{A}
 \]
@@ -621,7 +675,7 @@ occurs.  That is, calculate the probability of $A\nobreak
 Rule, the sum of these probabilities equals $\pr{A}$.  Expressing the
 intersection probabilities as conditional probabilities yields:
 \begin{rul}[Law of Total Probability, single event]\label{total_prob_Ebar}
-%If $\prob{E}$ and $\prob{\setcomp{E}}$~are nonzero, then
+If $\prob{E}$ and $\prob{\setcomp{E}}$~are nonzero, then
 \[
 \pr{A} = \prcond{A}{E} \cdot \pr{E} +
          \prcond{A}{\setcomp{E}} \cdot \pr{\setcomp{E}}.
@@ -647,24 +701,12 @@ the whole process yields a 2 is
 
 There is also a form of the rule to handle more than two cases.
 \begin{rul}[Law of Total Probability]
-If $E_1, \dots, E_n$ are disjoint events% with nonzero probabilities
-whose union is the whole sample space, then:
-\begin{equation}\label{multitotalprob}
+If $E_1, \dots, E_n$ are disjoint events whose union is the whole
+sample space, then:
+\[
 \pr{A} = \sum_{i=1}^{n} \prcond{A}{E_i} \cdot \pr{E_i}.
-\end{equation}
+\]
 \end{rul}
-
-This Law is the basis for a multi-event version of Bayes' Rule in
-which the coniditional probability of an event $E_1$ given event $A$
-is given in terms of the ``inverse'' conditional probabilities of $A$
-given events $E_1,E_2,\dots,E_n$:
-
-\begin{theorem}[Multi-event Bayes' Rule]
-If $E_1, \dots, E_n$ are disjoint events whose union is the whole sample space, then
-\begin{equation}\label{multibayesrule}
-\prcond{E_1}{A} = \frac{\prcond{A}{E_1}\cdot \pr{E_1}}{\sum_{i=1}^{n} \prcond{A}{E_i} \cdot \pr{E_i}}
-\end{equation}
-\end{theorem}
 
 \subsection{Conditioning on a Single Event}\label{cond_ident_subsec}
 
@@ -676,13 +718,13 @@ probabilities are conditioned on an event $C$:
 \prcond{A \union B}{C} = \prcond{A}{C} + \prcond{B}{C} - \prcond{A \intersect B}{C}.
 \]
 This is easy to verify by plugging in the Definition~\ref{LN12:prcond}
-of conditional probability.\footnote{Problem~\ref{PS_conditional_space} explains why
+of conditional
+probability.\footnote{Problem~\ref{PS_conditional_space} explains why
   this and similar conditional identities follow on general principles
   from the corresponding unconditional identities.}
 
 \iffalse
-%This follows from the fact that if $\pr{C} \neq 0$, then
-Namely, 
+This follows from the fact that if $\pr{C} \neq 0$, then
 \begin{align*}
 \prcond{A \union B}{C}
     &= \frac{\pr{(A \union B) \intersect C}}{\pr{C}} \\[3pt]
@@ -745,7 +787,6 @@ $1/3 \ne 1/2 + 1/2 - 1$, equation~\eqref{LN12:fc} does not hold.
 
 \end{figure}
 \fi
-
 
 \subsection{Discrimination Lawsuit}\label{discrimination_subsec}
 
@@ -850,12 +891,12 @@ about the causes of tenure decisions.\footnote{These issues are
 illustrates a basic principle in statistics which people constantly
 ignore: \emph{never assume that correlation implies causation}.
 
+
 %% Conditional Probability Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problems}
 \practiceproblems
 \pinput{TP_six_shooter_probability}
-\pinput{TP_bayes_proof}
 
 \classproblems
 \pinput{CP_missing_card_probability}
@@ -869,7 +910,6 @@ ignore: \emph{never assume that correlation implies causation}.
 \pinput{PS_conditional_probability_problem_errors}
 \pinput{PS_coin_flip_sequences}
 \pinput{PS_13_card_hand}
-\pinput{PS_conditional_probability_product_rule}
 \pinput{PS_conditional_space}
 
 \examproblems
@@ -1324,7 +1364,7 @@ start on analyzing the problem.  More importantly, these assumptions
 are justifiable in important computer science applications of birthday
 matching.  For example, the birthday matching is a good model for
 collisions between items randomly inserted into a hash table.  So we
-won't worry about things like spring procreation preferences that make
+won't worry about things like Spring procreation preferences that make
 January birthdays more common, or about twins' preferences to take
 classes together (or not).  \begin{editingnotes}
 or that fact that a student
@@ -1353,9 +1393,8 @@ that a couple has matching birthdays is \index{pairwise independent}
 be important in Chapter~\ref{deviation_chap} because pairwise
 independence will be enough to justify some conclusions about the
 expected number of matches.  However, these matching birthday events
-are \emph{not} mutually independent.  In fact, it's obvious that they're
-not even 3-way independent: if Alice and Bob match, and also
-Alice and Carol match, then Bob and Carol will match.
+are obviously \emph{not} even 3-way independent: if Alice and Bob
+match, and also Alice and Carol match, then Bob and Carol will match.
 
 \iffalse
 We could justify all these assertions of independence using the four
@@ -1443,8 +1482,9 @@ attacks'' that crack certain cryptographic systems.
 
 
 \begin{problems}
-%\practiceproblems
-%\pinput{TP_Practice_with_Bounds}
+\practiceproblems
+\pinput{TP_Binomial_Board_Breaking}
+\pinput{TP_Practice_with_Bounds}
 %\pinput{FP_random_sampling}
 
 \examproblems
