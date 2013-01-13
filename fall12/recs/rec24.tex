@@ -1,0 +1,355 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+\renewenvironment{problem}[1]
+  {\begin{problemthm}%
+   \pdfbookmark[1]{Problem~\theproblemthm}
+   {Problem\theproblemthm}
+   \setlength{\parindent}{0pt}%
+   \setcounter{outerproblempart}{0}}
+  {\end{problemthm}}
+
+\renewcommand{\ppart}[1]
+  {\item}
+ 
+%\hidesolutions
+\showsolutions
+\begin{document}
+
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#1}}\nolimits\left(#2\right)}
+
+\recitation{24}{December 5, 2012}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\insolutions{
+\section{Conditional Expectation and Total Expectation}
+
+There are conditional expectations, just as there are conditional
+probabilities.  If $R$ is a random variable and $E$ is an event, then
+the conditional expectation $\ex{R \mid E}$ is defined by:
+%
+\[
+\ex{R \mid E} = \sum_{w \in S} R(w) \cdot \pr{w \mid E}
+\]
+%
+For example, let $R$ be the number that comes up on a roll of a fair
+die, and let $E$ be the event that the number is even.  Let's compute
+$\ex{R \mid E}$, the expected value of a die roll, given that the
+result is even.
+%
+\begin{align*}
+\ex{R \mid E} 
+    & = \sum_{w \in \set{1, \ldots, 6} } R(w) \cdot \pr{w \mid E} \\
+    & = 1 \cdot 0 + 2 \cdot \frac{1}{3} + 3 \cdot 0 +
+        4 \cdot \frac{1}{3} + 5 \cdot 0 + 6 \cdot \frac{1}{3} \\
+    & = 4
+\end{align*}
+
+It helps to note that the conditional expectation, $\ex{R \mid
+E}$ is simply the expectation of $R$ with respect to the probability
+measure $\prsub{E}{}$ defined in PSet 10.  So it's linear:
+\[
+\ex{R_1+R_2 \mid E} = \ex{R_1 \mid E} + \ex{R_2 \mid E}.
+\]
+
+Conditional expectation is really useful for breaking down the calculation
+of an expectation into cases.  The breakdown is justified by an analogue
+to the Total Probability Theorem:
+
+\begin{theorem}[Total Expectation]
+Let $E_1, \ldots, E_n$ be events that partition the sample space and
+all have nonzero probabilities.  If $R$ is a random variable, then:
+%
+\[
+\ex{R} = \ex{R \mid E_1} \cdot \pr{E_1} + \cdots +
+         \ex{R \mid E_n} \cdot \pr{E_n}
+\]
+\end{theorem}
+
+For example, let $R$ be the number that comes up on a fair die and $E$
+be the event that result is even, as before.  Then $\overline{E}$ is
+the event that the result is odd.  So the Total Expectation theorem
+says:
+%
+\[
+\underbrace{\ex{R}}_{=\ 7/2} = \underbrace{\ex{R \mid E}}_{=\ 4} \cdot \underbrace{\pr{E}}_{=\ 1/2} + \underbrace{\ex{R \mid \overline{E}}}_{=\ ?} \cdot \underbrace{\pr{E}}_{=\ 1/2}
+\]
+%
+The only quantity here that we don't already know is $\ex{R \mid
+\overline{E}}$, which is the expected die roll, given that the result is
+odd.  Solving this equation for this unknown, we conclude that $\ex{R \mid
+\overline{E}} =3$.
+
+To prove the Total Expectation Theorem, we begin with a Lemma.
+
+\begin{lemma*}
+Let $R$ be a random variable, $E$ be an event with positive probability,
+and $I_E$ be the indicator variable for $E$.  Then
+\begin{equation}\label{RE}
+\ex{R \mid E}  = \frac{\ex{R \cdot I_E}}{\pr{E}}
+\end{equation}
+\end{lemma*}
+
+\begin{proof}
+Note that for any outcome, $s$, in the sample space,
+\[
+\pr{\set{s} \cap E} = \begin{cases} 0 & \text{if }I_E(s) = 0,\\
+                                \pr{s} &  \text{if }I_E(s) = 1,
+\end{cases}
+\]
+and so
+\begin{equation}\label{sE}
+\pr{\set{s}\cap E} = I_E(s) \cdot \pr{s}.
+\end{equation}
+
+Now,
+\begin{align*}
+\ex{R \mid E} & = \sum_{s \in S} R(s)\cdot \pr{\set{s} \mid E} & \text{(Def of
+              $\ex{\cdot \mid E}$)}\\
+              & = \sum_{s \in S} R(s)\cdot  \frac{\pr{\set{s} \cap E}}{\pr{E}} &
+              \text{(Def of $\pr{\cdot \mid E}$)}\\
+              & = \sum_{s \in S} R(s)\cdot 
+              \frac{I_E(s) \cdot \pr{s}}{\pr{E}}  & \text{(by~\eqref{sE})}\\
+             & = \frac{\sum_{s \in S} (R(s)\cdot I_E(s)) \cdot 
+              \pr{s}}{\pr{E}}\\
+             & = \frac{\ex{R\cdot I_E}}{\pr{E}} & \text{(Def of $\ex{R\cdot I_E}$)}
+\end{align*}
+
+\end{proof}
+
+Now we prove the Total Expectation Theorem:
+
+\begin{proof}
+Since the $E_i$'s partition the sample space,
+\begin{equation}\label{R=}
+R = \sum_i R\cdot I_{E_i}
+\end{equation}
+for any random variable, $R$.  So
+\begin{align*}
+\ex{R} & = \ex{\sum_i R\cdot I_{E_i}}  & \text{(by~\eqref{R=})}\\
+       & = \sum_i \ex{R\cdot I_{E_i}}  & \text{(linearity of $\ex{}$)}\\
+       & = \sum_i \ex{R \mid E_i} \cdot \pr{E_i} & \text{(by~\eqref{RE})}
+\end{align*}
+
+\end{proof}
+
+\iffalse
+
+\begin{proof} % meta-Q disaster :-(
+\begin{align*}
+\ex{R}
+  & = \sum_{w \in S} R(w) \cdot \pr{w} & \text{def. of expectation}\\
+  & = \sum_{w \in S} R(w) \cdot \paren{\sum_{k=1}^n \pr{w \mid E_k}
+  \cdot \pr{E_k}} & \text{Total Probability} \\ & = \sum_{w \in S}
+  \sum_{k=1}^n R(w) \cdot \pr{w \mid E_k} \cdot \pr{E_k} & \text{pull
+  $R(w)$ into inner sum} \\ & = \sum_{k=1}^n \sum_{w \in S} R(w) \cdot
+  \pr{w \mid E_k} \cdot \pr{E_k} & \text{swap sums} \\ & =
+  \sum_{k=1}^n \pr{E_k} \cdot \paren{\sum_{w \in S} R(w) \cdot \pr{w
+  \mid E_k}} & \text{pull $\pr{E_k}$ out} \\ & = \sum_{k=1}^n \pr{E_k}
+  \cdot \ex{R \mid E_k} & \text{def. of cond. expectation}
+\end{align*}
+\end{proof}
+\fi
+
+
+\newpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{}
+Here's yet another fun 6.042 game!  You pick a number between 1 and 6.
+Then you roll three fair, independent dice.
+%
+\begin{itemize}
+\item If your number never comes up, then you lose a dollar.
+\item If your number comes up once, then you win a dollar.
+\item If your number comes up twice, then you win two dollars.
+\item If your number comes up three times, you win \textit{four} dollars!
+\end{itemize}
+%
+What is your expected payoff?  Is playing this game likely to be
+profitable for you or not?
+
+\solution{Let the random variable $R$ be the amount of money won or
+lost by the player in a round.  We can compute the expected value of
+$R$ as follows:
+%
+\begin{align*}
+\ex{R}  & =    -1  \cdot \pr{\text{0 matches}} +
+                     1 \cdot \pr{\text{1 match}} +
+                     2  \cdot \pr{\text{2 matches}} +
+                     4 \cdot \pr{\text{3 matches}} \\
+        & =    -1 \cdot \left(\frac{5}{6}\right)^3 +
+                1 \cdot 3\left(\frac{1}{6}\right)\left(\frac{5}{6}\right)^2+
+                2 \cdot 3\left(\frac{1}{6}\right)^2\left(\frac{5}{6}\right)+
+                4 \cdot \left(\frac{1}{6}\right)^3 \\
+        & =    \frac{-125 + 75 + 30 + 4}{216} \\
+        & =    \frac{-16}{216}
+\end{align*}
+%
+You can expect to lose $16/216$ of a dollar (about 7.4 cents) in every
+round.  This is a horrible game!}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\begin{problem}{}
+The number of squares that a piece advances in one turn of the game
+Monopoly is determined as follows:
+
+\begin{itemize}
+
+\item Roll two dice, take the sum of the numbers that come up, and
+advance that number of squares.
+
+\item If you roll {\em doubles} (that is, the same number comes up on
+both dice), then you roll a second time, take the sum, and advance
+that number of additional squares.
+
+\item If you roll doubles a second time, then you roll a third time,
+take the sum, and advance that number of additional squares.
+
+\item However, as a special case, if you roll doubles a third time,
+then you go to jail.  Regard this as advancing zero squares overall
+for the turn.
+
+\end{itemize}
+
+\end{problem}
+
+\bparts
+
+\ppart{} What is the expected sum of two dice, given that the same
+number comes up on both?
+
+\solution[\vspace{2in}]{There are six equally-probable sums: 2, 4, 6, 8, 10, and 12.
+Therefore, the expected sum is:
+%
+\[
+\frac{1}{6} \cdot 2 + \frac{1}{6} \cdot 4 + \ldots + \frac{1}{6} \cdot 12 = 7
+\]
+}
+
+\ppart{} What is the expected sum of two dice, given that different
+numbers come up?  (Use your previous answer and the Total Expectation
+Theorem.)
+
+\solution[\vspace{3in}]{Let the random variables $D_1$ and $D_2$ be the
+numbers that come up on the two dice.  Let $E$ be the event that they are
+equal.  The Total Expectation Theorem says:
+%
+\begin{align*}
+\ex{D_1 + D_2}
+	& = 	\ex{D_1 + D_2 \mid E} \cdot \pr{E} + 
+		\ex{D_2 + D_2 \mid \overline{E}} \cdot \pr{\overline{E}} \\
+\end{align*}
+%
+Two dice are equal with probability $\pr{E} = 1 / 6$, the expected sum
+of two independent dice is 7, and we just showed that $\ex{D_1 +
+D_2 \mid E} = 7$.  Substituting in these quantities and solving the
+equation, we find:
+%
+\begin{align*}
+7	& = 	7 \cdot \frac{1}{6} + 
+		\ex{D_2 + D_2 \mid \overline{E}} \cdot \frac{5}{6} \\
+\ex{D_2 + D_2 \mid \overline{E}}
+	& = 	7
+\end{align*}
+}
+
+\instatements{\newpage}
+
+\ppart{} To simplify the analysis, suppose that we always roll the dice
+three times, but may ignore the second or third rolls if we didn't
+previously get doubles.  Let the random variable $X_i$ be the sum of
+the dice on the $i$-th roll, and let $E_i$ be the event that the
+$i$-th roll is doubles.  Write the expected number of squares a piece
+advances in these terms.
+
+\solution[\vspace{3in}]{
+From the total expectation formula, we get:
+%
+\begin{align*}
+\ex{\text{advance}}
+	& = 	\ex{X_1 \mid \overline{E_1}}
+			\cdot \pr{\overline{E_1}} \\
+	& \quad	+ \ex{X_1 + X_2 \mid E_1 \cap \overline{E_2}}
+			\cdot \pr{E_1 \cap \overline{E_2}} \\
+	& \quad	+ \ex{X_1 + X_2 + X_3 \mid E_1 \cap E_2 \cap
+			  \overline{E_3}}
+			\cdot \pr{E_1 \cap E_2 \cap \overline{E_3}} \\
+	& \quad	+ \ex{0 \mid E_1 \cap E_2 \cap E_3}
+			\cdot \pr{E_1 \cap E_2 \cap E_3} \\
+\end{align*}
+Then using linearity of (conditional) expectation, we refine this to
+\begin{align*}
+\lefteqn{\ex{\text{advance}}}\\
+	& = 	\ex{X_1 \mid \overline{E_1}}
+			\cdot \pr{\overline{E_1}} \\
+	& \quad	+ \paren{\ex{X_1  \mid E_1 \cap \overline{E_2}}
+                          + \ex{X_2 \mid E_1 \cap \overline{E_2}}}
+			\cdot \pr{E_1 \cap \overline{E_2}} \\
+	& \quad	+ \paren{\ex{X_1 \mid E_1 \cap E_2 \cap
+			  \overline{E_3}} + \ex{X_2 \mid E_1 \cap E_2 \cap
+			  \overline{E_3}} +
+             \ex{X_3 \mid E_1 \cap E_2 \cap \overline{E_3}}}\\
+        &          \qquad \cdot \pr{E_1 \cap E_2 \cap \overline{E_3}}\\
+	& \quad	+ 0.
+\end{align*}
+Using mutual independence of the rolls, we simplify this to
+\begin{align}
+\lefteqn{\ex{\text{advance}}}\notag\\
+	& = 	\ex{X_1 \mid \overline{E_1}}
+			\cdot \pr{\overline{E_1}}\label{exa} \\
+	& \quad	+ \paren{\ex{X_1  \mid E_1}
+                          + \ex{X_2 \mid \overline{E_2}}}
+			\cdot \pr{E_1} \cdot \pr{\overline{E_2}}\notag \\
+	& \quad	+ \paren{\ex{X_1 \mid E_1} + \ex{X_2 \mid E_2} +
+             \ex{X_3 \mid \overline{E_3}}}
+			\cdot \pr{E_1} \cdot \pr{E_2} \cdot \pr{\overline{E_3}}\notag
+\end{align}
+}
+
+\iffalse
+
+ERIC: There's a bunch of defs and facts being used here that we haven't
+mentioned explicitly.  We should remark that an RV, $R$, is independent of an
+event, $E$, iff $R$ and $I_E$ are independent RV's.  Next we need that if
+$R$ is independent of $E$, then $\ex{R \mid E} = \ex{R}$:
+\begin{proof}
+\begin{align*}
+ ex{R \mid E} &  = \frac{\ex{R \cdot I_E}}{\pr{E}} & \text{(by~\eqref{RE})}\\
+              & =  \frac{\ex{R} \cdot \ex{I_E}}{\pr{E}}
+                        & \text{(independence of $R$ from $E$)}\\
+              & =  \frac{\ex{R} \cdot \pr{E}}{\pr{E}}
+                        & \text{(rule for Ex(indicator))}\\
+              & = \ex{R}.
+\end{align*}
+\end{proof}
+More generally, we need that $\ex{R \mid (E \cap F)} = \ex{R \mid F}$ when
+$R$ and $F$ are both indep of $E$ -- or something like that I haven't had
+time to check.
+\fi
+
+\ppart{} What is the expected number of squares that a piece advances in
+Monopoly?
+
+\solution[\vspace{3in}]{We plug the values
+from parts (a) and (b) into equation~\eqref{exa}:
+%
+\begin{align*}
+\ex{\text{advance}}
+	& = 	7 \cdot \frac{5}{6}
+		+ (7 + 7) \cdot \frac{1}{6} \cdot \frac{5}{6}
+		+ (7 + 7 + 7) \cdot \frac{1}{6} \cdot \frac{1}{6} \cdot \frac{5}{6}\\
+	& = 8\frac{19}{72}
+\end{align*}
+}
+
+\eparts
+
+\end{document}
