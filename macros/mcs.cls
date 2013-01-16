@@ -2630,10 +2630,10 @@
 
 
 \newcommand{\coursecopyrightyear}{
-  2011%
+  2013%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightyear}{2011}
+\renewcommand{\coursecopyrightyear}{2013}
 
 \newcommand{\coursecopyrightnames}{
 Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
