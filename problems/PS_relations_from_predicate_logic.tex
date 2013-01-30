@@ -1,15 +1,22 @@
 \documentclass[problem]{mcs}
 
 \newcommand{\discrs}{\ensuremath{\mathcal{D}}}
+\newcommand{\vrbls}{\ensuremath{\text{Var}}}
 
 \begin{pcomments}
   \pcomment{PS_relations_from_predicate_logic}
   \pcomment{created by adamc for S12:ps2}
+  \pcomment{edited by ARM 1/29/13}
+  \pcomment{not in book, still needs a lot of work}
 \end{pcomments}
 
 \pkeywords{
   relations
   predicate logic
+  environment
+  meaning
+  sets
+  recursive_definition
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,23 +27,24 @@
 
 Many mathematical concepts can be expressed with roughly similar
 effort either via sets or predicate formulas.  One might wonder
-whether there are concepts that can be expressed only with one of the
-approaches and not the other.  It may be easy to believe that any
-description via sets can be written as a predicate formula as well,
-since, as we will see in Chapter \ref{set_theory_chap}, the axioms of
-ZF set theory show how the concepts of set theory can be defined via
-predicate formulas.  Less obviously, we can re-express any predicate
-formula via set theory operations.  In this problem, you will invent a
-strategy for this translation, dealing with a subset of the usual
-predicate formula constructs.
+whether there are concepts that can be expressed only one way or the
+other.  It may be easy to believe that any description via sets can be
+written as a predicate formula as well, since, as we will see in
+Chapter~\bref{set_theory_chap}, the axioms of set theory show how the
+concepts of set theory can be defined via predicate formulas.  Less
+obviously, we can re-express any predicate formula via set theory
+operations.  In this problem, you will invent a strategy for this
+translation, dealing with a subset of the usual predicate formula
+constructs.
 
 In particular, consider predicate formulas built only with the
 following constructs:
 \begin{itemize}
 
-\item $R(x, y)$, for any binary relation symbol $R$ and variables $x$ and $y$,
+\item $\mtt{R}(x, y)$, where $\mtt{R}$ is a fixed binary
+  relation symbol, and $x$ and $y$ are variables,
 
-\item $\QNOT(\varphi)$, where $\varphi$ is a predicate formula,i
+\item $\QNOT(\varphi)$, where $\varphi$ is a predicate formula,
 
 \item $\varphi_1 \QAND \varphi_2$ and $\varphi_1 \QOR \varphi_2$,
   where $\varphi_1$ and $\varphi_2$ are predicate formulas,
@@ -45,15 +53,15 @@ following constructs:
   is a variable, and $\varphi$ is a formula that may mention $x$.
 \end{itemize}
 
-An \term{environment} is what computer scientists call an object that
-assigns values to variables; logicians call them \term{variable
-  assignments}.  So an environment can be represented as a
-function from the set of variables to their values.  For example, let
+An \term{environment} is what computer scientists call an assignment
+of values to variables; logicians call them \term{variable
+  assignments}.  Formally, an environment is a
+function from the set of variables to their values.  For example,
+if $\varphi$ is the formula
 \[
-\varphi \eqdef x + y = z,
+x + y = z,
 \]
-be a predicate formula, and let $\nu_1$ and $\nu_2$ be environments
-where
+and $\nu_1$ and $\nu_2$ be environments such that
 \[\begin{array}{l}
 \nu_1(x) = 2, \nu_1(y) = 3, \nu_1(z) = 5,\\
 \nu_2(x) = 0, \nu_1(y) = 1, \nu_1(z) = 2,
@@ -62,32 +70,25 @@ then $\varphi$ is true in environment $\nu_1$ and false in $\nu_2$.
 
 From now on, let's assume there is a fixed domain of discourse,
 \discrs, that all variables range over.  So an environment is a
-function from variables to \discrs.  Let $\Env$ be set of all such
-environments.  We will take the relation symbol $R$ that appears in
-formulas as the name of an actual binary relation $R_\discrs$ on the
-domain \discrs. 
+function from the set, \vrbls, of all variables to \discrs.  Let
+$\Env$ be set of all such environments.  We will take the relation
+symbol $\mtt{R}$ that appears in formulas as the name some given
+binary relation $R_\discrs$ on the domain \discrs.
 
-Now we can say that the meaning
+Now we can say that the \index{meaning of a predicate
+  formula}\emph{meaning}, $\mean{\varphi}$ of a predicate formula
+$\varphi$ is the set of environments in which it is true.
 
 \bparts
 
-\ppart Describe a procedure for translating any such predicate formula
-into a set theory expression standing for the set of
-\term{environments}
-\iffalse
-\emph{variable assignments}
-\fi
-that make the formula true.  In more detail, let
-$\mathcal V$ be the set of all variables; the details of which
-elements belong to $\mathcal V$ are not important.  Let $\mathcal D$
-be the domain of discourse, that is, the set of fundamental objects
-that all the variables range over.  
+\ppart Give a recursive definition of the meaning of any such
+predicate formula.
 
-To start you off, here is a rule for encoding the predicate formula
-$R(x, y)$ as a set of variable assignments.  We use the name $\mathcal
-A$ for the set of variable assignments.
-
-$$R(x, y) ::= \{ a \in \mathcal A | R(a(x), a(y)) \}$$
+To start you off, here is a rule for the basic formula
+$\mtt{R}(x, y)$:
+\[
+\mean{\mtt{R}(x, y)} \eqdef \set{e \in \Env \suchthat R_\discrs(e(x), e(y))}.
+\]
 
 Complete a description of a translation from predicate formulas to set
 theory expressions, such that any output expression does not use any
@@ -103,8 +104,8 @@ Two more notational conventions will be useful:
   denote the sum of all values of $e$ while variable $i$ ranges from 1
   to $n$.  An alternate notation using set theory is $\Sigma_{i \in S}
   e$ for some set $S$, where we take the sum of $e$ with $i$
-  substituted by every element of $S$.  Similar notation $\bigcup_{x
-    \in S} e$ and $\bigcap_{x \in S} e$ will be useful for taking the
+  substituted by every element of $S$.  Similar notation $\lgunion_{x
+    \in S} e$ and $\lgintersect_{x \in S} e$ will be useful for taking the
   union or intersection, respectively, of all values of $e$ obtained
   by subsituting elements of $S$ for variable $x$.
 \end{itemize}
@@ -124,9 +125,8 @@ Two more notational conventions will be useful:
   \end{eqnarray*}
 \end{solution}
 
-\ppart Prove that a predicate formula $\varphi$ is true under some
-variable assignment $a$ iff $a$ belongs to the set that your
-translation outputs for $\varphi$.
+\ppart Prove that a predicate formula $\varphi$ is true under
+environment $e$ iff $e \in \mean{\varphi}$.
 
 \hint Consider the set of nonnegative integers $n$ such that some
 formula $\varphi$ exists where (a) $\varphi$ is $n$ characters long
@@ -145,7 +145,7 @@ contradiction via the Well Ordering Principle.
 
   \begin{itemize}
 
-  \item Case $\varphi = R(x, y)$:
+  \item Case $\varphi = \mtt{R}(x, y)$:
 
 \[\begin{array}{rcll}
 a \textrm{ satisfies } \varphi &\QIFF{}& R(a(x), a(y))
@@ -210,7 +210,10 @@ a \textrm{ satisfies } \varphi &\QIFF{}& R(a(x), a(y))
 
   \end{itemize}
 
-  Since every case shows that the desired equivalence holds for $\varphi$, we have contradicted our assumption that $C$ is nonempty.  Therefore, $C$ is empty, and every formula $\varphi$ of every character length satisfies the equivalence.
+  Since every case shows that the desired equivalence holds for
+  $\varphi$, we have contradicted our assumption that $C$ is nonempty.
+  Therefore, $C$ is empty, and every formula $\varphi$ of every
+  character length satisfies the equivalence.
 \end{solution}
 
 \eparts
