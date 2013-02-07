@@ -1237,6 +1237,7 @@
 \newcommand{\QIFF}{\mbint{\textsc{iff}}}
 \newcommand{\QNOT}{\mopt{\textsc{not}}}
 \newcommand{\QNAND}{\mopt{\textsc{nand}}}
+\newcommand{\QNOR}{\mopt{\textsc{nor}}}
 
 \newcommand{\nand}{\mathbin{\mid}}
 
