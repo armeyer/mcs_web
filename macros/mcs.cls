@@ -2737,28 +2737,33 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   See also \texttt{course.sty} for a longer example.%
   \message{^^JExam preamble is *INCORRECT*.^^J^^J}
   \vfill}
+
 \newcommand{\useStandardMiniquizPreamble}{
 \renewcommand{\exampreamble}{   % !! renew \exampreamble
-  \begin{tabular}{ll}
-    \textbf{Circle your TA}: &  \courseassistants\\[.35cm] 
-    \textbf{Write your}:     &  \teaminfo
+  \begin{tabular}{l}
+%    \textbf{Circle your TA/LA}: &  \courseassistants\\[.35cm] 
+    \textbf{Write your}:  \teaminfo
   \end{tabular}
 
   \begin{itemize}
 
   \item
-   This exam is \textbf{closed book}, but you may use one page of notes.  Total time is \examtime.
+   This exam is \textbf{closed book}, except for a one-sided crib
+   sheet.  Total time is \miniqtime.
+
+\iffalse
 
   \item
    Write your solutions in the space provided.  If you need more
    space, write on the back of the sheet containing the problem.
    Please keep your entire answer to a problem on that problem's page.
 
-   \item
+ \item
    You may use any of the results from class or text without proof.
 
-  \item
+ \item
    GOOD LUCK!
+\fi
   \end{itemize}}}
 
 \newcommand{\examtable}{%
@@ -2838,7 +2843,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \textbf{Your name:}       &                       \\[.35cm]
     \textbf{Due date:}        & \duedateofpaper{ps#1} \\[.35cm]
     \textbf{Submission date:} &                       \\[.35cm] 
-    \textbf{Circle your TA}:  & \courseassistants\\[.35cm] 
+%    \textbf{Circle your TA}:  & \courseassistants\\[.35cm] 
     \textbf{Write your}:      & \teaminfo
   \end{tabular}
   \vspace{.35cm}
@@ -2868,10 +2873,17 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \end{tabular}
   \end{center}}
 
-
 \newcommand{\examtime}{%
   Renew $\backslash$\texttt{examtime} to get the time here!!%  
   \message{^^JExam time *INCORRECT*.^^J^^J}}
+
+\newcommand{\miniqtime}{%
+  Renew $\backslash$\texttt{miniqtime} to get the time here!!%  
+  \message{^^JMiniquiz time *INCORRECT*.^^J^^J}}
+
+\newcommand{\midtermtime}{%
+  Renew $\backslash$\texttt{examtime} to get the time here!!%  
+  \message{^^JMidterm time *INCORRECT*.^^J^^J}}
 
 \newcommand{\courseassistants}{%
   Renew $\backslash$\texttt{courseassistants} to get 
@@ -3108,9 +3120,10 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
     \paper[#1]{mqus#2}{}{Staff Solutions to Mini-Quiz #2}
     \else
     \ifshowsolutions
-        \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
+    \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
     \else
-        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
+%        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
+    \paper[#1]{mqu#2}{}{Mini-Quiz #2}
     \fi
     \fi}
 
