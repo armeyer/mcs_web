@@ -1,8 +1,8 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{PS_walk_relation_composition}
-  \pcomment{revised for walks by ARM, 3/10/11}
+  \pcomment{CP_walk_relation_composition}
+  \pcomment{better version of PS_walk_relation_composition}
   \pcomment{from: digraph notes}
 \end{pcomments}
 
@@ -17,75 +17,120 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-%Prove Lemma~\bref{lem:Rn-paths}, Namely,
-
-Let $R$ be a binary relation on a set $A$ and $C^n$ be the composition
-of $R$ with itself $n$ times for $n \ge 0$.  So $C^0 \eqdef
-\ident{A}$, and $C^{n+1} \eqdef R \compose C^n $.  Regarding $R$ as a
-digraph, let $R^n$ denote the length-$n$ walk relation in the digraph
+Let $R$ be a binary relation on a set $A$.  Regarding $R$ as a
+digraph, let $W^{(n)}$ denote the length-$n$ walk relation in the digraph
 $R$, that is,
 \[
-a \mrel{R^n} b \eqdef \mbox{there is a length-$n$ walk from $a$ to
+a \mrel{W^{(n)}} b \eqdef \mbox{there is a length-$n$ walk from $a$ to
     $b$ in $R$}.
 \]
+
+\bparts
+
+\ppart
 Prove that
 \begin{equation}\label{RnRpnp}
-R^n = C^n
+W^{(n)} \compose W^{(m)} = W^{(m+n)}
 \end{equation}
-for all $n \in \naturals$.
+for all $m,n \in \naturals$, where $\compose$ denotes \idx{relational
+composition}.\inhandout{
+\footnote{ The \idx{composition} of binary relations $R: B\to C$ with
+  $S: A \to B$ is the binary relation $(R \compose S): A\to C$ defined
+  by the rule
+\[
+a \mrel{(R \compose S)} c \eqdef\ \exists b \in B.\, (a \mrel{S} b)
+\QAND (b \mrel{R} c).
+\]
+}}
 
 \begin{solution}
 
 \begin{proof}
-By induction on $n$ with equation~\eqref{RnRpnp} as induction
-hypothesis.
-
-\inductioncase{Base case} ($n=0$): $C^0 = \ident{A}$ by definition, and $R^0$
-is the length-0 walk relation which also equals $\ident{A}$ by
-definition.
-
-\inductioncase{Inductive step:} Suppose~\eqref{RnRpnp} holds for some $n\ge 0$.
-We want to prove it holds with ``$n$'' replaced by ``$n+1$.''
-
-We begin by showing that
-\begin{equation}\label{arn1bimp}
-a \mrel{R^{n+1}} b \qimplies a \mrel{C^{n+1}} b.
-\end{equation}
-So suppose $a \mrel{R^{n+1}} b$, that is, there is a length-$(n+1)$
-walk
-\[
-a=a_0\ \diredge{a_0}{a_1}\ a_1\ \diredge{a_1}{a_2} \dots \diredge{a_n}{a_{n+1}}\ a_{n+1} =b
+  Any length-$(m+n)$ walk between vertices $u$ and $v$ begins with a
+  length-$m$ walk starting at $u$ and ending at some vertex, $w$,
+  followed by a length-$n$ walk starting at $w$ and ending at $v$.  So
+ \[
+u \mrel{W^{(m+n)}} v 
+   \qiff \exists w.\, u \mrel{W^{(m)}} w \QAND w \mrel{W^{(n)}} v
+   \qiff  u \mrel{W^{(n)} \compose W^{(m)}} v
 \]
-in $R$.  In particular, there is a length-$n$ walk from $a$ to some
-vertex $a_n$ such that $a_n \mrel{R} b$.  By induction hypothesis, we
-have that $a\mrel{C^n} a_n$.  Therefore,
-\[
-a \mrel{(C^n \compose R)} b
-\]
-by the definition\inbook{~(\bref{rel_compose_def})} of composition.
-This proves~\eqref{arn1bimp}.
-
-Conversely, we show that
-\begin{equation}\label{acn1imp}
-a \mrel{C^{n+1}} b \qimplies a \mrel{R^{n+1}} b.
-\end{equation}
-So suppose $a \mrel{C^{n+1}} b$, that is $a \mrel{(C^n \compose R)}
-b$.  By definition of composition, there must be an $a_n \in A$ such
-that
-\[
-a \mrel{C^n} a_n \QAND a_n \mrel{R} b.
-\]
-So there is a length-$n$ walk from $a$ to $a_n$ by induction
-hypothesis, and $\diredge{a_n}{b} \in \edges{R}$.  Merging the walk
-with this edge yields a length-$(n+1)$ walk from $a$ to $b$.  That is,
-$a \mrel{R^{n+1}} b$.  This proves~\eqref{acn1imp}
-
-Combining~\eqref{arn1bimp} and~\eqref{acn1imp} we conclude that
-$R^{n+1} = C^{n+1}$, which is the exactly~\eqref{RnRpnp} with ``$n$''
-replaced by ``$n+1$,'' completing the proof by induction.
 \end{proof}
 
 \end{solution}
+
+\ppart  Let $R^n$ be the composition
+of $R$ with itself $n$ times for $n \ge 0$.  So $R^0 \eqdef
+\ident{A}$, and $R^{n+1} \eqdef R \compose R^n $.  
+
+Conclude that
+\begin{equation}\label{Rn=Wn}
+R^n = W^{(n)}
+\end{equation}
+ for all $n \in \naturals$.
+
+\begin{solution}
+
+\begin{proof}
+By induction on $n$ with equation~\eqref{Rn=Wn} as induction
+hypothesis.
+
+\inductioncase{Base case} ($n=0$): $R^0 = \ident{A}$ by definition,
+and $W^{(0)}$ is the length-0 walk relation which also equals
+$\ident{A}$ by definition.
+
+\inductioncase{Inductive step:} Suppose~\eqref{Rn=Wn} holds for some $n\ge 0$.
+We want to prove that
+\[
+R^{n+1} = W^{(n+1)}.
+\]
+
+We first observe that
+\begin{equation}\label{R=W1}
+R = W^{(1)}
+\end{equation} by definition.
+
+Now we have
+\begin{align*}
+R^{n+1} & \eqdef R \compose R^n\\
+       & = W^{(1)} \compose W^{(n)} 
+           & \text{(by~\eqref{R=W1} and ind. hyp.~\eqref{Rn=Wn})}\\
+       & = W^{(n+1)}
+           & \text{(by~\eqref{RnRpnp})}
+\end{align*}
+
+This completes the proof by induction, and we conclude that $\forall n
+\in \naturals.\, R^n = W^{(n)}$.
+
+\end{proof}
+\end{solution}
+
+\ppart Conclude that
+\[
+R^{+} = \lgunion_{i=1}^n R^i
+\]
+where $n \eqdef \card{A}$ and $R^{+}$ is the positive length walk
+relation of $R$.
+
+\begin{solution}
+By Theorem~\bref{shortestwalk_thm}, there is a positive length walk
+from vertex $u$ to a different vertex $v$ iff there is a positive
+length path from $u$ to $v$.  Likewise, by
+Lemma~\bref{shortestclosedwalk_lem}, there is a positive length walk
+from $u$ to itself iff $u$ is on a positive length cycle.  Since no
+path can be longer than $n-1$ and no positive length cycle can be
+longer than $n$, it follows that
+\begin{align*}
+u \mrel{R^{+}} v
+  & \qiff \exists i \in [1,n].\, \text{[there is a length
+       $i$ walk from $u$ to $v$]}\\
+  & \qiff \exists i \in [1,n].\ u \mrel{ W^{(i)}} v\\
+  & \qiff u \mrel{\paren{\lgunion_{i=1}^n W^{(i)}}} v\\
+  & \qiff u \mrel{\paren{\lgunion_{i=1}^n R^i}} v & \text{by~\eqref{Rn=Wn}}.
+\end{align*}
+
+\end{solution}
+
+\eparts
 \end{problem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
