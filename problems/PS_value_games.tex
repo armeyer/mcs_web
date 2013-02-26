@@ -104,25 +104,28 @@ A \emph{play} of a game is a sequence of legal moves that either goes
 on forever or finishes with an ended game.  More formally:
 
 \begin{definition*}%\label{def:play}
-The \term{plays} of a game $G \in \VG$ are defined recursively on the
+A \term{play} of a game $G \in \VG$ is defined recursively on the
 definition of $\VG$:
 
 \inductioncase{Base case}: ($G$ is an ended game.)
-Then the length one sequence $(G)$ is a \term{play} of $G$.
+Then the length one sequence $(G)$ is a \emph{play} of $G$.
 
 \inductioncase{Constructor case}: ($G$ is not an ended game.)
   Then a \emph{play} of $G$ is a sequence that starts with a possible first
   move, $G_i$, of $G$ and continues with the elements of a play of $G_i$.
+
+If a play does not go on forever, its \term{payoff} is defined to be
+the value it ends with.
 \end{definition*}
 
-If a play does not go on forever, we can define its \emph{payoff} to
-be the value it ends with.  Let's first rule out the possibility of
-playing forever.  Namely, every play will have a payoff.
+Let's first rule out the possibility of playing forever.  Namely,
+every play will have a payoff.
 
 \bparts
 
-\ppart Prove that every play of a \VG\ is a finite sequence that ends
-with a value in $V$.  \hint By structural induction on $G$.
+\ppart Prove that every play of a $G \in \VG$ is a finite sequence that
+ends with a value in $V$.  \hint By structural induction on the
+definition of \VG.
 
 \begin{solution}
 We prove by structural induction on $G \in \VG$ that every play of $G$
@@ -134,10 +137,10 @@ certainly ends with a value.
 
 \inductioncase{Constructor case}: [$G = (a, \set{G_0,G_1,\dots})$.]  A
 play of $G$ by definition consists of a sequence that starts with some
-$G_j$ and continues with a play of $G_j$.  By structural induction, we
-know that this play of $G_j$ is a sequence of some finite length $n$
-that ends with a value, so this play of $G$ is a length $n+1$ sequence
-that ends with the same value.
+first move $G_j$ and continues with a play of $G_j$.  By structural
+induction, we know that this play of $G_j$ is a sequence of some
+finite length $n$ that ends with a value, so this play of $G$ is a
+length $n+1$ sequence that ends with the same value.
 \end{solution}
 
 \eparts
@@ -147,10 +150,12 @@ to make when it's his turn.  Formally:
 \begin{definition*}
 If $a$ is one of the labels \texttt{max} or \texttt{min}, then an
 $a$-\term{strategy} is a function $s:\VG \to \VG$ such that
-\begin{itemize}
-\item $s(G)$ is a first move of $G$ if $G$ has label $a$, and
-\item $s(G)$ is undefined otherwise.
-\end{itemize}
+\[
+s(G)\text{ is } \begin{cases}
+                \text{a first move of $G$} & \text{if $G$ has label $a$,}\\
+                \text{undefined}, & \text{otherwise.}
+                \end{cases}
+\]
 \end{definition*}
 
 Any pair of strategies for the two players determines a unique play of
@@ -163,7 +168,7 @@ strategy for the min-player \term{caps} payoff at $v$ when, paired
 with any strategy for the max-player, the resulting payoff is \emph{at
   most} $v$.
 
-\begin{staffnotes}
+\begin{editingnotes}
 \begin{definition}
 If $s_a$ and $s_b$ are strategies for labels $a \neq b$, and $G \in
 \VG$, then the play, $p$, of $G$ they determine is defined recursively on the
@@ -174,13 +179,13 @@ the unique play of $G$.
 
 \inductioncase{Constructor case}: If $G$ is not an ended game, and the
 label of $G$ is $c$, then $p$ is the play that starts with $s_c(G)$
-followed by the elements in the play of $s_C(G)$ determined by the two
+followed by the elements in the play of $s_c(G)$ determined by the two
 strategies.
 \end{definition}
-\end{staffnotes}
+\end{editingnotes}
 
 Assuming for simplicity that the set $V$ of possible values of a game
-is finite, the WOP (Section\bref{well_ordering_sec}) implies there
+is finite, the WOP (Section~\bref{well_ordering_sec}) implies there
 will be a strategy for the max-player that ensures the largest
 possible payoff; this is called the \term{max-ensured-value} of the
 game.  Dually, there will also be a strategy for the min-player that
@@ -229,17 +234,16 @@ min-capped-value are both $v$.
 
 \inductioncase{Constructor case}: [$G = (a, \set{G_0,G_1,\dots})$].  By
 structural induction we may assume that the max-ensured-value and
-min-capped-value are equal for each of the games $G_i$.
+min-capped-value are equal for each of the possible first moves $G_i$.
 
-\inductioncase{Case} ($a = \texttt{max}$):
-We may assume by structural induction that each of the next moves of
-$G$ has a value.  Let $v$ be the maximum of these values.  This max
-will exist because $V$ is assumed to be finite.
+\inductioncase{Case} ($a = \texttt{max}$.)  Let $v$ be the maximum of
+the values of the first moves of $G$.  This max will exist because $V$
+is assumed to be finite.
 
-Now a strategy whereby the max-player can ensure $v$ is:
+Now a strategy for the max-player that ensures $v$ is:
 \begin{quote}
-Choose a first move, $G_i$, that has value $v$, and then follow the
-strategy that ensures $v$ for $G_i$.
+Choose a first move, $G_i$, that has the maximum value $v$, and then
+follow the strategy that ensures $v$ for $G_i$.
 \end{quote}
 
 Dually, a strategy whereby the min-player can cap payoff at $v$ is:
@@ -249,27 +253,26 @@ $w$ be the value of $G_j$.  Now follow the strategy in $G_j$ that caps
 the value at $w$.  But $w \leq v$ since $v$ is the maximum value among
 the first moves, so this strategy will also cap the value at $v$.
 \end{quote}
-So $v$ can be both ensured and capped at, and hence must be both the
-max-ensured-value and the min-capped-value.  So $G$ has value $v$.
+So $v$ can be both ensured and capped at, and hence it is the value of
+$G$.
 
 \inductioncase{Case} ($a = \texttt{min}$):
-
 Let $v$ be the minimum of the values of the next moves of $G$.  This
 minimum exists for the same reasons as in the previous case.
 
-Now a strategy whereby the min-player can cap payoff to $v$ to choose
-a first move, $G_i$, with value $v$, and thereafter, to follow the
-strategy in $G_i$ that caps at $v$.
+Now a strategy for the min-player to cap payoff to $v$ is to choose a
+first move, $G_i$, with value $v$, and then to follow the strategy in
+$G_i$ that caps the payoff at $v$.
 
 Dually, a strategy whereby the max-player can ensure payoff $v$ is to
 let $G_j$ be whatever first move is chosen by the min player and then
 to follow the strategy in $G_j$ that ensures the value of $G_j$, which
 is at least $v$.  
 
-So $v$ can be both capped at and ensured, and hence must be both the
-min-capped-value and max-ensured-value.  So $G$ has value $v$.
+So $v$ can be both capped at and ensured, and hence is the value of
+$G$.
 
-So in any case, the $G$ has a value, $v$, which completes the
+So in any case, the game $G$ has a value, which completes the
 constructor case of the structural induction.
 \end{solution}
 
@@ -283,7 +286,7 @@ By the fundamental theorem, the value of chess must be 1, $-1$, or 0.
 \end{solution}
 \eparts
 
-So where do we come upon games with an infinite nunmber of first
+So where do we come upon games with an infinite number of first
 moves?  Well, suppose we play a tournament of $n$ chess games for some
 positive integer $n$.  This tournament will be a \VG\ if we agree on a
 rule for combining the payoffs of the $n$ individual chess games into
