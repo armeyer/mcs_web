@@ -33,7 +33,7 @@ what cards belong to the other players.  Neither do games involving
 random features like dice rolls, since a player's move does not
 uniquely determine what happens next.
 
-Chess counts as a deterministic game of perfect information, because
+Chess counts as a deterministic game of perfect information because
 at any point of play, both players know whose turn it is to move and
 the location of every chess piece on the board.\footnote{In order to
   prevent the possibility of an unending game, chess rules specify a
@@ -80,12 +80,10 @@ Let $V$ be a nonempty set of real numbers.  The class \VG\ of
 \term{$V$-valued} \term{deterministic max-min games} \emph{of}
 \term{perfect information} is defined recursively as follows:
 
-\begin{itemize}
-
-\item \inductioncase{Base case}:
+\inductioncase{Base case}:
 A value $v \in V$ is a \VG, and is called an \term{ended game}.
 
-\item \inductioncase{Constructor case}: If $\set{G_0,G_1,\dots}$ is a
+\inductioncase{Constructor case}: If $\set{G_0,G_1,\dots}$ is a
   nonempty set of \VG's, and $a$ is a label equal to \texttt{max} or
   \texttt{min}, then
 \[
@@ -93,31 +91,28 @@ G \eqdef (a, \set{G_0,G_1,\dots})
 \]
 is a $\VG$.  Each game $G_i$ is called a possible \term{first move} of
 $G$.
-\end{itemize}
 \end{definition*}
 
 In all the games like this that we're familiar with, there are only a
 finite number of possible first moves.  It's worth noting that the
 definition of \VG\ does not require this.  Since finiteness is not
-needed to prove any of the results below, it would misleading to
-assume it.  Later, we'll also suggest how games with an infinite
-number of possible first moves might come up.
+needed to prove any of the results below, it would arguably be
+misleading to assume it.  Later, we'll suggest how games with an
+infinite number of possible first moves might come up.
 
 A \emph{play} of a game is a sequence of legal moves that either goes
-on forever or finishes with an ended game.  The plays of $G \in \VG$
-can also be defined recursively:
+on forever or finishes with an ended game.  More formally:
+
 \begin{definition*}%\label{def:play}
+The \term{plays} of a game $G \in \VG$ are defined recursively on the
+definition of $\VG$:
 
-\begin{itemize}
-
-\item \inductioncase{Base case}: ($G$ is an ended game.)
-
+\inductioncase{Base case}: ($G$ is an ended game.)
 Then the length one sequence $(G)$ is a \term{play} of $G$.
 
-\item \inductioncase{Constructor case}: ($G$ is not an ended game.)
-  Then a play of $G$ is a sequence that starts with a possible first
+\inductioncase{Constructor case}: ($G$ is not an ended game.)
+  Then a \emph{play} of $G$ is a sequence that starts with a possible first
   move, $G_i$, of $G$ and continues with the elements of a play of $G_i$.
-\end{itemize}
 \end{definition*}
 
 If a play does not go on forever, we can define its \emph{payoff} to
@@ -128,11 +123,25 @@ playing forever.  Namely, every play will have a payoff.
 
 \ppart Prove that every play of a \VG\ is a finite sequence that ends
 with a value in $V$.  \hint By structural induction on $G$.
+
 \begin{solution}
-\TBA{}
+We prove by structural induction on $G \in \VG$ that every play of $G$
+is finite and ends with a value.
+
+\inductioncase{Base case}: [$G$ is the ended game $v \in V$.]  Then
+there is only one play of $G$, namely the length one play $(v)$, which
+certainly ends with a value.
+
+\inductioncase{Constructor case}: [$G = (a, \set{G_0,G_1,\dots})$.]  A
+play of $G$ by definition consists of a sequence that starts with some
+$G_j$ and continues with a play of $G_j$.  By structural induction, we
+know that this play of $G_j$ is a sequence of some finite length $n$
+that ends with a value, so this play of $G$ is a length $n+1$ sequence
+that ends with the same value.
 \end{solution}
 
 \eparts
+
 A \emph{strategy} for a game is a rule that tells a player which move
 to make when it's his turn.  Formally:
 \begin{definition*}
@@ -145,12 +154,12 @@ $a$-\term{strategy} is a function $s:\VG \to \VG$ such that
 \end{definition*}
 
 Any pair of strategies for the two players determines a unique play of
-a game, and hence a unique payoff, in an obvious way.  Namely, playing
-game $G$, when it is a player's turn to move, he chooses the move
+a game, and hence a unique payoff, in an obvious way.  Namely, when it
+is a player's turn to move in a game $G$, he chooses the move
 specified by his strategy.  A strategy for the max-player is said to
 \term{ensure} payoff $v$ when, paired with \emph{any} strategy for the
 min-player, the resulting payoff is \emph{at least} $v$.  Dually, a
-strategy for the min-player \term{limits} payoff to $v$ when, paired
+strategy for the min-player \term{caps} payoff at $v$ when, paired
 with any strategy for the max-player, the resulting payoff is \emph{at
   most} $v$.
 
@@ -159,48 +168,45 @@ with any strategy for the max-player, the resulting payoff is \emph{at
 If $s_a$ and $s_b$ are strategies for labels $a \neq b$, and $G \in
 \VG$, then the play, $p$, of $G$ they determine is defined recursively on the
 definition of $\VG$:
-\begin{itemize}
-\item \inductioncase{Base case}: If $G$ is an \term{ended game}, then
- $p$ is the unique play of $G$.
 
-\item \inductioncase{Constructor case}: If $G$ is not an ended game,
-  and the label of $G$ is $c$, then $p$ is the play that starts with
-  $s_c(G)$ followed by the elements in the play of $s_C(G)$ determined
-  by the two strategies.
-\end{itemize}
+\inductioncase{Base case}: If $G$ is an \term{ended game}, then $p$ is
+the unique play of $G$.
+
+\inductioncase{Constructor case}: If $G$ is not an ended game, and the
+label of $G$ is $c$, then $p$ is the play that starts with $s_c(G)$
+followed by the elements in the play of $s_C(G)$ determined by the two
+strategies.
 \end{definition}
-
-A strategy, $s$, for the \texttt{max}-player \emph{ensures} a payoff,
-$v$ in a game $G$, if the play of $G$ determined by $s$ and any
-strategy for the \texttt{min}-player has a payoff $\geq v$.  Dually, a
-strategy, $r$, for the \texttt{min}-player \emph{limits to} payoff,
-$v$, if the play of $G$ determined by $r$ and any strategy for the
-\texttt{max}-player has a payoff $\leq v$.
 \end{staffnotes}
 
 Assuming for simplicity that the set $V$ of possible values of a game
 is finite, the WOP (Section\bref{well_ordering_sec}) implies there
 will be a strategy for the max-player that ensures the largest
-possible payoff; this is called the \term{max-value} of the game.
-Dually, there will also be a strategy for the min-player that limits
-the payoff to the smallest possible value, which is called the
-\term{min-value} of the game.
+possible payoff; this is called the \term{max-ensured-value} of the
+game.  Dually, there will also be a strategy for the min-player that
+caps the payoff at the smallest possible value, which is called the
+\term{min-capped-value} of the game.
 
-The max-value of course cannot be larger than the min-value.  If the
-two values happen to be equal, their value is called the \term{value
-  of the game}.  So if both players play optimally in a game with
-value $v$, then there is actually no point in playing at all.  Since
-the payoff is ensured to be at least $v$ and is also limited to be at
-most $v$, it must be exactly $v$; the min-player should just pay $v$
-to the max-player (a negative payment means the max-player is paying
-the min-player).
+The max-ensured-value of course cannot be larger than the
+min-capped-value.  A unique value can be assigned to a game when these
+two values agree:
+\begin{definition*}
+If the max-ensured-value and min-capped-value of a game are equal, their
+common value is called the \term{value of the game}.
+\end{definition*}
 
-The punch line of our story is that the max-value and the min-value
-are \emph{always} equal.
+So if both players play optimally in a game with that has a value,
+$v$, then there is actually no point in playing.  Since the payoff is
+ensured to be at least $v$ and is also capped to be at most $v$, it
+must be exactly $v$.  So the min-player may as well skip playing and
+simply pay $v$ to the max-player (a negative payment means the
+max-player is paying the min-player).
+
+The punch line of our story is that the max-ensured-value and the
+min-capped-value are \emph{always} equal.
 
 \begin{theorem*}[Fundamental Theorem for Deterministic Min-Max
 Games of Perfect Information]
-
 Let $V$ be a finite set of real numbers.  Every $V$-valued
 deterministic max-min game of perfect information has a value.
 \end{theorem*}
@@ -214,51 +220,56 @@ induction.
 The proof is by structural induction on the definition of a $G \in
 \VG$.  The induction hypothesis is that there is that
 \begin{quote}
-  $G$'s max-value and min-value are equal.
+  $G$'s max-ensured-value equals $G$'s min-capped-value.
 \end{quote}
 
-\inductioncase{Base case}: [$G$ is the ended game $v \in V$.]  The only
-possible play is $(v)$.  So the max-value and the min-value are both
-$v$.
+\inductioncase{Base case}: [$G$ is the ended game $v \in V$.]  The
+only possible play is $(v)$.  So the max-ensured-value and the
+min-capped-value are both $v$.
 
-\inductioncase{Constructor case}: [$G = (a, \set{G_0,G_1,\dots}$].  By
-structural induction we may assume that the max-value and min-value
-are equal for each of the games $G_i$.
+\inductioncase{Constructor case}: [$G = (a, \set{G_0,G_1,\dots})$].  By
+structural induction we may assume that the max-ensured-value and
+min-capped-value are equal for each of the games $G_i$.
 
 \inductioncase{Case} ($a = \texttt{max}$):
+We may assume by structural induction that each of the next moves of
+$G$ has a value.  Let $v$ be the maximum of these values.  This max
+will exist because $V$ is assumed to be finite.
 
-Let $v$ be the maximum of the values of the next moves of $G$.  (This
-max will exist because $V$ is assumed to be finite.)
-
-Now a strategy whereby the max-player can ensure $v$ to choose a
-first move, $G_i$, which has value $v$, and thereafter, to follow the
+Now a strategy whereby the max-player can ensure $v$ is:
+\begin{quote}
+Choose a first move, $G_i$, that has value $v$, and then follow the
 strategy that ensures $v$ for $G_i$.
+\end{quote}
 
-Dually, a strategy whereby the min-player can limit payoff to $v$ is
-to let $G_j$ be whatever first move is chosen by the max-player, and
-then to follow the strategy in $G_j$ that limits to the value of
-$G_j$, which is at most $v$.
-
-So $v$ can be both ensured and limited to, and hence must be both the
-max-value and the min-value.
+Dually, a strategy whereby the min-player can cap payoff at $v$ is:
+\begin{quote}
+Let $G_j$ be whatever first move is chosen by the max-player, and let
+$w$ be the value of $G_j$.  Now follow the strategy in $G_j$ that caps
+the value at $w$.  But $w \leq v$ since $v$ is the maximum value among
+the first moves, so this strategy will also cap the value at $v$.
+\end{quote}
+So $v$ can be both ensured and capped at, and hence must be both the
+max-ensured-value and the min-capped-value.  So $G$ has value $v$.
 
 \inductioncase{Case} ($a = \texttt{min}$):
 
-Let $v$ be the minimum of the values of the next moves of $G$.
+Let $v$ be the minimum of the values of the next moves of $G$.  This
+minimum exists for the same reasons as in the previous case.
 
-Now a strategy whereby the min-player can limit payoff to $v$ to
-choose a first move, $G_i$, with value $v$, and thereafter, to follow
-the strategy that limits to this value for $G_i$.
+Now a strategy whereby the min-player can cap payoff to $v$ to choose
+a first move, $G_i$, with value $v$, and thereafter, to follow the
+strategy in $G_i$ that caps at $v$.
 
-Dually, a strategy whereby the amx-player can ensure payoff $v$ is to
+Dually, a strategy whereby the max-player can ensure payoff $v$ is to
 let $G_j$ be whatever first move is chosen by the min player and then
 to follow the strategy in $G_j$ that ensures the value of $G_j$, which
 is at least $v$.  
 
-So $v$ can be both limited to and ensured, and hence must be both the
-min-value and max-value.
+So $v$ can be both capped at and ensured, and hence must be both the
+min-capped-value and max-ensured-value.  So $G$ has value $v$.
 
-So in any case, the max-value equals the min-value, completing the
+So in any case, the $G$ has a value, $v$, which completes the
 constructor case of the structural induction.
 \end{solution}
 
