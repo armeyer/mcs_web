@@ -1,0 +1,196 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{PS_Euler_by_cosets}
+\pcomment{DRAFT extracts from old version of number_theory 3/27/13}
+\end{pcomments}
+
+\pkeywords{
+  primes
+  number_theory
+  Eulers_theorem
+  modular_arithmetic
+  bijections
+  Euler_function
+  phi_function
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Now let's work out an example that illustrates the remaining ideas
+needed to prove Euler's Theorem.  Suppose $n=28$, so
+\begin{align}
+\relpr{28} & = \set{1, 3, 5, 9, 11, 13, 15, 17, 19, 23, 25, 27},\text{
+  and} \label{gcd128}\\
+\phi(28) & = \card{\relpr{28}} = 12. \notag
+\end{align}
+
+We pick any element of $\relpr{28}$, for example, 9.  Let $P_9$ be all
+the positive powers of 9 in $\Zmod{28}$, so
+\[
+P_9 \eqdef \set{9, 9^2, \dots, 9^k, \dots}.
+\]
+The order of 9 in $\Zmod{28}$ turns out to be 3, since $9^2 = 25$ and
+$9^3 = 1$.  So $P_9$ really has just these 3 elements:
+\[
+P_9 = \set{9, 25, 1}.
+\]
+\begin{definition}
+For any $m \in [0,n)$ and subset $P \subseteq [0,n)$, define
+\[
+mP \eqdef \set{m \cdot p \suchthat p \in P}.
+\]
+\end{definition}
+
+Let's look at $3P_9$.  Multiplying each of the elements in $P_9$ by 3
+gives
+\[
+3P_9 = \set{27, 19, 3}.
+\]
+The first thing to notice is that $3P_9$ also has 3 elements.  We
+could have predicted this: different elements of $P_9$ must map to
+different elements of $3P_9$ since $3 \in \relpr{28}$ is cancellable.
+
+\begin{lemma}\label{lem:cP=cmP}
+For any set, $P \subseteq [0,n)$, if $k \in \relpr{n}$, then
+\begin{equation}\label{eq:cP=cmP}
+\card{P} = \card{kP}.
+\end{equation}
+
+\begin{proof}
+Define a function $f_k:P \to kP$ by the rule
+\[
+f_k(p) \eqdef k \cdot p.
+\]
+The function $f_k$ is total and surjective \iffalse ($[=
+  1\ \text{out}, \geq 1\ \text{in}]$)\fi by definition.  It is also an
+injection \iffalse ($[\leq 1\ \text{in}]$)\fi because
+\[
+f_k(p_1) = f_k(p_2)
+\]
+means
+\[
+k \cdot p_1 = k \cdot p_2, 
+\]
+which implies that $p_1 = p_2$ since $k \in \relpr{n}$ is cancellable.
+This shows that $f_k$ is a bijection, and~\eqref{eq:cP=cmP} follows by
+the Mapping Rule~\ref{bij_same_fincard}.
+\end{proof}
+
+\end{lemma}
+
+Continuing with the example, the next number in the
+list~\eqref{gcd128} of elements of $\relpr{28}$ is 5, so let's look at
+\[
+5P_9 = \set{17, 13, 5}.
+\]
+Again $5P_9$ has 3 elements since $5 \in \relpr{28}$, but now notice
+something else: $5P_9$ has no elements in common with $3P_9$, and
+neither $3P_9$ nor $5P_9$ have any elements in common with $P_9$.  The
+following lemma explains this.
+
+\begin{lemma}\label{disjointPa}
+Let $P_k \eqdef \set{k, k^2, \dots, k^i,\dots}$ be the set of powers
+of some element $k \in \relpr{n}$, and suppose $a,b \in [0,n)$.  If
+  the sets $aP_k$ and $bP_k$ have an element in common, then $aP_k = bP_k$.
+
+\begin{proof}
+So suppose $aP_k$ and $bP_k$ have an element in common.  That is,
+\[
+ak^i=bk^j
+\]
+for some $i,j \geq 0$.  Then multiplying both sides of this equality
+by an arbitrary power of $k$, we conclude that $a$ times any large power
+of $k$ equals $b$ times another large power of $k$, and conversely,
+$b$ times any large power of $k$ equals $a$ times a large power of
+$k$.  But since $k \in \relpr{n}$ has finite order, every element in
+$P_k$ can be expressed as a large power of $k$, and we conclude that
+$aP_k = bP_k$.
+\end{proof}
+\end{lemma}
+
+Notice that since $P_9=1P_9$, Lemma~\ref{disjointPa} explains not only
+why $3P_9$ and $5P_9$ don't overlap, but also why neither of them
+overlaps with $P_9$.
+
+The next number in the list of elements of $\relpr{28}$ is 9, which
+brings us to
+\[
+9P_9  = \set{25, 1, 9} = P.
+\]
+Of course we could have predicted that $9P = P$ without actually
+multiplying each element of $P_9$ by 9; since $1\in P_9$, we know that
+$9 = 9\cdot 1 \in 9P_9$, so $9P_9$ and $1P_9$ have the element 9 in
+common, and therefore must be equal according to
+Lemma~\ref{disjointPa}.
+
+Next, we come to
+\[
+11P_9 = \set{15, 23, 11}.
+\]
+Now we're done, because we have 4 different size 3 subsets of
+$\relpr{28}$, and since $\relpr{28}$ has 12 elements, we must
+have them all.  That is,
+\[
+\relpr{28} = 1P_9\ \union\ 3P_9\ \union\ 5P_9\ \union\ 11P_9.
+\]
+This means there's no need to examine $mP_9$ for any of the remaining
+numbers $m \in \relpr{28}$ since they are bound to overlap with, and
+therefore be equal to, one of the four sets $1P_9, 3P_9, 5P_9$, and
+$11P_9$, that we already have.  For example, we could conclude without
+further calculation that the next set, $13P_9$, must be
+the same as $5P_9$, since both include the number 13.
+
+We can also see why the size of $P_9$ had to divide $\phi(28)$
+---because $\relpr{28}$ is a union of non-overlapping sets of the same
+size as $P_9$.
+
+\begin{lemma}\label{orddividesphi}
+If $k \in \relpr{n}$, then
+\[
+\ordmod{k}{n} \divides \phi(n).
+\]
+\end{lemma}
+
+\begin{proof}
+Let $P_k$ be the powers of $k$, so $P_k$ has $\ordmod{k}{n}$ elements,
+namely,
+\[
+P_k = \set{k,k^2, \dots,\ k^{\ordmod{k}{n}}}
+\]
+By Lemma~\ref{relprimgroup}, both $P_k$ and $mP_k$ are subsets of
+$\relpr{n}$ for $m \in \relpr{n}$.  Since $1 \in P_k$, we have $m \in
+mP_k$ for all $m \in [0,n)$.  Therefore,
+\[
+\relpr{n} = \lgunion_{m \in \relpr{n}} mP_k.
+\]
+By Lemma~\ref{lem:cP=cmP}, $\card{mP_k} = \ordmod{k}{n}$, and by
+Lemma~\ref{disjointPa}, distinct $mP_k$'s don't overlap, it follows
+that
+\[
+\card{\relpr{n}} = \ordmod{k}{n}\cdot \Card{\set{mP_k \suchthat m \in \relpr{n}}}.
+\]
+So $\ordmod{k}{n}$ divides $\card{\relpr{n}} = \phi(n)$.
+\end{proof}
+
+In particular, Lemma~\ref{orddividesphi} implies that
+$\phi(n) = \ordmod{k}{n} \cdot c$ for some number $c$, and so
+\begin{equation}\label{kphin1}
+k^{\phi(n)} = k^{\ordmod{k}{n} \cdot c} = \paren{k^{\ordmod{k}{n}}}^c = 1^c = 1.
+\end{equation}
+Euler's theorem now follows immediately, since it is simply the
+restatement of the $\Zmod{n}$ equation~\eqref{kphin1} in terms of
+congruence mod $n$.
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\endinput
+
