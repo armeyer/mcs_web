@@ -2,15 +2,17 @@
 
 \begin{pcomments}
   \pcomment{CP_RSA_proving_correctness}
-  \pcomment{DRAFT: being revised for Zmodn, maybe becomes a TP---ARM 3/27/13}
   \pcomment{from: S09.cp8r}
+  \pcomment{revised for Zmodn and way simpler---ARM 3/28/13}
 \end{pcomments}
 
 \pkeywords{
   number_theory
   modular_arithmetic
   primes
-  rsa
+  RSA
+  Euler_theorem
+  phi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,130 +21,75 @@
 
 \begin{problem}
   A critical fact about \idx{RSA} is, of course, that decrypting an
-  encrypted message, $\hat{m}$, always gives back the original message,
-  $m$.  Namely, if $n=pq$ where $p$ and $q$ are distinct primes, $m
-  \in [0,pq)$, and
-\[
-d\cdot e \equiv 1 \pmod{(p-1)(q-1)},
-\]
-then
-\begin{equation}\label{mdepq=m}
-\paren{m^d}^e = m \quad \Zmod{n}.
-%\rem{\paren{\rem{m^d}{n}}^e}{n} = m.
-\end{equation}
+  encrypted message always gives back the original message, $m$.
+  Namely, if $n=pq$ where $p$ and $q$ are distinct primes, $m \in
+  [0,pq)$, and
+    \[
+    d\cdot e \equiv 1 \pmod{(p-1)(q-1)},
+    \]
+    then
+    \begin{equation}\label{mdepq=m}
+      \widehat{m}^d \eqdef \paren{m^e}^d = m \inzmod{n}.
+      %\rem{\paren{\rem{m^d}{n}}^e}{n} = m.
+    \end{equation}
 
-\iffalse
 We'll now prove this.
 
 \bparts
 
-\iffalse
-
-This will follow from something simpler and more general:
-
-\begin{lemma*}%\label{npdp}
-If $n$ is a product of distinct primes and $a \equiv 1
-\pmod{\phi(n)}$, then $m^a = m \quad (\Zmod{n})$.
-%$m^a \equiv m \pmod {n}$.
-\end{lemma*}
-
-\ppart Explain why the Lemma implies that $k$ and $k^5$ have the
-same last digit.  For example:
-%
-\[
-\underline{2}^5 = 3\underline{2}
-
-\hspace{1in}
-7\underline{9}^5 = 307705639\underline{9}
-\]
-\hint What is $\phi(10)$?
+\ppart\label{relprime:mdepq-m} Explain why~\eqref{mdepq=m} follows
+very simply from Euler's theorem when $m$ is \emph{relatively prime
+  to} $n$.
 
 \begin{solution}
-Two nonnegative integers have the same last digit iff they are $\equiv
-\pmod {10}$.  Now $\phi(10) = \phi(2)\phi(5) = 4$ and $5 \equiv 1
-\pmod {4}$, so by the Lemma,
+By definition of $d$ and $e$, we have that
 \[
-k^5 \equiv k \pmod {10}.
+de= 1 + k(p-1)(q-1)= 1 + k\phi(n)
 \]
-\end{solution}
-\fi
-
-\ppart\label{cong->decode} Verify that
-\iffalse for all $d,e \in \naturals$, \fi
-if
-\begin{equation}\label{mdeqvmpq}
-\paren{m^{d}}^e = m \quad (\Zmod{n}),
-%\paren{m^{d}}^e \equiv m \pmod {n},
-\end{equation}
-then~\eqref{mdepq=m} is true.
-
-\iffalse
-\begin{staffnotes}
-  If a team is stuck, have them first prove that~\eqref{mdeqvmpq}
-  implies that~\eqref{mdepq=m} holds as a congruence mod $n$, that
-  is~\eqref{mdeqvmpq} implies
-\[
-\rem{\rem{m^d}{n}^e}{n} \equiv m \pmod {n}.
-\]
-\end{staffnotes}
-\fi
-
-\begin{solution}
-If equation~\eqref{mdeqvmpq} is true, then replacing $m^d$ by its
-remainder modulo $n$ preserves the congruence,\footnote{See
-  Corollary~\bref{aran} of the Remainder Lemma~\bref{lem:conrem}.}
-giving
-\[
-\rem{m^d}{n}^e \equiv m \pmod {n}.
-\]
-Now replacing the left hand side by its remainder yields
-\[
-\rem{\rem{m^d}{n}^e}{n} \equiv m \pmod {n}.
-\]
-Since both the left and right hand sides of the previous congruence are in
-$[0,n)$, they must be equal, which proves~\eqref{mdepq=m}.
-\end{solution}
-
-\begin{staffnotes}
-Someone on your team may notice that~\eqref{mdeqvmpq} follows by by
-multiplying both sides of the congruence by $m$ in Euler's theorem:
-\[
-m^{\phi(n)} \equiv 1 \pmod{n},
-\]
-so
-\[
-\paren{m^d}^e = m^{de} = m^{1+ c\cdot \phi(n)} \equiv m \pmod{n},
-\]
-since $de = 1+ c\cdot \phi(n)$ for some $c \in \naturals$.  However,
-\emph{Euler's theorem only works for $m$ relatively prime to $n$.}
-All the rest of this problem is about removing this restriction on $m$
-and showing that it works for all $m \in [0,n)$.
-
-Note the we're just being pure mathematicians here: we're just trying
-to get rid of the relative primality condition, which turns out to be
-theoretically unnecessary.  But the whole business of RSA is
-predicated on the difficulty of factoring.  If an $m$ that wasn't
-relatively prime to $n$ ever came up, we could factor $n$ by computing
-$\gcd(m,n)$.  So if we believe in the security of RSA, we must believe
-that the probability of a message $m$ that was not relatively prime to
-$n$ is negligible, so there is no \emph{practical} reason to worry
-about $m$'s that are not relatively prime to $n$.
-\end{staffnotes}
-
-\ppart\label{pma} Prove that if $p$ is prime, then $m^a \equiv m \pmod
-            {p}$ for all $a \in \naturals$ congruent to 1 mod $p-1$.
-
-\begin{solution}
-If $p \divides m$, then the congruence holds since both sides are
-$\equiv 0 \pmod {p}$.  So assume $p$ does not divide $m$.  Now if $a
-\equiv 1 \pmod{p-1}$, then $a = 1 + (p-1)k$ for some $k$, so
+for some integer $k$.  So
 \begin{align*}
-m^a & = m^{1+ (p-1)k}\\
-    & = m\cdot \paren{m^{p-1}}^k\\
-    & \equiv m\cdot (1)^k \pmod {p}
-            & \text{(by Fermat's Little Thm.)}\\
-    & \equiv m \pmod {p}.
+\paren{m^e}^d
+ & = m^{de} = m^{1 + k\phi(n)}\\
+ & = m \paren{m^{\phi(n)}}^k\\
+ & = m \cdot 1^k & \text{(Euler's Theorem for $m \in \relpr{n}$)}\\
+ & = m \inzmod{n}.
 \end{align*}
+\end{solution}
+
+\eparts All the rest of this problem is about removing the restriction
+that $m$ be relatively prime to $n$.  That is, we aim to prove that
+equation~\eqref{mdepq=m} holds for \emph{all} $m \in [0,n)$.
+
+It is important to realize that, even if it was theoretically
+necessary, there would be no practical reason to worry about---or to
+bother to check for---this relative primality condition before sending
+a message $m$ using RSA.  That's because the whole RSA enterprise is
+predicated on the difficulty of factoring.  If an $m$ ever came up
+that wasn't relatively prime to $n$, then we could factor $n$ by
+computing $\gcd(m,n)$.  So believing in the security of RSA implies
+believing that the probability of a message $m$ turning up that was
+not relatively prime to $n$ is negligible.
+
+But's let's be pure, impractical mathematicians and rid of this
+technically unnecessary relative primality side condition, even it is
+is harmless.  One gain for doing this is that statements about RSA
+will have be simpler without the side condition.  More important, the
+proof below illustrates a useful general method of proving things
+about a number $n$ by proving them separately for the prime factors of
+$n$.
+
+\bparts
+
+\ppart\label{pma} Prove that if $p$ is prime and $a \equiv 1
+\pmod{p-1}$, then
+\begin{equation}\label{mamp}
+m^a = m \inzmod{p}.
+\end{equation}
+
+\begin{solution}
+If $p \divides m$, then equation~\eqref{mamp} holds since both sides
+equal 0 in $\Zmod{p}$.  On the other hand, if $p$ does not divide
+$m$, then~\eqref{mamp} holds by part~\eqref{relprime:mdepq-m}.
 \end{solution}
 
 \iffalse
@@ -151,24 +98,23 @@ m^a & = m^{1+ (p-1)k}\\
 if $a \equiv b \pmod k$ and $j \divides k$, then $a \equiv b \pmod j$
 
 \begin{solution}
-
 $a \equiv b \pmod k$ iff $k \divides (a-b)$.  But if $k \divides (a-b)$
 and $j \divides k$, then also $j \divides (a-b)$, which implies $a \equiv
 b \pmod j$.
-
 \end{solution}
 \fi
 
-\ppart\label{abp} Prove that if $a \equiv b \pmod {p_i}$ for distinct
-primes $p_1,p_2,\dots,p_n$, then $a \equiv b \pmod{p_1p_1\cdots
-p_n}$.
+\ppart\label{abp} Give an elementary proof\footnote{There is no need
+  to appeal the the Chinese Remainder Theorem.} that if $a \equiv b
+\pmod {p_i}$ for distinct primes $p_i$, then $a \equiv b$ modulo their product.
+
+%\pmod{p_1p_1\cdots p_n}$.
 
 \begin{solution}
-By definition of congruence, $a \equiv b \pmod {k}$ iff $k \divides
-(a-b)$.  So if $a \equiv b \pmod {p_i}$ for each $p_i$, then $p_i
-\divides (a-b)$ for each $p_i$.  By the Unique Factorization
-Theorem~\bref{thm:unique_factor}, the product of the $p_i$'s must also
-divide $(a-b)$, which means that $a \equiv b \pmod {p_1p_1\cdots p_n}$.
+If $a \equiv b \pmod {p_i}$, then by definition, $p_i \divides (a-b)$.
+By the Unique Factorization Theorem~\bref{thm:unique_factor}, the
+product of the $p_i$'s must therefore also divide $(a-b)$, which means
+that $a \equiv b$ modulo their product.
 \end{solution}
 
 \iffalse
@@ -187,11 +133,15 @@ $\phi(p) = (p-1)$ which divides $(p-1)p^{k-1} = \phi(p^k)$.
 \end{solution}
 \fi
 
-\ppart Prove
-\begin{lemma*}%\label{npdp}
-If $n$ is a product of distinct primes and $a \in \naturals$ is
-$\equiv 1\ \pmod{\phi(n)}$, then $m^a = m \quad \Zmod{n}$.
-\end{lemma*}
+\ppart Note that~\eqref{mdepq=m} is a special case of
+\begin{claim*}
+If $n$ is a product of distinct primes and $a \equiv 1
+\pmod{\phi(n)}$, then
+\[
+m^a = m \inzmod{n}.
+\]
+\end{claim*}
+Use the previous parts to Prove the Claim.
 
 \begin{solution}
 Suppose $n$ is a product of distinct primes,
@@ -215,30 +165,11 @@ from part~\eqref{abp} that
 \[
 m^a \equiv m \pmod{n},
 \]
-which proves the Lemma.
-\end{solution}
-
-\ppart Combine the previous parts to complete the proof
-of~\eqref{mdepq=m}.
-
-\begin{solution}
-By part~\eqref{cong->decode}, we need only prove~\eqref{mdeqvmpq}.
-
-Now for $n=pq$, we have from Lemma~\bref{phi_pq}---or the more
-general Theorem~\bref{th:phi}---that $\phi(n) = (p-1)(q-1)$, so
-$a \eqdef d \cdot e \equiv 1 \pmod {\phi(n)}$.  Now the Lemma implies
-\[
-m^a \equiv m \pmod {n},
-\]
-and this implies~\eqref{mdeqvmpq} since $m^a = m^{d \cdot e}=
-(m^d)^e$.
+which proves the Claim.
 \end{solution}
 
 \eparts
-\fi
-
 \end{problem}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -246,3 +177,13 @@ and this implies~\eqref{mdeqvmpq} since $m^a = m^{d \cdot e}=
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
+
+
+\ppart\label{cong->decode} Verify that
+\iffalse for all $d,e \in \naturals$, \fi
+if
+\begin{equation}\label{mdeqvmpq}
+\paren{m^{d}}^e = m \quad (\Zmod{n}),
+%\paren{m^{d}}^e \equiv m \pmod {n},
+\end{equation}
+then~\eqref{mdepq=m} is true.

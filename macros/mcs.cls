@@ -1344,8 +1344,9 @@
 
 \newcommand{\rem}[2]{\operatorname{rem}(#1,\ #2)}
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
-\newcommand{\pring}[1]{\ (\Zmod{#1})}
-\newcommand{\powermod}[3]{{#1}^{#2} \pring{#3}}
+%\newcommand{\pring}[1]{\Zmod{#1}}
+\newcommand{\inzmod}[1]{\quad (\Zmod{#1})}
+%\newcommand{\powermod}[3]{{#1}^{#2} \inzmod{#3}}
 %\newcommand{\relpr}[1]{\operatorname{gcd1}\set{#1}}
 \newcommand{\relpr}[1]{\Zmod{#1}^*}
 \newcommand{\ordmod}[2]{\operatorname{ord}(#1,#2)}
