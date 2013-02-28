@@ -1342,7 +1342,7 @@
 \newcommand{\divides}{\mid}
 \newcommand{\ndivides}{\nmid}
 
-\newcommand{\rem}[2]{\operatorname{rem}\paren{#1,\ #2}}
+\newcommand{\rem}[2]{\operatorname{rem}(#1,\ #2)}
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
 \newcommand{\pring}[1]{\ (\Zmod{#1})}
 \newcommand{\powermod}[3]{{#1}^{#2} \pring{#3}}
