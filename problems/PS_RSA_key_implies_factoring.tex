@@ -4,12 +4,18 @@
   \pcomment{PS_RSA_key_implies_factoring}
   \pcomment{from: S09.ps8; F06.ps6}
   \pcomment{commented out in S09 - has typos and probably needs substantial revision}
+  \pcomment{Could make a very nice problem, but needs work before
+    using.  It is skectchy and hard to follow.  Also, frustrating
+    because so many facts are stipulated w/o proof---ARM 3/3/13.}
 \end{pcomments}
 
 \pkeywords{
-  RSA
-  number_theory
   modular_arithmetic
+  factor
+  RSA
+  Euler
+  Eulers_theorem
+  square_root
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,24 +24,20 @@
 
 \begin{problem}
 
-\begin{editingnotes}
-\textcolor{red}{THIS PROBLEM NEEDS WORK!}
-\end{editingnotes}
-
 You've seen how the RSA encryption scheme works, but why is it hard to
-break?  In this problem, you will see that finding private keys is as hard
-as finding the prime factorizations of integers.  Since there is a general
-consensus in the crypto community (enough to persuade many large financial
-institutions, for example) that factoring numbers with a few hundred
-digits requires astronomical computing resources, we can therefore be sure
-it will take the same kind of overwhelming effort to find RSA private keys
-of a few hundred digits.  This means we can be confident the private RSA
-keys are not somehow revealed by the public keys
+break?  In this problem, you will see that finding private keys is as
+hard as finding the prime factorizations of integers.  Since there is
+a general consensus in the crypto community (enough to persuade many
+large financial institutions, for example) that factoring numbers with
+a few hundred digits requires astronomical computing resources, we can
+therefore be sure it will take the same kind of overwhelming effort to
+find RSA private keys of a few hundred digits.  This means we can be
+confident the private RSA keys are not somehow revealed by the public
+keys
 \footnote{This is a very weak kind of ``security'' property, because it
 doesn't even rule out the possibility of deciphering RSA encoded messages
 by some method that did not require knowing the private key.  Nevertheless,
 over twenty years experience supports the security of RSA in practice.}
-
 
 % It would calm a lot of people down if we could show that the ability to
 % compute any nontrivial piece of information about a message sent via RSA
@@ -46,41 +48,38 @@ over twenty years experience supports the security of RSA in practice.}
 % then there would be much bigger problems in the world than whether or not
 % you can send your message securely.)  Instead, what .
 
-
 For this problem, assume that $n = p \cdot q$ where $p,q$ are both
 \emph{odd} primes \iffalse (this only rules out the prime 2, which would
 not be a very secure prime to choose)\fi and that $e$ is the public key
 and $d$ the private key of the RSA protocol..
-Let $x \eqdef e \cdot d - 1$.
+Let $c \eqdef e \cdot d - 1$.
 
 \bparts
 
-\ppart  Show that $\phi(n)$ divides $x$.
+\ppart\label{phindc}  Show that $\phi(n)$ divides $c$.
 
 \begin{solution}
-$ed \equiv 1 \pmod \phi(n)$ by definition of $d$, so $\phi(n)$ divides $x$
+$ed \equiv 1 \pmod \phi(n)$ by definition of $d$, so $\phi(n)$ divides $c$
 by definition of $\equiv$ mod $\phi(n)$.
-
 \end{solution}
 
-\ppart Conclude that 4 divides $x$.
+\ppart Conclude that 4 divides $c$.
 
 \begin{solution}
-Since $p,q$ are odd, both $p-1$ and $q-1$ are even.  Thus $4$
-divides $(p-1)(q-1) = \phi(n)$, so by part~(a), 4 also divides $x$.
+Since $p,q$ are odd, both $p-1$ and $q-1$ are even.  Thus $4$ divides
+$(p-1)(q-1) = \phi(n)$, so by part~\eqref{phindc}, 4 also divides $c$.
 \end{solution}
 
 \ppart
 \label{squareequals1modn}
-Show that if $\gcd(r,n)=1$, then $r^x \equiv 1 \pmod{n}.$
+Show that if $\gcd(r,n)=1$, then $r^c \equiv 1 \pmod{n}.$
 
 \begin{solution}
-By Euler's Theorem, $r^{\phi(n)} \equiv 1 \pmod{n}$.  By part~(a), $x =
+By Euler's Theorem, $r^{\phi(n)} \equiv 1 \pmod{n}$.  By part~(a), $c =
 k\phi(n)$ for some integer, $k$, so
 \[
-r^x = r^{k\phi(n)} = \paren{r^{\phi(n)}}^k \equiv 1^k \equiv 1 \pmod n.
+r^c = r^{k\phi(n)} = \paren{r^{\phi(n)}}^k \equiv 1^k \equiv 1 \pmod n.
 \]
-
 \end{solution}
 
 
@@ -94,10 +93,10 @@ r^x = r^{k\phi(n)} = \paren{r^{\phi(n)}}^k \equiv 1^k \equiv 1 \pmod n.
 
 \eparts
 
-A \emph{square root} of $m$ modulo $n$ is a nonnegative integer $s
-< n$ such that $s^2 \equiv m \pmod n$.  Here is a nice fact to know: when
-$n$ is a product of two odd primes, then every number $m$ such that
-$\gcd(m,n)=1$ has 4 square roots modulo $n$.
+A \emph{square root} of $m$ modulo $n$ is an integer $s \in [0.n)$
+  such that $s^2 \equiv m \pmod n$.  Here is a nice fact to know: when
+  $n$ is a product of two odd primes, then every number $m$ such that
+  $\gcd(m,n)=1$ has 4 square roots modulo $n$.
 
 In particular, the number 1 has four square roots modulo $n$.  The two
 trivial ones are 1 and $n-1$ (which is $\equiv - 1 \pmod n$).  The other
@@ -105,8 +104,8 @@ two are called the \emph{nontrivial} square roots of 1.
 
 \bparts
 \ppart\label{y2=1}
-Since you know $x$, then for any integer, $r$, you can also compute the
-remainder, $y$, of $r^{x/2}$ divided by $n$.  So $y^2 \equiv r^x \pmod n$.
+Since you know $c$, then for any integer, $r$, you can also compute the
+remainder, $y$, of $r^{c/2}$ divided by $n$.  So $y^2 \equiv r^c \pmod n$.
 Now if $r$ is relatively prime to $n$, then $y$ will be a square root of 1
 modulo $n$ by part~\eqref{squareequals1modn}.
 

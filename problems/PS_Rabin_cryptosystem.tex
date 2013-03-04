@@ -1,40 +1,31 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{PS_Rabin_cryptosystem} 
+  \pcomment{PS_Rabin_cryptosystem}
   \pcomment{from: S07.ps7}
+  \pcomment{Could make a very nice problem, but needs work before
+    using.  It is skectchy and hard to follow.  Also, frustrating
+    because so many facts are stipulated w/o proof---ARM 3/3/13.}
+
 \end{pcomments}
 
 \pkeywords{
-RSA
-crypto
-Rabin
-Chinese_Remainder_Theorem
+  RSA
+  crypto
+  Rabin
+  Chinese_Remainder_Theorem
+  square_root
+  quadratic_residue
+  Fermat_theorem
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problem}
-\iffalse
-In class and recitation, we will study the RSA cryptosystem.
-
-%which will be used by the Teen Titans in recitation.
-
-However, we will not be able to give any evidence that it is hard to
-break the RSA cryptosystem other than proof by reference to eminent
-authority ---that is, Rivest, Shamir and Adleman as well as a lot of
-other very smart people over the last few decades were not able to
-break it.  This explains why cryptographers don't sleep very well.
-
-%The Powerpuff girls need to ``one-up'' the
-%Teen Titans from Recitation 5.
-%To do this, they want to use a cryptosystem that has slightly better
-\fi
-
 Although RSA has successfully withstood cryptographic attacks for a
 more than a quarter century, it is not known that breaking RSA would
-imply that factoring is easy.   
+imply that factoring is easy.
 
 In this problem we will examine the \term{Rabin cryptosystem} that
 does have such a security certification.  Namely, if someone has the
@@ -45,6 +36,7 @@ Why should that convince us that it is hard to break the cryptosystem
 efficiently?  Well, mathematicians have been trying to factor
 efficiently for centuries, and they still haven't figured out how to
 do it.
+
 \iffalse
 So, we are again appealing to a proof by eminent authority,
 but at least there are more authorities involved here.
@@ -52,9 +44,9 @@ but at least there are more authorities involved here.
 
 What is the Rabin cryptosystem?  The public key will be a number $N$
 that is a product of two very large primes $p,q$ such that $p \equiv q
-\equiv 3 \pmod{4}$.  To send the message $x$, send
-$\rem{x^2}{N}$.\footnote{We will see soon, that there are other
-  numbers that would be encrypted by $\rem{x^2}{N}$, so we'll have to
+\equiv 3 \pmod{4}$.  To send the message $m$, send
+$\rem{m^2}{N}$.\footnote{We will see soon, that there are other
+  numbers that would be encrypted by $\rem{m^2}{N}$, so we'll have to
   disallow those other numbers as possible messages in order to make
   it possible to decode this cryptosystem, but let's ignore that for
   now.}
@@ -65,20 +57,24 @@ then they can decode the message.  On the other hand, if an
 eavesdropper who doesn't know $p,q$ listens in, then we must show that
 they are very unlikely to figure out this message.
 
-First some definitions.  We know what it means for a number to be a square
-over the integers, that is $s$ is a square if there is another integer $x$
-such that $s= x^2$.  Over the numbers mod $N$, we say that $s$ is a \emph{
-square modulo $N$} if there is an $x$ such that $s \equiv x^2 \pmod{N}$.
-If $x$ is such that $0 \leq x <N$ and $s \equiv x^2 \pmod{N}$, then $x$ is
-the \emph{square root of $s$}.
+\begin{editingnotes}
+The rest would be clearer written in term s $\Zmod{N}$ instead of
+$\equiv \pmod{N}$
+\end{editingnotes}
+
+Say that $s$ is a \term{square modulo $N$} if there is an $m \in
+[0,N)$ such that $s \equiv m^2 \pmod{N}$.  Such an $m$ is a
+  \term{square root of $s$ modulo $N$}.
 
 \bparts
 
-\ppart What are the squares modulo 5?  For each nonzero square in
-the interval $[0,5)$, how many square roots does it have?
+\ppart What are the squares modulo 5?  For each square in the interval
+$[0,5)$, how many square roots does it have?
 
-\begin{solution}0,1,4 are the squares.  1 and 4 each have 2 square roots (1,4)
-and (2,3) respectively.  2 and 3 have 0 square roots.
+\begin{solution}
+The squares are 0,1 \& 4: 0 has one square root, namely itself; 1 has
+two square roots, namely, 1 \& 4; 4 also has two square roots, namely
+2 \& 3.
 \end{solution}
 
 \ppart For each integer in $[1,15)$ that is relatively prime to 15,
@@ -86,34 +82,39 @@ how many square roots (modulo 15) does it have?  Note that all the square
 roots are \emph{also} relatively prime to 15.  We won't go through why this
 is so here, but keep in mind that this is a general phenomenon!
 
-\begin{solution}1,4 each have 4 square roots. 2,7,8,11,13,14 have no
-square roots.
+\begin{solution}
+1,4 each have 4 square roots. 2,7,8,11,13,14 have no square roots.
 \end{solution}
 
-\ppart\label{peqv34} Suppose that $p$ is a prime such that $p \equiv 3 \pmod{4}$.  It
-turns out that squares modulo $p$ have exactly 2 square roots.  First show
-that $(p+1)/4$ is an integer.  Next figure out the two square roots of
-1 modulo $p$.  Then show that you can find a ``square root mod a prime
-$p$'' of a number by raising the number to the $(p+1)/4$th power.
-That is, given $s$, to find $x$ such that $s \equiv x^2 \pmod{p}$, you can
-compute $\rem{s^{(p+1)/4}}{p}$.
+\begin{editingnotes}
+Revise this next part and its soln, which are too hard to follow now.
+\end{editingnotes}
 
-\begin{solution}If $s \equiv x^2 \pmod{p}$, then
+\ppart\label{peqv34} Suppose that $p$ is a prime such that $p \equiv 3
+\pmod{4}$.  It turns out that squares modulo $p$ have exactly 2 square
+roots.  First show that $(p+1)/4$ is an integer.  Next figure out the
+two square roots of 1 modulo $p$.  Then show that you can find a
+``square root mod a prime $p$'' of a number by raising the number to
+the $(p+1)/4$th power.  That is, given $s$, to find $m$ such that $s
+\equiv m^2 \pmod{p}$, you can compute $\rem{s^{(p+1)/4}}{p}$.
+
+\begin{solution}If $s \equiv m^2 \pmod{p}$, then
 \[
-s^{(p+1)/4} \equiv x^{(p+1)/2} \pmod{p} \equiv
-x^{(p-1)/2} \cdot x \pmod{p} .
+s^{(p+1)/4} \equiv m^{(p+1)/2} \pmod{p} \equiv
+m^{(p-1)/2} \cdot m \pmod{p} .
 \]
-The square roots of $1$ modulo $p$ are just $1$ and $-1$.  Now by Fermat's
-theorem, the latter is equivalent modulo $p$ to both $+x$ and $-x$.
+The square roots of $1$ modulo $p$ are just $1$ and $-1$.  Now by
+Fermat's theorem, the latter is equivalent modulo $p$ to both $+m$ and
+$-m$.
 \end{solution}
 
 \ppart The Chinese Remainder Theorem
 (Problem~\bref{CP_chinese_remainder}) implies that if $p, q$ are
-distinct primes, then $s$ is a square modulo $p q$ if and
-only if $s$ is a square modulo $p$ and $s$ is a square modulo $q$.  In
-particular, if $s \equiv x^2 \pmod{p} \equiv (x')^2 \pmod{p}$ and
-$s\equiv y^2 \pmod{p} \equiv (y')^2 \pmod{p}$ then $s$ has exactly
-four square roots, namely,
+distinct primes, then $s$ is a square modulo $p q$ if and only if $s$
+is a square modulo $p$ and $s$ is a square modulo $q$.  In particular,
+if $s \equiv x^2 \equiv (x')^2 \pmod{p}$ where $x \neq x'$, and
+likewise $s\equiv y^2 \equiv (y')^2 \pmod{q}$ then $s$ has exactly
+four square roots modulo $N$, namely,
 \[
 s \equiv (xy)^2 \equiv (x'y)^2  \equiv (xy')^2 \equiv (x'y')^2 \pmod{pq}.
 \]
@@ -133,9 +134,10 @@ private key, decoding is easy.
 %
 \fi
 
-\emph{But what if you don't know $p,q$?}  Suppose $N \eqdef p q$,
-where $p,q$ are two primes equivalent to $3 \pmod{4}$.
-%You are not told the factorization of $N$, but instead
+\emph{But what if you don't know $p,q$?}  \iffalse Suppose $N \eqdef p
+q$, where $p,q$ are two primes equivalent to $3 \pmod{4}$.  You are
+not told the factorization of $N$, but instead\fi
+
 Let's assume that the evil message interceptor claims to have a
 program that can find all four square roots of any number modulo
 $N$.  Show that he can actually use this program to efficiently find
@@ -156,13 +158,12 @@ efficient square root program exists!
 
 \begin{solution}
 \[
-r^2-r'^2
-\equiv (r+r')(r-r') \pmod{N} \equiv 0 \pmod{N}.
+r^2-r'^2 \equiv (r+r')(r-r') \equiv 0 \pmod{N}.
 \]
-Therefore one of $(r+r')(r-r')$ divides $N=p \cdot q$, and since $p,q$ are
-primes, it must be the case that one of $(r+r'),(r-r')$ divided $p$,
-whereas the other divides $q$.  So compute $g = \gcd(N,r-r')$.  Output $g,
-N/g$ and halt.
+Therefore one of $(r+r')$ and $(r-r')$ divides $N=p \cdot q$, and
+since $p,q$ are primes, it must be the case that one of $(r+r')$ and
+$(r-r')$ divides $p$ and the other divides $q$.  So compute $g =
+\gcd(N,r-r')$.  Output $g, N/g$ and halt.
 
 In the actual proof of security of the Rabin cryptosystem, you need
 to show that if you have a program that can find \emph{any} square
@@ -175,19 +176,37 @@ encoding one of two possible candidate messages (that is, either ``meet at
 dome at dusk'' or ``meet at dome at dawn'') and is just trying to figure
 out which of the two, then can he break this cryptosystem?
 
-\begin{solution}Yes, he just needs to square both candidate messages, take the
-remainder with $N$ (which he knows) and see which one was sent.  If it's
-so easy, then why is this a secure cryptosystem?  Well, it's still pretty
-good in the case when there are a lot of possible messages.
+\begin{solution}
+Yes, he just needs to square both candidate messages, take the
+remainder with $N$ (which he knows) and see which one was sent.  If
+it's so easy, then why is this a secure cryptosystem?  Well, it's
+still pretty good in the case when there are a lot of possible
+messages.
 \end{solution}
 
 \eparts
 
 \end{problem}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem ends here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
+
+\iffalse
+In class and recitation, we will study the RSA cryptosystem.
+
+%which will be used by the Teen Titans in recitation.
+
+However, we will not be able to give any evidence that it is hard to
+break the RSA cryptosystem other than proof by reference to eminent
+authority---that is, Rivest, Shamir and Adleman as well as a lot of
+other very smart people over the last few decades were not able to
+break it.  This explains why cryptographers don't sleep very well.
+
+%The Powerpuff girls need to ``one-up'' the
+%Teen Titans from Recitation 5.
+%To do this, they want to use a cryptosystem that has slightly better
+\fi
+
