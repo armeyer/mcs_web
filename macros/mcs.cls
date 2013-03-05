@@ -3121,9 +3121,9 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 \newcommand{\microquiz}[2][\stamp]{%
   \theoremsunderproblems
   \ifshowsolutions
-  \paper[#1]{micros#2}{}{Solutions to Microquiz #2}
+  \paper[#1]{micros#2}{}{Solutions to Microquiz Week #2}
   \else
-  \paper[#1]{micro#2}{}{Microquiz #2}
+  \paper[#1]{micro#2}{}{Microquiz Week #2}
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
