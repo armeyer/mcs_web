@@ -1,3 +1,1425 @@
+\chapter{Recursive Data Types}\label{recursive_data_chap}
+
+\term{Recursive data types} play a central role in programming, and
+induction is really all about them.
+
+Recursive data types are specified by \term{recursive definitions},
+which say how to construct new data elements from previous ones.
+Along with each recursive data type there are recursive definitions of
+properties or functions on the data type.  Most importantly, based on
+a recursive definition, there is a \term{structural induction} method
+for proving that all data of the given type have some property.
+
+This chapter examines a few examples of recursive data types and
+recursively defined functions on them:
+\begin{itemize}
+\item strings of characters,
+\item ``balanced'' strings of brackets,
+\item the nonnegative integers, and
+\item arithmetic expressions.
+%\item two-player zero-sum games with perfect information.
+\end{itemize}
+
+%\hyperdef{paren}{string}
+\section{Recursive Definitions and Structural Induction}
+
+We'll start off illustrating recursive definitions and proofs using
+the example of character strings.  Normally we'd take strings of
+characters for granted, but it's informative to treat them as a
+recursive data type.  In particular, strings are a nice first example
+because you will see recursive definitions of things that are easy to
+understand or that you already know, so you can focus on how the
+definitions work without having to figure out what they are for.
+
+Definitions of recursive data types have two parts:
+\begin{itemize}
+\item \inductioncase{Base case(s)} specifying that some known
+  mathematical elements are in the data type, and
+
+\item \inductioncase{Constructor case(s)} that specify how to construct new data
+  elements from previously constructed elements or from base elements.
+\end{itemize}
+
+The definition of strings over a given character set, $A$, follows this
+pattern:
+
+\begin{definition}\label{recstring_def}
+  Let $A$ be a nonempty set called an \term{alphabet}, whose elements are
+  referred to as \term{characters}, \term{letters}, or \term{symbols}.
+  The recursive data type, $\strings{A}$, of strings over alphabet, $A$,
+  are defined as follows:
+\begin{itemize}
+\item \inductioncase{Base case}: the empty string, $\emptystring$, is in $\strings{A}$.
+
+\item \inductioncase{Constructor case}: If $a \in A$ and $s \in \strings{A}$, then the pair
+       $\ang{a,s} \in \strings{A}$.
+\end{itemize}
+\end{definition}
+So $\strings{\set{0,1}}$ are supposed to be the binary strings.
+
+The usual way to treat binary strings is as sequences of 0's and 1's.
+For example, we have identified the length-4 binary string 1011 as a
+sequence of bits, the 4-tuple $(1,0,1,1)$.  But according to
+the recursive Definition~\ref{recstring_def}, this string would be
+represented by nested pairs, namely
+\[
+\ang{1,\ang{0,\ang{1,\ang{1,\emptystring}}}}.
+\]
+These nested pairs are definitely cumbersome and may also seem
+bizarre, but they actually reflect the way that such lists of
+characters would be represented in programming languages like Scheme
+or Python, where $\ang{a,s}$ would correspond to $\text{cons}(a, s)$.
+
+Notice that we haven't said exactly how the empty string is
+represented.  It really doesn't matter, as long as we can recognize
+the empty string and not confuse it with any nonempty string.
+
+\begin{editingnotes}
+EVEN before func def, define binary relation def, say ``t a proper
+suffix of s'' or ``t is a subsequence of s'' and then set up func def
+as special case
+\end{editingnotes}
+
+Continuing the recursive approach, let's define the length of a string.
+\begin{definition}
+The length, $\lnth{s}$, of a string, $s$, is defined recursively
+based on the definition of $s \in \strings{A}$:
+
+\item \inductioncase{Base case}:  $\lnth{\emptystring} \eqdef\ 0$.
+
+\item \inductioncase{Constructor case}: $\lnth{\ang{a,s}} \eqdef\ 1 + \lnth{s}$.
+
+\end{definition}
+
+This definition of length follows a standard pattern: functions on
+recursive data types can be defined recursively using the same cases
+as the data type definition.  Specifically, to define a function, $f$,
+on a recursive data type, define the value of $f$ for the base cases
+of the data type definition, then define the value of $f$ in each
+constructor case in terms of the values of $f$ on the component data
+items.
+
+Let's do another example: the \term{concatenation} $s\cdot t$ of the
+strings $s$ and $t$ is the string consisting of the letters of $s$
+followed by the letters of $t$.  This is a perfectly clear
+mathematical definition of concatenation (except maybe for what to do
+with the empty string), and in terms of Scheme/Python lists, $s\cdot
+t$ would be the list $\text{append}(s, t)$.  Here's a recursive
+definition of concatenation.
+
+\begin{definition}\label{concat_def}
+The \term{concatenation} $s\cdot t$ of the strings $s,t \in
+\strings{A}$ is defined recursively based on the definition of $s \in
+\strings{A}$:
+
+\item \inductioncase{Base case}:     % ($s=\emptystring$):
+\[
+\emptystring \cdot t \eqdef\ t.
+\]
+
+\item \inductioncase{Constructor case}: %($s = \ang{a,r}$ for $r \in \strings{A}$):
+\[
+\ang{a,s} \cdot t \eqdef\ \ang{a, s \cdot t}.
+\]
+\end{definition}
+
+\term{Structural induction} is a method for proving that all the elements
+of a recursively defined data type have some property.  A structural
+induction proof has two parts corresponding to the recursive definition:
+\begin{itemize}
+\item Prove that each base case element has the property.
+\item Prove that each constructor case element has the property, when
+  the constructor is applied to elements that have the property.
+\end{itemize}
+
+For example, we can verify the familiar fact that the length of the
+concatenation of two strings is the sum of their lengths using structural
+induction:
+
+\begin{theorem}\label{stAl+}
+For all $s,t \in \strings{A}$,
+\[
+\lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+\]
+\begin{proof}
+By structural induction on the definition of $s \in \strings{A}$.   The
+induction hypothesis is
+\[
+P(s) \eqdef\ \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+\]
+
+\inductioncase{Base case} ($s = \emptystring$):
+\begin{align*}
+\lnth{s \cdot t}
+   &= \lnth{\emptystring \cdot t}\\
+   & = \lnth{t}
+         & \text{(def $\cdot$, base case)}\\
+   & = 0 + \lnth{t}\\
+   & = \lnth{s} + \lnth{t}
+         & \text{(def length, base case)}
+\end{align*}
+
+\inductioncase{Constructor case}: Suppose $s \eqdef \ang{a,r}$ and assume the induction hypothesis, $P(r)$.  We must show that $P(s)$ holds:
+\begin{align*}
+\lnth{s \cdot t}
+    & = \lnth{\ang{a, r} \cdot t}\\
+    & = \lnth{\ang{a,r \cdot t}}
+        &  \text{(concat def, constructor case)}\\
+    & = 1 + \lnth{r \cdot t}
+        &  \text{(length def, constructor case)}\\
+    & = 1 +  (\lnth{r} + \lnth{t})
+        & \text{since $P(r)$ holds}\\
+    & = (1 +  \lnth{r}) + \lnth{t}\\
+    & = \lnth{\ang{a,r}} + \lnth{t}
+        & \text{(length def, constructor case)}\\
+    & = \lnth{s} + \lnth{t}.
+\end{align*}
+This proves that $P(s)$ holds as required, completing the constructor
+case.  By structural induction we conclude that $P(s)$ holds for all
+strings $s \in \strings{A}$.
+\end{proof}
+
+\end{theorem}
+
+This proof illustrates the general principle:
+
+\textbox{ 
+\textboxtitle{The Principle of Structural Induction.}
+
+Let $P$ be a predicate on a recursively defined data type $R$.  If
+%
+\noindent \begin{itemize}
+\item $P(b)$ is true for each base case element, $b \in R$, and
+
+\item for all two argument constructors, $\mathbf{c}$,
+\[
+[P(r)\QAND P(s)] \QIMPLIES P(\mathbf{c}(r, s))
+\]
+for all $r,s \in R$,\\
+and likewise for all constructors taking other numbers of arguments,
+\end{itemize}
+then
+\[
+P(r) \text{ is true for all } r \in R.
+\]
+}
+
+The number, $\cnt{c}{s}$, of occurrences of the character $c \in A$ in
+the string $s$ has a simple recursive definition based on the
+definition of $s \in \strings{A}$:
+\begin{definition}\label{countas_def} \mbox{}
+
+\inductioncase{Base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
+
+\inductioncase{Constructor case}:
+\[
+\cnt{c}{\ang{a,s}} \eqdef \begin{cases}
+                           \cnt{c}{s}  &\text{ if } a \neq c,\\
+                           1 + \cnt{c}{s} &\text{ if } a = c.
+                           \end{cases}
+\]
+
+\end{definition}
+
+We'll need the following lemma in the next section:
+\begin{lemma}\label{countas_lem}
+\[
+\cnt{c}{s \cdot t} = \cnt{c}{s} + \cnt{c}{t}.
+\]
+\end{lemma}
+The easy proof by structural induction is an exercise
+(Problem~\ref{PS_count_a_s_lem}).
+
+\begin{problems}
+\classproblems
+\pinput{CP_string_associativity}
+\pinput{CP_string_reversal}
+\pinput{CP_F18_functions}
+\pinput{CP_recursively_defined_sets}
+\pinput{CP_binary_trees}
+
+\homeworkproblems
+\pinput{PS_linear_combination_by_structural_induction}
+\pinput{PS_count_a_s_lem}
+\pinput{PS_koch_snowflake}
+\pinput{PS_labeled_binary_trees}
+
+\examproblems
+\pinput{FP_arith_trig_functions}
+\pinput{FP_structural_induction_lF18_composition}
+\pinput{FP_structural_induction_rational_composition}
+
+\end{problems}
+
+\section{Strings of Matched Brackets}
+
+Let $\brkts$ be the set of all strings of square brackets.  For example,
+the following two strings are in $\brkts$:
+\begin{equation}\label{2strings}
+\lefbrk\rhtbrk\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\quad \text{and}\quad \lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
+\end{equation}
+
+A string, $s \in \brkts$, is called a \term{matched string} if its
+brackets ``match up'' in the usual way.  For example, the left hand
+string above is not matched because its second right bracket does not
+have a matching left bracket.  The string on the right is matched.
+
+We're going to examine several different ways to define and prove
+properties of matched strings using recursively defined sets and
+functions.  These properties are pretty straightforward, and you might
+wonder whether they have any particular relevance in computer science.
+The honest answer is ``not much relevance \emph{any more}.''  The reason
+for this is one of the great successes of computer science as explained in
+the text box below.
+
+\textbox{
+\textboxheader{Expression Parsing}
+%Flesh this out and get references
+
+During the early development of computer science in the 1950's and 60's,
+creation of effective programming language compilers was a central
+concern.  A key aspect in processing a program for compilation was
+expression parsing.  One significant problem was to take an expression
+like
+\[
+x + y * z^2 \div y + 7
+\]
+and \emph{put in} the brackets that determined how it
+should be evaluated ---should it be
+\begin{align*}
+[[x + y] * z^2 \div y] + 7,\text{ or}, \\
+x + [y * z^2 \div [y + 7]], \text{ or},\\
+[x + [y * z^2 ]] \div [y + 7], \text{ or}\dots?
+\end{align*}
+
+The Turing award (the ``Nobel Prize'' of computer science) was
+ultimately bestowed on Robert W. Floyd, for, among other things,
+discovering simple procedures that would insert the brackets properly.
+
+In the 70's and 80's, this parsing technology was packaged into high-level
+compiler-compilers that automatically generated parsers from expression
+grammars.  This automation of parsing was so effective that the subject no
+longer demanded attention.  It had largely disappeared from the computer
+science curriculum by the 1990's.}
+
+\iffalse
+One precise way to determine if a string is matched is to start with 0 and
+read the string from left to right, adding 1 to the count for each left
+bracket and subtracting 1 from the count for each right bracket.
+For example, here are the counts for the two strings above
+\[\begin{array}{rrrrrrrrrrrrr}
+& \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \lefbrk & \lefbrk & \lefbrk &
+\lefbrk & \rhtbrk & \rhtbrk & \rhtbrk & \rhtbrk\\
+0 & 1 & 0 & -1 & 0 & 1 & 2 & 3 & 4 & 3 & 2 & 1 & 0\\
+\\
+\\
+& \lefbrk & \lefbrk & \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \rhtbrk &
+\rhtbrk & \lefbrk & \rhtbrk\\
+0 & 1 & 2 & 3 & 2 & 1 & 2 & 1 & 0 & 1 & 0
+\end{array}\]
+A string has a \term{good count} if its running count never goes
+negative and ends with 0.  So the second string above has a good count, but
+the first one does not because its count went negative at the third step.
+\begin{definition}\label{gc-def}
+Let
+\[
+\GC \eqdef\  \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
+\]
+\end{definition}
+The matched strings can now be characterized precisely as this set of
+strings with good counts.
+\fi
+
+The matched strings can be nicely characterized as a recursive data type:
+
+\begin{definition}\label{RM_def}\label{RM-def}
+Recursively define the set, $\RM$, of strings as follows:
+\begin{itemize}
+
+\item \inductioncase{Base case}: $\emptystring \in\RM$.
+
+\item \inductioncase{Constructor case}: If $s,t \in\RM$, then
+\[
+\lefbrk s\, \rhtbrk t \in \RM.
+\]
+\end{itemize}
+
+\end{definition}
+
+Here $\lefbrk s\, \rhtbrk t$ refers to the concatenation of
+strings which would be written in full as
+\[
+\lefbrk \cdot (s \cdot (\rhtbrk \cdot t)).
+\]
+From now on, we'll usually omit the ``$\cdot$'s.'' 
+
+Using this definition, $\emptystring \in\RM$ by the Base
+case, so letting $s=t =\emptystring$ in the constructor case implies
+\[
+\lefbrk\emptystring\rhtbrk\emptystring=\lefbrk\rhtbrk\in\RM.
+\]
+Now,
+\begin{align*}
+\lefbrk\emptystring\rhtbrk\lefbrk\rhtbrk &= \lefbrk\rhtbrk\lefbrk\rhtbrk \in \RM
+    & \text{(letting $s = \emptystring, t = \lefbrk\rhtbrk$)}\\
+\lefbrk\lefbrk\rhtbrk\rhtbrk\emptystring & = \lefbrk\lefbrk\rhtbrk\rhtbrk \in \RM
+    & \text{(letting $s = \lefbrk\rhtbrk, t = \emptystring$)}\\
+&\ \ \lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk \in \RM
+    & \text{(letting $s = \lefbrk\rhtbrk, t = \lefbrk\rhtbrk$)}
+\end{align*}
+are also strings in $\RM$ by repeated applications of the Constructor
+case; and so on.
+
+\iffalse
+If you haven't seen this kind of definition before, you should
+try continuing this example to verify that
+$\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk
+\in \RM$.
+\fi
+
+
+\iffalse
+Given the way this section is set up you might guess that $\RM = \GC$,
+and you'd be right, but it's not completely obvious.  The proof is worked
+out in Problem~\ref{PS_bracket_good_count}.
+\fi
+
+It's pretty obvious that in order for brackets to match, there had
+better be an equal number of left and right ones.  For further
+practice, let's carefully prove this from the recursive definitions.
+
+\begin{lemma*}%label{}
+Every string in $\RM$ has an equal number of left and right brackets.
+
+\begin{proof}
+The proof is by structural induction with induction hypothesis
+\[
+P(s) \eqdef\  \cnt{\lefbrk}{s} = \cnt{\rhtbrk}{s}.
+\]
+
+\inductioncase{Base case}: $P(\emptystring)$ holds because
+\[
+\cnt{\lefbrk}{\emptystring} = 0 = \cnt{\rhtbrk}{\emptystring}
+\]
+by the base case of Definition~\ref{countas_def} of $\cnt{c}{}$.
+
+\inductioncase{Constructor case}: By structural induction hypothesis, we assume
+$P(s)$ and $P(t)$ and must show $P(\lefbrk s\,\rhtbrk t)$:
+\begin{align*}
+\cnt{\lefbrk}{\lefbrk s\,\rhtbrk t}
+    & = \cnt{\lefbrk}{\lefbrk} + \cnt{\lefbrk}{s}
+        +\cnt{\lefbrk}{\rhtbrk}+ \cnt{\lefbrk}{t}
+         & \text{(Lemma~\ref{countas_lem})}\\
+    & = 1 + \cnt{\lefbrk}{s} + 0 + \cnt{\lefbrk}{t}
+         & \text{(def $\cnt{\lefbrk}{}$)}\\
+    & = 1 + \cnt{\rhtbrk}{s} + 0 + \cnt{\rhtbrk}{t}
+         & \text{(by $P(s)$ and $P(t)$)}\\
+    & = 0 + \cnt{\rhtbrk}{s} + 1 + \cnt{\rhtbrk}{t}\\
+    & = \cnt{\rhtbrk}{\lefbrk} + \cnt{\rhtbrk}{s}
+        +\cnt{\rhtbrk}{\rhtbrk}+ \cnt{\rhtbrk}{t}
+         & \text{(def $\cnt{\rhtbrk}{}$)}\\
+    & = \cnt{\rhtbrk}{\lefbrk s\,\rhtbrk t}
+            & \text{(Lemma~\ref{countas_lem})}
+\end{align*}
+This completes the proof of the constructor case.  We conclude by
+structural induction that $P(s)$ holds for all $s \in\RM$.
+\end{proof}
+\end{lemma*}
+
+
+\iffalse
+
+The \term{depth} of a matched string is defined recursively as follows
+\begin{definition}
+The \emph{depth}, $d(s)$, of a string, $s \in\RM$, is defined
+recursively by the rules:
+\begin{itemize}
+\item $d(\emptystring) \eqdef\  0.$
+\item $d(\lefbrk s\,\rhtbrk t)
+    \eqdef\ \max \set{d(s) + 1, d(t)}$
+\end{itemize}
+\end{definition}
+\fi
+
+\textbf{Warning:} When a recursive definition of a data type allows
+the same element to be constructed in more than one way, the
+definition is said to be \emph{ambiguous}.  We were careful to choose
+an \emph{un}ambiguous definition of $\RM$ to ensure that functions
+defined recursively on its definition would always be well-defined.
+Recursively defining a function on an ambiguous data type
+definition usually will not work.  To illustrate the problem, here's
+another definition of the matched strings.
+
+\iffalse Recursive definitions of tagged data types, where the tag
+uniquely determines the rule used to construct an element, are guaranteed
+to be unambiguous.
+\fi
+
+\begin{definition}
+\label{AM_def}
+Define the set, $\AM \subseteq \brkts$ recursively as follows:
+\begin{itemize}
+
+\item \inductioncase{Base case}: $\emptystring \in \AM$,
+
+\item \inductioncase{Constructor cases}: if $s,t \in \AM$, then
+  the strings $\lefbrk s\, \rhtbrk$ and $st$ are also in $\AM$.
+\end{itemize}
+\end{definition}
+
+It's pretty easy to see that the definition of $\AM$ is just another way
+to define $\RM$, that is $\AM = \RM$ (see Problem~\ref{PS_RM_equal_AM}).
+The definition of $\AM$ is arguably easier to understand, but we didn't
+use it because it's ambiguous, while the trickier definition of $\RM$ is
+unambiguous.  Here's why this matters.  Let's define the number of
+operations, $f(s)$, to construct a matched string $s$ recursively on the
+definition of $s \in \AM$:
+\begin{align*}
+  f(\emptystring)        & \eqdef\ 0, \tag{$f$ base case}\\
+  f(\lefbrk s\,\rhtbrk\ ) & \eqdef\ 1+ f(s), \\
+  f(st)                  & \eqdef\ 1+ f(s) +f(t).\tag{$f$ concat case}
+\end{align*}
+This definition may seem ok, but it isn't:
+$f(\emptystring)$ winds up with two values, and consequently:
+\begin{align*}
+0 & = f(\emptystring) & \text{($f$ base case))}\\
+  & = f(\emptystring \cdot \emptystring) & \text{(concat def, base case)} \\
+                & = 1 + f(\emptystring) + f(\emptystring)
+                      &  \text{($f$ concat case)},\\
+                & = 1 + 0 + 0 = 1
+                      & \text{($f$ base case)}.
+\end{align*}
+This is definitely not a situation we want to be in!
+
+
+\iffalse
+
+Now suppose $s = \lefbrk\rhtbrk\lefbrk\rhtbrk\lefbrk\rhtbrk\lefbrk\rhtbrk$.
+
+
+%%FIND SIMPLER EXAMPLE
+
+Let $a$ be the string $\lefbrk\lefbrk\rhtbrk\rhtbrk \in M$ built by two successive
+applications of the first $M$ constructor starting with $\emptystring$.  Next
+let $b \eqdef aa$ and $c \eqdef bb$, each built by successive applications
+of the second $M$ constructor.
+
+Alternatively, we can build $ba$ from the second constructor with $s=b$
+and $t=a$, and then get to $c$ using the second constructor with $s=ba$
+and $t=a$.
+
+Now by these rules, $f(a) = 2$, and $f(b) = (2+1)(2+1)=9$.  This means
+that $f(c) = f(bb)= (9+1)(9+1)=100$.
+
+But also $f(ba) = (9+1)(2+1) = 27$, so that $f(c) = f(ba\,a) = (27 +1)
+(2+1) = 84$.
+
+The outcome is that $f(c)$ is defined to be both 100 and 84, which shows
+that the rules defining $f$ are inconsistent.
+
+On the other hand, structural induction remains a sound proof method even
+for ambiguous recursive definitions, which is why it is easy to prove
+that $M=\RM$.
+\fi
+
+\begin{problems}
+
+\practiceproblems
+\pinput{MQ_ambiguous_recursive_def}
+
+\classproblems
+\pinput{CP_erasable_strings}
+\pinput{PS_RM_equal_AM}
+\pinput{PS_bracket_good_count}
+
+\end{problems}
+
+
+\section{Recursive Functions on Nonnegative Integers}
+
+The nonnegative integers can be understood as a recursive data type.
+\begin{definition}\label{0succ}
+The set, $\naturals$, is a data type defined recursively as:
+\begin{itemize}
+\item $0 \in \naturals$.
+\item If $n \in \naturals$, then the \emph{successor}, $n+1$, of $n$ is in
+$\naturals$.
+\end{itemize}
+
+\end{definition}
+
+The point here is to make it clear that ordinary induction is simply the
+special case of structural induction on the recursive
+Definition~\ref{0succ}.  This also justifies the familiar recursive
+definitions of functions on the nonnegative integers.
+
+\subsection{Some Standard Recursive Functions on $\naturals$}
+
+\begin{example}\label{factorial-def}
+
+\emph{The Factorial function.}  This function is often written
+``$n!$.''  You will see a lot of it in later chapters.  Here we'll use
+the notation $\text{fac}(n)$:
+\begin{itemize}
+\item $\text{fac}(0) \eqdef 1$.
+\item $\text{fac}(n+1) \eqdef (n+1)\cdot \text{fac}(n)$ for $n \ge 0$.
+\end{itemize}
+
+\end{example}
+\begin{example}\label{fib-def}
+\emph{The Fibonacci numbers.}  Fibonacci numbers arose out of an
+effort 800 years ago to model population growth.  They have a
+continuing fan club of people captivated by their extraordinary
+properties (see Problems~\ref{PS_fib_induction},
+\ref{CP_fibonacci_by_induction}, \ref{MQ_fib_squares}).  The $n$th
+Fibonacci number, $\text{fib}$, can be defined recursively by:
+\begin{align*}
+F(0) &\eqdef 0,\\
+F(1) &\eqdef 1,\\ 
+F(n) &\eqdef F(n-1) + F(n-2) &\mbox{for $n \geq 2$.} 
+\end{align*}
+Here the recursive step starts at $n=2$ with base cases for 0 and 1.  This
+is needed since the recursion relies on two previous values.
+
+What is $F(4)$?  Well, $F(2) = F(1)+F(0) = 1$, $F(3) =
+F(2)+F(1) = 2$, so $F(4) = 3$.  The sequence
+starts out $0, 1, 1, 2, 3, 5, 8, 13, 21,\dots$.
+
+\end{example}
+
+\begin{example}
+
+\emph{Sum-notation.}\label{sum-notation-def} Let ``$S(n)$'' abbreviate
+the expression ``$\sum_{i=1}^n f(i)$.''  We can recursively define
+$S(n)$ with the rules
+  \begin{itemize}
+  \item $S(0) \eqdef 0$.
+  \item $S(n+1) \eqdef  f(n+1) + S(n)$ for $n\geq 0$.
+  \end{itemize}
+\end{example}
+
+\begin{editingnotes}
+
+\item[Simultaneous recursive definitions:]
+  You can define several things at the same time, in terms of each
+  other.  For example, we may define two functions $f$ and $g$ from
+  $\naturals$ to $\naturals$, recursively, by:
+  \begin{itemize}
+  \item
+    $f(0) \eqdef 1$,
+  \item
+    $g(0) \eqdef 1$,
+  \item
+    $f(n+1) \eqdef f(n) + g(n)$, for $n \geq 0$,
+  \item
+    $g(n+1) \eqdef f(n) \cdot g(n)$, for $n \geq 0$.
+  \end{itemize}
+
+\end{editingnotes}
+
+\begin{editingnotes}
+
+\subsection{Induction on Fibonacci Numbers}
+
+We can use the recursive definition of a function to establish its
+properties by structural induction.
+
+As an illustration, we'll prove a cute identity involving Fibonacci
+numbers.  Fibonacci numbers provide lots of fun for mathematicians because
+they satisfy many such identities.
+\begin{proposition}
+\[
+\forall n \geq 0 (\Sigma_{i=0}^n F_i^2 = F_n F_{n+1}).
+\]
+\end{proposition}
+
+Example: $n = 4$:
+\[
+0^2 + 1^2 + 1^2 + 2^2 + 3^2 = 15 = 3 \cdot 5.
+\]
+Let's try a proof by (standard, not strong) induction.  The theorem
+statement suggests trying it with $P(n)$ defined as:
+\[
+\sum_{i=0}^n F_i^2 = F_n F_{n+1}.
+\]
+
+\inductioncase{Base case} ($n=0$):
+$\Sigma_{i=0}^0 F_i^2 \eqdef (F_0)^2 = 0 = F_0 F_1$ because
+$F_0 \eqdef 0$.
+
+\inductioncase{Inductive step} ($n\geq 0$): Now we stare at the gap
+between $P(n)$ and $P(n+1)$.  $P(n+1)$ is given by a summation that's
+obtained from that for $P(n)$ by adding one term; this suggests that,
+once again, we subtract.  The difference is just the term $F_{n+1}^2$.
+Now, we are assuming that the original $P(n)$ summation totals $F_n
+F_{n+1}$ and want to show that the new $P(n+1)$ summation totals
+$F_{n+1} F_{n+2}$.  So we would \emph{like} the difference to be
+\[
+F_{n+1} F_{n+2} - F_n F_{n+1}.
+\]
+
+So, the actual difference is $F_{n+1}^2$ and the difference we want is
+$F_{n+1} F_{n+2} - F_n F_{n+1}$.  Are these the same?  We want to check
+that:
+\[
+F_{n+1}^2 = F_{n+1} F_{n+2} - F_n F_{n+1}.
+\]
+But this is true, because it is really the Fibonacci definition in
+disguise: to see this, divide by $F_{n+1}$.
+
+\end{editingnotes}
+
+\subsection{Ill-formed Function Definitions}
+%\hyperdef{ill}{formed}
+
+There are some other blunders to watch out for when defining functions
+recursively.  The main problems come when recursive definitions don't
+follow the recursive definition of the underlying data type.  Below are
+some function specifications that resemble good definitions of functions
+on the nonnegative integers, but they aren't.
+
+\begin{eqnarray}\label{f1}
+f_1(n)\eqdef 2+f_1(n-1).
+\end{eqnarray}
+This ``definition'' has no base case.  If some function, $f_1$,
+satisfied~(\ref{f1}), so would a function obtained by adding a constant to
+the value of $f_1$.  So equation~(\ref{f1}) does not uniquely define
+an $f_1$.
+
+\begin{eqnarray}\label{f2}
+f_2(n) \eqdef
+\begin{cases}
+ 0, & \text{if $n=0$},\\
+ f_2(n+1) &  \text{otherwise}.
+\end{cases}
+\end{eqnarray}
+This ``definition'' has a base case, but still doesn't uniquely determine
+$f_2$.  Any function that is 0 at 0 and constant everywhere else would
+satisfy the specification, so~\eqref{f2} also does not uniquely define
+anything.
+
+In a typical programming language, evaluation of $f_2(1)$ would begin with
+a recursive call of $f_2(2)$, which would lead to a recursive call of
+$f_2(3)$, \dots with recursive calls continuing without end.  This
+``operational'' approach interprets~\eqref{f2} as defining a
+\emph{partial} function, $f_2$, that is undefined everywhere but 0.
+
+\begin{eqnarray}\label{f3}
+f_3(n) \eqdef \begin{cases}
+  0, &  \text{if $n$ is divisible by 2,}\\
+  1, &  \text{if $n$ is divisible by 3,}\\
+  2, & \text{otherwise.}
+ \end{cases}
+\end{eqnarray}
+This ``definition'' is inconsistent: it requires $f_3(6) = 0$ and $f_3(6)
+=1$, so~(\ref{f3}) doesn't define anything.
+
+%\subsubsection{A Mysterious Function}
+Mathematicians have been wondering about this function specification for a
+while:
+\begin{eqnarray}\label{f5}
+f_4(n) \eqdef\begin{cases}
+ 1, & \text{if $n\le 1$},\\
+ f_4(n/2) &  \text{if $n>1$ is even},\\
+ f_4(3n+1)& \text{if $n>1$ is odd}.
+\end{cases}
+\end{eqnarray}
+For example, $f_4(3)=1$ because
+\[
+f_4(3)\eqdef f_4(10)\eqdef f_4(5)\eqdef f_4(16)\eqdef f_4(8)\eqdef
+f_4(4)\eqdef f_4(2)\eqdef f_4(1)\eqdef 1.
+\]
+The constant function equal to 1 will satisfy~\eqref{f5} (why?), but it's not
+known if another function does too.  The problem is that the third case
+specifies $f_4(n)$ in terms of $f_4$ at arguments larger than $n$, and so
+cannot be justified by induction on $\naturals$.  It's known that any
+$f_4$ satisfying~\eqref{f5} equals 1 for all $n$ up to over a billion.
+
+\iffalse
+\textbf{Quick exercise:} Why does the constant function 1
+satisfy~\eqref{f5}?
+\fi
+
+A final example is Ackermann's function, which is an extremely
+fast-growing function of two nonnegative arguments.  Its inverse is
+correspondingly slow-growing ---it grows slower than $\log n$, $\log \log
+n$, $\log \log \log n$, \dots, but it does grow unboundly.  This inverse
+actually comes up analyzing a useful, highly efficient procedure known as
+the \emph{Union-Find algorithm}.  This algorithm was conjectured to run in
+a number of steps that grew linearly in the size of its input, but turned
+out to be ``linear'' but with a slow growing coefficient nearly equal to
+the inverse Ackermann function.  This means that pragmatically
+\emph{Union-Find} is linear since the theoretically growing coefficient is
+less than 5 for any input that could conceivably come up.
+
+\iffalse
+You will learn about Union-Find if you take the Algorithms course, 6.046.
+We're mentioning this story to motivate an examination of the somewhat
+unusual recursive definition of Ackermann's function, $A(m,n)$.
+\fi
+
+Ackermann's function can be defined recursively as the function, $A$,
+given by the following rules:
+\begin{align}
+A(m,n) &=  2n, &&\text{if $m=0$ or $n \le 1$},\label{Am0}\\ 
+A(m,n) &=  A(m-1,A(m,n-1)), &&\text{otherwise}.\label{AA}
+\end{align}
+
+Now these rules are unusual because the definition of $A(m,n)$
+involves an evaluation of $A$ at arguments that may be a lot bigger
+than $m$ and $n$.  The definitions of $f_2$ above showed how
+definitions of function values at small argument values in terms of
+larger one can easily lead to nonterminating evaluations.  The
+definition of Ackermann's function is actually ok, but proving this
+takes some ingenuity (see Problem~\ref{PS_Ackermann_def}).
+                            
+\begin{problems}
+\homeworkproblems
+\pinput{PS_Ackermann_def}
+\end{problems}
+
+\section{Arithmetic Expressions}\label{aexp_sec}
+Expression evaluation is a key feature of programming languages, and
+recognition of expressions as a recursive data type is a key to
+understanding how they can be processed.
+
+To illustrate this approach we'll work with a toy example: arithmetic
+expressions like $3x^2 + 2x + 1$ involving only one variable, ``$x$.''
+We'll refer to the data type of such expressions as $\aexp$.  Here is its
+definition:
+
+\begin{definition} \mbox{}
+
+\begin{itemize}
+\item \inductioncase{Base cases}: \mbox{}
+
+\begin{itemize}
+
+\item The variable, $x$, is in $\aexp$.
+
+\item The arabic numeral, $\mtt{k}$, for any nonnegative integer, $k$, is
+  in $\aexp$.
+
+\end{itemize}
+
+\item \inductioncase{Constructor cases}: If $e,f \in \aexp$, then
+\begin{itemize}
+\setcounter{enumi}{2}
+
+\item $\lefbrk e \sumsym f \rhtbrk \in \aexp$.  The expression $\lefbrk e \sumsym
+  f \rhtbrk$ is called a \emph{sum}.  The \aexp's $e$ and $f$ are called the
+  \emph{components} of the sum; they're also called the \emph{summands}.
+
+\item $\lefbrk e \prodsym f\rhtbrk \in \aexp$.  The expression $\lefbrk e \prodsym f\rhtbrk$ is called a
+  \emph{product}.  The \aexp's $e$ and $f$ are called the
+  \emph{components} of the product; they're also called the
+  \emph{multiplier} and \emph{multiplicand}.
+
+\item $\minussym\lefbrk e\rhtbrk \in \aexp$.  The expression $\minussym\lefbrk e\rhtbrk$ is called a
+  \emph{negative}.
+\end{itemize}
+\end{itemize}
+\end{definition}
+
+Notice that \aexp's are fully bracketed, and exponents aren't allowed.  So
+the $\aexp$ version of the polynomial expression $3x^2 + 2x + 1$ would
+officially be written as
+\begin{equation}\label{fullparens}
+\lefbrk \lefbrk \mtt{3} \prodsym \lefbrk x \prodsym x\rhtbrk\rhtbrk \sumsym \lefbrk \lefbrk \mtt{2} \prodsym x\rhtbrk \sumsym \mtt{1}\rhtbrk\rhtbrk.
+\end{equation}
+These brackets and $\ast$'s clutter up examples, so we'll often use
+simpler expressions like ``$3x^2 + 2x + 1$'' instead
+of~\eqref{fullparens}.  But it's important to recognize that $3x^2 +
+2x + 1$ is not an \aexp; it's an \emph{abbreviation} for an $\aexp$.
+
+\iffalse
+
+being represented as
+a tagged datum.  To start, we might represent 0 as a length one sequence
+consisting of the tag \texttt{zero}:
+\begin{definition}
+The nonnegative integers can be defined recursively as follows:
+
+\begin{definition}\label{tagn}
+\begin{itemize}
+\item \inductioncase{Base case}:  $\ang{\texttt{zero}}\in \naturals$.
+\item \inductioncase{Constructor case}: if $n \in \naturals$, then
+      $\ang{\texttt{successor},n}\in \naturals$.
+\end{itemize}
+
+\end{definition}
+\fi
+
+\subsection{Evaluation and Substitution with Aexp's}
+
+\subsubsection{Evaluating Aexp's}
+
+Since the only variable in an \aexp\ is $x$, the value of an \aexp\ is
+determined by the value of $x$.  For example, if the value of $x$ is 3,
+then the value of $3x^2 + 2x + 1$ is obviously 34.  In general, given any
+$\aexp$, $e$, and an integer value, $n$, for the variable, $x$, we can
+evaluate $e$ to finds its value, $\meval{e}{n}$.  It's easy, and useful, to
+specify this evaluation process with a recursive definition.
+
+\begin{definition}\label{meval-def}
+  The \term{evaluation function}, $\text{eval}: \aexp \cross \integers \to
+  \integers$, is defined recursively on expressions, $e \in \aexp$, as
+  follows.  Let $n$ be any integer.
+
+\begin{itemize}
+\item \inductioncase{Base cases}:
+\begin{align}
+\meval{x}{ n} & \eqdef n,
+    & \text{(value of variable $x$ is $n$.)}\label{eval-var}\\
+\meval{\mtt{k}}{ n} & \eqdef k, 
+   & \text{(value of numeral $\mtt{k}$ is $k$, regardless of $x$.)}\label{eval-const}
+\end{align}
+
+\item \inductioncase{Constructor cases}:
+
+\begin{align}
+%\setcounter{enumi}{2}
+\meval{\lefbrk e_1 \sumsym e_2 \rhtbrk}{n}
+   & \eqdef \meval{e_1}{n}+\meval{e_2}{n},\label{eval-sum}\\
+\meval{\lefbrk e_1 \prodsym e_2 \rhtbrk}{n}
+  & \eqdef \meval{e_1}{n} \cdot \meval{e_2}{n}, \label{eval-prod}\\
+\meval{\minussym\lefbrk e_1 \rhtbrk}{n} 
+  &  \eqdef - \meval{e_1}{n}. \label{eval-minus}
+\end{align}
+\end{itemize}
+
+\end{definition}
+
+For example, here's how the recursive definition of $\text{eval}$
+would arrive at the value of $3+x^2$ when $x$ is 2:
+\begin{align*}
+\meval{\lefbrk \mtt{3} \sumsym \lefbrk x \prodsym x\rhtbrk \rhtbrk}{2}
+ & = \meval{\mtt{3}}{2} + \meval{\lefbrk x \prodsym x \rhtbrk}{2}
+                  & \text{(by~Def~\ref{meval-def}.\ref{eval-sum})}\\
+ & = 3 + \meval{\lefbrk x \prodsym x \rhtbrk}{2} & \text{(by~Def~\ref{meval-def}.\ref{eval-const})}\\
+ & = 3 + (\meval{x}{2} \cdot \meval{x}{2}) & \text{(by~Def~\ref{meval-def}.\ref{eval-prod})}\\
+ & = 3 + (2 \cdot 2) & \text{(by~Def~\ref{meval-def}.\ref{eval-var})}\\
+ & = 3 + 4 = 7.
+\end{align*}
+
+\subsubsection{Substituting into Aexp's}
+Substituting expressions for variables is a standard operation used by
+compilers and algebra systems.  For example, the result of substituting
+the expression $3x$ for $x$ in the expression $x(x-1)$ would be
+$3x(3x-1)$.  We'll use the general notation $\msubst{f}{e}$ for the result
+of substituting an $\aexp$, $f$, for each of the $x$'s in an $\aexp$, $e$.
+So as we just explained,
+\[
+\msubst{3x}{x(x-1)} = 3x(3x-1).
+\]
+
+This substitution function has a simple recursive definition:
+
+\begin{definition}\label{subst-def}
+  The \term{substitution function} from $\aexp \cross \aexp$ to \aexp\ is
+  defined recursively on expressions, $e \in \aexp$, as follows.  Let $f$
+  be any $\aexp$.
+
+\begin{itemize}
+\item \inductioncase{Base cases}:
+
+\begin{align}
+\msubst{f}{x} & \eqdef f, \label{subst-var} 
+    & \text{(subbing $f$ for variable, $x$, just gives $f$)}\\
+\msubst{f}{\mtt{k}} & \eqdef \mtt{k}
+    & \text{(subbing into a numeral does nothing.)}\label{subst-const}
+\end{align}
+
+
+\item \inductioncase{Constructor cases}:
+
+
+%\setcounter{enumi}{2}
+\begin{align}
+\msubst{f}{\lefbrk e_1 \sumsym e_2\rhtbrk} & \eqdef  \lefbrk \msubst{f}{e_1} \sumsym
+\msubst{f}{e_2}\rhtbrk\label{subst-sum}\\
+\msubst{f}{\lefbrk e_1 \prodsym e_2\rhtbrk} & \eqdef  \lefbrk \msubst{f}{e_1} \prodsym
+\msubst{f}{e_2}\rhtbrk\label{subst-prod} \\
+\msubst{f}{\minussym\lefbrk e_1\rhtbrk} & \eqdef \minussym \lefbrk
+       \msubst{f}{e_1}\rhtbrk.\label{subst-minus} 
+\end{align}
+\end{itemize}
+\end{definition}
+
+Here's how the recursive definition of the substitution function would find
+the result of substituting $3x$ for $x$ in the $x(x-1)$:
+\begin{align*}
+\lefteqn{\msubst{3x}{x(x-1)}}\\
+ & =
+\msubst{\lefbrk 3 \prodsym x \rhtbrk}{\lefbrk x \prodsym \lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk \rhtbrk} & \text{(unabbreviating)}\\
+ & =\lefbrk \msubst{\lefbrk 3 \prodsym x \rhtbrk}{x}\ \prodsym\\
+       & \qquad\qquad \msubst{\lefbrk 3 \prodsym x \rhtbrk}{\lefbrk x \sumsym \minussym
+\lefbrk 1 \rhtbrk \rhtbrk} \rhtbrk
+         & \text{(by~Def~\ref{subst-def}~\ref{subst-prod})}\\
+ & = \lefbrk \lefbrk 3 \prodsym x \rhtbrk \prodsym
+       \msubst{\lefbrk 3 \prodsym x \rhtbrk}{\lefbrk x \sumsym \minussym\lefbrk 1 \rhtbrk \rhtbrk} \rhtbrk
+         & \text{(by~Def~\ref{subst-def}~\ref{subst-var})}\\
+ & = \lefbrk \lefbrk 3 \prodsym x \rhtbrk \prodsym \lefbrk \msubst{\lefbrk 3 \prodsym x \rhtbrk}{x}\\
+ & \qquad\qquad\qquad \sumsym \msubst{\lefbrk 3 \prodsym x \rhtbrk}{\minussym\lefbrk 1 \rhtbrk} \rhtbrk \rhtbrk
+         & \text{(by~Def~\ref{subst-def}~\ref{subst-sum})}\\
+ & = \lefbrk \lefbrk 3 \prodsym x \rhtbrk \prodsym \lefbrk \lefbrk 3 \prodsym x \rhtbrk \sumsym \minussym \lefbrk \msubst{\lefbrk 3 \prodsym x \rhtbrk}{1} \rhtbrk \rhtbrk \rhtbrk
+         & \text{(by~Def~\ref{subst-def}~\ref{subst-var} \&~\ref{subst-minus})}\\
+ & = \lefbrk \lefbrk 3 \prodsym x \rhtbrk \prodsym \lefbrk \lefbrk 3 \prodsym x \rhtbrk \sumsym \minussym \lefbrk 1\rhtbrk \rhtbrk\rhtbrk
+         & \text{(by~Def~\ref{subst-def}~\ref{subst-const})}\\
+ & =  3x(3x-1) & \text{(abbreviation)}
+\end{align*}
+
+Now suppose we have to find the value of $\msubst{3x}{x(x-1)}$ when $x =
+2$.  There are two approaches.
+
+First, we could actually do the substitution above to get $3x(3x-1)$, and
+then we could evaluate $3x(3x-1)$ when $x =2$, that is, we
+could recursively calculate $\meval{3x(3x-1)}{2}$ to get the
+final value 30.  This approach is described by the expression
+\begin{equation}\label{em3xsub}
+\meval{\msubst{3x}{x(x-1)}}{2}
+\end{equation}
+In programming jargon, this would be called evaluation using the
+\emph{Substitution Model}.  With this approach, the formula $3x$
+appears twice after substitution, so the multiplication $3 \cdot 2$
+that computes its value gets performed twice.
+
+The other approach is called evaluation using the \emph{Environment
+  Model}.  Namely, to compute the value of~\eqref{em3xsub},
+we evaluate $3x$ when $x = 2$ using just 1 multiplication to get the value
+6.  Then we evaluate $x(x-1)$ when $x$ has this value 6 to arrive at the
+value $6\cdot 5=30$.  This approach is described by the expression
+\begin{equation}\label{mexme32}
+\meval{x(x-1)}{\meval{3x}{2}}.
+\end{equation}
+The Environment Model only computes the value of $3x$ once, and so
+it requires one fewer multiplication than the Substitution model to
+compute~\eqref{mexme32}.  This is a good place to stop and work this
+example out yourself (Problem~\ref{TP_eval_subst}).
+
+But how do we know that these final values reached by these two
+approaches, that is, the final integer values of~\eqref{em3xsub}
+and~\eqref{mexme32}, agree?  In fact, we can prove pretty easily that
+these two approaches \emph{always} agree by structural induction on
+the definitions of the two approaches.  More precisely, what we want
+to prove is
+\begin{theorem}\label{environments}
+For all expressions $e,f \in \aexp$ and $n \in \integers$,
+\begin{equation}\label{eval-subst}
+\meval{\msubst{f}{e}}{n} = \meval{e}{\meval{f}{n}}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The proof is by structural induction on $e$.\footnote{This is an
+  example of why it's useful to notify the reader what the induction
+  variable is---in this case it isn't $n$.}
+
+\inductioncase{Base cases}:
+\begin{itemize}
+
+\item Case[$x$]
+
+  The left hand side of equation~\eqref{eval-subst} equals $\meval{f}{n}$
+  by this base case in Definition~\ref{subst-def} of the substitution
+  function, and the right hand side also equals $\meval{f}{n}$ by this base
+  case in Definition~\ref{meval-def} of $\text{eval}$.
+
+\item Case[$\mtt{k}$].
+
+  The left hand side of equation~\eqref{eval-subst} equals $\mtt{k}$ by
+  this base case in Definitions~\ref{subst-def} and~\ref{meval-def} of
+  the substitution and evaluation functions.  Likewise, the right hand
+  side equals $\mtt{k}$ by two applications of this base case in the
+  Definition~\ref{meval-def} of $\text{eval}$.
+
+\end{itemize}
+
+\inductioncase{Constructor cases}:
+\begin{itemize}
+
+\item Case[$\lefbrk e_1 \sumsym e_2 \rhtbrk$]
+
+  By the structural induction hypothesis~\eqref{eval-subst}, we may assume
+  that for all $f \in \aexp$ and $n \in \integers$,
+
+\begin{equation}\label{ln4.hyp}
+\meval{\msubst{f}{e_i}}{n}  =  \meval{e_i}{\meval{f}{n}}
+\end{equation}
+for $i= 1,2$.  We wish to prove that
+\begin{equation}\label{s+}
+\meval{\msubst{f}{\lefbrk e_1\sumsym e_2 \rhtbrk}}{n}  =  \meval{\lefbrk e_1 \sumsym e_2 \rhtbrk}{ \meval{f}{n}}
+\end{equation}
+The left hand side of~\eqref{s+} equals
+\[
+\meval{\lefbrk \msubst{f}{e_1} \sumsym \msubst{f}{e_2} \rhtbrk}{ n}
+\]
+by Definition~\ref{subst-def}.\ref{subst-sum} of substitution into a sum
+expression.  But this equals
+\[
+\meval{\msubst{f}{e_1}}{n} + \meval{\msubst{f}{e_2}}{n}
+\]
+by Definition~\ref{meval-def}.\eqref{eval-sum} of $\text{eval}$ for a sum expression.  By
+induction hypothesis~\eqref{ln4.hyp}, this in turn equals
+\[
+\meval{e_1}{\meval{f}{n}} + \meval{e_2}{\meval{f}{n}}.
+\]
+Finally, this last expression equals the right hand side of~\eqref{s+} by
+Definition~\ref{meval-def}.\eqref{eval-sum} of $\text{eval}$ for a sum
+expression.  This proves~\eqref{s+} in this case.
+
+\item Case[$\lefbrk e_1 \prodsym e_2 \rhtbrk$]  Similar.
+
+\item Case[$-\lefbrk e_1 \rhtbrk$]  Even easier.
+
+\end{itemize}
+
+This covers all the constructor cases, and so completes the proof by
+structural induction.
+
+\end{proof}
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_eval_subst}
+
+\homeworkproblems
+\pinput{PS_erase_aexps}
+\pinput{PS_value_games}
+\end{problems}
+
+\begin{editingnotes}
+
+\begin{example*}
+\begin{definition}\label{E}
+Define a set, $E$, recursively as follows:
+\begin{itemize}
+\item \inductioncase{Base case}: $0 \in E$,\label{0E}
+\item \inductioncase{Constructor cases}: if $n \in E$, then
+\begin{itemize}
+\item $n+2 \in E$, when $n\geq 0$;\label{+2E}
+\item $-n \in E$, when $n > 0$.\label{-E}
+\end{itemize}
+\end{itemize}
+
+\end{definition}
+\end{example*}
+
+Using this definition, we can see that $0 \in E$ by the Base case, so $0 +
+2 = 2 \in E$ by Constructor case~\ref{+2E}., and so $2+2 =4 \in E$, $4+2 =
+6 \in E$, \dots, and in fact any nonnegative even number is in $E$ by
+successive application of case~\ref{+2E}.  Also, by case~\ref{-E}.,
+$-2,-4,-6,\dots \in E$.  So clearly all the even integers are in $E$.
+
+Is anything else in $E$?  The definition doesn't say so explicitly, but an
+implicit condition on a recursive definition is that the only way things
+get into $E$ is as a consequence of the Base and Constructor cases.  In
+other words, $E$ will be exactly the set of even integers.
+
+A very simple application of structural induction proves that the set $E$
+given by Definition~\ref{E} is exactly the set of even numbers.  We already
+explained why all the even numbers are in $E$.  So what's left is to show
+that:
+
+\begin{lemma*}
+Every number in the set $E$ in Definition~\ref{E} is even.
+\begin{proof}
+The proof is by structural induction on $n \in E$.  The induction
+hypothesis is 
+\[
+Q(n) \eqdef \text{$n$ is even}.
+\]
+
+\inductioncase{Base case}: $Q(0)$ holds since 0 is even.
+
+\inductioncase{Constructor cases}: assuming $n \in E$ and $Q(n)$ holds, prove
+that
+\begin{itemize}
+
+\item $Q(n+2)$ holds.  This is immediate, since adding 2 to an even number
+  gives an even number.
+
+\item $Q(-n)$ holds.  This is also immediate, since $n$ is even iff $-n$ is
+even.
+
+\end{itemize}
+
+This completes the proof of the Constructor cases, and we conclude by
+structural induction at $Q(n)$ holds for all $n \in E$.
+\end{proof}
+
+\end{lemma*}
+
+
+defining the set, $E$, of even numbers as in Definitions~\ref{E}, but
+without the conditions~\ref{+2E}.\ and~\ref{-E}.\ that restrict application of
+the rules.  Namely,
+
+\begin{definition}\label{Eamb}
+Define a set, $E'$, recursively as follows:
+\begin{itemize}
+\item \inductioncase{Base case}: $0 \in E'$,\label{0Eamb}
+\item \inductioncase{Constructor cases}: if $n \in E'$, then
+   \begin{itemize}
+   \item $n+2 \in E'$, \label{+2Eamb}
+   \item $-n \in E'$.\label{-Eamb}
+   \end{itemize}
+\end{itemize}
+\end{definition}
+
+Now Definition~\ref{Eamb} is perfectly legitimate, and we could us it to
+prove by structural induction that $E'$ also is the set of even integers,
+that is, $E'= E$.  But Definition~\ref{Eamb} is ambiguous.  For example,
+$0\in E'$ by the base case, but also $0=-0 \in E'$ by applying constructor
+case~\ref{-Eamb} to the base case.  This begins to matter when we try to
+define a function, $s$, from $E'$ to nonnegative integers based on
+Definition~\ref{Eamb}:
+\begin{align*}
+  s(0) & \eqdef 1,\\
+s(n+2) & \eqdef 1+ s(n),\\
+ s(-n) & \eqdef 1+ s(n).
+\end{align*}
+So $s(0) \eqdef 1$ by the base case of this definition, and also $s(0)=
+s(-0) \eqdef 1+s(0) = 1 + 1 = 2$ by the second constructor case, which
+shows that these rules are inconsistent.
+
+On the other hand, using the unambiguous Definition~\ref{E} of $E$,
+essentially the same definition of $S$ works just fine.  Namely, define
+\begin{align*}
+  s(0) & \eqdef 1,\\
+  s(n+2) & \eqdef 1+ s(n), & \text{ for } n \geq 0\\
+  s(-n) & \eqdef 1+ s(n) & \text{ for } n > 0.
+\end{align*}
+Now $s(n)$ is unambiguously defined, and in fact is precisely the (unique)
+number of steps required to construct $n \in E$ according to the
+unambiguous Definition~\ref{E} of $E$.
+
+\end{editingnotes}
+
+
+\iffalse
+
+%% Games as a Recursive Data Type %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Games as a Recursive Data Type}
+
+Chess, Checkers, Go, and Tic-Tac-Toe are examples of \emph{two-person
+  terminating games of perfect information},---$\tg$'s for short.  These
+are games in which two players alternate moves that depend only on the
+visible board position or state of the game.  ``Perfect information''
+means that the players know the complete state of the game at each move.
+(Most card games are \emph{not} games of perfect information because
+neither player can see the other's hand.)  ``Terminating'' means that play
+cannot go on forever---it must end after a finite number of
+moves.\footnote{Since board positions can repeat in chess and checkers,
+  termination is enforced by rules that prevent any position from being
+  repeated more than a fixed number of times.  So the ``state'' of these
+  games is the board position \emph{plus} a record of how many times
+  positions have been reached.}
+
+We will define $\tg$'s \iffalse in a straightforward way tagged\fi as a 
+recursive data type.  To see how this will work, let's use the game of
+Tic-Tac-Toe as an example.
+
+\subsection{Tic-Tac-Toe}
+
+Tic-Tac-Toe is a game for young children.  There are two players who
+alternately write the letters ``X'' and ``O'' in the empty boxes of a $3
+\times 3$ grid.  Three copies of the same letter filling a row, column, or
+diagonal of the grid is called a \emph{tic-tac-toe}, and the first player
+who gets a tic-tac-toe of their letter wins the game.
+Children generally don't take long to figure out an optimal strategy
+for playing the game.
+
+We're now going give a precise mathematical definition of the
+Tic-Tac-Toe \term{game tree} as a recursive data type.  \iffalse and
+carefully defining the allowed moves\fi
+
+Children of course have no need for such a definition, and it would be
+too complicated for them anyway.  But if we had to write a Tic-Tac-Toe
+playing \emph{computer program}, we'd need this kind of picky
+precision.
+
+Here's the idea behind the definition: at any point in the game, the
+``board position'' is the pattern of X's and O's on the $3 \times 3$
+grid.  From any such Tic-Tac-Toe pattern, there are a number of next
+patterns that might result from a move.  For example, from the initial
+empty grid, there are nine possible next patterns, each with a single
+X in some grid cell and the other eight cells empty.  From any of
+these patterns, there are eight possible next patterns gotten by
+placing an O in an empty cell.  These move possibilities are given by
+the
+\hyperdef{game}{tree}{game tree} for Tic-Tac-Toe indicated in
+Figure~\ref{fig:Tic-Tac-Toe}.
+
+\begin{figure}
+%\graphic{topgame}
+\includegraphics[width=6.5in]{topgame}
+\caption{The Top of the Game Tree for Tic-Tac-Toe.}
+\label{fig:Tic-Tac-Toe}
+\end{figure}
+
+
+\iffalse
+\[\begin{array}{c|c|c}
+\hspace{.1in} & \hspace{.1in} & \hspace{.1in}\\
+\hline  & &\\
+\hline  & &
+\end{array}\]
+
+\textbf{FIGURE NEEDED}
+\fi
+
+\begin{definition}
+
+A Tic-Tac-Toe \emph{pattern} is a $3 \times 3$ grid each of whose 9 cells
+contains either the single letter, X, the single letter, O, or is
+empty.
+\begin{editingnotes}
+
+Moreover, there must be either
+\begin{itemize}
+
+\item one more X than O's, with at most two tic-tac-toes of X's, and no
+tic-tac-toe of O's, or
+
+\item an equal number of X's and O's, with at most one tic-tac-toes of
+O's, and no tic-tac-toe of X's.
+\end{itemize}
+
+\end{editingnotes}
+
+A pattern, $Q$, is a \emph{possible next pattern after} $P$, providing $P$
+has no tic-tac-toes and
+\begin{itemize}
+
+\item if $P$ has an equal number of X's and O's, and $Q$ is the same as
+$P$ except that a cell that was empty in $P$ has an X in $Q$, or
+
+\item if $P$ has one more X than O's, and $Q$ is the same as $P$ except
+that a cell that was empty in $P$ has an O in $Q$.
+\end{itemize}
+
+If $P$ is a Tic-Tac-Toe pattern, and $P$ has no next patterns, then the
+\emph{terminated Tic-Tac-Toe game trees} at $P$ are
+
+\begin{itemize}
+
+\item 
+$\ang{P, \ang{\texttt{win}}}$,
+if $P$ has a tic-tac-toe of X's.
+
+
+\item 
+$\ang{P, \ang{\texttt{lose}}}$, if $P$ has a tic-tac-toe of O's.
+
+
+\item $\ang{P, \ang{\texttt{tie}}}$, otherwise.
+
+\end{itemize}
+
+\iffalse
+If $Q$ is a possible move from $P$, then the game tree starting at $Q$ is
+called a \emph{  Notice
+that $\mathcal{G}_P = \emptyset$ iff $P$ is terminated.}
+\fi
+
+The \emph{Tic-Tac-Toe game trees starting at $P$} are defined recursively:
+
+\inductioncase{Base Case}:
+A terminated Tic-Tac-Toe game tree at $P$ is a Tic-Tac-Toe game tree
+starting at $P$.
+
+\inductioncase{Constructor case}: If $P$ is a non-terminated Tic-Tac-Toe pattern,
+then the Tic-Tac-Toe game tree starting at $P$ consists of $P$ and the set
+of all game trees starting at possible next patterns after $P$.
+\end{definition}
+
+For example, if
+\begin{align*}
+P_0 & =  \begin{array}{c|c|c}
+                O & X & O\\
+         \hline X & O & X\\
+         \hline X & &
+        \end{array}\\
+Q_1 & = \begin{array}{c|c|c}
+                O & X & O\\
+         \hline X & O & X\\
+         \hline X &  & O
+        \end{array}\\
+Q_2 & = \begin{array}{c|c|c}
+                O & X & O\\
+         \hline X & O & X\\
+         \hline X & O & 
+        \end{array}\\
+R & = \begin{array}{c|c|c}
+                O & X & O\\
+         \hline X & O & X\\
+         \hline X & O & X
+        \end{array}
+\end{align*}
+the game tree starting at $P_0$ is pictured in Figure~\ref{fig:endgame}.
+
+\begin{editingnotes}
+
+Then,
+\begin{equation}\label{endgame}
+\ang{P, \set{\ang{Q_1, \ang{\texttt{lose}}},
+             \ang{Q_2, \set{\ang{R,\ang{\texttt{tie}}}}}}}
+\end{equation}
+is the tagged recursive datum that corresponds to a Tic-Tac-Toe ``end
+game'' that starts with $P$.  This game is easier to understand by
+looking at its game tree in Figure~\ref{fig:endgame}.  Notice that the
+game tree---which so far we haven't actually defined---is simply the
+parse tree of the tagged datum.
+
+\end{editingnotes}
+
+\begin{figure}[htbp]
+%\graphic{endgame}
+\includegraphics[width=6in]{endgame}
+\caption{Game Tree for the Tic-Tac-Toe game starting at $P_0$.}
+\label{fig:endgame}
+\end{figure}
+
+Game trees are usually pictured in this way with the starting pattern
+(referred to as the ``root'' of the tree) at the top and lines connecting
+the root to the \iffalse roots of the \fi game trees that start at each
+possible next pattern.  The ``leaves'' at the bottom of the tree (trees
+grow upside down in computer science) correspond to terminated games.  A
+path from the root to a leaf describes a complete \emph{play} of the game.
+(In English, ``game'' can be used in two senses: first we can say that
+Chess is a game, and second we can play a game of Chess.  The first usage
+refers to the data type of Chess game trees, and the second usage refers to
+a ``play.'')
+
+\subsection{Infinite Tic-Tac-Toe Games}
+
+At any point in a Tic-Tac-Toe game, there are at most nine possible
+next patterns, and no play can continue for more than nine moves.  But
+we can expand Tic-Tac-Toe into a larger game by running a 5-game
+tournament: play Tic-Tac-Toe five times and the tournament winner is
+the player who wins the most individual games.  A 5-game tournament
+can run for as many as 45 moves.
+
+It's not much of generalization to have an \emph{$n$-game Tic-Tac-Toe
+  tournament}.  But then comes a generalization that sounds simple but can
+be mind-boggling: consolidate all these different size tournaments into a
+single game we can call \emph{Tournament-Tic-Tac-Toe ($T^4$)}.  The first
+player in a game of $T^4$ chooses any integer $n > 0$.  Then the players
+play an $n$-game tournament.  Now we can no longer say how long a $T^4$
+play can take.  In fact, there are $T^4$ plays that last as long as you
+might like: if you want a game that has a play with, say, nine billion
+moves, just have the first player choose $n$ equal to one billion.  This
+should make it clear the game tree for $T^4$ is infinite.
+
+But still, it's obvious that every possible $T^4$ play will stop.
+That's because after the first player chooses a value for $n$, the
+game can't continue for more than $9n$ moves.  So it's not possible to
+keep playing forever even though the game tree is infinite.
+
+This isn't very hard to understand, but there is an important
+difference between any given $n$-game tournament and $T^4$: even
+though every play of $T^4$ must come to an end, there is no longer any
 initial bound on how many moves it might be before the game ends---a
 play might end after 9 moves, or $9(2001)$ moves, or $9(10^{10}+1)$
 moves.  It just can't continue forever.
