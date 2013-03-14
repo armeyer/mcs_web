@@ -717,6 +717,12 @@ u \mrel{G^+} v \eqdef \mbox{there is a positive length walk in $G$ from
 $u$ to $v$}.
 \end{equation}
 
+\begin{definition}
+When there is a path from vertex $v$ to vertex $w$, we say that $w$ is
+\term{reachable} from $v$, or equivalently, that $v$ is
+\term{connected} to $w$.
+\end{definition}
+
 \subsection{Composition of Relations}\label{relation_compose_subsec}
 There is a simple way to extend \idx{composition} of functions to
 composition of relations, and this gives another way to talk about
@@ -794,7 +800,7 @@ subject $t$ indicates that $s$ is listed in the catalogue as a direct
 prerequisite of $t$.  Of course, before you can take subject $t$, you
 have to take not only subject $s$, but also all the prerequisites of $s$,
 and any prerequisites of those prerequisites, and so
-on.
+anon.
 \begin{editingnotes} Of course, in order to take subject $t$, you
   not only have to take subject $s$ first, but you also have to take
   all the prerequisites of $s$, as well as any prerequisites of these
@@ -815,9 +821,11 @@ has to be completed before taking subject $v$ iff $u \mrel{D^+} v$.
 \end{figure}
 
 It would clearly have a dire effect on the time it takes to graduate
-if this direct prerequisite graph had a positive length cycle. So,
-the direct prerequisite graph among subjects had better be
-\term{acyclic}:
+if this direct prerequisite graph had a positive length closed walk.
+We need to forbid such closed walks, which, by
+Lemma~\ref{shortestclosedwalk_lem} is the same as forbidding positive
+length cycles.  So, the direct prerequisite graph among subjects had
+better be \term{acyclic}:
 
 \begin{definition}
 A \term{directed acyclic graph (DAG)} is a directed graph with no
@@ -828,9 +836,12 @@ DAGs have particular importance in computer science.  They capture key
 concepts used in analyzing task scheduling and concurrency control.
 When distributing a program across multiple processors, we're in
 trouble if one part of the program needs an output that another part
-hasn't generated yet!  We won't be working on any examples quite so
-technical in this chapter, but let's begin to examine the principles
-of scheduling in more depth.
+hasn't generated yet!  So let's examine DAGs and their connection to
+scheduling in more depth.
+
+\iffalse
+We won't be working on any examples quite so
+technical in this chapter, but\fi
 
 
 %% Scheduling %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -860,20 +871,13 @@ put on before certain others.
 When faced with a set of prerequisites like this one, the most basic
 task is finding an order in which to perform all the tasks, one at a
 time, while respecting the dependency constraints.  This task of
-finding a complete ordering that is consistent with a DAG is known as
-\emph{topological sorting}.
-
-\begin{editingnotes}
+finding an order for the tasks is known as \emph{topological sorting}.
 
 \begin{definition}
-  A \term{topological sort} of a DAG, $\prec$, on a set, $A$, is
-  a ordering, $\sqsubset$, of all elements of $A$ such that
-\[
-a \prec b\ \QIMPLIES\  a \sqsubset b.
-\]
+  A \term{topological sort} of a finite DAG is a list of all the
+  vertices such that each vertex, $v$ appears earlier in the list than
+  every other vertex reachable from $v$.
 \end{definition}
-
-\end{editingnotes}
 
 \begin{figure}\redrawntrue
 
@@ -896,8 +900,7 @@ right shoe      & left shoe \\[\medskipamount]
 \label{fig:7FQ}
 \end{figure}
 
-
-There are many ways to get dressed one item as a time while obeying
+There are many ways to get dressed one item at a time while obeying
 the constraints of Figure~\ref{fig:7FP}.  We have listed two in
 Figure~\ref{fig:7FQ}.  Each such list is a topological sort for the
 tasks Figure~\ref{fig:7FP}.  In what follows, we will prove
@@ -906,30 +909,31 @@ can think of this as a mathematical proof that you \emph{can} get
 dressed in the morning. 
 %(and then show up for math lecture).
 
-
-Topological sorts for partial orders on finite sets are easy to construct
-by starting from \term{minimal} elements:
+Topological sorts for finite DAG's are easy to construct by starting
+from \term{minimal} elements:
 
 \begin{definition}
-  An element $a_0 \in A$ is \index{minimum}\term*{minim\underline{um}}
-  iff it is a prerequisite to every other element of $A$.  That is, if
-  $D$ is the digraph whose vertices are $A$ and whose edges correspond
-  the prerequisites of $A$, then $a_0 \mrel{D^+} b$ for all $b \neq a_0 \in A$.
+  An vertex $v$ of a DAG, $D$, is
+  \index{minimum}\term*{minim\underline{um}} iff every other vertex is
+  reachable from $v$.
 
-\nopagebreak
-
-  The element $a_0$ is \index{minimal}\term*{minim\underline{al}} iff no
-  other element is prerequisite to $a_0$, that is, $\QNOT(b \mrel{D^+} a_0)$ for all
-  $b \neq a_0$.
+  A vertex $v$ is \index{minimal}\term*{minim\underline{al}} iff $v$
+  is not reachable from any other vertex.
 \end{definition}
-There are corresponding definitions for \term{maximum} and \term{maximal}.
-Alternatively, a maximum(al) element for a relation, $R$, could be
-defined as a minimum(al) element for $\inv{R}$.
 
+It is kind of peculiar to use the words ``minimum'' and ``minimal''
+just to talk about vertices that start paths.  These words come from
+the perspective that regards a vertex as ``smaller'' than any other
+vertex it connects to.  We'll explore this way of thinking about DAG's
+in the next section.
+
+\iffalse
 In a topological sort, minimum and minimal elements are the same thing.
-But a DAG may have no minimum element but lots of minimal
-elements.  There are four minimal elements in the clothes example:
-leftsock, rightsock, underwear, and shirt.
+\fi
+
+A DAG may have no minimum element but lots of minimal elements.  There
+are four minimal elements in the clothes example: leftsock, rightsock,
+underwear, and shirt.
 
 To build an order for getting dressed, we pick one of these minimal
 elements---say, shirt.  Now there is a new set of minimal elements;
@@ -982,16 +986,15 @@ So our construction shows:
 \begin{theorem}\label{thm:topological}
 Every finite DAG has a topological sort.
 \end{theorem}
-\begin{editingnotes}
 
-There are many other ways of constructing topological sorts.  For example,
-instead of starting ``from the bottom'' with minimal elements, we could
-build a path-total ordering starting \emph{anywhere} and simply keep
-putting additional elements into the path-total order wherever they will fit.
-In fact, the domain of the partial order need not even be finite; we won't
-prove it, but \emph{all} partial orders, even infinite ones, have
-topological sorts.
-\end{editingnotes}
+There are many other ways of constructing topological sorts.  For
+example, instead of starting from the minimal elements at the
+beginning of paths, we could build a topological sort starting from
+\term{maximal} elements at the end of paths.  In fact, we could build
+a topological sort picking vertics arbitrarily and simply inserting
+them into the list wherever they will fit.\footnote{In fact, the DAG
+  doesn't even need to be finite, but you'll be relieved to know we
+  have no need to go into this.}
 
 \subsection{Parallel Task Scheduling}\label{parallel_sec}
 
@@ -1043,31 +1046,32 @@ pants, our pants before our belt, and our belt before our jacket.
 Such a sequence of items is known as a \term{chain}.
 
 \begin{definition}
-A \term{chain} is a set of elements in a DAG such that any pair of
-elements in that set are comparable, meaning that there is a walk from
-one of those vertices to the other.  A chain is said to \index{end of
-  chain}\emph{end at} its maximum element.
+Two vertices in a DAG are \term{comparable} when one of them is
+reachable from the other.  A \term{chain} in a DAG is a set of
+vertices such that any two of them are comparable.  A chain is said to
+\index{end of chain}\emph{end at} its maximum element, that is, at a
+vertex that is reachable from all the other vertices in the chain.
 \end{definition}
 
-Thus, the time it takes to schedule tasks, even with an unlimited
-number of processors, is at least the length of the longest chain.
-Indeed, if we used less time, then two items from a longest chain
-would have to be done at the same time, contradicting the precedence
-constraints.  For this reason, a longest chain is also known as a
-\term{critical path}.  For example, Figure~\ref{fig:7FS} shows the
-critical path for the getting-dressed digraph.
+The time it takes to schedule tasks, even with an unlimited number of
+processors, is at least as large as any chain.  That's because if we
+used less time than the size of some chain, then two items from the
+chain would have to be done at the same time, contradicting the
+precedence constraints.  For this reason, a \emph{largest} chain is
+also known as a \term{critical path}.  For example,
+Figure~\ref{fig:7FS} shows the critical path for the getting-dressed
+digraph.
 
-In this example, we were able to schedule all the tasks in $t$
-steps, where $t$ is the length of the longest chain.  The nice
-thing about DAGs is that this is always possible!  In other words,
-for any DAG, there is a legal parallel schedule that runs in $t$
-steps, where $t$ is the length of the longest chain.
+In this example, we were able to schedule all the tasks in $t$ steps,
+where $t$ is the size of the largest chain.  The nice thing about DAGs
+is that this is always possible!  In other words, for any DAG, there
+is a legal parallel schedule that runs in $t$ steps, where $t$ is the
+size of the largest chain.
 
 In general, a \emph{schedule} for performing tasks specifies which
 tasks to do at successive steps.  Every task, $a$, has to be scheduled
 at some step, and all the tasks that have to be completed before task
 $a$ must be scheduled for an earlier step.
-
 
 \begin{definition}\label{def:partition}
 A \term{partition} of a set~$A$ is a set of nonempty
@@ -1092,13 +1096,9 @@ into three blocks is
 \]
 
 \begin{definition}\label{def:schedule}
-A \term{parallel schedule} for a DAG, $D$, on a
-set, $A$, is a partition of $A$ into blocks $A_0, A_1,\dots,$ such
-that for all $a,b \in A$, $k \in \naturals$,
-\[
-[a \in A_k \QAND b \mrel{D^{+}} a] \quad\QIMPLIES\quad b \in A_j
-\text{ for some } j < k.
-\]
+A \term{parallel schedule} for a DAG, $D$, is a partition of
+$\vertices{D}$ into blocks $A_0, A_1,\dots,$ such that when $j <
+k$, no vertex in $A_j$ is reachable from any vertex in $A_k$.
 The block $A_k$ is called the set of elements \term{scheduled at step
   $k$}, and the \emph{length} of the schedule is the number of blocks
 in the partition.  The maximum number of elements scheduled at any
@@ -1148,10 +1148,10 @@ $k$ at step $k$.  That's how we found the schedule for getting dressed
 given above.
 
 \begin{theorem}\label{thm:parallel-time}
-Let $D$ be an acyclic digraph whose vertices are the set, $A$.  A minimum length
-schedule for $D$ consists of the sets $A_0, A_1,\dots,$ where
+A minimum length schedule for a finite DAG $D$ consists of the sets
+$A_0, A_1,\dots,$ where
 \[
-A_k \eqdef \set{a \suchthat \dpth{a} =k}.
+A_k \eqdef \set{v \in \vertices{D} \suchthat \dpth{a} =k}.
 \]
 \end{theorem}
 
@@ -1166,29 +1166,27 @@ Parallel time = length of critical path.
 \end{corollary}
 
 Things get a little more interesting when the number of processors is
-bounded, but not immensely so. See Problem~\ref{PS_Brents_theorem} for
-an example.
+bounded (see Problem~\ref{PS_Brents_theorem}).
 
 \subsection{Dilworth's Lemma}\label{dilworth_subsec}
 
 \begin{definition}
-An \term{antichain} in a DAG is a set of vertices such that any two
-elements in the set are incomparable---no walk exists between any two
-different vertices in the set.
+An \term{antichain} in a DAG is a set of vertices such that \emph{no}
+two elements in the set are comparable---no walk exists between any
+two different vertices in the set.
 \end{definition}
 
 Our conclusions about scheduling also tell us something about antichains.
 
 \begin{corollary}\label{cor:parallel}
-If the largest chain in a DAG, $A$, is of size $t$,
-then $A$ can be partitioned into $t$ antichains.
+If the largest chain in a DAG, $D$, is of size $t$, then
+$\vertices{D}$ can be partitioned into $t$ antichains.
 \end{corollary}
 
 \begin{proof}
-Let the antichains be the sets $A_k \eqdef \set{a \suchthat \dpth{a}
-  =k}$.
-It is an easy exercise to verify that each $A_k$ is an antichain
-(Problem~\ref{PS_antichains_by_depth}).
+Let the antichains be the sets $A_k \eqdef \set{a \in \vertices{D}
+  \suchthat \dpth{a} =k}$.  It is an easy exercise to verify that each
+$A_k$ is an antichain (Problem~\ref{PS_antichains_by_depth}).
 \end{proof}
 
 Corollary~\ref{cor:parallel} implies a famous
@@ -1197,7 +1195,7 @@ result\footnote{Lemma~\ref{lem:Dilworth} also follows from a more
   discuss.} about acyclic digraphs:
 
 \begin{lemma}[Dilworth]\label{lem:Dilworth}
-\hyperdef{rule}{Dilworth}{For} all $t>0$, every DAG with
+For all $t>0$, every DAG with
 $n$ vertices must have either a chain of size greater than $t$ or an
 antichain of size at least $n / t$.
 \end{lemma}
@@ -1269,27 +1267,26 @@ which makes for an amusing in-class demo.
 After mapping the ``direct prerequisite'' relation onto a digraph, we
 were then able to use the tools for understanding computer scientists'
 graphs to make deductions about something as mundane as getting
-dressed. This may (or may not) have impressed you, but we can do
+dressed.  This may or may not have impressed you, but we can do
 better.  In the introduction to this chapter, we mentioned a useful
-fact that bears repeating: any digraph is formally the same as the
-image of a binary relation whose domain and codomain are its
-vertices. This means that \emph{any} binary relation whose domain is
-the same as its codomain can be translated into a digraph!  Talking
-about the edges of a binary relation or the image of a set under a
-digraph may seem odd at first, but doing so will allow us to draw
-important connections between different types of relations.  For
-instance, we an apply Dillworth's lemma to the ``direct prerequisite''
-relation for getting dressed because the graph of that relation was a
-DAG.
+fact that bears repeating: any digraph is formally the same as a
+binary relation whose domain and codomain are its vertices.  This
+means that \emph{any} binary relation whose domain is the same as its
+codomain can be translated into a digraph!  Talking about the edges of
+a binary relation or the image of a set under a digraph may seem odd
+at first, but doing so will allow us to draw important connections
+between different types of relations.  For instance, we an apply
+Dilworth's lemma to the ``direct prerequisite'' relation for getting
+dressed because the graph of that relation was a DAG.
 
-But how can we tell if the graph of a binary relation will be a DAG?
-And once we know that a relation is a DAG, what exactly can we
-conclude?  In this section, we will axiomatize some of the properties
-that a binary relation might have, and use those axioms to define
-classes of relations---in particular, we'll explain this section's
-title, Partial Orders.
+But how can we tell if a binary relation is a DAG?  And once we know
+that a relation is a DAG, what exactly can we conclude?  In this
+section, we will abstract some of the properties that a binary
+relation might have, and use those properties to define classes of
+relations---in particular, we'll explain this section's title, Partial
+Orders.
 
-\subsection{The Properties of Strict Partial Orders}
+\subsection{The Properties of the Walk Relation in DAGs}
 
 To begin, let's talk about some features common to all digraphs.
 Since merging a walk from $u$ to $v$ with a walk from $v$ to $w$ gives
@@ -1304,6 +1301,10 @@ A binary relation, $R$, on a set, $A$, is
 \]
 \quad for every $a,b,c\in A$.
 \end{definition}
+So we have
+\begin{lemma}
+For any digraph, $G$, the walk relations $G^+$ and $G^*$ are transitive.
+\end{lemma}
 
 Since there is a length-0 walk from any vertex to itself, the walk
 relation has another relational property called \emph{reflexivity}:
@@ -1312,73 +1313,64 @@ relation has another relational property called \emph{reflexivity}:
 A binary relation, $R$, on a set, $A$, is \term{reflexive} iff $a
 \mrel{R} a$ for all $a \in A$.
 \end{definition}
+Now we have
+\begin{lemma}
+For any digraph, $G$, the walk relation $G^*$ is reflexive.
+\end{lemma}
 
-A graph $D$ is a DAG iff it has no positive length
-cycles. Lemma~\ref{shortestclosedwalk_lem} implies that if there is a
-positive closed walk on a digraph, there is also a cycle.  This
-implies that $D$ is a DAG iff no vertex has a positive length walk to
-itself.  This relational property of $D^+$ is called
-\term{irreflexivity}.
+We know that a digraph is a DAG iff it has no positive length closed
+walks. \iffalse Lemma~\ref{shortestclosedwalk_lem} \fi This means that
+the positive walk relation of $D^+$ of a DAG has a relational property
+called \term{irreflexivity}.
 
 \begin{definition}
 A binary relation, $R$, on a set, $A$, is
 \term{irreflexive} iff
-\[n
+\[
 \QNOT(a \mrel{R} a)
 \]
 for all $a \in A$.
 \end{definition}
-
 So we have
 \begin{lemma}\label{R+irr}
 $R$ is a DAG iff $R^+$ is irreflexive.
 \end{lemma}
 
-Now here is where we begin to define interesting classes of relations:
+\subsection{Strict Partial Orders}
+
+Here is where we begin to define interesting classes of relations:
 
 \begin{definition}
 A relation that is transitive and irreflexive is called a \term{strict
   partial order}.
 \end{definition}
 
-Since we know that the positive walk relation is transitive, we have
-\begin{lemma}
-If $D$ is a DAG, then $D^+$ is a strict partial order.
-\end{lemma}
-
-The transitivity property of a relation says that where there's a
-length two walk, there is an edge.  This implies by induction that
-where there is a walk of any positive length, there is an edge (see
-Problem~\ref{PS_transitive_closure_proof}), and so:
-
-\begin{lemma}\label{transitive_closure_lem}
-If a binary relation $R$ is transitive, then $R^+ = R$.
-\end{lemma}
-
-\begin{corollary}
-If $R$ is a strict partial order, then $R$ is a DAG.
-\end{corollary}
-
-\begin{proof}
-If vertex $a$ is on a positive length cycle in the graph of $R$, then
-$a \mrel{R^+} a$ holds by definition, which in particular implies that
-$R^+$ is not irreflexive.  This means that if $R^+$ is irreflexive,
-then $R$ must be a DAG.
-
-But if $R$ is a strict partial order, then by definition it is
-irreflexive and by Lemma~\ref{transitive_closure_lem} $R^+ = R$, so
-$R^+$ is indeed irreflexive.
-\end{proof}
-
-To summarize, we have
-\begin{theorem}\label{SPOiffDAG}
-A relation is a strict partial order iff it is the positive walk relation of a DAG.
+A simple connection between strict partial orders and DAGs now follows from Lemma~\ref{R+irr}:
+\begin{theorem}\label{thm:SPOiffDAG}
+A relation $R$ is a strict partial order iff $R$ is the positive walk
+relation of a DAG.
 \end{theorem}
 
-Another consequence of Lemma~\ref{shortestclosedwalk_lem} is that if a
-graph is a DAG, it cannot have two vertices with positive length walks
-in both directions between them.  This relational property of a
-positive walk relation is called \term{asymmetry}.
+Strict partial orders come up in many situations which on the face of
+it have nothing to do with digraphs.  For example, the less-than
+order, $<$, on numbers is a strict partial order:
+\begin{itemize}
+\item if $x <y$ and $y < z$ then $x < z$, so less-than is transitive, and
+\item  $\QNOT(x < x)$, so less-than is irreflexive.
+\end{itemize}
+The proper containment relation $\subset$ is also a
+partial order:
+\begin{itemize}
+\item if $A \subset B$ and $B \subset C$ then $A \subset C$,
+so containment is transitive, and
+\item  $\QNOT(A \subset A)$, so proper containment is irreflexive.
+\end{itemize}
+
+If there are two vertices are reachable from each other then there is
+a postive length closed walk that starts at one vertex, goes to the
+other, and then comes back.  So DAGs are digraphs in which no two
+vertices are mutually reachable.  This corresponds to a relational
+property called \term{asymmetry}.
 
 \begin{definition}
 A binary relation, $R$, on a set, $A$, is \term{asymmetric} iff
@@ -1387,20 +1379,17 @@ a \mrel{R} b \QIMPLIES \QNOT(b \mrel{R} a)
 \]
 for all $a,b \in A$.
 \end{definition}
-
-That is, Lemma~\ref{shortestclosedwalk_lem} implies
+So we can also characterize DAGs in terms of asymmetry:
 \begin{corollary}\label{R+asymm}
-$R$ is a DAG iff $R^+$ is asymmetric.
+A digraph $D$ is a DAG iff $D^+$ is asymmetric.
 \end{corollary}
 
-And immediately from Corollary~\ref{R+asymm} and Theorem~\ref{SPOiffDAG}
-we get
-\begin{corollary}
-$R$ is a strict partial order iff it is transitive and
-  asymmetric.\footnote{Some texts use this Corollary to define strict
-    partial orders.}
+Corollary~\ref{R+asymm} and Theorem~\ref{thm:SPOiffDAG} combine to give
+\begin{corollary}\label{cor:spoifftransasym}
+A binary relation $R$ on a set $A$ is a strict partial order iff it is
+transitive and asymmetric.\footnote{Some texts use this Corollary to
+  define strict partial orders.}
 \end{corollary}
-
 
 \iffalse
 can be an economical way to represent partial orders.  For example,
@@ -1409,7 +1398,6 @@ Chapter~\ref{partial-order-chapter} was used to determine the partial
 order of indirect prerequisites on subjects.  This indirect
 prerequisite partial order is precisely the positive length walk
 relation of the direct prerequisites.
-
 \fi
 
 A strict partial order may be the positive walk relation of different
@@ -1466,24 +1454,11 @@ to be unique and easy to find (see Problem~\ref{CP_covering_edges}).
 * likewise OR/AND matrix multiplication
 \end{editingnotes}
 
-\subsection{Weak Partial Orders}\label{partial_order_sec}
-Partial orders come up in many situations which on the face of it have
-nothing to do with digraphs.  For example, the less-than order, $<$, on
-numbers is a partial order:
-\begin{itemize}
-\item if $x <y$ and $y < z$ then $x < z$, so less-than is transitive, and
-\item  if $x <y$ then $y \not < x$, so less-than is asymmetric.
-\end{itemize}
- The proper containment relation $\subset$ is also a
-partial order:
-\begin{itemize}
-\item if $A \subset B$ and $B \subset C$ then $A \subset C$,
-so containment is transitive, and
-\item  $A \not\subset A$, so proper containment is irreflexive.
-\end{itemize}
 
 
 \iffalse
+\subsection{Weak Partial Orders}\label{partial_order_sec}
+
 , but so is the containment relation on sets
 and the divisibility relation on integers.
 \fi
@@ -1568,6 +1543,7 @@ are the relation, $<$, on real numbers, and the proper subset relation,
 $\subset$, on sets.
 \fi
 
+\subsection{Weak Partial Orders}
 The less-than-or-equal relation, $\leq$, is at least as familiar as
 the less-than strict partial order, and the ordinary containment
 relation, $\subseteq$, is even more common than the proper containment
@@ -1609,7 +1585,7 @@ for all $a,b \in A$.
 \end{lemma}
 
 Since a length zero walk goes from a vertex to itself, this lemma
-combined with Theorem~\ref{SPOiffDAG} yields:
+combined with Theorem~\ref{thm:SPOiffDAG} yields:
 \begin{corollary}\label{weakPOiffDAGwalk}
 A relation is a weak partial order iff it is the walk relation of a DAG.
 \end{corollary}
@@ -1638,11 +1614,13 @@ Let $A$ be some family of sets and define $a \mrel{R} b$ iff $a
 \supset b$.  Then $R$ is a strict partial order.
 \end{example}
 
+\iffalse
 For integers, $m,n$ we write $m \divides n$ to mean that $m$
 \emph{divides} $n$, namely, there is an integer, $k$, such that $n=km$.
+\fi
 
 \begin{example}\label{divides}
-The divides relation is a weak partial order on the nonnegative integers.
+The divisibility relation is a weak partial order on the nonnegative integers.
 \end{example}
 
 \section{Representing Partial Orders by Set Containment}\label{poset-as-sets_sec}
@@ -1734,46 +1712,47 @@ is in front of the other.  In a nonlinear partial order, elements
 might be next to each other.
 \end{editingnotes}
 
-\section{Path-Total Orders}
+\section{Linear Orders}
 
 The familiar order relations on numbers have an important additional
 property: given two different numbers, one will be bigger than the
-other.  Partial orders with this property are said to be
-\emph{path-total orders}.\footnote{Path-total partial orders are
-  conventionally just called ``total.''  But this terminology
-  conflicts with the definition of ``total relation,'' and it
-  regularly confuses students.  So we chose the terminology
-  ``path-total'' to avoid the confusion.  Some texts use \term{linear
-    orders} as the name for path-total orders.
+other.  Partial orders with this property are said to be \emph{linear
+  orders}.  You can think of a linear order as one where all the
+elements are lined up so that everyone knows exactly who is ahead and
+who is behind them in the line.
+\footnote{Linear orders are often called ``total'' orders, but this
+  terminology conflicts with the definition of ``total relation,'' and
+  it regularly confuses students.
 
-  Being a path-total partial order is a much stronger condition than
-  being a partial order that is a total relation.  For example, any
-  weak partial order such as $\subseteq$ is a total relation but
-  generally won't be path-total.}
+  Being a linear order is a much stronger condition than being a
+  partial order that is a total relation.  For example, any weak
+  partial order is a total relation but generally won't be linear.}
 
 \begin{definition}\label{def:path_total}
 Let $R$ be a binary relation on a set, $A$, and let $a, b$ be elements of
 $A$.  Then $a$ and $b$ are \emph{comparable} with respect to $R$ iff $[a
   \mrel{R} b\ \QOR\ b \mrel{R} a]$.  A partial order for which every two
-different elements are comparable is called a \emph{path-total order}.
+different elements are comparable is called a \emph{linear order}.
 \end{definition}
 
-So $<$ and $\le$ are path-total orders on $\reals$.  On the other hand, the
-subset relation is \emph{not} path-total, since, for example, any two different
+So $<$ and $\le$ are linear orders on $\reals$.  On the other hand, the
+subset relation is \emph{not} linear, since, for example, any two different
 finite sets of the same size will be incomparable under $\subseteq$.  The
-prerequisite relation on Course 6 required subjects is also not path-total
+prerequisite relation on Course 6 required subjects is also not linear
 because, for example, neither 8.01 nor 6.042 is a prerequisite of the
 other.
 
-The name path-total is based on the following
+\iffalse
+The name linear is based on the following
 \begin{lemma}\label{path_total_lem} For any
-  finite, nonempty set of vertices from a path-total digraph, there is
+  finite, nonempty set of vertices from a linear order, there is
   a directed path going through exactly these vertices.  If
   the digraph is a DAG, the directed path is unique.
 \end{lemma}
 Lemma~\ref{path_total_lem} is easy to prove by induction on the size
 of the set of vertices.  The proof is given in
 Problem~\ref{CP_tournament_chain}.
+\fi
 
 \begin{problems}
 \practiceproblems
@@ -1834,9 +1813,9 @@ $R_2$ both have one of these properties, then so does $R_1 \cross
 R_2$.  This implies that if $R_1$ and $R_2$ are both partial orders,
 then so is $R_1 \cross R_2$.
 
-On the other hand, the property of being a path-total order is not preserved.
-For example, the age-height relation $Y$ is the product of two path-total
-orders, but it is not path-total: the age 240 months, height 68 inches pair,
+On the other hand, the property of being a linear order is not preserved.
+For example, the age-height relation $Y$ is the product of two linear
+orders, but it is not linear: the age 240 months, height 68 inches pair,
 (240,68), and the pair (228,72) are incomparable under $Y$.
 
 \begin{problems}
@@ -1857,7 +1836,7 @@ A relation is an \term{equivalence relation} if it is reflexive,
 symmetric, and transitive.
 \end{definition}
 
-Congruence modulo~$n$ is an excellent example of an equivalence
+Congruence modulo~$n$ is an important example of an equivalence
 relation:
 \begin{itemize}
 
@@ -1897,9 +1876,9 @@ could be been defined using Definition~\ref{equiv_f}.
 
 \subsection{Equivalence Classes}
 
-Equivalence relations are closely related to \idx{partitions} because the
-images of elements under an equivalence relation form the blocks of a
-partition.
+Equivalence relations are closely related to \idx{partitions} because
+the images of elements under an equivalence relation are the blocks of
+a partition.
 
 \begin{definition}\label{def:equiv_class}
 Given an equivalence relation $R : A \to A$, the \term{equivalence
@@ -1924,8 +1903,8 @@ and partitions of~$A$.  Namely, given on one hand any partition of a
 set, then being in the same block is obviously an equivalence
 relation.  On the other hand we have:
 \begin{theorem}\label{equiv-partition_thm}
-The equivalence classes of an equivalence relation on a set~$A$ form a
-partition of~$A$.
+The equivalence classes of an equivalence relation on a set~$A$ are
+the blocks of a partition of~$A$.
 \end{theorem}
 
 We'll leave the proof of Theorem~\ref{equiv-partition_thm} as an easy
@@ -2041,7 +2020,7 @@ $\diredge{v_0}{v_k}$ is in~$G$ (and, hence, $\diredge{v_i}{v_j}$ is
 also in~$G$ for all $i < j$.
 \fi
 
-\item[Path-Total] $R$ is \term{path-total} when
+\item[Linear] $R$ is \term{linear} when
 \[
  \forall x \neq y \in A. \; (x \mrel{R} y\ \QOR\ y \mrel{R} x)
 \]
