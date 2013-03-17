@@ -19,24 +19,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  The binary-GCD state machine computes the GCD of $a$ and $b$ using
-  only division by 2 and subtraction, which makes it run very
-  efficiently on hardware that uses binary representation of numbers.
-  In practice, it runs more quickly than the more famous Euclidean
-  algorithm described in Section~\bref{sec: Euclid}.
+  The \term{Binary GCD} state machine computes the GCD of integers $a
+  > b > 0$ using only division by 2 and subtraction, which makes it
+  run very efficiently on hardware that uses binary representation of
+  numbers.  In practice, it runs more quickly than the more famous
+  Euclidean algorithm described in Section~\bref{sec: Euclid}.
 
 \begin{align*}
 \text{states} & \eqdef \naturals^3\\
-\text{start state} & \eqdef (a, b, 1)
-             & \text{(where $a > b >0$)}\\
+\text{start state} & \eqdef (a, b, 1)\\
 \text{transitions} & \eqdef \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\\
      &\qquad \text{the first possible state according to the rules:}\\
      &\qquad
        \begin{cases}
        (1, 0, ex)     & \text{(if $x = y$)}\\
        (1, 0, e)      & \text{(if $y=1$)},\\
-       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides
-           y$)},\\
+       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)},\\
        (x/2, y, e)    & \text{(if $2 \divides x$)}\\
        (x, y/2, e)    & \text{(if $2 \divides y$)}\\
        (y, x, e)      & \text{(if $y>x$)}\\
@@ -51,8 +49,6 @@
 stops, that is, reaches a state $(x,y,e)$ in which no transition is
 possible, then $e = \gcd(a,b)$.
 
-\hint There are only three ways the machine can stop.
-
 \begin{solution}
 We claim that a preserved invariant of this machine is
 \[
@@ -64,60 +60,71 @@ e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
 
-\inductioncase{Case}: ($x=y$).  Since $x=y$, we have $\gcd(x,y) = x$,
-and since the invariant holds for $(x,y,e)$, we conclude that
-\begin{equation}\label{gcdabex}
-\gcd(a,b) = ex.
-\end{equation}
-In this case, $(x',y',e') = (1,0,ex)$, so
+\inductioncase{Case}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+Now we have
 \begin{align*}
-e'\gcd(x',y')
-   & = ex\gcd(1,0)\\
-   & = ex\\
-   & = \gcd(a,b) & \text{(by~\eqref{gcdabex})},
+\gcd(a,b) 
+    & = e\gcd(x,x) 
+          & \text{(by the invariant for $(x,x,e)$)}\\
+    & = ex\\
+    & = ex\gcd(1,0)
+          & \text{(since $\gcd(1,0) = 1$)}\\
+    & =  e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  We use the
-easily verified fact that $\gcd(au,av) = a\gcd(u,v)$.  So in this
-case, we have $\gcd(x,y) = 2\gcd(x/2,y/2)$.  Since the invariant holds
-for $(x,y,e)$, we conclude that
-\begin{equation}\label{gcdabe2x2}
-\gcd(a,b) = e 2\gcd(x/2,y/2).
+\inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  
+In this case, $(x',y',e') = (x/2, y/2, 2e)$.
+
+We use the easily verified fact
+\begin{equation}\label{auavauv}
+\gcd(au,av) = a\gcd(u,v).
 \end{equation}
-Now $(x',y',e')= (x/2, y/2, 2e)$, so
+
+Now
 \begin{align*}
-e'\gcd(x',y')
- & = 2e\gcd(x/2,y/2)\\
-& = \gcd(a,b) & \text{(by~\eqref{gcdabe2x2})},
+\gcd(a,b)
+  & =  e\gcd(x,y)
+        & \text{(by the invariant for $(x,y,e)$)}\\
+  & = e 2\gcd(x/2,y/2)
+        & \text{(by~\eqref{auavauv})}\\
+  & = e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: $2 \divides x$ and 2 does not divide $y$.  Now
-\begin{equation}\label{gcdxyx2}
-\gcd(x,y) = \gcd(x/2,y),
+\inductioncase{Case}: ($2 \divides x$ and 2 does not divide $y$).
+In this case, $(x',y',e') = (x/2,y, e)$.
+
+We use the easily verified fact
+\begin{equation}\label{auvvuv}
+\gcd(au,v) = \gcd(u,v)
 \end{equation}
-and $(x',y',e') = (x/2,y, e)$.  So
+for $a$ relatively prime to $v$.
+
+Now
 \begin{align*}
 \gcd(a,b)
   & = e\gcd(x,y)
       & \text{(invariant for $(x,y,e)$)}\\
   & = e\gcd(x/2,y)
-      & \text{(by~\eqref{gcdxyx2})}\\
+      & \text{(by~\eqref{auvvuv})}\\
   & = e'\gcd(x',y'),
 \end{align*}
-proving that the invariant holds for $(x',y',e')$.
+which shows that the invariant holds for $(x',y',e')$.
 
 \inductioncase{Case}: (otherwise clause).
+In this case $(x',y',e') = (x-y,y,e)$.
+
 We use the easily verified fact that
 \begin{equation}\label{gcdu-v}
 \gcd(u-v,v) = \gcd(u,v).
 \end{equation}
-In this case $(x',y',e') = (x-y,y,e)$, so
+
+Now,
 \begin{align*}
 \gcd(a,b)
   & = e\gcd(x,y) & \text{(invariant for $(x,y,e)$)}\\
-  & = e\gcd(x-y,y) & \text{(by~\eqref{gcdu-v })}\\
+  & = e\gcd(x-y,y) & \text{(by~\eqref{gcdu-v})}\\
   & = e'\gcd(x',y'),
 \end{align*}
 proving that the invariant holds for $(x',y',e')$.
@@ -126,35 +133,23 @@ Verification of the remaining cases follows similarly.
 
 To apply the Invariant Principle, we now first observe that the
 preserved invariant holds trivially in the start state $(a,b,1)$
-because $\gcd(a,b) = 1\cdot\gcd(a,b)$, allowing us to conclude that
-the preserved invariant holds in every reachable state.
+because $\gcd(a,b) = 1\cdot\gcd(a,b)$.  We conclude that the preserved
+invariant holds in every reachable state.
 
-The final transition rule to state $(x-y,y,e)$ is only possible if
-$x>y>0$, so another transition will be possible after applying this
-rule.  A transition is also possible from the start state.  It follows
-that there are only two ways to reach a stopped state:
-\begin{align}
-(x,x,e) & \movesto (1, 0, ex) &\text{ or} \label{xxe10ex}\\
-(x,1,e) & \movesto (1, 0, e).  \label{x1e10ex}
-\end{align}
-
-In case~\eqref{xxe10ex}, we have
-\begin{align*}
-\gcd(a,b)
-   & = e\gcd(x,x)
-       & (invariant for $(x,x,e)$)\\
-   & = ex = e',
-\end{align*}
+We claim that only the first two rules can lead to stopped states,
+which in both cases are of the form $(1,0,e')$.  If such a state is
+reachable, then the invariant implies
+\[
+\gcd(a,b) = e'\gcd(1,0) = e',
+\]
 as required.
 
-In case~\eqref{xxe0xe}, we have
-\begin{align*}
-\gcd(a,b)
-   & = e\gcd(x,x)
-       & (invariant for $(x,x,e)$)\\
-   & = e\cdot 1 = e',
-\end{align*}
-as required.
+To see why these are the only stopped states, note that The final
+transition rule to state $(x-y,y,e)$ is only possible if $x>y>0$, so
+another transition will be possible after applying this rule.  A
+transition is also possible from the start state.  Moves by the third
+through sixth rules do not lead to stopped states, since the minimum
+of the new $x$ and $y$ values remains positive.
 \end{solution}
 
 \ppart Prove that the machine reaches a final state in at most
