@@ -1,0 +1,98 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{MQ_fast_exponentiation}
+  \pcomment{lighter version of CP_fast_exponentiation}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  exponentiation
+  algorithm
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The \emph{\idx{Fast Exponentiaiton}} state machine is defined as
+follows:
+
+\begin{enumerate}
+\item The set of states is $\reals \cross \reals \cross \naturals$,
+\item The start state is $(a,1,b)$,
+\item the transitions are defined by the rule
+\begin{equation*}
+(x,y,z) \movesto
+\begin{cases}
+(x^2, y, \quotient(z,2)) & \text{if $z$ is positive and even},\\
+(x^2, xy, \quotient(z,2)) & \text{if $z$ is positive and odd}.
+\end{cases}
+\end{equation*}
+\end{enumerate}
+
+\bparts
+
+\ppart Verify that the predicate $P(x,y,z) \eqdef\ [yx^z = a^b]$ is a
+preserved invariant.
+
+\begin{solution}
+We show that $P$ is preserved, namely, assuming $P(x,y,z)$, that is,
+\begin{equation}\label{yxzd}
+yx^z = a^b
+\end{equation}
+holds and $(x,y,z) \movesto (x',y',z')$ is a transition, then
+$P(x',y',z')$, that is,
+\[
+y'x'^{z'} = a^b
+\]
+holds.
+
+We consider two cases:
+
+If $z > 0$ and is even, then we have that $x' = x^2, y' = y, z' =
+\quotient(z,2)$.  Therefore,
+\begin{align*}
+y'x'^{z'} &  = yx^{2 \cdot \quotient(z,2)}\\
+           & = yx^{2 \cdot (z/2)}\\
+           & = yx^z\\
+          & = a^b & \mbox{(by~\eqref{yxzd})}
+\end{align*}
+
+If $z > 0$ and is odd, then we have that $x' = x^2, y' = xy, z' =
+\quotient(z,2)$. Therefore,
+\begin{align*}
+y'x'^{z'} & = xyx^{2 \cdot \quotient(z,2)}\\
+& = yx^{1+2 \cdot (z-1)/2}\\
+& = yx^{1+(z-1)}\\
+& = yx^z\\
+& = a^b & \mbox{(by~\eqref{yxzd})}
+\end{align*}
+
+So in both cases, $P(x',y',z')$ holds, proving that $P$ is a
+preserved invariant.
+\end{solution}
+
+\ppart Prove that the algorithm is partially correct: if it stops, it
+does so with $y=a^b$.
+
+\begin{solution}
+  $P$ holds for the start state $(a,1,b)$ since $1\cdot a^b = a^b$.
+  So by the Invariant Principle~\bref{subsec:invariant}, $P$ holds for
+  all reachable states.  But a stopped state must have $z = 0$, so if
+  any stopped state $(x,y,0)$ is reachable, then $y = yx^0 = a^b$ as
+  required.
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

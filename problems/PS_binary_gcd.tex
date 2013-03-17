@@ -3,10 +3,12 @@
 \begin{pcomments}
   \pcomment{PS_binary_gcd}
   \pcomment{By ARM 4/24/11 based on Shoup}
+  \pcomment{soln edited ARM 3/16/13}
+  \pcomment{lighter version in MQ_binary_gcd}
 \end{pcomments}
 
 \pkeywords{
-  strong_induction
+  preserved_invariant
   GCD
   binary_GCD
   state_machine
@@ -33,7 +35,8 @@
        \begin{cases}
        (1, 0, ex)     & \text{(if $x = y$)}\\
        (1, 0, e)      & \text{(if $y=1$)},\\
-       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)},\\
+       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides
+           y$)},\\
        (x/2, y, e)    & \text{(if $2 \divides x$)}\\
        (x, y/2, e)    & \text{(if $2 \divides y$)}\\
        (y, x, e)      & \text{(if $y>x$)}\\
@@ -43,40 +46,115 @@
 
 \bparts 
 
-\ppart Prove that if this machine stops, that is, reaches a state
-$(x,y,e)$ in which no transition is possible, then $e = \gcd(a,b)$.
+\ppart Use the Invariant Principle \iffalse
+(Section~\bref{subsec:invariant})\fi to prove that if this machine
+stops, that is, reaches a state $(x,y,e)$ in which no transition is
+possible, then $e = \gcd(a,b)$.
+
+\hint There are only three ways the machine can stop.
 
 \begin{solution}
-Invariant is $\gcd(a,b) = e\gcd(x,y)$.  To show this, we assume the
-invariant holds for state $(x,y,e)$ and show that if $(x,y,e) \movesto
-(x',y',e')$, then $\gcd(a,b) = e'\gcd(x',y')$.
+We claim that a preserved invariant of this machine is
+\[
+\gcd(a,b) = e\gcd(x,y).
+\]
+To show this, we assume the invariant holds for state $(x,y,e)$ and
+show that if $(x,y,e) \movesto (x',y',e')$, then $\gcd(a,b) =
+e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
 
-\inductioncase{Case}: ($x=y$).  in this case we have $\gcd(x,y) = x$
-so by the invariant, $\gcd(a,b) = ex$.  So $e'\gcd(x',y') =
-ex\gcd(1,0) = ex = \gcd(a,b)$, which shows that the invariant holds
-for $(x',y',e')$.
+\inductioncase{Case}: ($x=y$).  Since $x=y$, we have $\gcd(x,y) = x$,
+and since the invariant holds for $(x,y,e)$, we conclude that
+\begin{equation}\label{gcdabex}
+\gcd(a,b) = ex.
+\end{equation}
+In this case, $(x',y',e') = (1,0,ex)$, so
+\begin{align*}
+e'\gcd(x',y')
+   & = ex\gcd(1,0)\\
+   & = ex\\
+   & = \gcd(a,b) & \text{(by~\eqref{gcdabex})},
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: $2 \divides x$ and $2 \divides y$.  We use the
-fact that $\gcd(ax,ay) = a\gcd(x,y)$. 
+\inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  We use the
+easily verified fact that $\gcd(au,av) = a\gcd(u,v)$.  So in this
+case, we have $\gcd(x,y) = 2\gcd(x/2,y/2)$.  Since the invariant holds
+for $(x,y,e)$, we conclude that
+\begin{equation}\label{gcdabe2x2}
+\gcd(a,b) = e 2\gcd(x/2,y/2).
+\end{equation}
+Now $(x',y',e')= (x/2, y/2, 2e)$, so
+\begin{align*}
+e'\gcd(x',y')
+ & = 2e\gcd(x/2,y/2)\\
+& = \gcd(a,b) & \text{(by~\eqref{gcdabe2x2})},
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
 
 \inductioncase{Case}: $2 \divides x$ and 2 does not divide $y$.  Now
 \begin{equation}\label{gcdxyx2}
 \gcd(x,y) = \gcd(x/2,y),
-\end{equation}.  So
+\end{equation}
+and $(x',y',e') = (x/2,y, e)$.  So
 \begin{align*}
 \gcd(a,b)
   & = e\gcd(x,y)
       & \text{(invariant for $(x,y,e)$)}\\
   & = e\gcd(x/2,y)
       & \text{(by~\eqref{gcdxyx2})}\\
-  & = e'\gcd(x',y')
-      & \text{(since $(x',y',e') = (x/2,y,e)$)},
+  & = e'\gcd(x',y'),
 \end{align*}
-proving that $(x',y',e')$ satisfies the invariant.
+proving that the invariant holds for $(x',y',e')$.
 
-We omit the remaining cases which are just as easy.
+\inductioncase{Case}: (otherwise clause).
+We use the easily verified fact that
+\begin{equation}\label{gcdu-v}
+\gcd(u-v,v) = \gcd(u,v).
+\end{equation}
+In this case $(x',y',e') = (x-y,y,e)$, so
+\begin{align*}
+\gcd(a,b)
+  & = e\gcd(x,y) & \text{(invariant for $(x,y,e)$)}\\
+  & = e\gcd(x-y,y) & \text{(by~\eqref{gcdu-v })}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+proving that the invariant holds for $(x',y',e')$.
+
+Verification of the remaining cases follows similarly.
+
+To apply the Invariant Principle, we now first observe that the
+preserved invariant holds trivially in the start state $(a,b,1)$
+because $\gcd(a,b) = 1\cdot\gcd(a,b)$, allowing us to conclude that
+the preserved invariant holds in every reachable state.
+
+The final transition rule to state $(x-y,y,e)$ is only possible if
+$x>y>0$, so another transition will be possible after applying this
+rule.  A transition is also possible from the start state.  It follows
+that there are only two ways to reach a stopped state:
+\begin{align}
+(x,x,e) & \movesto (1, 0, ex) &\text{ or} \label{xxe10ex}\\
+(x,1,e) & \movesto (1, 0, e).  \label{x1e10ex}
+\end{align}
+
+In case~\eqref{xxe10ex}, we have
+\begin{align*}
+\gcd(a,b)
+   & = e\gcd(x,x)
+       & (invariant for $(x,x,e)$)\\
+   & = ex = e',
+\end{align*}
+as required.
+
+In case~\eqref{xxe0xe}, we have
+\begin{align*}
+\gcd(a,b)
+   & = e\gcd(x,x)
+       & (invariant for $(x,x,e)$)\\
+   & = e\cdot 1 = e',
+\end{align*}
+as required.
 \end{solution}
 
 \ppart Prove that the machine reaches a final state in at most
