@@ -1409,7 +1409,7 @@
 
 \providecommand{\sg}{\ms{sg}}
 \providecommand{\ide}{\ms{id}}
-\providecommand{\EF}{\ms{F18}}
+\providecommand{\EF}{\text{F18}}
 %\providecommand{\T}{\ms{ST}}
 
 \newcommand{\binnum}[1]{\operatorname{num}\left(#1\right)}
