@@ -446,6 +446,7 @@
 %% Can't use \let here because of hyperref.
 
 \def\bref{\ref}
+%\def\bcite{\cite}
 
 \newcount\ref@chapter
 
