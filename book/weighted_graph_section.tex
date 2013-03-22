@@ -1,5 +1,6 @@
 \begin{editingnotes}
-This was in the simple graphs chapter.  Really belongs in digraphs.
+This was in the simple graphs chapter, and then was commented out to
+shorten the chapter.  Really belongs in the digraphs chapter.
 \end{editingnotes}
 
 \section{Weighted Graphs}
@@ -7,6 +8,9 @@ This was in the simple graphs chapter.  Really belongs in digraphs.
 Sometimes we'll be interested in connections between nodes that have a
 \emph{capacity} or \emph{weight}.  For example, we might be interested in
 quantities such as the
+\begin{editingnotes}
+Include some directed edge examples: diodes, one-way streets, head-winds, \dots
+\end{editingnotes}
 \begin{itemize}
 
 \item resistance of a wire between a pair of terminals, 
@@ -20,11 +24,10 @@ quantities such as the
 \item distance of a highway between a pair of cities.
 
 \end{itemize}
-To model such cases, we associate with an edge a quantity called its
-\emph{weight}.  More precisely,
+To model such cases, we attach a numerical \term{weight} to each edge.
 \begin{definition}
-  A \term{weight function} for a graph $G$ is a function $w: \edges{G} \to
-  \reals$, where $w(e)$ is called the \term{weight of edge} $e$.
+  A \term{weight function} for a graph $G$ is a function $\weight: \edges{G} \to
+  \reals$, where $\weight{e}$ is called the \term{weight of edge} $e$.
 An \term{edge-weighted graph} consists of a simple graph along with
 a weight function for the graph.
 \end{definition}
@@ -43,7 +46,7 @@ where the weight of edge $\edge{a}{b}$ is~5.
 \label{fig:weighted_graph}
 \end{figure}
 
-\subsection{Weighted Adjacency Matrices}
+\subsection{Weight Matrices}
 
 \iffalse
 %\begin{editingnotes}
@@ -55,26 +58,24 @@ where the weight of edge $\edge{a}{b}$ is~5.
 %\end{editingnotes}
 \fi
 
-\term{Adjacency matrices} for weighted graphs show the weight of each
-edge instead of just a zero or one.  For a graph with vertices
-$v_0,\dots,v_{n-1}$, the $ij$th matrix entry would be the weight of
-$\edge{v_i}{v_j}$.  Several formulas get simpler if, instead of
-numbering the vertices, we simply index the matrix by the vertices
-themselves.
-
+For weighted graphs, adjacency matrices get generalized to weight
+matrices.  For a graph with vertices $v_0,\dots,v_{n-1}$, the $ij$th
+entry of the weight matrix is the weight of $\edge{v_i}{v_j}$.
+Several formulas get simpler if, instead of numbering the vertices, we
+simply index the matrix by the vertices themselves:
 \begin{definition}\label{def:weighted_adjacency_matrix}
-The \term{weighted adjacency matrix} for a weighted graph~$G$
-is the $n \by n$ matrix $A_G$ indexed by $\vertices{G}$ whose $uv$th entry is
+The \term{weight matrix} for a weighted graph~$G$
+is the $n \by n$ matrix $A_G$ indexed by vertices $u,v \in \vertices{G}$ where
 \[
   (A_G)_{uv} \eqdef \begin{cases}
-                w(\edge{u}{v}) & \text{if $\edge{u}{v} \in \edges{G}$}, \\
+                \weight{\edge{u}{v}} & \text{if $\edge{u}{v} \in \edges{G}$}, \\
                 \infty         & \text{otherwise.}
               \end{cases}
 \]
 \end{definition}
 
-For example, Figure~\ref{fig:adjacency_matrix} shows the weighted
-adjacency matrix for the graph in Figure~\ref{fig:weighted_graph}.
+For example, Figure~\ref{fig:adjacency_matrix} shows the weight matrix
+for the graph in Figure~\ref{fig:weighted_graph}.
 
 \begin{figure}\redrawntrue
 \[
@@ -86,8 +87,8 @@ adjacency matrix for the graph in Figure~\ref{fig:weighted_graph}.
        \end{pmatrix}
 \]
 
-\caption{The weighted adjacency matrix for the weighted graph in
-  Figure~\ref{fig:weighted_graph} for the nodes in order $a,b,c,d$.}
+\caption{The weight matrix for the weighted graph in
+  Figure~\ref{fig:weighted_graph} with nodes in order $a,b,c,d$.}
 \label{fig:adjacency_matrix}
 \end{figure}
 
@@ -137,24 +138,23 @@ W_{uv} \eqdef
 \end{definition}
 
 So the minimum weight matrix for length $1$ walks in a weighted graph
-$G$ is precisely its weighted adjacency matrix $A_G$.  Now for the
-purpose of finding minimum weight walks, we'll modify the definition
-of matrix multiplication, replacing multiplication of elements by
-addition, and the sum of the products by the minimum.
+$G$ is precisely its weighted adjacency matrix $A_G$.  To find minimum
+weight walks, we'll modify the definition of matrix multiplication,
+replacing products of elements by addition, and the sums by minimums.
 
 \begin{definition}\label{def:minplus}
   The $\minplus$ product of two $n\times n$ matrices $W$ and $M$ with
   entries in $\reals\union \set{\infty}$ is the $n \times n$ matrix
   $W\minplusop M$ whose $ij$ entry is
 \[
-(W\minplusop M )_{ij} \eqdef \min \set{W_{ik} + M_{kj} \suchthat 1 \leq k \leq n}\, .
+(W\minplusop M )_{ij} \eqdef \min_{k=1}^n \paren{W_{ik} + M_{kj}}.
 \]
 \end{definition}
 
 \begin{theorem}\label{thm:weightmatrix-min+}
-  If $W$ is the minimum weight matrix for length $k$ walks in a
+  If $K$ is the minimum weight matrix for length $k$ walks in a
   weighted graph $G$, and $M$ is the minimum weight matrix for length
-  $m$ walks, then $W\minplusop M$ is the minimum weight matrix for
+  $m$ walks, then $K \minplusop M$ is the minimum weight matrix for
   length $k+m$ walks.
 \end{theorem}
 
@@ -167,7 +167,7 @@ addition, and the sum of the products by the minimum.
   $k$ path starting at $u$ and ending at some vertex, $x$, followed by a
   length $m$ path starting at $x$ and ending at $v$.  So the minimum
   weight of a length $k+m$ path from $u$ to $v$ that goes through $x$ at
-  the $k$th step equals the minimum weight $W_{ux}$ of length $k$ walks
+  the $k$th step equals the minimum weight $K_{ux}$ of length $k$ walks
   from $u$ to $x$, plus the minimum weight $M_{xv}$ of length $m$ walks
   from $w$ to $v$.  So we can get the minimum weight of length $k+m$ walks
   from $u$ to $v$ by taking the minimum over all possible vertices $x$ of
@@ -177,16 +177,16 @@ addition, and the sum of the products by the minimum.
 \text{min weight of a length $n+m$ path from $u$ to $v$} =
               \min_{x \in \vertices{G}} W_{ux}+M_{xv}\, .
 \end{equation}
-But the right hand side of~\eqref{ln-min+nuv} is precisely the definition of
-$(W\minplusop M)_{uv}$.  Thus, $W\minplusop M$ is indeed the minimum weight
-matrix for walks of length $k+m$.
+But the right hand side of~\eqref{ln-min+nuv} is precisely the
+definition of $(K \minplusop M)_{uv}$.  Thus, $K \minplusop M$ is
+indeed the minimum weight matrix for walks of length $k+m$.
 \end{proof}
 
 Now Theorem~\ref{thm:weightmatrix-min+} implies that the $k$th $\minplus$ power
 of $A_G$, that is,
 \[
-(A_G)^{k, \minplus} \eqdef \underbrace{\paren{A_G\ \minplusop\ \paren{A_G\
-      \minplusop\ \paren{\cdots \paren{A_G\ \minplusop\ A_G}} }}}_{k\ A_G\text{'s}},
+(A_G)^{k, \minplus} \eqdef \underbrace{(A_G\ \minplusop\ (A_G\
+      \minplusop\ (\cdots (A_G\ \minplusop\ A_G)) ))}_{k\ A_G\text{'s}},
 \]
 is the minimum weight matrix for the length $k$ walks.
 
@@ -198,18 +198,18 @@ reasoning used for Theorem~\ref{shortestwalk_thm}.  Since $n-1$ is the
 longest a \emph{path} can be in an $n$-node graph, we have an upper
 bound on the length of minimum weight paths we have to look at.  We
 could now find the minimum weight paths by computing all the
-$\minplus$ powers of $A_G$ up to the $n-1$st.  But there is another
-trick that dramatically cuts the number of $\minplus$ matrix
-multiplications.
+$\minplus$ powers of $A_G$ up to the $n-1$st.
 
-Namely, for any graph $G$, let $G_0$ be the same as $G$ except that
-self-loops of weight zero appear at every vertex.  So a path of length $k$
-in $G$ can be extended to a path in $G_0$ with the same weight but with
-any desired length $\geq k$---just repeatedly follow weight zero
-self-loops after the $k$th step.  This means that $(A_{G_0})^{k, \minplus}$
-is the minimum weight matrix for walks of length \emph{less than or equal}
-to $k$ in $G$.  So we can choose $k = n-1$ to get a matrix with the
-actual minimum weights among all walks between vertices.
+But there is another trick that cuts down the number of $\minplus$
+matrix multiplications a lot.  Namely, for any graph $G$, let $G_0$ be
+the same as $G$ except that self-loops of weight zero appear at every
+vertex.  So a path of length $k$ in $G$ can be extended to a path in
+$G_0$ with the same weight but with any desired length $\geq k$---just
+repeatedly follow weight zero self-loops after the $k$th step.  This
+means that $(A_{G_0})^{k, \minplus}$ is the minimum weight matrix for
+walks of length \emph{less than or equal} to $k$ in $G$.  So we can
+choose $k = n-1$ to get a matrix with the actual minimum weights among
+all walks between vertices.
 
 \begin{theorem}\label{thm:minweightmatrix}
 Let $G$ be an $n$-vertex weighted graph with nonnegative weights, and let
@@ -222,13 +222,15 @@ is,
 \]
 \end{theorem}
 Theorem~\ref{thm:weightmatrix-min+} now justifies using repeated
-squaring to compute $(D_G)^{n-1, \minplus}$ using about $\log n$
-$\minplus$ matrix multiplications instead of $n-2$ such
-multiplications.  The upshot is that the shortest distances between
-all pairs of vertices can be computed by doing about $n^2\log n$
-operations of addition and pairwise min's.\footnote{Slightly faster
-  methods using proportional to $n^2$ operations are often described
-  in introductory algorithms classes.}
+squaring to compute $(D_G)^{n-1, \minplus}$ with about $\log n$
+$\minplus$ matrix multiplications.  Computing a single entry in a
+\minplus\ matrix product takes about $n$ pairwise min's and plusses,
+and since the product matrix has $n^2$ entries, about $n^3$ min's and
+plusses are required to compute one product.  The upshot is that the
+shortest distances between all pairs of vertices can be computed with
+about $n^3\log n$ pairwise additions and min's.\footnote{Faster
+  methods using proportional to $n^2\log n$ operations usually are
+  described in introductory algorithms classes.}
 
 %\begin{editingnotes}
 \arm{Good to add an example here}
