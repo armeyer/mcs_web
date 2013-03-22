@@ -26,10 +26,10 @@ Include some directed edge examples: diodes, one-way streets, head-winds, \dots
 \end{itemize}
 To model such cases, we attach a numerical \term{weight} to each edge.
 \begin{definition}
-  A \term{weight function} for a graph $G$ is a function $\weight: \edges{G} \to
-  \reals$, where $\weight{e}$ is called the \term{weight of edge} $e$.
-An \term{edge-weighted graph} consists of a simple graph along with
-a weight function for the graph.
+  A \term{weight function} for a graph $G$ is a function $\text{wgt}:
+  \edges{G} \to \reals$, where $\weight{e}$ is called the \term{weight
+    of edge} $e$.  An \term{edge-weighted graph} consists of a simple
+  graph along with a weight function for the graph.
 \end{definition}
 We'll just say \term{weighted graph} when we mean
 edge-weighted.\footnote{Vertex-weighted graphs can be defined similarly,
@@ -60,12 +60,13 @@ where the weight of edge $\edge{a}{b}$ is~5.
 
 For weighted graphs, adjacency matrices get generalized to weight
 matrices.  For a graph with vertices $v_0,\dots,v_{n-1}$, the $ij$th
-entry of the weight matrix is the weight of $\edge{v_i}{v_j}$.
+entry of the weight matrix is the weight of edge $\edge{v_i}{v_j}$.
 Several formulas get simpler if, instead of numbering the vertices, we
 simply index the matrix by the vertices themselves:
 \begin{definition}\label{def:weighted_adjacency_matrix}
-The \term{weight matrix} for a weighted graph~$G$
-is the $n \by n$ matrix $A_G$ indexed by vertices $u,v \in \vertices{G}$ where
+The \term{weight matrix} for a weighted graph~$G$ with $n$ vertices is
+the $n \by n$ matrix $A_G$ indexed by vertices $u,v \in \vertices{G}$
+where
 \[
   (A_G)_{uv} \eqdef \begin{cases}
                 \weight{\edge{u}{v}} & \text{if $\edge{u}{v} \in \edges{G}$}, \\
@@ -126,10 +127,10 @@ path, its length will be $\leq n$.
 \fi
 
 \begin{definition}
-  The \term{minimum weight matrix} for length $k$ walks in an $n$-vertex
+  The \term{minimum-weight matrix} for length $k$ walks in an $n$-vertex
   weighted graph $G$ is the $n \times n$ matrix $W$ such that for $u,v \in \vertices{G}$,
 \begin{equation}\label{def:weight_matrix}
-W_{uv} \eqdef
+K_{uv} \eqdef
 \begin{cases} w & \text{if $w$ is the minimum weight among length $k$
                             walks from $u$ to $v$},\\
               \infty & \text{if there is no length $k$ walk from $u$ to $v$}.
@@ -137,17 +138,16 @@ W_{uv} \eqdef
 \end{equation}
 \end{definition}
 
-So the minimum weight matrix for length $1$ walks in a weighted graph
-$G$ is precisely its weighted adjacency matrix $A_G$.  To find minimum
-weight walks, we'll modify the definition of matrix multiplication,
+So the minimum-weight matrix for length $1$ walks in a weighted graph
+$G$ is precisely its weight matrix $A_G$.  To find minimum weight
+walks, we can modify the definition of matrix multiplication,
 replacing products of elements by addition, and the sums by minimums.
-
 \begin{definition}\label{def:minplus}
-  The $\minplus$ product of two $n\times n$ matrices $W$ and $M$ with
+  The $\minplus$ product of two $n\times n$ matrices $K$ and $M$ with
   entries in $\reals\union \set{\infty}$ is the $n \times n$ matrix
   $W\minplusop M$ whose $ij$ entry is
 \[
-(W\minplusop M )_{ij} \eqdef \min_{k=1}^n \paren{W_{ik} + M_{kj}}.
+(K\minplusop M )_{ij} \eqdef \min_{k=1}^n \paren{K_{ik} + M_{kj}}.
 \]
 \end{definition}
 
@@ -200,21 +200,21 @@ bound on the length of minimum weight paths we have to look at.  We
 could now find the minimum weight paths by computing all the
 $\minplus$ powers of $A_G$ up to the $n-1$st.
 
-But there is another trick that cuts down the number of $\minplus$
-matrix multiplications a lot.  Namely, for any graph $G$, let $G_0$ be
-the same as $G$ except that self-loops of weight zero appear at every
-vertex.  So a path of length $k$ in $G$ can be extended to a path in
-$G_0$ with the same weight but with any desired length $\geq k$---just
-repeatedly follow weight zero self-loops after the $k$th step.  This
-means that $(A_{G_0})^{k, \minplus}$ is the minimum weight matrix for
-walks of length \emph{less than or equal} to $k$ in $G$.  So we can
-choose $k = n-1$ to get a matrix with the actual minimum weights among
-all walks between vertices.
+A small modification to the weight matrix will cut down the number of
+$\minplus$ matrix multiplications a lot.  Namely, for any graph $G$,
+let $G_0$ be the same as $G$ except that self-loops of weight zero
+appear at every vertex.  So a path of length $k$ in $G$ can be
+extended to a path in $G_0$ with the same weight but with any desired
+length $\geq k$---just repeatedly follow weight zero self-loops after
+the $k$th step.  This means that $(A_{G_0})^{k, \minplus}$ is the
+minimum-weight matrix for walks of length \emph{less than or equal} to
+$k$ in $G$.  So we can choose $k = n-1$ to get a matrix with the
+actual minimum weights among all walks between vertices.
 
 \begin{theorem}\label{thm:minweightmatrix}
 Let $G$ be an $n$-vertex weighted graph with nonnegative weights, and let
-$D_G$ be the adjacency matrix of $G$ with the diagonal entries set to 0.
-Then $(D_G)^{n-1, \minplus}$ is the minimum weight path matrix for $G$, that
+$D_G$ be the weight matrix of $G$ with the diagonal entries set to 0.
+Then $(D_G)^{n-1, \minplus}$ is the minimum-weight walk matrix for $G$, that
 is,
 \[
 ((D_G)^{n-1, \minplus})_{uv} = \text{the minimum weight of walks in $G$ from
@@ -228,11 +228,10 @@ $\minplus$ matrix multiplications.  Computing a single entry in a
 and since the product matrix has $n^2$ entries, about $n^3$ min's and
 plusses are required to compute one product.  The upshot is that the
 shortest distances between all pairs of vertices can be computed with
-about $n^3\log n$ pairwise additions and min's.\footnote{Faster
-  methods using proportional to $n^2\log n$ operations usually are
-  described in introductory algorithms classes.}
+about $n^3\log n$ pairwise min's and plusses.\footnote{Faster methods
+  using proportional to $n^2\log n$ operations usually are described
+  in introductory algorithms classes.}
 
 %\begin{editingnotes}
 \arm{Good to add an example here}
 %\end{editingnotes}
-
