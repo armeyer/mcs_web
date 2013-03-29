@@ -1,0 +1,130 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{INCOMPLETE DRAFT}
+  \pcomment{PS_fair_st_petersburg}
+  \pcomment{related to MQ_st_petersburg}
+  \pcomment{ARM 5/28/12, from material removed from deviation chapter}
+\end{pcomments}
+
+\pkeywords{
+  deviation
+  pairwise_independent
+  paradox
+  roulette
+  mean_time_to_failure
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A gambler bets on the toss of a fair coin: if the toss is Heads, the
+gambler wins the amount of his bet.  If he loses, he doubles his bet
+on the next toss, and continues in this way until a Head finally gets
+tossed.  
+
+\iffalse
+For example, suppose his first bet is \$10.  If the first toss is
+Heads, the gambler gets his original bet plus \$10 back and walks away
+a \$10 winner.  If the first toss is Tails, he loses his \$10 bet, but
+then doubles his bet to \$20.  Now if the second toss is Heads, he
+gets his \$20 bet plus \$20 back and again walks away with a net win
+of $20-10 = \$10$.  Continuing in this way, he will win \$10 whenever
+a Head finally gets tossed.  \fi
+
+\bparts
+
+\ppart
+Verify that if there was a fixed
+
+
+The first thing that's wrong is the argument claiming that the
+expectation is 0.  It would be 0 if the number of bets had a fixed
+bound.  If you could only make $n$ bets, then your expectation in the
+fair game would be the sum of your expected wins on each of the bets,
+namely, $n \cdot 0 = 0$.  But there is no such fixed bound, and that
+changes things.
+
+To explain this carefully, let $C_i$ be the number of dollars won on
+the $i$th spin.  So $C_i = 2^{i-1}$ when red comes up for the first time
+on the $i$th spin, and $C_i = -2^{i-1}$, when the first red spin comes up
+after the $i$th spin.  We can define $C_i$ to be 0 if the first red
+comes up before the $i$th spin.  This means
+\[
+\expect{C_i} = 0.
+\]
+Also, the total of your winnings is 
+\[
+C \eqdef \sum_{i \in \integers^+} C_i.
+\]
+The conclusion that $\expect{C} = 10$ follows from Total
+Expectation, conditioning on the number of spins till a red first
+occurs.  Namely, if the first red occurs on the $i$th spin, the amount
+won is
+\[
+-10 \cdot (1 + 2 + 2^2 + \dots + 2^{i - 2}) + 10 \cdot 2^{i-1}   = 10.
+\]
+Then by Total Expectation,
+\begin{align*}
+\expect{C}
+  & = \sum_{i  \in \integers^+}
+      \expcond{C}{\text{first red on $i$th spin}}
+      \cdot \prob{\text{first red on $i$th spin}}\\
+  & = \sum_{i  \in \integers^+} 10 \cdot 2^{-i}
+    = 10 \cdot \sum_{i  \in \integers^+} 2^{-i} = 10 \cdot 1 = 10.
+\end{align*}
+
+So sure enough,
+\begin{equation}\label{expCsum10}
+\expect{C} \eqdef \Expect{\sum_{i \in \integers^+} C_i} = 10.
+\end{equation}
+
+But since $\expect{C_i} = 0$,
+\begin{equation}\label{sumCi0}
+\sum_{i \in \integers^+} \expect{C_i} = \sum_{i \in \integers^+} 0 = 0.
+\end{equation}
+It seems that~\eqref{sumCi0} and~\eqref{expCsum10} contradict each
+other, but they don't.  The apparent contradiction comes from applying
+infinite linearity to conclude
+\begin{falseclm*}
+\[
+\Expect{\sum_{i \in \integers^+} C_i} = \sum_{i \in \integers^+} \expect{C_i}.
+\]
+\end{falseclm*}
+But this is a case where the convergence conditions required for
+infinite linearity don't hold.  Even though the left hand sum
+\idx{converges} (to 10) and the right hand sum converges (to 0), the
+infinite linearity Theorem~\eqref{linexp} requires that the sum of
+expectations of \emph{\idx{absolute value}s} converges.  That is,
+infinite linearity would follow if the sum
+\begin{equation}\label{sumabsC}
+\sum_{i \in \integers^+} \expect{\, \abs{C_i}\, }
+\end{equation}
+converged.  But
+\begin{align*}
+\expect{\, \abs{C_i}\, }
+  & = (\abs{10 \cdot 2^{i-1}}) \cdot \prob{\text{1st red in $i$th spin}}\\
+  &\quad  + (\abs{-10 \cdot 2^{i-1}}) \cdot \prob{\text{1st red after $i$th spin}}\\
+  &\quad  + 0 \cdot \prob{\text{1st red before the $i$th spin}}\\
+  & = (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
+       + (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
+       + 0 = 10,
+\end{align*}
+so the sum~\eqref{sumabsC} diverges ---rapidly.
+
+Probability theory truly leads to this absurd conclusion: a game
+allowing an unbounded number of fair bets may not be fair in the end.
+In fact, even against an \emph{unfair} wheel, as long as there is some
+fixed positive probability of red on each spin, you are certain to win
+$\$10$ playing the Martingale strategy!
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
