@@ -45,8 +45,11 @@ variables $b$ and $d$ may use the same register; after the first step,
 we no longer need $b$ and can overwrite the register that holds its
 value.  Also, $f$ and $h$ may use the same register; once $f + 1$ is
 evaluated in the last step, the register holding the value of $f$ can
-be overwritten.(Assume that the computer carries out each step in the 
-order listed and that each step is completed before the next is begun.)
+be overwritten.
+
+\iffalse (Assume that the computer carries out each step in the order
+listed and that each step is completed before the next is begun.)  \fi
+
 
 \bparts
 
@@ -58,19 +61,33 @@ the graph corresponding to the example above.
 \begin{solution}
 There is one vertex for each variable.  An edge between two vertices
 indicates that the values of the variables must be stored in different
-registers.
-
-We can classify each appearance of a variable in the program as either
-an \emph{assignment} or a \emph{use}.  In particular, an appearance is
-an assignment if the variable is on the left side of an equation or on
-the ``Inputs'' line.  An appearance of a variable is a use if the
-variable is on the right side of an equation or on the ``Outputs''
-line.  The \term{lifetime of a variable} is the segment of code
+registers.  We can tell when two variables must be stored in different
+registers as follows: classify each appearance of a variable in the
+program as either an \emph{assignment} or a \emph{use}.  An appearance
+is an \term{assignment} when the variable is on the left side of an
+equation or on the ``Inputs'' line.  An appearance of a variable is a
+\index{variable use}\emph{use} if the variable is on the right side of
+an equation or on the ``Outputs'' line.  The \index{variable
+  lifetime}\emph{lifetime} of a variable is the segment of code
 extending from the initial assignment of the variable until the last
-use.\footnote{This definition is for the case that each variable is
-  assigned at most once (see part~\eqref{assignedmore}).}  There is an
-edge between two variables if their lifetimes overlap.  This rule
-generates the following graph:
+use.  There is an edge between two variables iff their lifetimes
+overlap.\footnote{This specification of edges is for the case that
+  each variable is assigned at most once (see
+  part~\eqref{assignedmore}).
+
+  We are also assuming that all variables are relevant to the Outputs,
+  where a variable is \index{relevant variable}\emph{relevant} iff it
+  is an Output or is used in an assignment to a relevant variable.
+  This is a recursive---not a circular---definition of relevant
+  variable!
+
+  Likewise, we assume that all variables are \index{dependent
+    variable}\emph{dependent} on the Inputs, where a variable is
+  dependent on the Inputs iff it is an Input or appears in the left
+  hand side of an assignment whose right hand side contains a
+  dependent variable.}
+
+This rule generates the following graph:
 
 \begin{figure}[h]
 \graphic[width=5in]{register1}
@@ -108,9 +125,9 @@ v & =  t + u \\
 How might you cope with this complication?
 
 \begin{solution}
-Each time a variable is reassigned, we could
-regard it as a completely new variable.  Then we would regard the
-example as equivalent to the following:
+Each time a variable is reassigned, we could regard it as a completely
+new variable.  Then we would regard the example as equivalent to the
+following:
 \begin{align*}
   & \ldots  \\
 t & =  r + s \\
