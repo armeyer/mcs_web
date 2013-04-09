@@ -2277,10 +2277,10 @@ it is not necessary to group the terms by how many sets are in the
 intersections.  So another way to state the rule is:
 
 \begin{rul*}[Inclusion-Exclusion-II]
-\[
+\begin{equation}\label{incexII}
 \Card{\lgunion_{i=1}^n S_i}
    =  \sum_{\emptyset \neq I \subseteq \set{1,\dots,n}} (-1)^{\card{I}+1} \Card{\lgintersect_{i \in I} S_i}
-\]
+\end{equation}
 \end{rul*}
 
 A proof of these rules using just highschool algebra is given in
@@ -2454,57 +2454,62 @@ to get the right hand side of equation~\eqref{1-xprodedn}.
 \end{editingnotes}
 
 \subsection{Computing Euler's Function}
-As an example, let's use Inclusion-Exclusion to derive an explicit
-formula~\eqref{inex-phi} for Euler's function, $\phi(n)$.  By
-definition, $\phi(n)$ is the number of nonnegative integers less than
-a positive integer $n$ that are relatively prime to $n$.  But the
-set~$S$ of nonnegative integers less than~$n$ that are \emph{not}
-relatively prime to $n$ will be easier to count.
+We can also use Inclusion-Exclusion to derive the explicit
+formula for Euler's function claimed in Corollary~\ref{cor:phi}:
+if the prime factorization of $n$ is $p_1^{e_1}\cdots p_m^{e_m}$
+for distinct primes $p_i$, then
+\begin{equation}\label{inex-phi}
+\phi(n) = n \prod_{i=1}^m \paren{1-\frac{1}{p_i}}.
+\end{equation}
 
-Suppose the prime factorization of $n$ is $p_1^{e_1}\cdots p_m^{e_m}$
-for distinct primes $p_i$.  This means that the integers in $S$ are
-precisely the nonnegative integers less than $n$ that are divisible by at
-least one of the $p_i$'s.  Letting $C_a$~be the set of nonnegative
-integers less than $n$ that are divisible by $a$, we have
+To begin, let~$S$ be the set of integers in $[0,n)$ that are
+  \emph{not} relatively prime to $n$.  So $\phi(n) = n - \card{S}$.
+Next, let $C_a$~be the set of integers in $[0,n)$ that are divisible
+  by $a$:
 \[
-S = \lgunion_{i=1}^m C_{p_i}.
+C_a \eqdef \set{k \in [0,n) \suchthat\quad a \divides k}.
 \]
+So the integers in $S$ are precisely the integers in
+$[0,n)$ that are divisible by at least one of the $p_i$'s.  Namely,
+\begin{equation}\label{Slgucpi}
+S = \lgunion_{i=1}^m C_{p_i}.
+\end{equation}
 
 We'll be able to find the size of this union using Inclusion-Exclusion
-because the intersections of the $C_p$'s are easy to count.  For example,
-$C_p \intersect C_q \intersect C_r$ is the set of nonnegative integers less
-than $n$ that are divisible by each of $p$, $q$ and $r$.  But since
-the $p,q,r$ are distinct primes, being divisible by each of them is
-the same as being divisible by their product.  Now observe that if $k$ is
-a positive divisor of $n$, then exactly $n/k$ nonnegative integers less
-than $n$ are divisible by $k$, namely, $0,k,2k,\dots,((n/k)-1)k$.  So
-exactly $n/pqr$ nonnegative integers less than $n$ are divisible by
-all three primes $p$, $q$, $r$.  In other words,
+because the intersections of the $C_{p_i}$'s are easy to count.  For
+example, $C_p \intersect C_q \intersect C_r$ is the set integers in
+$[0,n)$ that are divisible by each of $p$, $q$ and $r$.  But since the
+  $p,q,r$ are distinct primes, being divisible by each of them is the
+  same as being divisible by their product.  Now if $k$ is a positive
+  divisor of $n$, then there are exactly $n/k$ multiples of $k$ in
+  $[0,n)$.  So exactly $n/pqr$ of the integers in $[0,n)$ are
+      divisible by all three primes $p$, $q$, $r$.  In other words,
 \[
 \card{C_p \intersect C_q \intersect C_r} = \frac{n}{pqr}.
 \]
-
-Reasoning this way about all the intersections among the $C_p$'s and
-applying Inclusion-Exclusion, we get
-\begin{editingnotes}
-Revise using:
-\[
-\prod_{i=1}^n (1-a_i) = \sum_{I\subset [1,n]} \prod_{j\in I} -a_j,
-\]
-and
-\[
-\card{\lgintersect_{j \in I} C_{p_j}} = \frac{n}{\prod_{j \in I} {p_j}},
-\]
-so
+This reasoning extends to arbitrary intersections of $C_p$'s, namely,
+\begin{equation}\label{cardlgincpj}
+  \Card{\lgintersect_{j \in I} C_{p_j}} = \frac{n}{\prod_{j \in I} {p_j}},
+\end{equation}
+for any nonempty set $I \subseteq [1,m]$.  This lets us calculate:
 \begin{align*}
-\prod_{i=1}^n \paren{1-\frac{1}{p_i}}
- & = \sum_{I\subset [1,n]} (-1)^{\card{I}}\prod_{j \in I} \frac{1}{p_j}\\
- & = \sum_{I\subset [1,n]} (-1)^{\card{I}}\frac{\card{\lgintersect_{j \in I} C_{p_j}}}{n}
+\card{S}
+  & = \Card{\lgunion_{i=1}^m C_{p_i}}
+      & \text{(by~\eqref{Slgucpi})}\\
+  & = \sum_{\emptyset \neq I \subseteq [1,m]} (-1)^{\card{I}+1} \Card{\lgintersect_{i \in I} C_{p_i}}
+      &  \text{(by Inclusion-Exclusion~\eqref{incexII})}\\
+  & =  \sum_{\emptyset \neq I \subseteq [1,m]} (-1)^{\card{I}+1} \frac{n}{\prod_{j \in I} {p_j}}
+      & \text{(by~\eqref{cardlgincpj})}\\
+  & = -n\sum_{\emptyset \neq I \subseteq [1,m]} \frac{1}{\prod_{j \in I} (-p_j)}\\
+  & = - n \paren{\prod_{i=1}^m \paren{1-\frac{1}{p_i}}} + n,
 \end{align*}
-where the empty sum is 0, the empty product is 1, and the empty intersection of sets $A_1,\dots,A_n$ is
-$\lgunion_{i=1}^n A_i$.
-\end{editingnotes}
+so
+\[
+\phi(n) = n - \card{S} = n \prod_{i=1}^m \paren{1-\frac{1}{p_i}},
+\]
+which proves~\eqref{inex-phi}.
 
+\iffalse
 \begin{align*}
 \card{S}
   & = \Card{\lgunion_{i=1}^m C_{p_i}}\\
@@ -2527,6 +2532,7 @@ But $\phi(n)=n-\card{S}$ by definition, so
     + (-1)^m\frac{1}{p_1p_2\cdots p_n}}\notag\\
           &  = n \prod_{i=1}^m \paren{1 - \frac{1}{p_i}}.\label{inex-phi}
 \end{align}
+\fi
 
 Yikes!  That was pretty hairy.  Are you getting tired of all that
 nasty algebra?  If so, then good news is on the way.  In the next
