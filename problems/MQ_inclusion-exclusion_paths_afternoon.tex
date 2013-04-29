@@ -1,0 +1,137 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{MQ_inclusion-exclusion_paths}
+\pcomment{simplification of CP_inclusion-exclusion_paths}
+\pcomment{minor variation of PS_path_counting}
+\pcomment{was part of from CP_more_counting}
+\pcomment{perturbed from MQ_inclusion-exclusion_paths}
+\end{pcomments}
+
+\pkeywords{
+  counting
+  inclusion_exclsuion
+  paths
+  multinomial
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+\bparts
+
+We want to count step-by-step paths between points with integer
+coordinates in three dimensions.  Let $O,a,b,c$ be the following points:
+\begin{align*}
+O & \eqdef (0,0,0),\\
+a & \eqdef (4,9,14),\\
+b & \eqdef (14,9,4),\\
+c & \eqdef (9,19,29).
+%a & \eqdef (5,10,15),\\
+%b & \eqdef (15,10,5),\\
+%c & \eqdef (10,20,30).
+\end{align*}
+
+A step may move a unit distance in the positive $x$, $y$, or $z$
+direction.  For example, a step from point $a$ in the $y$ direction
+leads to $(4,10,14)$.
+
+For any set $S \subseteq \set{O,a,b,c}$ of the these points, let
+\[
+P_S \eqdef \text{the paths that go through all the points in } S.
+\]
+For example, $P_{O, (0,1,1),(1,2,1)}$ is the set of following four paths.
+\begin{align*}
+O, (0,1,0), (0,1,1), (1,1,1), (1,2,1) \\
+O, (0,1,0), (0,1,1), (0,2,1), (1,2,1) \\
+O, (0,0,1), (0,1,1), (1,1,1), (1,2,1) \\
+O, (0,0,1), (0,1,1), (0,2,1), (1,2,1) \\
+\end{align*}
+
+\ppart Express $\card{P_{a,c}}$ as a multinomial coefficient.
+
+\examspace[1in]
+
+\begin{solution}
+There must be exactly $c_x-a_x=9-4=5$ right steps, $c_y-a_y=19-9=10$
+up steps, and $c_z-a_z=29-14=15$ forward steps, for a total of 30
+%There must be exactly $c_x-a_x=10-5=5$ right steps, $c_y-a_y=20-10=10$
+%up steps, and $c_z-a_z=30-15=15$ forward steps, for a total of 30
+steps.  These steps may be taken in any order, so the number of paths
+is the same as the number of permutations of the letters $R^5 U^{10}
+F^{15}$, namely,
+\[
+\binom{30}{5,10,15}\,.
+\]
+\end{solution}
+
+\ppart\label{poacpoa}  Express $\card{P_{O,a,c}}$ in terms of $\card{P_{O,a}}$ and $\card{P_{a,c}}$.
+
+\examspace[0.5in]
+
+\begin{solution}
+\begin{equation}\label{cqcpcn}
+\card{P_{O,a,c}} = \card{P_{O,a}} \cdot \card{P_{a,c}}.
+\end{equation}
+
+Every path in $P_{O,a,c}$ consists of a path in $P_{O,a}$ followed by a path in $P_{a,c}$,
+and this correspondence between $P_{O,a,c}$ and $P_{O,a} \cross P_{a,c}$ is a bijection,
+so~\eqref{cqcpcn} follows by the Product Rule.
+\end{solution}
+
+\ppart\label{pab0} What is $\card{P_{a,b}}$? \hfill\examrule
+
+\begin{solution}
+\[
+0
+\]
+
+Since $a_x < b_x$ there is no path from $b$ to $a$.  Since $b_z < a_z$
+there is no path from $a$ to $b$.  So no path can go between $a$ and $b$.
+\end{solution}
+
+\ppart Let $N$ be the paths in $P_{O,c}$ that do \emph{not} go through $a$ or $b$.
+Express $\card{N}$ in terms of the sizes $\card{P_{p,q}}$ for $p,q \in \set{O,a,b,c}$.
+
+\examspace[2in]
+
+\begin{solution}
+\begin{align*}
+\card{N} & = \card{P_{O,c}} - (\card{P_{O,a,c}} + \card{P_{O,b,c}} - \card{P_{O,a,b,c}})
+                &  \text{(inclusion-exclusion)}\\
+& = \card{P_{O,c}} - (\card{P_{O,a}}\card{P_{a,c}} + \card{P_{O,b}}\card{P_{b,c}} - 0)
+               & \text{(parts~\eqref{poacpoa} and~\eqref{pab0})}
+\end{align*}
+
+\begin{comment}
+\[
+\binom{50}{20} -
+\binom{20}{10} \cdot \binom{30}{10} - \binom{35}{15} \cdot \binom{15}{5}
++ \binom{20}{10} \cdot \binom{15}{5} \cdot \binom{15}{5}.
+\]
+
+$N_1 \intersect N_2$ is the set of paths from $(0, 0)$ to $(20, 30)$
+that go through both $(10, 10)$ and $(15,20)$.  So $P - (N_1 \union
+N_2)$ is the set of paths to be counted.  Now we have
+\begin{align*}
+\Card{P - (N_1 \union N_2)}
+     & = \card{P} - \Card{N_1 \union N_2}\\
+     & = \card{P} - \card{N_1} - \card{N_2} + \Card{N_1 \intersect N_2}
+           & \text{by Inclusion-Exclusion}.
+\end{align*}
+Part~\ref{paths_through} shows how to calculate $\card{N_i}$.  Also,
+there is a bijection between $N_1 \intersect N_2$ and the set of
+triples consisting of a path $(0,0)$ to $(10,10)$, a path from
+$(10,10)$ to $(15,20)$, and a path from $(15,20)$ to $(20,30)$.  So
+the size of $N_1 \intersect N_2$ is the product of the sizes of these
+three sets of paths.
+\end{comment}
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
