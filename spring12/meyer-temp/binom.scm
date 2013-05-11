@@ -100,7 +100,7 @@
 
 (define abc approx-binom-cum)
 
- (+ (h 0.98) (log (expt 0.99 0.98)) (log2 (expt 0.01 0.02)))
+(+ (h 0.98) (log (expt 0.99 0.98)) (log2 (expt 0.01 0.02)))
 
 (define e 0.04)
 
@@ -239,3 +239,9 @@
 (/ 100000 
 
 #|
+
+(define (bb n eps)
+ (t n (/ 1 6.0) eps))
+
+(bb 100 0.001)
+
