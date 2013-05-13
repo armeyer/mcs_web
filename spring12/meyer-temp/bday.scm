@@ -3,7 +3,7 @@
  #|
 (define d 365)
 
-(define n 73)
+(define n 110)
 
 (define ei exact->inexact)
 
