@@ -2,10 +2,10 @@
 
 \begin{pcomments}
   \pcomment{PS_probabilistic_proof}
-  \pcomment{\textbf{Round Robin Tournaments}}
+  \pcomment{\textbf{Random Tournaments}}
   \pcomment{from S01.tut12}
   \pcomment{added to F02 repository by Tina Wang, S02}
-  \pcomment{formatted by ARM 5/7/12}
+  \pcomment{eidted by ARM 5/18/12}
 \end{pcomments}
 
 \pkeywords{
@@ -28,91 +28,109 @@ each other and one of them wins can be modelled a \term{tournament
 distinct vertices, but we'll continue to use the language of players
 beating each other.
 
-For $k \in [0,n)$, a tournament is $k$-neutral if for every set of $k$
-  players, there is another player who beats them all.  For example,
-  being 1-neutral is the same as not having a ``best'' player who
-  beats everyone else.  This problem shows that for any fixed $k$, if
-  $n$ is large enough, there will be a $k$-neutral tournament of $n$
-  players.  We will do this by reformulating the question in terms of
-  probabilities.  In particular, for any fixed $n$, we assign uniform
-  probability to all $n$-vertex tournament digraphs.
+An $n$-player tournament is \emph{$k$-neutral} for some $k \in [0,n)$,
+  when, for every set of $k$ players, there is another player who
+  beats them all.  For example, being 1-neutral is the same as not
+  having a ``best'' player who beats everyone else.
+
+This problem shows that for any fixed $k$, if $n$ is large enough,
+there will be a $k$-neutral tournament of $n$ players.  We will do
+this by reformulating the question in terms of probabilities.  In
+particular, for any fixed $n$, we assign probabilities to each
+$n$-vertex tournament digraph by choosing a direction for the edge
+between any two vertices, independently and with equal probability for
+each edge.
 
 \begin{problemparts}
 
-\iffalse
-\problempart
- numbering the sets of $k$ contestants.  How many such sets are
-there?
-
-\examspace[0.5in]
-
-\begin{solution}
-\[
-\binom{n}{k}
-\]
-\end{solution}
-\fi
-
-\problempart For any set $S$ of players, let $B_S$ be the event that
-no contestant beats everyone in $S$.  Express $\prob{B_S}$ in terms of
-$n$ and $\card{S}$.
+\problempart\label{prbsn} For any set $S$ of $k$ players, let $B_S$ be
+the event that no contestant beats everyone in $S$.  Express
+$\prob{B_S}$ in terms of $n$ and $k$.
 
 \examspace[1in]
 
 \begin{solution}
 The probability that a player outside $S$ beats everyone in $S$ is
-$(1/2)^{\card{S}}$, so the probability they did not beat everyone in
-the group is $1 - (1/2)^{\card{S}$.  There are $n-\card{S}$ people
-  outside of the group. Thus, $B_S$ has probability
+$(1/2)^k$.  So the probability such a player did not beat everyone in
+the group is $1 - (1/2)^k$.  There are $n-k$ players outside of the
+group, so
 \[
-\brac{1 - \paren{\frac{1}{2}}^k}^{n-\card{S}}
+\pr{B_S} = \brac{1 - \paren{\frac{1}{2}}^k}^{n-k} \,.
 \]
 \end{solution}
 
-\problempart For $k \in [0,n)$, give an upper bound on
+\problempart\label{qkalpha} Let $Q_k$ be the event equal to the set of $n$-vertex
+tournament digraphs that are \emph{not} $k$-neutral.
+Prove that
 \[
-\prob{\lgunion_{\card{S} = k} B_S}$.
-
-\examspace[1in]
-
-\begin{solution}
-Use Boole's inequality:
-\[
-\Prob{\lgunion B_i} \leq \sum \Prob{B_i}.
+\prob{Q_k} \leq \binom{n}{k} \alpha^{n-k},
 \]
+where $\alpha \eqdef 1 - (1/2)^k$.
 
-In other words, $\prob{\lgunion B_i}$ can be no greater than if all of
-the $B_i$ are disjoint.  (Overlap will merely reduce the total
-probability of the union).  Since the expression for $B_i$ does not
-depend on $i$---the probability is the same for each $k$-sized group
-$i$---the sum for all of the $B_i$ is simply
+\hint Let $S$ range over the size-$k$ subsets of players, so
 \[
-\binom{n}{k} \brac{1 - \paren{\frac{1}{2}}^k }^{n-k}
+Q_k = \lgunion_S B_S \, .
 \]
-\end{solution}
-
-\problempart
-Explain why this result can be used to prove the existence of the desired
-tournament outcome.
+Use Boole's inequality.
 
 \examspace[1.5in]
 
 \begin{solution}
-Probabilistic proof.  If the overall probability of $\lgunion B_i$ is
-less than 1, then there must be an outcome that is not in $\lgunion
-B_i$.  It does not matter that we chose the probabilities arbitrarily;
-the fact that there is \emph{any} positive probability at all means
-some outcome that we had not accounted for is possible.
+
+\begin{align*}
+\prob{Q_k} 
+ & =\prob{\lgunion_{S} B_S} & \text{(hint)}\\
+ & \leq \sum_{S} \prob{B_S} & \text{(Boole's Inequality)}\\
+ & = \card{\set{S \suchthat \card{S} = k}}\cdot \prob{B_S}\\
+ & = \binom{n}{k} \alpha^{n-k} & \text{(part~\eqref{prbsn})}
+\end{align*}
+
+\end{solution}
+
+\ppart Conclude that if $n$ is enough larger than $k$, then
+$pr{Q_k} < 1$.
+
+\begin{solution}
+\begin{align*}
+\pr{Q_k}
+   & \leq \binom{n}{k}\alpha^{n-k}
+       & \text{(by part~\eqref{qkalpha})}\\
+   & = (1/\alpha)^k \binom{n}{k}\alpha^n\\
+   & \leq (1/\alpha)^kn^k \alpha^n\,.
+\end{align*}
+But for any fixed $k$, this last term approaches 0 as $n$ goes to
+infinity, so $\pr{Q_k}$ will be less than 1 for all large $n$.
+
+To see why it approaches 0, note that $0< \alpha < 1$, so $1/\alpha >
+1$ and hence $n^k = o((1/\alpha)^n)$.  Therefore,
+[
+n^k\alpha^n = \frac{n^k}{(1/\alpha)^n} \to 0.
+\]
+\end{solution}
+
+\problempart Explain why the previous result implies that for every
+integer $k$, there is a $k$-neutral tournament.
+
+\examspace[1in]
+
+\begin{solution}
+Suppose $n$ is large enough that $\pr{Q_k} < 1$.  Then $\pr{\bar{Q_k}}
+> 0$, which implies there must be at least one tournament graph
+(outcome) in $\bar{Q_k}$, that is, at least one tournament graph that
+is $k$-neutral.  In fact, as $n$ grows, it follows that almost all
+$n$-player tournaments will be $k$-neutral.
 
 \medskip 
 For interest, some numbers that work are:
 \begin{align*}
 k = 1, n = 3; k = 2, n = 21;  k = 3, n = 33; k = 4, n = 46; \\
-k = 5, n = 59; k = 6, n = 72; k = 7, n = 85; k = 8, n = 98
+k = 5, n = 59; k = 6, n = 72; k = 7, n = 85; k = 8, n = 98.
 \end{align*}
+
 \end{solution}
 
 \end{problemparts}
+
 \end{problem}
                                  
 
