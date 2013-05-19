@@ -1,0 +1,206 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_sampling_wafers_S13}
+  \pcomment{by kazerani on 12/5/11 verbatim from F07 Final P11}
+  \pcomment{simplification of  FP_sampling_wafers}
+  \pcomment{similar to TP_sampling_perturbed}
+\end{pcomments}
+
+\pkeywords{
+binomial
+sampling
+probability
+confidence
+asympttoic
+little_oh
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+On May 19, 2013, the MIT fabrication facility produced a long run of
+silicon wafers.  To estimate the fraction, $d$, of defective wafers in
+this run, we will take a small sample of wafers from the run, chosen
+randomly and independently.  Then we will test the chosen wafers for
+defects, and will estimate that $d$ is approximately the same as the
+fraction of defective wafers in the sample.
+
+We want to calculate a small sample size, $n_0$, such that the
+fraction of defective wafers in a random sample of $n_0$ wafers will
+be within 0.006 of the actual fraction, $d$, with 97\% confidence.
+The following theorem about the binomial random variable $B_{n,p}$
+provides a good way to calculate $n_0$:
+
+\begin{theorem*} [Binomial Deviation]
+\begin{equation}\label{eps}
+\pr{\abs{\frac{B_{n,p}}{n} - p} \geq \epsilon}\leq f(\epsilon, n)
+\end{equation}
+where
+\[
+f(\epsilon, n) = o(\frac{1}{\epsilon 2^{\epsilon n}}).
+\]
+\end{theorem*}
+
+\begin{problemparts}
+
+\problempart \label{sample-thm} Suppose you have a program for
+evaluating the function $f$.  Briefly explain how to use the Binomial
+Deviation Theorem to find $n_0$, explicitly indicating which values
+should be plugged into what formulas.
+
+\begin{solution}
+To find $n_0$, let $\epsilon = 0.006$, and search for the smallest $n$
+such that $f(\epsilon,n)\leq 0.03$.  Such an $n_0$ will exist because
+\[
+\lim{n \to \infty} f(\epsilon,n) \leq \lim{n \to \infty} \frac{1}{\epsilon 2^{\epsilon n}} = 0
+\]
+\end{solution}
+
+\examspace[2in]
+
+\problempart The calculations in part~\eqref{sample-thm} depend on
+some facts about the run and how the $n_0$ wafers in the sample are
+chosen.  Mathematically, the fabrication \emph{run} is an actual
+outcome that happened a week ago.  The \emph{sample} is a random
+variable defined by the process for randomly choosing $n_0$ wafers from
+the run.
+
+Write \textbf{T} or \textbf{F} next to each of the following
+statements to indicate whether it is True or False.
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  The probability that the ninth wafer in the \emph{sample} is
+  defective is $d$.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{T}}}}&\end{array}\]
+
+\begin{solution}
+    The ninth wafer in the sample is equally likely to be any wafer in
+    the run, so the probability it is defective is the same as the
+    fraction, $d$, of defective wafers in the fabrication run.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  The probability that the ninth wafer in the \emph{run} is
+  defective is $d$.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{F}}}}&\end{array}\]
+
+\begin{solution}
+    The fabrication run was completed last week, so there's nothing
+    probabilistic about the defectiveness of the ninth (or any other)
+    wafer in the run: either it is or it isn't defective, though we
+    don't know which.  You could argue that this means it is defective
+    with probability zero or one, but in any case, it certainly isn't
+    $d$.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  All wafers are equally as likely to be selected as the third wafer in
+  the \emph{sample}.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{T}}}}&\end{array}\]
+
+\begin{solution}
+    The meaning of ``random choices of wafers from the run'' is
+    precisely that at each of the $n$ choices in the sample, in
+    particular at the third choice, each wafer in the run is equally
+    likely to be chosen.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  The expectation of the indicator variable for the last wafer in
+  the \emph{sample} being \text{defective} is~$d$.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{T}}}}&\end{array}\]
+
+\begin{solution}
+  The expectation of the indicator variable is the same as the
+  probability that it is 1, namely, it is the probability that the
+  $n$th wafer chosen is defective, which, by the reasoning we used
+  in the first part of this question, is $d$.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  Given that the first wafer in the \emph{sample} is defective, the
+  probability that the second wafer will also be defective is greater
+  than than~$d$.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{F}}}}&\end{array}\]
+
+\begin{solution}
+  The meaning of ``\emph{independent} random choices of wafers
+  from the run'' is precisely that at each of the $n$ choices in the
+  sample, in particular at the second choice, each wafer in the run
+  is equally likely to be chosen, independent of what the first or
+  any other choice happened to be.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  Given that the last wafer in the \emph{run} is defective, the
+  probability that the next-to-last wafer in the run will also be
+  defective is greater than than~$d$.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{F}}}}&\end{array}\]
+
+\begin{solution}
+  As noted above, it's zero or one.
+\end{solution}
+
+\[\begin{array}{lccr}
+  \parbox{5.5in}{
+    It turns out that there are several different possible wafer
+    colors. Given that the first two wafers in the \emph{sample} are
+    the same color, the probability that the first wafer is defective
+    may be greater than $d$.
+  }&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+      \insolutions{\textbf{T}}}}&\end{array}\]
+
+\begin{solution}
+  Yes, the conditional probability may be greater than $d$.
+
+  We don't know how color correlates to defectiveness.  It could be
+  for example, that most wafers in the run are white, and most white
+  wafers are defective.  Then given that two randomly chosen wafers
+  in the sample are the same color, their most likely color is white.
+  This makes them more likely to be defective than usual, that is,
+  the conditional probability that they will be defective would be
+  greater than $d$.
+\end{solution}
+
+\[\begin{array}{lccr}
+\parbox{5.5in}{
+  The probability that all the wafers in the \emph{sample} will be
+  different is nonzero.
+}&& \fbox{\makebox[\totalheight]{\rule[-0.1in]{0in}{0.3in}
+\insolutions{\textbf{T}}}}&\end{array}\]
+
+\begin{solution}
+  We know the length, $r$, of the fabrication run is larger than the
+  sample size, $n$, in which case the probability that all the wafers
+  in the sample are different is
+  \[
+  \frac{r}{r}\cdot \frac{r-1}{r}\cdot \frac{r-2}{r} \cdots 
+\frac{r-(n-1)}{r}
+  = \frac{r!}{(r-n)!r^n} > 0.
+  \]
+\end{solution}
+
+\end{problemparts}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
