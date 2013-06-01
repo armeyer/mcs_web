@@ -1011,15 +1011,15 @@ fit.\footnote{In fact, the DAG doesn't even need to be finite, but
 
 \subsection{Parallel Task Scheduling}\label{parallel_sec}
 
-For task dependencies, topological sorting provides a
-way to execute tasks one after another while respecting those dependencies.
-But what if we have the ability to execute more than one task at the same
-time?  For example, say tasks are programs, the DAG indicates
-data dependence, and we have a parallel machine with lots of processors
-instead of a sequential machine with only one.  How should we schedule the
-tasks?  Our goal should be to minimize the total \emph{time} to complete
-all the tasks.  For simplicity, let's say all the tasks take the same
-amount of time and all the processors are identical.
+For task dependencies, topological sorting provides a way to execute
+tasks one after another while respecting those dependencies.  But what
+if we have the ability to execute more than one task at the same time?
+For example, say tasks are programs, the DAG indicates data
+dependence, and we have a parallel machine with lots of processors
+instead of a sequential machine with only one.  How should we schedule
+the tasks?  Our goal should be to minimize the total \emph{time} to
+complete all the tasks.  For simplicity, let's say all the tasks take
+the same amount of time and all the processors are identical.
 
 So given a finite set of tasks, how long does it take to do them all
 in an optimal parallel schedule?  We can use walk relations on
@@ -1045,51 +1045,34 @@ Figure~\ref{fig:7FS}.
 
 \caption{A parallel schedule for the tasks-getting-dressed digraph in
 Figure~\ref{fig:7FP}.  The tasks in~$A_i$ can be performed in step~$i$
-<<<<<<< .mine
-for $1 \le i \le 4$.  A chain of size~4 (the critical path in this
-=======
-for $1 \le i \le 4$.  A chain 4 tasks (the critical path in this
->>>>>>> .r4405
+for $1 \le i \le 4$.  A chain of 4 tasks (the critical path in this
 example) is shown with bold edges.}
 
 \label{fig:7FS}
 
 \end{figure}
 
+\begin{editingnotes}
+Number from 0: $A_0, A_1, A_2, A_3$.
+\end{editingnotes}
+
 The total time to do these tasks is 4~units.  We cannot do better than
-<<<<<<< .mine
-4~units of time because there is a size~4 sequence of tasks
-following one of the minimal tasks that we perform in the first unit
-of time.  We have to put on a shirt before pants, pants before a belt,
-and a belt before a jacket.  Such a sequence of items is known as a
-\term{chain}.
-=======
-4~units of time because there is a sequence of 4 tasks that must
-each be done before the next.  We have to put on a shirt before
-pants, pants before a belt, and a belt before a jacket.
-Such a sequence of items is known as a \term{chain}.
->>>>>>> .r4405
+4~units of time because there is a sequence of 4 tasks that must each
+be done before the next.  We have to put on a shirt before pants,
+pants before a belt, and a belt before a jacket.  Such a sequence of
+items is known as a \term{chain}.
 
 \begin{definition}
 Two vertices in a DAG are \term{comparable} when one of them is
 reachable from the other.  A \term{chain} in a DAG is a set of
 vertices such that any two of them are comparable.  A chain is said to
 \index{end of chain}\emph{end at} its maximum element, the vertex that
-is reachable from all other vertices in the chain. A chain's
+is reachable from all other vertices in the chain.  A chain's
 \term{size} is equal to the number of vertices in the set, which is
 always one greater than the chain's \emph{length}.
 \end{definition}
 
 The time it takes to schedule tasks, even with an unlimited number of
-<<<<<<< .mine
-processors, is at least as long as the number of vertices in any
-chain.  That's because if we used less time than there are items in some
-chain, then two items from the chain would have to be done at the same
-time, contradicting the precedence constraints.  For this reason, a
-\emph{largest} chain is also known as a \term{critical path}.  For
-example, Figure~\ref{fig:7FS} shows the critical path for the
-getting-dressed digraph.
-=======
 processors, is at least as large as the number of vertices in any
 chain.  That's because if we used less time than the size of some
 chain, then two items from the chain would have to be done at the same
@@ -1097,35 +1080,24 @@ time, contradicting the precedence constraints.  For this reason, a
 \emph{largest} chain is also known as a \term{critical path}.  For
 example, Figure~\ref{fig:7FS} shows the critical path for the
 getting-dressed digraph.
->>>>>>> .r4405
 
 In this example, we were able to schedule all the tasks with $t$
 steps, where $t$ is the size of the largest chain.  The nice thing
 about DAGs is that this is always possible!  In other words, for any
-DAG, there is a legal parallel schedule that runs in $t$ total
-steps.
+DAG, there is a legal parallel schedule that runs in $t$ total steps.
 
 In general, a \emph{schedule} for performing tasks specifies which
 tasks to do at successive steps.  Every task, $a$, has to be scheduled
 at some step, and all the tasks that have to be completed before task
-$a$ must be scheduled for an earlier step.
+$a$ must be scheduled for an earlier step.  Here's a rigorous
+definition of schedule.
 
 \begin{definition}\label{def:partition}
-A \term{partition} of a set~$A$ is a set of nonempty
-subsets of $A$ called the \term{blocks}\begin{editingnotes}
-\footnote{We think it would
-  be nicer to call them the \emph{parts} of the partition, but
-  ``blocks'' is the standard terminology.}
-\end{editingnotes} of the partition, such that
-\begin{itemize}
-\item every element of $A$ is in some block, and
-
-\item if $B$ and $B'$ are different blocks, then $B \intersect B' =
-  \emptyset$.
-
-\iffalse $A= \lgunion_{B\in \mathcal{P}} B$.\fi
-
-\end{itemize}
+A \term{partition} of a set~$A$ is a set of nonempty subsets of $A$
+called the \term{blocks}\footnote{We think it would be nicer to call
+  them the \emph{parts} of the partition, but ``blocks'' is the
+  standard terminology.} of the partition, such that every element of
+$A$ is in exactly one block.
 \end{definition}
 
 For example, one possible partition of the set $\set{a, b, c, d, e}$
@@ -1139,10 +1111,9 @@ A \term{parallel schedule} for a DAG, $D$, is a partition of
 $\vertices{D}$ into blocks $A_0, A_1,\dots,$ such that when $j < k$,
 no vertex in $A_j$ is reachable from any vertex in $A_k$.  The block
 $A_k$ is called the set of elements \term{scheduled at step $k$}, and
-the \emph{length} of the schedule is the number of additional blocks beyond the
-first in the partition.  The maximum number of elements scheduled at
-any step is called the \term{number of processors} required by the
-schedule.
+the \emph{time} of the schedule is the number of blocks.  The
+maximum number of elements scheduled at any step is called the
+\term{number of processors} required by the schedule.
 \end{definition}
 
 \iffalse
@@ -1173,12 +1144,12 @@ to the other\footnote{We'll define this term with slightly more
 \end{definition}
 \fi
 
-In general, the earliest step (starting at step 0) at which an element
-$a$ can ever be scheduled must no earlier than the longest chain that
-ends at $a$.  A \emph{longest} chain ending at $a$ is called a
+A \emph{largest} chain ending at an element $a$ is called a
 \term{critical path} to $a$, and the length of the critical path is
-called the \term{depth} of $a$.  So in any possible parallel schedule,
-it takes at least $1 + \dpth{a}$ steps to complete task $a$.
+called the \term{depth} of $a$.  In any possible parallel schedule,
+there must be at least $\dpth{a}$ steps before task $a$ can be
+started.  In particular, the minimal elements are precisely the
+elements with depth 0.
 
 There is a very simple schedule that completes every task in its
 minimum number of steps: just use a ``greedy'' strategy of performing
@@ -1186,10 +1157,10 @@ tasks as soon as possible.  Schedule all the elements of depth
 $k$ at step $k$.  That's how we found the above schedule for getting dressed.
 
 \begin{theorem}\label{thm:parallel-time}
-A minimum duration schedule for a finite DAG $D$ consists of the sets
+A minimum time schedule for a finite DAG $D$ consists of the sets
 $A_0, A_1,\dots,$ where
 \[
-A_k \eqdef \set{v \in \vertices{D} \suchthat \dpth{a} =k}.
+A_k \eqdef \set{a \in \vertices{D} \suchthat \dpth{a} =k}.
 \]
 \end{theorem}
 
@@ -1204,9 +1175,9 @@ Parallel time = size of critical path.
 \end{corollary}
 
 Things get a little more complex when the number of processors is
-bounded; see Problem~\ref{PS_Brents_theorem} for an example. But the
-deductions we've made by assuming unlimited processors will lead us to
-interesting and useful conclusions.
+bounded; see Problem~\ref{PS_Brents_theorem} for an example.  But the
+deductions we've made by assuming unlimited processors will still lead
+us to useful conclusions.
 
 \subsection{Dilworth's Lemma}\label{dilworth_subsec}
 
@@ -1219,7 +1190,7 @@ two different vertices in the set.
 Our conclusions about scheduling also tell us something about antichains.
 
 \begin{corollary}\label{cor:parallel}
-In a DAG, $D$, if the size of the longest chain is $t$, then
+In a DAG, $D$, if the size of the largest chain is $t$, then
 $\vertices{D}$ can be partitioned into $t$ antichains.
 \end{corollary}
 
@@ -1239,28 +1210,15 @@ size greater than $t$ or an antichain of size at least $n / t$.
 \end{lemma}
 
 \begin{proof}
-Assume that there is no chain of size greater than $t$. Let $\ell$ be
+Assume that there is no chain of size greater than $t$.  Let $\ell$ be
 the size of the largest antichain.  If we make a parallel schedule
 according to the proof of Corollary~\ref{cor:parallel}, we create a
-number of antichains equal to the size of the longest chain, which is
-less than or equal $t$.  Each element belongs to exactly one antichain,
-none of which are larger than $\ell$. So, the number of total elements
-is limited by the product of $\ell$ and $t$---that is, $\ell t \geq
-n$. Simple division proves that $\ell \geq n/t$.
+number of antichains equal to the size of the largest chain, which is
+less than or equal $t$.  Each element belongs to exactly one
+antichain, none of which are larger than $\ell$.  So the total number
+of elements at most $\ell$ times $t$---that is, $\ell t \geq n$.
+Simple division implies that $\ell \geq n/t$.
 \end{proof}
-
-\begin{editingnotes}
-\begin{proof}
-Assume there is no chain of size greater than $t$, that is, the size of the
-longest chain is of size $\leq t$.  Then by
-Corollary~\ref{cor:parallel}, the $n$ elements can be partitioned into
-$t$ or fewer antichains.  Let $\ell$ be the size of the largest
-antichain.  Since every element belongs to exactly one antichain, and
-there are at most $t$ antichains, there can't be more than $\ell t$
-elements, namely, $\ell t \geq n$.  So, there is an antichain with at
-least $\ell \geq n / t$ elements.
-\end{proof}
-\end{editingnotes}
 
 \begin{corollary}\label{cor:Dilworth}
 Every DAG with $n$ vertices has a chain of size greater
@@ -1279,16 +1237,6 @@ Try $t = 3$.  There is a chain of size $4$.
 Try $t = 4$.  There is no chain of size $5$, but there is an antichain of
 size $4 \geq 10 / 4$.
 \end{example}
-
-\iffalse
-\begin{example}
-Suppose we have a class of 101 students.  Then using the product partial
-order, $Y$, from Example~\ref{Y}, we can apply Dilworth's Lemma to
-conclude that there is a chain of 11 students who get taller as they get
-older, or an antichain of 11 students who get taller as they get younger,
-which makes for an amusing in-class demo.
-\end{example}
-\fi
 
 %% Scheduling Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
@@ -1758,12 +1706,6 @@ Add a Sperner's Lemma problem?
 
 
 %% Total Orders %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{editingnotes}
-\TBA{REVISE} to use ``linear order'' language.  Explain that all the
-elements in a linear order are ``lined up'' so that given any two, one
-is in front of the other.  In a nonlinear partial order, elements
-might be next to each other.
-\end{editingnotes}
 
 \section{Linear Orders}
 
@@ -1845,6 +1787,13 @@ $R_1$ and $R_2$ is defined to be the relation with
 
 \end{definition}
 
+It follows directly from the definitions that products preserve the
+properties of transitivity, reflexivity, irreflexivity, and
+antisymmetry (see Problem~\ref{CP_product_relation_properties}).  If
+$R_1$ and $R_2$ both have one of these properties, then so does $R_1
+\cross R_2$.  This implies that if $R_1$ and $R_2$ are both partial
+orders, then so is $R_1 \cross R_2$.
+
 \begin{example}\label{Y}
 Define a relation, $Y$, on age-height pairs of being younger \emph{and}
 shorter.  This is the relation on the set of pairs $(y,h)$ where $y$ is a
@@ -1856,15 +1805,15 @@ by the rule
 \]
 That is, $Y$ is the product of the $\le$-relation on ages and the
 $\le$-relation on heights.
-\end{example}
 
-It follows directly from the definitions that products preserve the
-properties of transitivity, reflexivity, irreflexivity, and
-antisymmetry, as shown in
-Problem~\ref{CP_product_relation_properties}.  If $R_1$ and
-$R_2$ both have one of these properties, then so does $R_1 \cross
-R_2$.  This implies that if $R_1$ and $R_2$ are both partial orders,
-then so is $R_1 \cross R_2$.
+Since both ages and heights are ordered numerically, the age-height
+relation $Y$ is a partial order.  Now suppose we have a class of 101
+students.  Then we can apply Dilworth's Lemma~\ref{lem:Dilworth} to
+conclude that there is a chain of 11 students---that 11 students who
+get taller as they get older--or an antichain of 11 students---that
+is, 11 students who get taller as they get younger, which makes for an
+amusing in-class demo.
+\end{example}
 
 On the other hand, the property of being a linear order is not preserved.
 For example, the age-height relation $Y$ is the product of two linear
