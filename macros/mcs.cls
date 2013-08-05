@@ -174,7 +174,7 @@
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
 \RequirePackage{index}
-
+\RequirePackage{makeidx}
 \RequirePackage{times}
 
 \IfFileExists{mtpro2.sty}{%
