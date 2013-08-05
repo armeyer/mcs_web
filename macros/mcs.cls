@@ -173,7 +173,7 @@
 \RequirePackage{subfig}
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
-\RequirePackage{index}
+%\RequirePackage{index}
 \RequirePackage{makeidx}
 \RequirePackage{times}
 
