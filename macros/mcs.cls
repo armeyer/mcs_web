@@ -492,6 +492,8 @@
     }
 \fi
 
+\newcommand*\seealso[2]{\emph{see also} #1}
+
 \newcommand{\printchapglossary}[1]{%
     \begingroup
         \def\@indextype{glo}%
