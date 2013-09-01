@@ -3,6 +3,7 @@
 \begin{pcomments}
   \pcomment{PS_printout_binary_strings}
   \pcomment{from: S09.ps1}
+  \pcomment{rewritten by ARM 1/1/13}
 \end{pcomments}
 
 \pkeywords{
@@ -16,12 +17,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-Describe a simple recursive procedure which, given a positive integer
-argument, $n$, produces a truth table whose rows are all the assignments
-of truth values to $n$ propositional variables.  For example, for $n=2$,
-the table might look like:
+Describe a simple procedure which, given a positive integer argument,
+$n$, produces a width $n$ array of truth-values whose rows would be
+all the possible truth-value assignments for $n$ propositional
+variables.  For example, for $n=2$, the array would be:
 
-\[\begin{array}{|c|c|}
+\[\begin{array}{|cc|}
 \hline \true & \true\\
 \true & \false\\
 \false & \true\\
@@ -30,30 +31,55 @@ the table might look like:
 \end{array}\]
 
 Your description can be in English, or a simple program in some
-familiar language such as Scheme or Java.  If you do write a program,
-be sure to include some sample output.
+familiar language such as Python or Java.  \inbook{If you do write a program,
+be sure to include some sample output.}
 
 \begin{solution}
-Start with an $n=1$ table, namely a one-column table whose
-first row consists of a $\true$ entry and second row an $\false$ entry.
-Build the $n+1$ table recursively by taking an $n$ table and attaching a
-$\true$ at the beginning of every row, then taking another $n$ table and
-attaching a $\false$ at the beginning of every row, and finally placing
-the first table above the second table.
+A simple recursive approach is to start with an $n=1$ array, namely a
+$1 \times 2$ array whose first row has the entry $\true$ and whose
+second row has the entry $\false$.  Build the width-$(n+1)$ array for
+$n+1$ variables recursively by making two copies of the width-$n$
+array for $n$ variables.  Then add a $\false$ entry at the beginning
+of each row of the first copy to form an array of width-$(n+1)$, add a
+$\true$ entry at the beginning of each row of the second copy to form
+a second array of width-$(n+1)$, and finally, place the first
+width-$(n+1)$ array on top of the second width-$(n+1)$ array, forming
+a width-$(n+1)$ array of twice the height of the width-$n$ array.
+This is the answer.
 
-Here's a Scheme program that carries out this procedure:
+\begin{staffnotes}
+Replace with Python.
+\end{staffnotes}
+
+Here's a Scheme program that carries generates the rows of the array
+for $n$ variables in this way:
+
 \texttt{
 \begin{tabbing}
 (de\=fine (truth-values n)\\
    \> (if \= (= n 1) '((T) (F))\\
    \>    \> (let \=((table (truth-values (- n 1))))\\
               \>\>\> (ap\=pend\\
-                \>\>\>\> (map (lambda (row) (cons 'T row)) table)\\
-                \>\>\>\> (map (lambda (row) (cons 'F row)) table)))))\\
+                \>\>\>\> (map (lambda (row) (cons 'F row)) table)\\
+                \>\>\>\> (map (lambda (row) (cons 'T row)) table)))))\\
 (truth-values 3)\\
-;Value 17: \>\>\>((t t t) (t t f) (t f t) (t f f)\\
-           \>\>\>\ (f t t) (f t f) (f f t) (f f f))
+;Value 17: \>\>\>((f f f) (f f t) (f t f) (f t t)\\
+           \>\>\>\ (t f f) (t f t) (t t f) (t t t))
 \end{tabbing}}
+
+\medskip
+
+An alternative approach makes the observation that the rows of the
+array for $n$ variables as constructed above consist of the $n$-bit
+binary representations of the successive integers 0 to $2^n -1$, when
+we treat $\false$ as a code for 0 and $\true$ as a code for 1.  For
+example, if, in the above array for $n=3$, we number successive rows
+starting with zero, then row number three is \texttt{(f t t)} which
+codes \texttt{011}, namely, the binary representation of three.  So we
+generate the $k$th row of the array for $n$ variables by finding the
+length-$n$ binary representation of $k$ and converting \texttt{0}'s
+back to $\false$ and \texttt{1}'s back to $\true$.
+
 \end{solution}
 \end{problem}
 
