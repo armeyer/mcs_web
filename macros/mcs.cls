@@ -3131,6 +3131,14 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
   \paper[#1]{micro#2}{}{Microquiz Week #2}
   \fi}
 
+\newcommand{\prepcheck}[2][\stamp]{%
+  \theoremsunderproblems
+  \ifshowsolutions
+  \paper[#1]{micros#2}{}{Solutions to Preparation Check #2}
+  \else
+  \paper[#1]{micro#2}{}{Preparation Check #2}
+  \fi}
+
 \newcommand{\miniquiz}[2][\stamp]{%
     \theoremsunderproblems
     \ifshowstaffnotes
