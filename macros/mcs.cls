@@ -2773,6 +2773,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
 \fi
   \end{itemize}}}
 
+
 \newcommand{\examtable}{%
     \ifx\examtablecontents\@empty
         \vfill
@@ -2787,6 +2788,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
         \print@examtable
     \fi
 }
+
 
 \def\print@exam@line#1#2{%
     \global\advance\@tempcnta #2\relax
@@ -2806,6 +2808,7 @@ Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~M
         \end{tabular}
     \end{center}
 }
+
 
 % Formats the cover sheet (for the student's solutions) provided at
 % the end of every problem set, given the problem set number. 
