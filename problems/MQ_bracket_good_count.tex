@@ -1,0 +1,179 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{MQ_bracket_good_count}
+  \pcomment{part of MQ_bracket_good_count}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  matching
+  recursive_data
+  strings
+  structural_induction
+  count
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}
+One way to determine if a string has matching brackets, that is, if it is
+in the set, \RM\inhandout{\footnote{$\RM$ is defined recursively: \textbf{Base case:}
+    $\emptystring \in\RM$. \textbf{Constructor case:} If $s,t \in \RM$,
+    then $\lefbrk s\, \rhtbrk t \in \RM.$ }},\inbook{ of Definition~\bref{RM_def}}
+ is to start with 0 and read
+the string from left to right, adding 1 to the count for each left bracket
+and subtracting 1 from the count for each right bracket.  For example,
+here are the counts for two sample strings:
+\[\begin{array}{rrrrrrrrrrrrr}
+& \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \lefbrk & \lefbrk & \lefbrk &
+\lefbrk & \rhtbrk & \rhtbrk & \rhtbrk & \rhtbrk\\
+0 & 1 & 0 & -1 & 0 & 1 & 2 & 3 & 4 & 3 & 2 & 1 & 0\\
+\\
+\\
+& \lefbrk & \lefbrk & \lefbrk & \rhtbrk & \rhtbrk & \lefbrk & \rhtbrk &
+\rhtbrk & \lefbrk & \rhtbrk\\
+0 & 1 & 2 & 3 & 2 & 1 & 2 & 1 & 0 & 1 & 0
+\end{array}\]
+A string has a \term{good count} if its running count never goes
+negative and ends with 0.  So the second string above has a good count, but
+the first one does not because its count went negative at the third step.
+The empty string $\emptystring$ has a good count of 0.
+Let
+\[
+\GC \eqdef \set{ s \in \brkts \suchthat s\ \text{has a good count}}.
+\]
+
+One way to prove that $\RM = \GC$ is to show that each includes the
+other.
+
+\bparts
+
+\ppart\label{GCRMcontain} One of the inclusions
+\begin{align*}
+\GC & \subseteq \RM,\\
+\RM & \subseteq \GC,
+\end{align*}
+is easy to prove by structural induction, while the other inclusion
+follows easily by strong induction.  Which inclusion is easy to prove by
+structural induction?
+
+\begin{center}
+\exambox{1.0in}{0.5in}{0.0in}
+\end{center}
+
+\begin{solution}
+$\RM\subseteq \GC$
+\end{solution}
+
+\ppart State an induction hypothesis that allows an easy proof by
+structural induction of the inclusion from part~\eqref{GCRMcontain}.
+No proof is required.
+
+\begin{center}
+\exambox{3.0in}{0.5in}{0.0in}
+\end{center}
+
+\begin{solution}
+The structural induction hypothesis is simply.
+\[
+P(s) \eqdef s \in \GC.
+\]
+
+The proof was not required, but here it is:
+
+\begin{proof}
+The proof is by structural induction on the recursive definition of
+$\RM$.
+
+\textbf{Base Case}: $P(\emptystring)$ holds since the count of the
+empty string ends where it starts at zero.
+
+\textbf{Inductive Step:} Assume $P(s)$ and $P(t)$ are true.  We need to show
+that $P(\lefbrk s\, \rhtbrk t)$ is true.
+
+The count values for $\lefbrk s\, \rhtbrk t$ start with 0.  Reading
+the initial left bracket yields 1 as the next count value.  This 1
+serves as the start of a series of count values exactly equal to the
+count values of $s$, with each value incremented by one.  Since $s \in
+\GC$ by induction hypothesis, these incremented count values begin
+with 1, always stay positive, and end with 1.  The right bracket
+immediately after $s$ reduces the ending count to 0.  This 0 serves as
+the start of the remaining count values which are exactly the count
+values of $t$.  Since by induction hypothesis $t \in \GC$, these
+remaining values never go negative and end at 0.  Hence the entire
+sequence of count values for $\lefbrk s\, \rhtbrk t$ starts with 0,
+never goes negative, and ends with 0, which proves that $\lefbrk s\,
+\rhtbrk t \in \GC$.
+\end{proof}
+
+\end{solution}
+
+\ppart The other inclusion can be proved by strong induction.  State a
+strong induction hypothesis that leads to a straightforward proof of
+this other inclusion.  No proof is required.
+
+\begin{center}
+\exambox{3.0in}{0.5in}{0.0in}
+\end{center}
+
+\begin{solution}
+A straightforward strong induction hypothesis that works is
+\[
+Q(n) \eqdef \forall r \in \GC.\, \lnth{r} = n \QIMPLIES r \in \RM.
+\]
+
+The proof was not required, but here it is:
+
+\begin{proof}
+
+\textbf{Base Case} $n = 0$: There is only one string of length 0,
+namely the empty string, which is in $\RM$ by definition, proving
+$Q(0)$.
+
+\textbf{Inductive Step:} Assume that $Q(k)$ is true for all $k\leq n$, we
+need to prove that $Q(n+1)$ is also true.
+
+So suppose $r$ is a length $n+1$ string that counts well.  We must prove
+that $r \in \RM$.
+
+Now since $r$ has a good count, it must start with a left bracket (or else
+the count would immediately go negative).  Likewise, since the count for
+$r$ returns to the value 0 by the end, $r$ must end with right
+bracket.  So there must be a \emph{first} right bracket in $r$
+after which the count returns to 0.  Let $s$ be the substring of $r$
+between the initial left bracket and this right bracket.  That is,
+\[
+r = \lefbrk s\rhtbrk t
+\]
+for some string $t$.
+
+Since counts only change by one as each bracket character is read, and
+the count for $r$ \emph{first} returns to 0 after the right bracket
+following $s$, the count during $s$ must start and end with 1 and must
+stay \emph{positive} in between.  But this implies that a count for $s$
+alone, which would start with 0, would also end with 0 and stay
+\emph{nonnegative} in between.  That is, $s$ by itself has a good count.
+Since the length of $s \in \GC$ is less than the length of $r$, we
+have by strong induction that $s \in \RM$.
+
+Further, we know the count for $r$ returns to 0 after the right
+bracket following $s$, and since $r \in \GC$, the count ends with 0
+again and stays nonnegative in between.  But this implies that $t$ has
+a good count, and since the length of $t$ is less than the length of
+$r$, we have by strong induction that $t \in \RM$.  Now by the second
+case in the definition of $\RM$, we conclude $r = \lefbrk s\, \rhtbrk
+t \in \RM$.
+\end{proof}
+
+\end{solution}
+
+\end{problemparts}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

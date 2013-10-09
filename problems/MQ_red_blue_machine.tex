@@ -2,12 +2,15 @@
 
 \begin{pcomments}
   \pcomment{MQ_red_blue_machine}
-  \pcomment{DRAFT revision of FP_10_heads_and_100_tails, ARM 9/30/13}
+  \pcomment{ARM 10/8/13}
 \end{pcomments}
 
 \pkeywords{
   state_machines
-  increasing_decreasing_variables
+  derived_variable
+  strictly_decreasing
+  nonnegative
+  termination
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15,45 +18,65 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-There is a bucket with an equal number of red and blue balls.  Balls
-will be added and removed from the bucket according to the following
-two rules:
+There is a bucket containing more blue balls than red balls.  As long
+as there continue to be more blues than reds, balls may be added and
+removed from the bucket according to the following rules:
 
 \begin{enumerate}
-\item[(i)] Remove an equal number of red and blue balls.
+\item[(i)] Add a red ball.
+  
+\item[(ii)] Remove a blue ball.
 
-\item[(ii)] If the bucket has at least as many blue balls as red
-  balls, then add red balls so the number of red balls doubles.
+\item[(iii)] Add two reds and one blue.
+
+\item[(iv)] Remove two blues and one red.
 \end{enumerate}
 
 \bparts
 
-\ppart Starting with 10 reds and 10 blues, show how any red and blue
-balls are in the bucket during five successive applications of these
-rules, using each of the rules at least once.
+\ppart Starting with 10 reds and 16 blues, what is the largest number
+of balls the bucket will contain by applying these rules?
 
-\examspace[1.0in]
+\begin{solution}
+\[
+\mathbf{44} = 22 \text{ red balls} + 22 \text{ blue balls}.
+\]
 
-\ppart
-Let $b$ be the number of blue balls and $r$ the number of red balls in the bucket.
-Prove that $2b-r \ge 0$ is a preserved invariant under application of these rules.
+By applying rule (iii) six times.
+\end{solution}
+\eparts
 
-\examspace[2.0in]
+Let $b$ be the number of blue balls and $r$ be the number of red balls
+in the bucket at any given time.
 
-\ppart What property of the derived variable $2b-r$ guarantees that
-this process must terminate?  That is, the bucket must eventually
-contain a number of red and blue balls to which neither of the abive
-rules applies, no matter what the equal number of red and blue balls
-was initially.  Prove that $2b-r$ has this property.
+\bparts
+
+\ppart\label{b-rge0} Prove that $b - r \geq 0$ is a preserved invariant of the process
+of adding and removing balls according to rules (i)--(iv).
 
 \examspace[3.0in]
 
 \begin{solution}
-$2b-r$ is strictly decreasing and bounded below (by minus the initial
-  number of red balls), which guarantees termination.
+If $b\leq r$, then no rule applies, so $b-r \geq 0$ is vacuously
+preserved.  If a rule applies, we must have $b-r>0$.  Since each rule
+reduces the difference of $b$ and $r$ by one, we have $b-r \geq 0$
+after application of a rule.  So again $b-r \geq 0$ is preserved.
+\end{solution}
 
-To verify strictly decreasing \textbf{TBA}
+\ppart Prove that no matter how many balls the bucket contains,
+repeatedly applying rules (i)--(iv) will eventually lead to a state
+where no further rule can be applied.
 
+\begin{solution}
+It is easy to verify that $b - r$ is a strictly decreasing derived
+variable.  For example, applying rule (iii) takes $(b,r)$ to $(b+1,
+r+2)$ and
+\[
+b-r > b-r - 1 = (b+1)-(r+2).
+\]
+Since $b-r$ is also nonnegative by part~\eqref{b-rge0}, it follows
+that starting in state $(b,r)$, the rules can be applied at most $b-r$
+times.
 \end{solution}
 
 \eparts
