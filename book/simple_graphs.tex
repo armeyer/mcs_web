@@ -1730,318 +1730,7 @@ isomorphic to $C_n$ for some $n \ge 3$.
 This definition formally captures the idea that cycles don't
 have direction or beginnings or ends.
 
-\section{Connectivity}
-
-\begin{definition}\label{def:connected-vertices} %\label{def:connected-graph}
-  \emph{Two vertices are} \term{connected} in a graph when there is a
-  path that begins at one and ends at the other.  By convention, every
-  vertex is connected to itself by a path of length zero.  A
-  \emph{graph is connected} when every pair of vertices are connected.
-\end{definition}
-
-\subsection{Connected Components}
-
-Being connected is usually a good property for a graph to have.  For
-example, it could mean that it is possible to get from any node to any
-other node, or that it is possible to communicate between any pair of
-nodes, depending on the application.
-
-But not all graphs are connected.  For example, the graph where nodes
-represent cities and edges represent highways might be connected for
-North American cities, but would surely not be connected if you also
-included cities in Australia.  The same is true for communication
-networks like the Internet---in order to be protected from viruses
-that spread on the Internet, some government networks are completely
-isolated from the Internet.
-
-\begin{figure}[htbp]
-
-\graphic{connectivity-graphs}
-
-\caption{One graph with 3 connected components.}
-
-\label{fig:3comp}
-\end{figure}
-
-Another example, is shown in Figure~\ref{fig:3comp}, which looks like a
-picture of three graphs, but is intended to be a picture of \emph{one}
-graph.  This graph consists of three pieces (subgraphs).  Each piece
-by itself is connected, but there are no paths between vertices in
-different pieces.  These connected pieces of a graph are called its
-\term{connected components}.
-
-\begin{definition}\label{def:connected-component}
-A \emph{connected component} of a graph is a subgraph consisting of
-some vertex and every node and edge that is connected to that vertex.
-\end{definition}
-
-So, a graph is connected iff it has exactly one connected component.
-At the other extreme, the empty graph on $n$ vertices has $n$
-connected components.
-
-\subsection{$k$-Connected Graphs}
-
-If we think of a graph as modeling cables in a telephone network, or
-oil pipelines, or electrical power lines, then we not only want
-connectivity, but we want connectivity that survives component
-failure.  So more generally, we want to define how strongly two
-vertices are connected.  One measure of connection strength is how
-many links must fail before connectedness fails.  In particular, two
-vertices are \term{$k$-edge connected} when it takes at least $k$
-``edge-failures'' to disconnect them.  More precisely:
-
-\begin{definition}\label{def:k-connected}
-Two vertices in a graph are $k$-\term{edge connected} when they remain
-connected in every subgraph obtained by deleting up to $k-1$ edges.  A
-graph is $k$-edge
-\index{connected!edge}\index{connected!$k$-edge}connected when it has
-more than one vertex, and every subgraph obtained by deleting at most
-$k-1$ edges is connected.
-\end{definition}
-\iffalse
-every two of its vertices are $k$-edge connected.
-\fi
-
-Two vertices are connected according to
-Definition~\ref{def:connected-vertices} iff they are 1-edge connected
-according to Definition~\ref{def:k-connected}; likewise for any graph
-with more than one vertex.
-
-There are other kinds of connectedness, but edge-connectedness will be
-enough for us, so from now on we'll drop the ``edge'' modifier and
-just say ``\idx{connected}.''\footnote{There is an obvious definition
-  of $k$-\idx{vertex connected}ness\index{connected!$k$-edge} based on
-  deleting vertices rather than edges.  Graph theory texts usually use
-  ``$k$-connected'' as shorthand for ``$k$-vertex connected.''}
-
-For example, in the graph in Figure~\ref{dg}, vertices $c$ and~$e$ are
-3 connected, $b$ and~$e$ are 2 connected, $g$ and $e$ are 1 connected,
-and no vertices are 4 connected.  The graph as a whole is only 1
-connected.  A complete graph, $K_n$, is $(n-1)$ connected.
-\begin{editingnotes}
-\arm{inserted cycles and cut edges }
-\end{editingnotes}
-Every cycle is 2-connected.
-
-The idea of a \emph{cut edge} is a useful way to explain 2-connectivity.
-\begin{definition}
-If two vertices are connected in a graph $G$, but not connected when
-an edge $e$ is removed, then $e$ is called a \term{cut edge} of $G$.
-\end{definition}
-So a graph with more than one vertex is 2-connected iff it is
-connected and has no cut edges.  The following Lemma is
-another immediate consequence of the definition:
-\begin{lemma}\label{lem:cutiffcycle}
-An edge is a cut edge iff it is not on a cycle.
-\end{lemma}
-
-More generally, if two vertices are connected by $k$ edge-disjoint
-paths---that is, no edge occurs in two paths---then they must
-be $k$ connected, since at least one edge will have to be removed from
-each of the paths before they could disconnect.  A fundamental fact,
-whose ingenious proof we omit, is \idx{Menger}'s theorem which
-confirms that the converse is also true: if two vertices are
-$k$-connected, then there are $k$ edge-disjoint paths connecting them.
-It takes some ingenuity to prove this just for the case $k=2$.
-
-\subsection{The Minimum Number of Edges in a Connected Graph}
-
-The following theorem says that a graph with few edges must have many
-connected components.
-\begin{theorem}\label{th:connectivity}
-Every graph, $G$, has at least $\card{\vertices{G}} - \card{\edges{G}}$
-connected components.
-\end{theorem}
-Of course for Theorem~\ref{th:connectivity} to be of any use, there must
-be fewer edges than vertices.
-
-\begin{proof}
-We use induction on the number, $k$, of edges.  Let $P(k)$ be the
-proposition that
-\begin{quote}
-every graph, $G$, with $k$ edges has at least $\card{\vertices{G}}-k$
-connected components.
-\end{quote}
-
-\inductioncase{Base case} ($k=0$): In a graph with 0 edges, each
-vertex is itself a connected component, and so there are exactly
-$\card{\vertices{G}} = \card{\vertices{G}} - 0$ connected components.
-So $P(0)$ holds.
-
-\inductioncase{Inductive step}:
-
-\iffalse
-Now we assume that the induction hypothesis holds for every $k$-edge
-graph in order to prove that it holds for every $(k+1)$-edge graph,
-where $k \geq 0$.
-\fi
-
-Let $G_e$ be the graph that results from removing an edge, $e \in
-\edges{G}$.  So $G_e$ has $k$ edges, and by the induction hypothesis
-$P(k)$, we may assume that $G_e$ has at least $\card{\vertices{G}} -
-k$ connected components.  Now add back the edge $e$ to obtain the
-original graph $G$.  If the endpoints of $e$ were in the same
-connected component of $G_e$, then $G$ has the same sets of connected
-vertices as $G_e$, so $G$ has at least $\card{\vertices{G}} - k >
-\card{\vertices{G}} - (k+1)$ components.  Alternatively, if the
-endpoints of $e$ were in different connected components of $G_e$, then
-these two components are merged into one component in~$G$, while all
-other components remain unchanged, so that $G$ has one fewer connected
-component than $G_e$.  That is, $G$ has at least $(\card{\vertices{G}}
-- k) - 1 = \card{\vertices{G}} - (k+1)$ connected components.  So in
-either case, $G$ has at least $\card{\vertices{G}} - (k+1)$
-components, as claimed.
-
-This completes the inductive step and hence the entire proof by
-induction.
-\end{proof}
-
-\begin{corollary}
-\label{cor:n-1}
-Every connected graph with $n$ vertices has at least $n - 1$ edges.
-\end{corollary}
-
-A couple of points about the proof of Theorem~\ref{th:connectivity}
-are worth noticing.  First, we used induction on the number of edges
-in the graph.  This is very common in proofs involving graphs, as is
-induction on the number of vertices.  When you're presented with a
-graph problem, these two approaches should be among the first you
-consider.
-
-The second point is more subtle.  Notice that in the inductive step,
-we took an arbitrary $(k+1)$-edge graph, threw out an edge so that we
-could apply the induction assumption, and then put the edge back.
-You'll see this shrink-down, grow-back process very often in the
-inductive steps of proofs related to graphs.  This might seem like
-needless effort: why not start with an $k$-edge graph and add one more
-to get an $(k+1)$-edge graph?  That would work fine in this case, but
-opens the door to a nasty logical error called \term{buildup error},
-illustrated in Problem~\ref{CP_bogus_pos_deg_but_not_connected}.
-
-\iffalse
-
-\subsubsection{Build-Up Error}
-
-\begin{falseclm*}
-If every vertex in a graph has degree at least~1, then the graph is
-connected.
-\end{falseclm*}
-
-There are many counterexamples; for example, see Figure~\ref{fig:5Z}.
-
-\begin{figure}
-
-\graphic{Fig_5Z}
-
-\caption{A counterexample graph to the False Claim.}
-
-\label{fig:5Z}
-\end{figure}
-
-\begin{bogusproof}
-We use induction.  Let $P(n)$ be the proposition that if every vertex
-in an $n$-vertex graph has degree at least~1, then the graph is
-connected.
-
-\inductioncase{Base case} ($n=1$): There is only one graph with a
-single vertex and it has degree~0.  Therefore, $P(1)$ is vacuously true,
-since the if-part is false.
-
-\inductioncase{Inductive step}: We must show that $P(n)$ implies
-$P(n+1)$ for all $n \ge 1$.  Consider an $n$-vertex graph in which
-every vertex has degree at least~1.  By the assumption~$P(n)$, this
-graph is connected; that is, there is a path between every pair of
-vertices.  Now we add one more vertex~$x$ to obtain an $(n+1)$-vertex
-graph as shown in Figure~\ref{fig:5Y}.
-
-\begin{figure}
-
-\graphic{false-connect-pic}
-
-\caption{Adding a vertex~$x$ with degree at least~1 to a connected
-  $n$-node graph.}
-
-\label{fig:5Y}
-
-\end{figure}
-
-All that remains is to check that there is a path from $x$ to every
-other vertex~$z$.  Since $x$ has degree at least one, there is an edge
-from~$x$ to some other vertex; call it~$y$.  Thus, we can obtain a
-path from~$x$ to~$z$ by adjoining the edge $\edge{x}{y}$ to the path
-from~$y$ to~$z$.  This proves $P(n + 1)$.
-
-By the principle of induction, $P(n)$ is true for all  $n \ge 1$,
-which proves the theorem
-\end{bogusproof}
-
-Uh-oh\dots this proof looks fine!  Where is the bug?  It turns out
-that the faulty assumption underlying this argument is that
-\emph{every $(n + 1)$-vertex graph with minimum degree~1 can be
-obtained from an $n$-vertex graph with minimum degree~1 by adding 1
-more vertex}.  Instead of starting by considering an arbitrary $(n +
-1)$-node graph, this proof only considered $(n + 1)$-node graphs
-that you can make by starting with an $n$-node graph with minimum
-degree~1.
-
-The counterexample in Figure~\ref{fig:5Z} shows that this assumption
-is false; there is no way to build the 4-vertex graph in
-Figure~\ref{fig:5Z} from a 3-vertex graph with minimum degree~1.
-Thus the first error in the proof is the statement ``This proves
-$P(n + 1)$.''
-
-This kind of flaw is known as ``build-up error.''  Usually, build-up
-error arises from a faulty assumption that every size $n + 1$ graph
-with some property can be ``built up'' from a size~$n$ graph with the
-same property.  (This assumption is correct for some properties, but
-incorrect for others---such as the one in the argument above.)
-
-One way to avoid an accidental build-up error is to use a ``shrink
-down, grow back'' process in the inductive step, namely, start with a
-size $n+1$ graph, remove a vertex (or edge), apply the inductive
-hypothesis $P(n)$ to the smaller graph, and then add back the vertex
-(or edge) and argue that $P(n + 1)$ holds.  Let's see what would have
-happened if we'd tried to prove the claim above by this method:
-
-\inductioncase{Revised inductive step}: We must show that $P(n)$
-implies $P(n + 1)$ for all $n \ge 1$.  Consider an $(n + 1)$-vertex
-graph~$G$ in which every vertex has degree at least~1.  Remove an
-arbitrary vertex~$v$, leaving an $n$-vertex graph~$G_e$ in which every
-vertex has degree\dots\ uh oh!
-
-The reduced graph~$G_e$ might contain a vertex of degree~0, making the
-inductive hypothesis $P(n)$ inapplicable!  We are stuck---and
-properly so, since the claim is false!
-
-Always use shrink-down, grow-back arguments and you'll never fall into
-this trap.
-
-%S08, cp6m, S06 cp5f
-
-%S06 cp5f
-\fi
-
-%% Connectedness Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{problems}
-\classproblems
-\pinput{CP_n_dim_hypercube}
-\pinput{CP_graph_maximal_connected}
-\pinput{CP_Kn_is_very_connected}
-\pinput{CP_bogus_pos_deg_but_not_connected}
-
-\homeworkproblems
-\pinput{PS_shortest_undirected_closed_walk}
-\pinput{PS_Euler_circuits}
-\pinput{PS_tangled_and_mangled_graphs}
-\pinput{PS_circuit_graph_with_crossbars}
-
-\examproblems
-\pinput{MQ_graph_state_machine}
-
-\end{problems}
-
-
-\section{Odd Cycles and 2-Colorability}\label{subsec:odd_cycles}
+\subsection{Odd Cycles and 2-Colorability}\label{subsec:odd_cycles}
 
 We have already seen that determining the chromatic number of a graph is a
 challenging problem.  There is one special case where this problem is very
@@ -2079,7 +1768,6 @@ So each of these properties implies the other two,
   implication follows from transivity of implication,
   Rule~\ref{rule:transitivity} in Section~\ref{sec:logical_deduction}}
 \fi
-
 
 \begin{description}
 
@@ -2386,10 +2074,328 @@ Needless to say, if you can figure out a fast procedure that finds the
 optimal cycle for the traveling salesperson, let us know so that we
 can win a million dollars.
 
-\arm{Maybe include subsection on TSP within a small factor of minimal when
-distances are Euclidean?  This may already be in an old problem (not yet in repository).}
-
+\arm{Maybe include subsection on TSP within a small factor of minimal
+  when distances are Euclidean?  This may already be in an old problem
+  (not yet in repository).}
 \end{editingnotes}
+
+\begin{problems}
+\homeworkproblems
+\pinput{PS_shortest_undirected_closed_walk}
+\pinput{PS_Euler_circuits}
+\end{problems}
+
+
+\section{Connectivity}\label{connect-sec}
+
+\begin{definition}\label{def:connected-vertices} %\label{def:connected-graph}
+  \emph{Two vertices are} \term{connected} in a graph when there is a
+  path that begins at one and ends at the other.  By convention, every
+  vertex is connected to itself by a path of length zero.  A
+  \emph{graph is connected} when every pair of vertices are connected.
+\end{definition}
+
+
+
+
+\subsection{Connected Components}
+
+Being connected is usually a good property for a graph to have.  For
+example, it could mean that it is possible to get from any node to any
+other node, or that it is possible to communicate between any pair of
+nodes, depending on the application.
+
+But not all graphs are connected.  For example, the graph where nodes
+represent cities and edges represent highways might be connected for
+North American cities, but would surely not be connected if you also
+included cities in Australia.  The same is true for communication
+networks like the Internet---in order to be protected from viruses
+that spread on the Internet, some government networks are completely
+isolated from the Internet.
+
+\begin{figure}[htbp]
+
+\graphic{connectivity-graphs}
+
+\caption{One graph with 3 connected components.}
+
+\label{fig:3comp}
+\end{figure}
+
+Another example, is shown in Figure~\ref{fig:3comp}, which looks like a
+picture of three graphs, but is intended to be a picture of \emph{one}
+graph.  This graph consists of three pieces (subgraphs).  Each piece
+by itself is connected, but there are no paths between vertices in
+different pieces.  These connected pieces of a graph are called its
+\term{connected components}.
+
+\begin{definition}\label{def:connected-component}
+A \emph{connected component} of a graph is a subgraph consisting of
+some vertex and every node and edge that is connected to that vertex.
+\end{definition}
+
+So, a graph is connected iff it has exactly one connected component.
+At the other extreme, the empty graph on $n$ vertices has $n$
+connected components.
+
+\subsection{$k$-Connected Graphs}
+
+If we think of a graph as modeling cables in a telephone network, or
+oil pipelines, or electrical power lines, then we not only want
+connectivity, but we want connectivity that survives component
+failure.  So more generally, we want to define how strongly two
+vertices are connected.  One measure of connection strength is how
+many links must fail before connectedness fails.  In particular, two
+vertices are \term{$k$-edge connected} when it takes at least $k$
+``edge-failures'' to disconnect them.  More precisely:
+
+\begin{definition}\label{def:k-connected}
+Two vertices in a graph are $k$-\term{edge connected} when they remain
+connected in every subgraph obtained by deleting up to $k-1$ edges.  A
+graph is $k$-edge
+\index{connected!edge}\index{connected!$k$-edge}connected when it has
+more than one vertex, and every subgraph obtained by deleting at most
+$k-1$ edges is connected.
+\end{definition}
+\iffalse
+every two of its vertices are $k$-edge connected.
+\fi
+
+Two vertices are connected according to
+Definition~\ref{def:connected-vertices} iff they are 1-edge connected
+according to Definition~\ref{def:k-connected}; likewise for any graph
+with more than one vertex.
+
+There are other kinds of connectedness, but edge-connectedness will be
+enough for us, so from now on we'll drop the ``edge'' modifier and
+just say ``\idx{connected}.''\footnote{There is an obvious definition
+  of $k$-\idx{vertex connected}ness\index{connected!$k$-edge} based on
+  deleting vertices rather than edges.  Graph theory texts usually use
+  ``$k$-connected'' as shorthand for ``$k$-vertex connected.''}
+
+For example, in the graph in Figure~\ref{dg}, vertices $c$ and~$e$ are
+3 connected, $b$ and~$e$ are 2 connected, $g$ and $e$ are 1 connected,
+and no vertices are 4 connected.  The graph as a whole is only 1
+connected.  A complete graph, $K_n$, is $(n-1)$ connected.
+\begin{editingnotes}
+\arm{inserted cycles and cut edges }
+\end{editingnotes}
+Every cycle is 2-connected.
+
+The idea of a \emph{cut edge} is a useful way to explain 2-connectivity.
+\begin{definition}
+If two vertices are connected in a graph $G$, but not connected when
+an edge $e$ is removed, then $e$ is called a \term{cut edge} of $G$.
+\end{definition}
+So a graph with more than one vertex is 2-connected iff it is
+connected and has no cut edges.  The following Lemma is
+another immediate consequence of the definition:
+\begin{lemma}\label{lem:cutiffcycle}
+An edge is a cut edge iff it is not on a cycle.
+\end{lemma}
+
+More generally, if two vertices are connected by $k$ edge-disjoint
+paths---that is, no edge occurs in two paths---then they must
+be $k$ connected, since at least one edge will have to be removed from
+each of the paths before they could disconnect.  A fundamental fact,
+whose ingenious proof we omit, is \idx{Menger}'s theorem which
+confirms that the converse is also true: if two vertices are
+$k$-connected, then there are $k$ edge-disjoint paths connecting them.
+It takes some ingenuity to prove this just for the case $k=2$.
+
+\subsection{The Minimum Number of Edges in a Connected Graph}
+
+The following theorem says that a graph with few edges must have many
+connected components.
+\begin{theorem}\label{th:connectivity}
+Every graph, $G$, has at least $\card{\vertices{G}} - \card{\edges{G}}$
+connected components.
+\end{theorem}
+Of course for Theorem~\ref{th:connectivity} to be of any use, there must
+be fewer edges than vertices.
+
+\begin{proof}
+We use induction on the number, $k$, of edges.  Let $P(k)$ be the
+proposition that
+\begin{quote}
+every graph, $G$, with $k$ edges has at least $\card{\vertices{G}}-k$
+connected components.
+\end{quote}
+
+\inductioncase{Base case} ($k=0$): In a graph with 0 edges, each
+vertex is itself a connected component, and so there are exactly
+$\card{\vertices{G}} = \card{\vertices{G}} - 0$ connected components.
+So $P(0)$ holds.
+
+\inductioncase{Inductive step}:
+
+\iffalse
+Now we assume that the induction hypothesis holds for every $k$-edge
+graph in order to prove that it holds for every $(k+1)$-edge graph,
+where $k \geq 0$.
+\fi
+
+Let $G_e$ be the graph that results from removing an edge, $e \in
+\edges{G}$.  So $G_e$ has $k$ edges, and by the induction hypothesis
+$P(k)$, we may assume that $G_e$ has at least $\card{\vertices{G}} -
+k$ connected components.  Now add back the edge $e$ to obtain the
+original graph $G$.  If the endpoints of $e$ were in the same
+connected component of $G_e$, then $G$ has the same sets of connected
+vertices as $G_e$, so $G$ has at least $\card{\vertices{G}} - k >
+\card{\vertices{G}} - (k+1)$ components.  Alternatively, if the
+endpoints of $e$ were in different connected components of $G_e$, then
+these two components are merged into one component in~$G$, while all
+other components remain unchanged, so that $G$ has one fewer connected
+component than $G_e$.  That is, $G$ has at least $(\card{\vertices{G}}
+- k) - 1 = \card{\vertices{G}} - (k+1)$ connected components.  So in
+either case, $G$ has at least $\card{\vertices{G}} - (k+1)$
+components, as claimed.
+
+This completes the inductive step and hence the entire proof by
+induction.
+\end{proof}
+
+\begin{corollary}
+\label{cor:n-1}
+Every connected graph with $n$ vertices has at least $n - 1$ edges.
+\end{corollary}
+
+A couple of points about the proof of Theorem~\ref{th:connectivity}
+are worth noticing.  First, we used induction on the number of edges
+in the graph.  This is very common in proofs involving graphs, as is
+induction on the number of vertices.  When you're presented with a
+graph problem, these two approaches should be among the first you
+consider.
+
+The second point is more subtle.  Notice that in the inductive step,
+we took an arbitrary $(k+1)$-edge graph, threw out an edge so that we
+could apply the induction assumption, and then put the edge back.
+You'll see this shrink-down, grow-back process very often in the
+inductive steps of proofs related to graphs.  This might seem like
+needless effort: why not start with an $k$-edge graph and add one more
+to get an $(k+1)$-edge graph?  That would work fine in this case, but
+opens the door to a nasty logical error called \term{buildup error},
+illustrated in Problem~\ref{CP_bogus_pos_deg_but_not_connected}.
+
+\iffalse
+
+\subsubsection{Build-Up Error}
+
+\begin{falseclm*}
+If every vertex in a graph has degree at least~1, then the graph is
+connected.
+\end{falseclm*}
+
+There are many counterexamples; for example, see Figure~\ref{fig:5Z}.
+
+\begin{figure}
+
+\graphic{Fig_5Z}
+
+\caption{A counterexample graph to the False Claim.}
+
+\label{fig:5Z}
+\end{figure}
+
+\begin{bogusproof}
+We use induction.  Let $P(n)$ be the proposition that if every vertex
+in an $n$-vertex graph has degree at least~1, then the graph is
+connected.
+
+\inductioncase{Base case} ($n=1$): There is only one graph with a
+single vertex and it has degree~0.  Therefore, $P(1)$ is vacuously true,
+since the if-part is false.
+
+\inductioncase{Inductive step}: We must show that $P(n)$ implies
+$P(n+1)$ for all $n \ge 1$.  Consider an $n$-vertex graph in which
+every vertex has degree at least~1.  By the assumption~$P(n)$, this
+graph is connected; that is, there is a path between every pair of
+vertices.  Now we add one more vertex~$x$ to obtain an $(n+1)$-vertex
+graph as shown in Figure~\ref{fig:5Y}.
+
+\begin{figure}
+
+\graphic{false-connect-pic}
+
+\caption{Adding a vertex~$x$ with degree at least~1 to a connected
+  $n$-node graph.}
+
+\label{fig:5Y}
+
+\end{figure}
+
+All that remains is to check that there is a path from $x$ to every
+other vertex~$z$.  Since $x$ has degree at least one, there is an edge
+from~$x$ to some other vertex; call it~$y$.  Thus, we can obtain a
+path from~$x$ to~$z$ by adjoining the edge $\edge{x}{y}$ to the path
+from~$y$ to~$z$.  This proves $P(n + 1)$.
+
+By the principle of induction, $P(n)$ is true for all  $n \ge 1$,
+which proves the theorem
+\end{bogusproof}
+
+Uh-oh\dots this proof looks fine!  Where is the bug?  It turns out
+that the faulty assumption underlying this argument is that
+\emph{every $(n + 1)$-vertex graph with minimum degree~1 can be
+obtained from an $n$-vertex graph with minimum degree~1 by adding 1
+more vertex}.  Instead of starting by considering an arbitrary $(n +
+1)$-node graph, this proof only considered $(n + 1)$-node graphs
+that you can make by starting with an $n$-node graph with minimum
+degree~1.
+
+The counterexample in Figure~\ref{fig:5Z} shows that this assumption
+is false; there is no way to build the 4-vertex graph in
+Figure~\ref{fig:5Z} from a 3-vertex graph with minimum degree~1.
+Thus the first error in the proof is the statement ``This proves
+$P(n + 1)$.''
+
+This kind of flaw is known as ``build-up error.''  Usually, build-up
+error arises from a faulty assumption that every size $n + 1$ graph
+with some property can be ``built up'' from a size~$n$ graph with the
+same property.  (This assumption is correct for some properties, but
+incorrect for others---such as the one in the argument above.)
+
+One way to avoid an accidental build-up error is to use a ``shrink
+down, grow back'' process in the inductive step, namely, start with a
+size $n+1$ graph, remove a vertex (or edge), apply the inductive
+hypothesis $P(n)$ to the smaller graph, and then add back the vertex
+(or edge) and argue that $P(n + 1)$ holds.  Let's see what would have
+happened if we'd tried to prove the claim above by this method:
+
+\inductioncase{Revised inductive step}: We must show that $P(n)$
+implies $P(n + 1)$ for all $n \ge 1$.  Consider an $(n + 1)$-vertex
+graph~$G$ in which every vertex has degree at least~1.  Remove an
+arbitrary vertex~$v$, leaving an $n$-vertex graph~$G_e$ in which every
+vertex has degree\dots\ uh oh!
+
+The reduced graph~$G_e$ might contain a vertex of degree~0, making the
+inductive hypothesis $P(n)$ inapplicable!  We are stuck---and
+properly so, since the claim is false!
+
+Always use shrink-down, grow-back arguments and you'll never fall into
+this trap.
+
+%S08, cp6m, S06 cp5f
+
+%S06 cp5f
+\fi
+
+%% Connectedness Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problems}
+\classproblems
+\pinput{CP_n_dim_hypercube}
+\pinput{CP_graph_maximal_connected}
+\pinput{CP_Kn_is_very_connected}
+\pinput{CP_bogus_pos_deg_but_not_connected}
+
+\homeworkproblems
+\pinput{PS_tangled_and_mangled_graphs}
+\pinput{PS_circuit_graph_with_crossbars}
+
+\examproblems
+\pinput{MQ_graph_state_machine}
+
+\end{problems}
 
 \section{Forests \& Trees}\label{trees-sec}
 We've already made good use of digraphs without cycles, but
