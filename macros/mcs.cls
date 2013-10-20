@@ -2631,25 +2631,21 @@
 }
 \fi
 
-\newcommand{\coursecopyright}{%
-\symbolfootnote[0]{Creative Commons
-\resizebox{!}{0.15in}{\includegraphics{by-nc-sa}}~\coursecopyrightyear, 
-    \coursecopyrightnames.}}
+\newcommand{\coursecopyright}{\resizebox{!}{0.15in}{\href{http://creativecommons.org/licenses/by-sa/3.0/}{\includegraphics{by-sa}}}~\coursecopyrightyear,
+  \coursecopyrightnames.  This work is available under the terms of the
+  \href{http://creativecommons.org/licenses/by-sa/3.0/}{Creative
+    Commons Attribution-ShareAlike 3.0 license}.}
 
 
-\newcommand{\coursecopyrightyear}{
-  2013%
+\newcommand{\coursecopyrightyear}{2013%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 
 \renewcommand{\coursecopyrightyear}{2013}
 
-\newcommand{\coursecopyrightnames}{
-Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
+\newcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightnames}{
-Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
-}
+\renewcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}}
 
 
 % Formats the top matter (title+headers), given the paper supertitle,
