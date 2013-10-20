@@ -2574,10 +2574,10 @@
     \mbox{}\hrulefill\mbox{}}
   \mbox{}                                           \newline%
   \bigskip
-  \begin{center}       {\Large\textbf{#3}}  \coursecopyright      \end{center}%
-%  \coursecopyright
+  \begin{center}       {\Large\textbf{#3}}  \end{center}
+  \coursecopyright
+%  \begin{center}       {\Large\textbf{#3}}  \coursecopyright      \end{center}
 }
-
 
 \newcommand{\stamp}{%
   {\scriptsize{revised \today, \currenttime}}}
@@ -2622,19 +2622,21 @@
 \long\def\symbolfootnote[#1]#2{\begingroup%
 \def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
 
-\iffalse
-
 \newcommand{\coursecopyright}{%
-    \symbolfootnote[0]{Copyright~\copyright~\coursecopyrightyear, 
-    \coursecopyrightnames. All rights reserved.}%
+    \symbolfootnote[0]{\resizebox{!}{0.15in}{\href{http://creativecommons.org/licenses/by-sa/3.0/}{\includegraphics{by-sa}}}~\coursecopyrightyear,
+  \coursecopyrightnames.  This work is available under the terms of the
+  \href{http://creativecommons.org/licenses/by-sa/3.0/}{Creative
+    Commons Attribution-ShareAlike 3.0 license}.}
     % \symbolfootnote[0]{Illustrations by Geoffrey Allen Hyche.}%
 }
-\fi
 
+
+\iffalse
 \newcommand{\coursecopyright}{\resizebox{!}{0.15in}{\href{http://creativecommons.org/licenses/by-sa/3.0/}{\includegraphics{by-sa}}}~\coursecopyrightyear,
   \coursecopyrightnames.  This work is available under the terms of the
   \href{http://creativecommons.org/licenses/by-sa/3.0/}{Creative
     Commons Attribution-ShareAlike 3.0 license}.}
+\fi
 
 
 \newcommand{\coursecopyrightyear}{2013%
