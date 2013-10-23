@@ -1299,6 +1299,7 @@
 \newcommand{\domain}[1]{\operatorname{domain}(#1)}
 \newcommand{\codomain}[1]{\operatorname{codomain}(#1)}
 \newcommand{\graph}[1]{\operatorname{graph}(#1)}
+\newcommand{\neighbors}[1]{\operatorname{N}(#1)}
 
 %% Graph notation
 
