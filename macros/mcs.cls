@@ -1458,8 +1458,8 @@
 
 \newcommand{\sspace}{\mathcal{S}}
 
-\newcommand{\tails}{\mathrm{T}}
-\newcommand{\heads}{\mathrm{H}}
+\newcommand{\tails}{\mathtt{T}}
+\newcommand{\heads}{\mathtt{H}}
 
 \newcommand{\prob}[1]{\Pr[#1]}
 %\newcommand{\prsub}[2]{\Pr_{#2}[#1]}
