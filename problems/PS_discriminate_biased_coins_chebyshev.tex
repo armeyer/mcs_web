@@ -2,8 +2,7 @@
 
 \begin{pcomments}
   \pcomment{PS_discriminate_biased_coins_chebyshev}
-  \pcomment{NEEDS REVISION}
-  \pcomment{same as  PS_discriminate_biased_coins without Chernoff part}
+  \pcomment{same as PS_discriminate_biased_coins without Chernoff part}
 \end{pcomments}
 
 \pkeywords{
@@ -33,8 +32,23 @@ will guess that the fair coin had been picked.
   $n$ so that with probability 0.95 your strategy makes the correct
   guess, no matter which coin was picked.
 
+\inhandout{\hint Let the random variable $F$ be the number of heads that would appear
+in the first $n$ flips of the fair coin, and let $B$ denote the number
+of heads that would appear in the first $n$ flips of the biased coin.
+We must flip the coin sufficiently many times to ensure that if the
+coin is biased, then with probability 0.95, the number of heads will
+be closer to $(3/4) n$ than to $(1/2) n$, that is,
+\begin{equation}\label{confreqB}
+\Prob{B > (5/8)n} \ge 0.95\, .
+\end{equation}
+Similarly, if the coin is fair, then with probability 0.95, the number of heads will
+\emph{not} be closer to $(3/4) n$ than to $(1/2) n$, that is,
+\begin{equation}\label{confreqF}
+\Prob{F < (5/8)n} \ge 0.95\, .
+\end{equation}}
+
 \begin{solution}
-Let the random variable $F$ be the number of heads that would appear
+\inbook{Let the random variable $F$ be the number of heads that would appear
 in the first $n$ flips of the fair coin, and let $B$ denote the number
 of heads that would appear in the first $n$ flips of the biased coin.
 We must flip the coin sufficiently many times to ensure that if the
@@ -48,66 +62,69 @@ Similarly, if the coin is fair, then with probability 0.95, the number of heads 
 \begin{equation}\label{confreqF}
 \Prob{F < (5/8)n} \ge 0.95\, .
 \end{equation}
+}
 
 The variable $B$ has an $(n,3/4)$-binomial distribution, so its
 expectation is $(3/4)n$ and its variance is $(3/4)(1-3/4)n=(3/16)n$.
-Using Chebyshev's inequality for the biased coin,
-
-\TBA{NEED TO FIX:}
-
+\begin{align}
+\eqref{confreqB}
+& \QIFF \prob{B \leq (5/8)n} \leq 0.05\notag\\
+& \QIFF \prob{(3/4)n - B \geq (3/4)n -(5/8)n} \leq 0.05\notag\\
+& \QIFF \prob{\expect{B} - B \geq n/8} \leq 0.05\, .\label{peB-B}
+\end{align}
+But
+\[
+[\expect{B} - B \geq n/8] \QIMPLIES [\abs{\expect{B} - B} \geq n/8]
+\]
+and therefore
+\[
+\prob{\expect{B} - B \geq n/8} \leq \prob{\abs{\expect{B} - B} \geq n/8}.
+\]
+So we need only find $n$ such that
+\[
+\prob{\abs{\expect{B} - B} \geq n/8} \leq 0.05
+\]
+Using Chebyshev's inequality, we know
 \begin{align*}
-\Prob{B > (5/8) n} 
-& \geq \Prob{ \abs{B - \expect{B}} > (n/8) } \\
-%\Prob{B > (5/8) n}
-& = \Prob{B - (3/4) n > -(n/8) } \\
-& = \Prob{B - \expect{B} > - (n/8) }\\
-&  \geq \Prob{ \abs{B - \expect{B}} > (n/8) } \\
-& \leq\frac{\variance{B}}{(n/8)^2}  & \text{(by Chebyshev)}\\
+\prob{ \abs{B - \expect{B}} > n/8 }
+& \leq \frac{\variance{B}}{(n/8)^2}  & \text{(by Chebyshev)}\\
 & = \frac{(3/16)n}{n^2/64}
-  = (12/n)\ .
+  = \frac{12}{n},
 \end{align*}
+so we only need $12/n < 0.05$, that is
+\[
+n \geq 240.
+\]
 
 Now, $F$ has an $(n,1/2)$-binomial distribution, so its expectation is
-$n/2$ and its variance is $n/4$.  Using Chebyshev's inequality for the
-fair coin,
-\begin{align*}
-\Prob{F < (5/8) n} 
-& = \Prob{F - (n/2) < (n/8) } \\
-& = \Prob{F - \expect{F} < (n/8) }\\
-& = 1-\Prob{F - \expect{F} \geq (n/8) }\\
-& \geq 1-\Prob{\abs{F - \expect{F}} \geq (n/8) }\\
-& \geq 1- \frac{\variance{F}}{(n/8)^2} & \text{(by Chebyshev)}\\
-& = 1- \frac{n/4}{n^2/64}\\
-& = 1 - (16/n)\, .
-\end{align*}
-
-So, for the required confidence level, demand that
-\begin{align*}
-(12/n) & \leq 0.05,\\
-1- (16/n) & \geq 0.95.\\
-\end{align*}
-These hold iff $16/n \leq 0.05$, which is true iff $n \geq
-320$.  So knowing the results of at least $320$ flips of the chosen
-coin will allow us to guess its identity with 95\% confidence.
+$n/2$ and its variance is $n/4$.  Reasoning in exactly the same way, 
+we only need $16/n < 0.05$, that is
+\[
+n \geq 320.
+\]
+So knowing the results of $320$ flips of the chosen coin will
+allow us to guess its identity with 95\% confidence.
 
 Because the variance of the biased coin is less than that of the fair
-coin, we can do slightly better if we increase our threshold from $(5/8)n$ to
-about $0.634$, which gives probability 0.95 with 279 coin flips.
+coin, we can do slightly better if we increase our threshold from
+$(5/8)n$ to about $0.634$, which gives 95\% confidence with 279 coin
+flips.
 \end{solution}
 
 \ppart Suppose you had access to a computer program that would
 generate, in the form of a plot or table, the full binomial-$(n,p)$
 probability density and cumulative distribution functions.  How would
 you find the minimum number of coin flips needed to infer the identity
-of the chosen coin with probability 0.95?  (You do not need to
-determine the numerical value of this minimum $n$, but we'd be
-interested to know if you did.)
+of the chosen coin with probability 0.95?  How would you expect the
+number $n$ determined this way to compare to the number obtained in
+part\eqref{cheb95discrim}?  (You do not need to determine the
+numerical value of this minimum $n$, but we'd be interested to know if
+you did.)
 
 \begin{solution}
 Again, we seek to determine the values of $n$ that satisfy
-both~\eqref{confreqF} and~\eqref{confreqB}.  Using the same threshold
-as before, $t=5/8$, it is obvious that~\eqref{confreqF} is equivalent
-to
+both~\eqref{confreqF} and~\eqref{confreqB}.  But~\eqref{confreqF} is
+equivalent to
 \begin{equation}\label{cdfF}
 \cdf_F((5/8)n) \geq 0.95
 \end{equation}
@@ -118,8 +135,37 @@ while~\eqref{confreqB} is equivalent to
 
 Knowing that $F$ is $(n,1/2)$-binomially distributed and $B$ is
 $(n,3/4)$-binomially distributed, we can use the computer program to
-  find the smallest $n$ that satisfies both~\eqref{cdfF}
-  and~\eqref{cdfB}.
+find the smallest $n$ that satisfies both~\eqref{cdfF}
+and~\eqref{cdfB}.  We would expect these numbers to be smaller than
+those on part~\eqref{cheb95discrim} because we are making use of
+knowledge of the entire CDF of $F$ and $B$ instead of merely their
+mean and variance.  Moreover, we know from the discussion in
+Section~\bref{binomial_distribution_section} that the tails of a
+binomial distribution decrease very rapidly, so we would expect the
+numbers obtained using the binomial CDF to be a lot smaller than the
+one obtained using Chebyshev's Bound in part~\eqref{cheb95discrim}.
+
+In fact, the number of flip needed according to the binomial CDF's are
+40 and 38 respectively, and we conclude that merely knowing the
+results of $40$ flips of the chosen coin will allow us to guess its
+identity with 95\% confidence.
+\end{solution}
+
+\ppart Now that we have determined the proper number $n$, we will
+assert that the picked coin was the biased one whenever the number of
+Heads flipped is greater than $(5/8)n$, and we will be right with
+probability 0.95.  What, if anything, does this imply about
+\[
+\prcond{\text{picked coin was biased}}{\text{\# Heads flipped }\geq
+  (5/8)n}?
+\]
+
+\begin{solution}
+The conditional probability depends on the probability of the biased
+coin being picking, and we don't know what the latter probability is,
+or even if the choice of coin is made probabilistically---see the
+discussion of diagnostic testing in
+Section~\bref{med_test-subsection}.
 \end{solution}
 
 \end{problemparts}
