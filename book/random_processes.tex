@@ -1004,17 +1004,38 @@ One can think of this equation as $x_7$ sending half its probability to
 $x_2$ and the other half to $x_4$. The page $x_2$ sends all of its
 probability to $x_4$.
 
-There's one aspect of the web graph described thus far that doesn't mesh
-with the user experience---some pages have no hyperlinks out.  Under the
-current model, the user cannot escape these pages.  In reality, however,
-the user doesn't fall off the end of the web into a void of nothingness.
-Instead, he restarts his web journey.
+There's one aspect of the web graph described thus far that doesn't
+mesh with the user experience---some pages have no hyperlinks out.
+Under the current model, the user cannot escape these pages.  In
+reality, however, the user doesn't fall off the end of the web into a
+void of nothingness.  Instead, he restarts his web journey.  Moreover,
+even if a user does not get stuck at a dead end, he will commonly find
+himself following some unproductive path and decide to restart.
 
-To model this aspect of the web, Sergey and Larry added a supervertex to the
-web graph and had every page with no hyperlinks point to it.  Moreover,
-the supervertex points to every other vertex in the graph, allowing you to
-restart the walk from a random place.  For example, below left is a graph
-and below right is the same graph after adding the supervertex $x_{N+1}$.
+To model this aspect of the web, Sergey and Larry added a
+\emph{supervertex} to the web graph and added an edge from every page
+to the supervertex.  Moreover, the supervertex points to every other
+vertex in the graph with equal probability, allowing the walk to
+restart from a random place.  The ensures that the graph is strongly
+connected.
+
+If a page had no hyperlinks, then its edge to the supervertex has to
+be assigned probability one.  For pages that had some hyperlinks, the
+additional edge pointing to the supervertex was assigned some
+specially given probability.  In the original versions of Page Rank,
+this probability was arbitrarily set to 0.15.  That is, each vertex
+with outdegree $n \ge 1$ got an additional edge pointing to the
+supervertex with assigned probability 0.15; its other $n$ outgoing
+edges were still kept equally likely, that is, each of the $n$ edges
+was assigned probability $0.15/n$.
+
+\begin{editingnotes}
+\TBA{Add figure}
+\end{editingnotes}
+
+\iffalse
+For example, below left is a graph and below right is the same
+graph after adding the supervertex $x_{N+1}$.
 
 \bigskip\centerline{
   \resizebox{!}{1.3in}{\includegraphics{randomWalkFigs/adjMatrix2}}
@@ -1024,6 +1045,7 @@ and below right is the same graph after adding the supervertex $x_{N+1}$.
 
 The addition of the supervertex also removes the possibility that the value
 $1/\outdegr{x}$ might involve a division by zero.
+\fi
 
 \subsection{Stationary Distribution \& Page Rank}
 
@@ -1070,16 +1092,18 @@ is needed because the remaining constraints~\eqref{LN12:PReqs} could be
 satisfied by letting $\PRnk(x)\eqdef 0$ for all $x$, which is useless.
 
 Sergey and Larry were smart fellows, and they set up their page rank
-algorithm so it would always have a meaningful solution.  Their addition
-of a supervertex ensures there is always a \emph{unique} stationary
-distribution.  Moreover, starting from \emph{any} vertex and taking a
-sufficiently long random walk on the graph, the probability of being at
-each page will get closer and closer to the stationary distribution.  Note
-that general digraphs without supervertices may have neither of these
-properties: there may not be a unique stationary distribution, and even
-when there is, there may be starting points from which the probabilities
-of positions during a random walk do not converge to the stationary
-distribution.  Examples of this appear in some of the problems below.
+algorithm so it would always have a meaningful solution.  Strongly
+connected graphs have \emph{unique} stationary distributions
+(Problem~\ref{PS_random_walk_strongly_connected}), and their addition
+of a supervertex ensures this.  Moreover, starting from \emph{any}
+vertex and taking a sufficiently long random walk on the graph, the
+probability of being at each page will get closer and closer to the
+stationary distribution.  Note that general digraphs without
+supervertices may have neither of these properties: there may not be a
+unique stationary distribution, and even when there is, there may be
+starting points from which the probabilities of positions during a
+random walk do not converge to the stationary distribution
+(Problem~\ref{CP_random_walk_stationary_distributions_F13}).
 
 \begin{editingnotes}
 Here's a note on solving the system of linear constraints, for the
@@ -1132,15 +1156,11 @@ web pages is a daunting task.  That's why in 2011
   invested \$168,000,000 in a solar power plant}---the electrical
 power drawn by Google's servers in 2011 would have supplied the needs
 of 200,000
-households.\footnote{\href{http://www.nytimes.com/2011/09/09/technology/google-details-and-defends-its-use-of-electricity.html}{\emph{Google
-      Details, and Defends, Its Use of Electricity}, New York Times,
-    September 8, 2011.}}  Indeed, Larry and Sergey named their system
-Google after the number $10^{100}$---which is called a ``googol''---to
-reflect the fact that the web graph is so enormous.
-
-\begin{editingnotes}
-
-\end{editingnotes}
+households.\footnote{\href{http://www.nytimes.com/2011/09/09/technology/google-details-and-defends-its-use-of-electricity.html}
+{\emph{Google Details, and Defends, Its Use of Electricity}, New York
+  Times, September 8, 2011.}}  Indeed, Larry and Sergey named their
+system Google after the number $10^{100}$---which is called a
+``googol''---to reflect the fact that the web graph is so enormous.
 
 Anyway, now you can see how this text ranked first out of 378,000
 matches.  Lots of other universities used our notes and presumably
@@ -1157,7 +1177,7 @@ graph.
 \pinput{TP_uncountable_stationary_distributions}
 
 \classproblems
-\pinput{CP_random_walk_stationary_distributions}
+\pinput{CP_random_walk_stationary_distributions_F13}
 \pinput{CP_stationary_distribution}
 \pinput{CP_uniform_stationary}
 \pinput{CP_simple_google_graph}
