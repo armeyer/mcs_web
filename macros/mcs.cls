@@ -1356,6 +1356,7 @@
 %\newcommand{\relpr}[1]{\operatorname{gcd1}\set{#1}}
 \newcommand{\relpr}[1]{\Zmod{#1}^*}
 \newcommand{\ordmod}[2]{\operatorname{ord}(#1,#2)}
+\newcommand{\expof}[2]{\nu_#1(#2)}
 
 \newcommand{\remainder}{\mopt{remainder}}
 \newcommand{\quotient}{\mopt{quotient}}
