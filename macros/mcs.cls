@@ -1057,6 +1057,13 @@
         \cbend
 }
 
+
+
+\newcounter{lowerroman}
+\newenvironment{romanlist}
+{\begin{list}{\roman{lowerroman}.}{\usecounter{lowerroman}}}
+{\end{list}}
+
 \newcommand{\floatingtextbox}[1]{%
   \begin{figure}[htbp]\redrawntrue
     \textbox{#1}
