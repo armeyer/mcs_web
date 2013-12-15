@@ -1,0 +1,185 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_towers_of_Sheboygan_fall13} \pcomment{conflicts with
+    CP_towers_of_Sheboygan}
+\end{pcomments}
+
+\pkeywords{
+  generating_function
+  Sheboygan
+  linear_recurrence
+  towers_of_Hanoi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  Less well-known than the \idx{Towers of Hanoi}---but no less
+  fascinating---are the Towers of Sheboygan.  As in Hanoi, the puzzle
+  in Sheboygan involves 3 posts and $n$ rings of different sizes.  The
+  rings are placed on post \#1 in order of size with the smallest ring
+  on top and largest on bottom.
+
+\iffalse as in Figure~\ref{sheboygan-discs}.
+
+\begin{figure}
+
+\graphic{Fig_10-1}
+
+\caption{The initial configuration of the rings in the Towers of Sheboygan
+  problem.}
+
+\label{sheboygan-discs}
+
+\end{figure}
+\fi
+
+The objective is to transfer all $n$ rings to post \#2 via a sequence
+of moves.  As in the Hanoi version, a move consists of removing the
+top ring from one post and dropping it onto another post with the
+restriction that a larger ring can never lie above a smaller ring.
+But unlike Hanoi, a local ordinance requires that \textbf{a ring can
+  only be moved from post \#1 to post \#2, from post \#2 to post \#3,
+  or from post \#3 to post \#1.}  Thus, for example, moving a ring
+directly from post \#1 to post \#3 is not permitted.
+
+\bparts
+
+\ppart The best procedure to solve the Towers of Sheboygan puzzle can
+be defined in terms of two \idx{mutually recursive} procedures,
+procedure $P_1(n)$ for moving a stack of $n$ rings 1 pole forward, and
+$P_2(n)$ for moving a stack of $n$ rings 2 poles forward.  This is
+trivial for $n=0$.  For $n>0$, define:
+
+$P_1(n)$: Apply $P_2(n-1)$ to move the top $n-1$ rings two poles forward
+to the third pole.  Then move the remaining big ring once to land on
+the second pole.  Then apply $P_2(n-1)$ again to move the stack of $n-1$
+rings two poles forward from the third pole to land on top of the big
+ring.
+
+$P_2(n)$: Apply $P_2(n-1)$ to move the top $n-1$ rings two poles forward
+to land on the third pole.  Then move the remaining big ring to the second
+pole.  Then apply $P_1(n-1)$ to move the stack of $n-1$ rings one pole
+forward to land on the first pole.  Now move the big ring 1 pole forward
+again to land on the third pole.  Finally, apply $P_2(n-1)$ again to move
+the stack of $n-1$ rings two poles forward to land on the big ring.
+
+Let $t_n$ be the number of moves needed to solve the Sheboygan puzzle
+using procedure $P_1(n)$.  Show that
+\begin{equation}\label{TnTT}
+t_n = 2t_{n-1} +  2t_{n-2} + 3,
+\end{equation}
+for $n > 1$.
+
+\hint Let $u_n$ be the number of moves used by procedure $P_2(n)$.  Express
+each of $t_n$ and $u_n$ as linear combinations of $t_{n-1}$ and
+$u_{n-1}$ and solve for $t_n$.
+
+\begin{solution}
+From the definitions of procedures $P_1$ and $P_2$ we have
+\begin{align}
+t_0 & = 0, \notag\\
+u_0 & = 0, \notag\\
+t_n & = u_{n-1} + 1 + u_{n-1} & \text{for } n > 0,\label{ST}\\
+u_n & = u_{n-1} + 1 + t_{n-1} + 1 + u_{n-1} & \text{for } n > 0.\label{TT}
+\end{align}
+
+Using~\eqref{ST} to get $u_{n-1} = (t_n - 1)/2$ and then expressing
+$u$'s in~\eqref{TT} in terms of $t$'s, we conclude that for $n > 0$,
+\[
+\frac{t_{n+1} -1}{2} =  (t_n -1) + t_{n-1} + 2
+\]
+so
+\[
+t_{n+1} = 2t_n + 2t_{n-1} + 3,
+\]
+which is the same as the given recurrence~\eqref{TnTT} with $n+1$
+replacing $n$.
+\end{solution}
+
+\ppart Let $T(x) \eqdef t_0 + t_1 x + t_2 x^2 + t_3 x^3 + \cdots$ be
+the generating function for the $t_n$'s.  Show that
+\[
+T(x) = \frac{2x^2+x}{(1-x)(1-2x-2x^2)}
+\]
+
+\begin{solution}
+\[
+\begin{array}{rcccrcrcr}
+T(x)      & = & t_0 & + &  t_1 x & + &  t_2 x^2 & + &  t_3 x^3  + \cdots,\\
+-2xT(x)   & = &     & - & 2t_0 x & - & 2t_1 x^2 & - & 2t_2 x^3  - \cdots,\\
+-2x^2T(x) & = &     &   &        & - & 2t_0 x^2 & - & 2t_1 x^3  - \cdots,\\
+-3/(1-x)  & = & - 3 & - &    3 x & - &    3 x^2 & - &    3 x^3  - \cdots,
+\end{array}
+\]
+so
+\[
+\begin{array}{rcccrcrcr}
+T(x)(1-2x-2x^2)-\frac{3}{1-x}
+       & = & t_0-3  & + & \paren{t_1-2t_0 -3} x
+                                 & + &    0 x^2 & + &    0 x^3  + \cdots\\
+       & = & -3   & + & (-2) x,
+\end{array}
+\]
+so
+\[
+T(x)(1-2x-2x^2)  = \frac{3}{1-x} -3 -2x  = \frac{2x^2 + x}{1-x},
+\]
+and
+\begin{equation}\label{Tfrac}
+T(x) = \frac{2x^2+x}{(1-x)(1-2x-2x^2)}.
+\end{equation}
+
+For completeness, we derive a closed form for $t_n$, which was
+\textbf{not asked for to answer this question}.
+
+From the quadratic formula we derive
+\[
+T(x) = \frac{2x^2+x}{(1-x)(1-\alpha x)(1-\beta x)}
+\]
+where $\alpha = 1+\sqrt{3}$, $\beta = 1-\sqrt{3}$.  This implies that
+$T(x)$ can be expressed using partial fractions as
+\begin{equation}\label{Tpfrac}
+T(x) = \frac{a}{1 - \alpha x} + \frac{b}{1 - \beta x} + \frac{c}{1 - x}
+\end{equation}
+To find $a,b,c$, multiply both sides of~\eqref{Tpfrac} by
+$(1-\alpha x)(1-\beta x)(1-x)$ to get
+\begin{equation}\label{Tpfrac2}
+2x^2+x = a(1-\beta x)(1-x) +
+         b(1-\alpha x)(1- x) +
+         c(1-\alpha x)(1-\beta x).
+\end{equation}
+Letting $x=1$ gives
+\[
+3 = c (1-\alpha)(1-\beta) = c (-3)
+\]
+so $c = -1$.  Similarly, letting $x=1/\alpha$ gives (after a little
+calculation) $a = 1/(3-\sqrt{3})$, and letting $x=1/\beta$ gives $b =
+1/(3+\sqrt{3})$.
+
+Finally, since
+\[
+[x^n]\paren{d/(1-\delta x)} = d \delta^n,
+\]
+we conclude that
+\begin{align*}
+t_n & = a \alpha^n + b \beta n + c 1^n\\
+    & = \frac{1}{3-\sqrt{3}}(1+\sqrt{3})^n+\frac{1}{3+\sqrt{3}}(1-\sqrt{3})^n - 1
+\end{align*}
+
+In particular, we conclude that $t_n = \Theta((1+ \sqrt{3})^n)$.
+Noting that the naive strategy for this problem described in the first
+part of Problem~\bref{CP_towers_of_Sheboygan} required $s_n =
+\Theta(4^n)$ moves, we conclude that $t_n = o(s_n)$, so our mutually
+recursive strategy is asymptotically more efficient that the naive
+one.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput
