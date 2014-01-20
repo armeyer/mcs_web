@@ -2616,7 +2616,6 @@
   \message{^^JProfessor name/link *INCORRECT*.^^J^^J}}
 
 
-
 \iffalse
 %%THE PROBLEM%%   \coursecopyright
 
@@ -2648,10 +2647,10 @@
 \fi
 
 
-\newcommand{\coursecopyrightyear}{2013%
+\newcommand{\coursecopyrightyear}{2014%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightyear}{2013}
+\renewcommand{\coursecopyrightyear}{2014}
 
 \newcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
