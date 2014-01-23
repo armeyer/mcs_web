@@ -3148,6 +3148,14 @@
   \paper[#1]{micro#2}{}{Preparation Check #2}
   \fi}
 
+\newcommand{\topics}[2][\stamp]{%
+  \theoremsunderproblems
+  \ifshowsolutions
+  \paper[#1]{topics#2}{}{Solutions to Preparation Check #2}
+  \else
+  \paper[#1]{topics#2}{}{Topics for #2}
+  \fi}
+
 \newcommand{\miniquiz}[2][\stamp]{%
     \theoremsunderproblems
     \ifshowstaffnotes
