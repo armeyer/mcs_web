@@ -2647,12 +2647,12 @@
 \fi
 
 
-\newcommand{\coursecopyrightyear}{2014%
+\newcommand{\coursecopyrightyear}{%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 
 \renewcommand{\coursecopyrightyear}{2014}
 
-\newcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}
+\newcommand{\coursecopyrightnames}{%
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
 \renewcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}}
@@ -3132,6 +3132,7 @@
   \paper[#1]{spch#2}{}{Spot Check #2}
   \fi}
 
+\iffalse
 \newcommand{\microquiz}[2][\stamp]{%
   \theoremsunderproblems
   \ifshowsolutions
@@ -3147,6 +3148,7 @@
   \else
   \paper[#1]{micro#2}{}{Preparation Check #2}
   \fi}
+\fi
 
 \newcommand{\topics}[2][\stamp]{%
   \theoremsunderproblems
