@@ -3153,9 +3153,9 @@
 \newcommand{\topics}[2][\stamp]{%
   \theoremsunderproblems
   \ifshowsolutions
-  \paper[#1]{topics#2}{}{Solutions to Preparation Check #2}
+  \paper[#1]{tpcs#2}{}{Topic Solutions for Week #2}
   \else
-  \paper[#1]{topics#2}{}{Topics for #2}
+  \paper[#1]{tpc#2}{}{Topics for Week #2}
   \fi}
 
 \newcommand{\miniquiz}[2][\stamp]{%
