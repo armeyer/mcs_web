@@ -185,7 +185,7 @@
     \ClassWarning{mcs}{Can't find MathTime fonts -- using CMR for math}%
 }
 
-\RequirePackage{xr}
+\RequirePackage{xr-hyper}
 
 \RequirePackage[
     bookmarksopen, 
