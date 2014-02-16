@@ -3166,7 +3166,8 @@
     \ifshowsolutions
     \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
     \else
-        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
+%        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
+    \paper[#1]{mqu#2}{}{Mini-Quiz #2}
     \fi
     \fi}
 
