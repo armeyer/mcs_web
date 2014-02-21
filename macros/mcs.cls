@@ -158,6 +158,9 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+\RequirePackage{enumerate}  %added by ARM 2/20/14
+
 \RequirePackage{datetime}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
