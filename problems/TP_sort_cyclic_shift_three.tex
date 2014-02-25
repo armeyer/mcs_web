@@ -18,49 +18,97 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-The following problem is a variation on the \emph{Fifteen Puzzle}
-problem encountered in class. It describes a (somewhat nonstandard)
-approach to sort an array of integers.
+The following problem is a twist on the {Fifteen-Puzzle}
+problem that we did in class. Let $A$ be a given array containing the numbers $1,\dots,n$ in some order.  A pair of
+integers in $A$ is called an \emph{out-of-order pair} when the first element of
+the pair both comes \emph{earlier} in the array, and \emph{is larger}, than
+the second element of the pair. For example, the array $A = (1,2,4,5,3)$ has two out-of-order pairs:
+$(4,3)$ and $(5,3)$. 
 
-Let $L$ be a sequence of the numbers $1,\dots,n$ in some order.  A
-subsequence of 3 integers is called an \emph{out-of-order triple} in $L$ when the first element of
-the triple pair both comes \emph{earlier} in the list and \emph{is larger} than
-the second element of the pair.  For example, the sequence $1,2,4,5,3,6$ has two
-out-of-order triples: $(4,5,3)$ and $(5,3,6)$.  The increasing list
-$1,2 \ldots n$ has no out-of-order triples. 
+We are allowed to swap elements in $A$ using a rule called
+\textsc{Rotate-Triple}. In each time step,
+\textsc{Rotate-Triple} chooses any sub-array of three {\em consecutive}
+elements, and rotates them such that the smallest of the three is
+placed in the first position. For example, if $A = (1,2,4,5,3)$ and
+\textsc{Rotate-Triple} chooses the sub-array
+$(4,5,3)$, then we obtain the (new) array $A' = (1, 2, 3, 4, 5)$. On the
+other hand, if \textsc{Rotate-Triple} chooses the sub-array $(1,2,4)$,
+then the smallest of the three is already in the first position and the new array $A'$ is the same as $A$.
 
-
-Let a state, $S$, be a pair $(L, (i,j))$ described above.  
-% We define the
-% \emph{parity} of $S$ to be 0 or 1 depending on whether the sum of the number of
-% out-of-order pairs in $L$ and the row-number of the empty square is
-% even or odd. that is
-% \[
-% \text{parity}(S) \eqdef\begin{cases}
-% 0 & (\text{if } p(L) + i \text{ is even},\\
-% 1 & \text{otherwise}.
-% \end{cases}
-% \]
+A state machine model of this problem can be described as follows: the
+state at any time instant is a list of numbers in the array in order.
+The start state is a list of the numbers in the initial (given) array $A$.
 
 \begin{problemparts}
 
-\problempart Verify that the parity of the start state and the target
-state are different.
+\problempart Write out the set of transitions that describe the
+actions of $\textsc{Rotate-Triple}$ at any time step.
 
-\begin{solution}
-The parity of the start state is 0 since $(0+4)$ is even.  The parity
-of the target is 1 because $((15 \cdot 14/ 2) + 4)$ is odd.
-
-\end{solution}
-
-\problempart Show that the parity of a state is preserved under
-transitions.  
+\hint You will need to consider six different cases.
 
 \begin{solution}
 
-\TBA{\textbf{FILL IN.}}
+Consider any consecutive triple in $A$ containing the elements $\{ a,b,c
+\}$ in some order. Without loss of generality, assume that $a < b < c$. The
+six different cases correspond to the different permutations of
+$\{a,b,c\}$. Explicitly, the set of transitions can be described as follows:
+\begin{align*}
+\textsc{Rotate-Triple}(a,b,c) &\movesto (a,b,c) \\
+\textsc{Rotate-Triple}(a,c,b) &\movesto (a,c,b) \\
+\textsc{Rotate-Triple}(b,c,a) &\movesto (a,b,c) \\
+\textsc{Rotate-Triple}(b,a,c) &\movesto (a,c,b) \\
+\textsc{Rotate-Triple}(c,b,a) &\movesto (a,c,b) \\
+\textsc{Rotate-Triple}(c,a,b) &\movesto (a,b,c).
+\end{align*}
 
 \end{solution}
+
+\examspace[1in]
+
+\problempart 
+Denote the \emph{number} of out-of-order pairs in $A$ by the function
+$f(A)$. For example, for the array $A = (1,2,4,5,3)$, the value of $f(A)$ is 2.
+
+Argue that for the state machine model described above, the derived variable $f$ is \emph{weakly decreasing}.
+
+\begin{solution}
+
+Consider some triple containing elements $a < b < c$. At each
+time-step, there are six possible transitions. Two of the transitions
+--- $(a,b,c) \movesto (a,b,c)$ and $(a,c,b) \movesto (a,c,b)$ ---
+leave the state unchanged and therefore $f$ remains the same. 
+
+The transition $(b,a,c) \movesto (a,c,b)$ removes one
+out-of-order pair $(b,a)$, but introduces a {\em new} out-of-order
+pair $(c,b)$.  therefore resulting in no change in $f$. 
+
+The transitions $(b,c,a) \movesto (a,b,c)$ and $(c,a,b) \movesto (a,b,c)$
+both \emph{decrease} the number of out-of-order pairs from 2 to 0. 
+
+Finally, the transition $(c,b,a) \movesto (a,c,b)$ decreases the
+number of out-of-order pairs from 3 to 1.
+
+In each of the cases, $f$ is either constant or reduces in value. In other words, $f$ is weakly decreasing.
+
+\end{solution}
+
+\examspace[1in]
+
+\problempart  Define the \emph{parity} of a list $L$ to be 0 or 1, depending on whether the number of
+out-of-order pairs in $L$ is even or odd. For example, the parity of the list $L = (1,2,4,5,3)$ is 0
+(since $f(L)=2$). 
+
+Show that the parity of a state is preserved under transitions.  
+
+\begin{solution}
+
+This part follows directly from the argument that $f$ is weakly
+decreasing. We have shown that in each transition, $f$ changes  by a
+value of 0 or 2. Therefore, the parity of $f$ remains unchanged.
+
+\end{solution}
+
+\examspace[1.5in]
 
 \problempart Argue that the procedure ensures that all
 of the numbers will eventually end up in their ``correct'' place, {except possibly
