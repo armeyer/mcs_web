@@ -2741,6 +2741,19 @@
     \examtable
   \clearpage}
 
+\newcommand{\formatMQexampages}[3][\stamp]{%
+  \thispagestyle{empty}
+  \markboth{\hspace{2em}Your name:\hrulefill{}\hfill#2}
+           {#2\hfill{}Your name:\hrulefill\hspace{2em}}
+  \pagestyle{myheadings}
+  \formattitle[#1]{}{#2}{#3}
+  \bigskip\bigskip\textbf{Your name:}\hrulefill
+  %\medskip%\par\bigskip
+  \exampreamble
+%  \vfill
+%  \clearpage
+}
+
 \newcommand{\exampreamble}{
   \vfill\noindent
   You have to renew $\backslash$\texttt{exampreamble} in the preamble
@@ -2996,6 +3009,10 @@
     \formatexampages[#1]{#3}{\releasedateofpaper{#2}}%
 }
 
+\newcommand{\examMQpaper}[3][\stamp]{%
+    \formatMQexampages[#1]{#3}{\releasedateofpaper{#2}}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Starting lecture notes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3164,13 +3181,12 @@
 \newcommand{\miniquiz}[2][\stamp]{%
     \theoremsunderproblems
     \ifshowstaffnotes
-    \paper[#1]{mqus#2}{}{Staff Solutions to Mini-Quiz #2}
+    \paper[#1]{mqus#2}{}{Staff Solutions to Miniquiz #2}
     \else
     \ifshowsolutions
-    \paper[#1]{mqus#2}{}{Solutions to Mini-Quiz #2}
+    \paper[#1]{mqus#2}{}{Solutions to Miniquiz #2}
     \else
-%        \exampaper[#1]{mqu#2}{Mini-Quiz #2}
-    \paper[#1]{mqu#2}{}{Mini-Quiz #2}
+        \examMQpaper[#1]{mqu#2}{Miniquiz #2}
     \fi
     \fi}
 
