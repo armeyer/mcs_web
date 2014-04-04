@@ -2732,7 +2732,7 @@
   \pagestyle{myheadings}
   \formattitle[#1]{}{#2}{#3}
   \bigskip\bigskip\textbf{Your name:}\hrulefill\par\bigskip
-    \exampreamble
+  \exampreamble
   \vfill
 %    \newpage  %%inserted for F07
   \hrule\smallskip  %%commented out for F07
