@@ -21,7 +21,7 @@ function internal_versions {
 		internal_actions $1 hidesolutions ${1}.pdf $previewfolder pub $5 $6 $7
 	fi
 	if [ $3 -eq 1 ]; then
-		internal_actions $1 showsolutions ${1}sol.pdf $previewfolder solutions $5 $6 $7
+		internal_actions $1 showsolutions ${1}sol.pdf $previewfolder ssol $5 $6 $7
 	fi
 	if [ $4 -eq 1 ]; then
 		internal_actions $1 staffsolutions ${1}-staff.pdf $previewfolder ssol $5 $6 $7
