@@ -1809,6 +1809,7 @@ after all.
 \pinput{CP_carnival_dice_fair}
 \pinput{CP_consecutive_coin_flips}
 \pinput{CP_tournament_probabilistic_proof}
+\pinput{CP_sqrt_infinite_expectation}
 
 \examproblems
 \pinput{MQ_expectHHH}
@@ -2214,7 +2215,127 @@ convergent, which justifies rearranging them as follows:
 \end{proof}
 
 \begin{editingnotes}
-\textbf{Insert here?:} faulty argument that fair St. Petersburg is fair
+\subsection{A Paradox}
+One of the simplest casino bets is on ``red'' or ``black'' at the roulette
+table.  In each play at roulette, a small ball is set spinning around a
+roulette wheel until it lands in a red, black, or green colored slot.
+The payoff for a bet on red or black matches the bet; for example, if you bet
+$\$10$ on red and the ball lands in a red slot, you get back your original
+$\$10$ bet plus another matching $\$10$.
+
+The casino gets its advantage from the green slots, which render the
+probability of red less than 1/2 and likewise the probability of black
+is less than 1/2.  But suppose we are
+
+In the US, a roulette wheel has 2 green slots among 18 black and 18 red
+slots, so the probability of red is $p::= 18/38 \approx 0.473$.  In
+Europe, where roulette wheels have only 1 green slot, the odds for red
+are a little better ---that is, $p = 18/37 \approx 0.486$---but still less
+than even.  To make the game fair, we might agree to ignore green, so that
+$p = 1/2$.
+
+There is a notorious gambling strategy which seems to guarantee a profit
+at roulette: bet $\$10$ on red, and keep doubling the bet until a red
+comes up.  This strategy implies that a player will leave the game as a
+net winner of $\$10$ as soon as the red first appears.  Of course the
+player may need an awfully large bankroll to avoid going bankrupt before
+red shows up---but we know that the mean time until a red occurs is $1/p$,
+so it seems possible that a moderate bankroll might actually work out.
+(In this setting, a ``win'' on red corresponds to a ``failure'' in a
+mean-time-to-failure situation.)
+
+Suppose we have the good fortune to gamble against a fair roulette wheel.
+In this case, our expected win on any spin is zero, since at the $i$th
+spin we are equally likely to win or lose $10 \cdot 2^{i-1}$ dollars.  So
+our expected win after any finite number of spins remains zero, and
+therefore our expected win using this gambling strategy is zero.  This is
+just what we should have anticipated in a fair game.
+
+But wait a minute.  As long as there is a fixed, positive probability of
+red appearing on each spin of the wheel---even if the wheel is
+unfair---it's \emph{certain} that red will eventually come up.  So with
+probability one, we leave the casino having won $\$10$, and our expected
+dollar win is obviously $\$10$, not zero!
+
+Something's wrong here.  What?
+
+\subsection{Solution to the Paradox}
+
+The expected amount won is indeed $\$10$.
+
+The argument claiming the expectation is zero is flawed by an invalid use
+of linearity of expectation for an infinite sum.  To pinpoint this flaw,
+let's first make the sample space explicit: a sample point is a sequence
+$B^nR$ representing a run of $n \geq 0$ black spins terminated by a red
+spin.  Since the wheel is fair, the probability of $B^nR$ is $2^{-(n+1)}$.
+
+Let $C_i$ be the number of dollars won on the $i$th spin.  So 
+$C_i = 10 \cdot 2^{i-1}$ 
+when red comes up for the first time on the $i$th spin, that is, at
+precisely one sample point, namely $B^{i-1}R$.  Similarly, 
+$C_i = -10  \cdot  2^{i-1}$ 
+when the first red spin comes up after the $i$th spin, namely, at the
+sample points $B^nR$ for $n \geq i$.  Finally, we will define $C_i$ by
+convention to be zero at sample points in which the session ends before the
+$i$th spin, that is, at points $B^nR$ for $n < i-1$.
+
+The dollar amount won in any gambling session is the value of the sum
+$\sum_{i = 1}^\infty C_i$.  At any sample point $B^nR$, the value of this
+sum is
+\[
+10 \cdot -(1 + 2 + 2^2 + \dots + 2^{n - 1}) + 10 \cdot 2^n  = 10,
+\]
+which trivially implies that its expectation is 10 as well.  That is, the
+amount we are \emph{certain} to leave the casino with, as well as
+expectation of the amount we win, is $\$10$.
+
+Moreover, our reasoning that $\expect{C_i} = 0$ is sound, so 
+\[
+\sum_{i = 1}^\infty \expect{C_i} = \sum_{i = 1}^\infty 0 = 0.
+\]
+
+The flaw in our argument is the claim that, since the expectation at each
+spin was zero, therefore the final expectation would also be zero.
+Formally, this corresponds to concluding that
+\[
+\expect{\mbox{amount won}}  =  \expect{\sum_{i = 1}^\infty C_i}
+  =  \sum_{i = 1}^\infty \expect{C_i} = 0.
+\]
+The flaw lies exactly in the second equality.  This is a case where
+linearity of expectation fails to hold---even though both $\sum_{i =
+1}^\infty \expect{C_i}$ and $\expect{\sum_{i = 1}^\infty C_i}$ are
+finite---because the convergence hypothesis needed for linearity is false.
+Namely, the sum
+\[
+\sum_{i = 1}^\infty \expect{\abs{C_i}}
+\]
+does not converge.  In fact, the expected value of $\abs{C_i}$ is $10$
+because $\abs{C_i} =  10 \cdot 2^{i}$  with probability $2^{-i}$ and
+otherwise is zero, so this sum rapidly approaches infinity.
+
+Probability theory truly leads to this apparently paradoxical conclusion: a
+game allowing an unbounded---even though always finite---number of ``fair''
+moves may not be fair in the end.  In fact, our reasoning leads to an even
+more startling conclusion: even against an \emph{unfair} wheel, as long as
+there is some fixed positive probability of red on each spin, we are
+certain to win $\$10$!
+
+This is clearly a case where naive intuition is unreliable: we don't
+expect to beat a fair game, and we do expect to lose when the odds are
+against us.  Nevertheless, the ``paradox'' that in fact we always win by
+bet-doubling cannot be denied.
+
+But remember that from the start we chose to assume that no one goes
+bankrupt while executing our bet-doubling strategy.  This assumption is
+crucial, because the expected loss while waiting for the strategy to
+produce its ten dollar profit is actually infinite!  So it's not
+surprising, after all, that we arrived at an apparently paradoxical
+conclusion from an unrealistic assumption.
+
+This example also serves a warning that in making use of infinite
+linearity of expectation, the convergence hypothesis which justifies it
+had better be checked.
+
 \end{editingnotes}
 
 \subsection{Expectations of Products}
