@@ -22,23 +22,23 @@
 
 \begin{problem}
 A gambler bets on the toss of a fair coin: if the toss is Heads, the
-gambler gets back the amount he bet along with an additional wins the
+gambler gets back the amount he bet along with an additional the
 amount equal to his bet.  Otherwise he loses the amount bet.  For
-example, suppose a gambler bets \$10.  Then if he wins, he gets back
+example, the gambler bets \$10 and wins, he gets back
 \$20 for a net profit of \$10.  If he loses, he gets back nothing for
 a net loss of \$10, that is a net profit of $-\$10$.
 
 Gambler's often try to develop betting strategies to beat the odds is
 such a game.  A well know strategy of this kind is \emph{bet
-  doubling}---also known as the St. Peterberg strategy---because of an
+  doubling}, namely,
+\iffalse
+---also known as the St. Peterberg strategy---because of an
 alleged attempt to bankrupt the famous St. Petersberg casino in 19th
-century Russia.  With this strategy, he makes some initial bet, say
-\$10.  If he wins, he stops playing and leaves with his \$10 profit.
-If he loses, he doubles his bet, and continues in this way until a
-Head finally gets tossed.  Thus, if the gambler loses \$10 on the
-first toss, he bets \$20 on the second toss.  Now if the second toss
+century Russia.\fi
+if he wins his first \$10 bet, he stops playing and leaves with his \$10 profit.
+If he loses the first toss, he bets \$20 on the second toss.  Now if the second toss
 is Heads, he gets his \$20 bet plus \$20 back and again walks away
-with a net win of $20-10 = \$10$.  If he loses the second toss, he
+with a net profit of $20-10 = \$10$.  If he loses the second toss, he
 bets \$40 on the third toss, and so on.
 
 You would think that any such strategy will be doomed: in a fair game
@@ -55,100 +55,91 @@ probability 1/2, is 10 with probability 1/4, and is $-10$ with
 probability 1/4.  Now letting $W$ be the amount won when the gambler
 stops betting, we have
 \[
-W = W_1 + W_2 +\cdots+W_n +\cdots.
+W = W_1 + W_2 +\cdots+ W_n +\cdots.
 \]
 Furthermore, since each toss is fair,
 \[
 \expect{W_n} = 0
 \]
-for all $n>0$.
-
+for all $n>0$.  Now by linearity of expectation, we have
+\begin{equation}\label{zeroexpectsum}
+\expect{W} = \expect{W_1} + \expect{W_2} +\cdots+\expect{W_n} +\cdots = 0 + 0 + \cdots + 0 + \cdots = 0,
+\end{equation}
+confirming that with fair tosses, the expected win is zero.
 \end{quote}
+
+But wait a minute!
 \bparts
 
-\ppart
-Verify that if there was a fixed
+\ppart Explain why the gambler is certain to win eventually if he
+keeps betting.
 
+\begin{solution}
+The probability that he will never win is less than the probability
+that he will have to bet more than $n$ times, which equals $(1/2)^n$.
+Since this quantity approaches zero as $n$ grows, the probability of
+never winning must be zero, and therefore the probability that he does
+eventually win is one.
+\end{solution}
 
-The first thing that's wrong is the argument claiming that the
-expectation is 0.  It would be 0 if the number of bets had a fixed
+\ppart Prove that when the gambler finally wins a bet, his net profit
+is \$10.
+
+\begin{solution}
+On the $n$th bet before winning, the gambler bets $10\cdot 2^{n-1}$.
+So prior to his $n$th bet, he has bet and lost
+\[
+\sum_{k=1}^{n-1} 10 \cdot 2^{k-1} = 10 \sum_{k=0}^{n-2} 2^k = 10 \cdot 2^{n-1} - 10,
+\]
+which is \$10 less than his $n$th bet.  So if he wins on the $n$th bet,
+his net profit is \$10.
+\end{solution}
+
+\ppart Since the gambler's profit is always \$10 when he wins, and he
+is certain to win, his expected profit is also \$10.  That is
+\[
+\expect{W} = 10,
+\]
+contradicting~\eqref{zeroexpectsum}.  So what's wrong with the
+reasoning that led to the false conclusion~\eqref{zeroexpectsum}?
+
+\begin{solution}
+Equation~\eqref{zeroexpectsum} assumes that linearity holds for the
+expected value of the sum of the \emph{infinite} sequence of random
+variables $W_1,W_2,\cdots$, but this is a case where infinite
+linearity fails.  The infinite linearity Theorem~(\bref{linexp})
+requires that the sum of expectations of \emph{\idx{absolute value}s}
+converges.  That is, infinite linearity would follow if the sum
+\begin{equation}\label{sumabsC}
+\sum_{n=1}^\infty \expect{\, \abs{W_n}\, }
+\end{equation}
+converged.  But
+\begin{align*}
+\expect{\, \abs{W_n}\, }
+  & = (\abs{10 \cdot 2^{n-1}}) \cdot \prob{\text{1st Head on the $n$th toss}}\\
+  &\quad  + (\abs{-10 \cdot 2^{n-1}}) \cdot \prob{\text{1st Head after the $n$th toss}}\\
+  &\quad  + 0 \cdot \prob{\text{1st Head before the $n$th toss}}\\
+  & = (10 \cdot 2^{n-1}) \cdot 2^{-n}
+       + (10 \cdot 2^{n-1}) \cdot 2^{-n}
+       + 0 = 10,
+\end{align*}
+so the sum~\eqref{sumabsC} equals $10+10+\cdots 10 + \cdots$ which
+diverges---rapidly.
+
+It would be 0 if the number of bets had a fixed
 bound.  If you could only make $n$ bets, then your expectation in the
 fair game would be the sum of your expected wins on each of the bets,
 namely, $n \cdot 0 = 0$.  But there is no such fixed bound, and that
 changes things.
 
-To explain this carefully, let $C_i$ be the number of dollars won on
-the $i$th spin.  So $C_i = 2^{i-1}$ when red comes up for the first time
-on the $i$th spin, and $C_i = -2^{i-1}$, when the first red spin comes up
-after the $i$th spin.  We can define $C_i$ to be 0 if the first red
-comes up before the $i$th spin.  This means
-\[
-\expect{C_i} = 0.
-\]
-Also, the total of your winnings is 
-\[
-C \eqdef \sum_{i \in \integers^+} C_i.
-\]
-The conclusion that $\expect{C} = 10$ follows from Total
-Expectation, conditioning on the number of spins till a red first
-occurs.  Namely, if the first red occurs on the $i$th spin, the amount
-won is
-\[
--10 \cdot (1 + 2 + 2^2 + \dots + 2^{i - 2}) + 10 \cdot 2^{i-1}   = 10.
-\]
-Then by Total Expectation,
-\begin{align*}
-\expect{C}
-  & = \sum_{i  \in \integers^+}
-      \expcond{C}{\text{first red on $i$th spin}}
-      \cdot \prob{\text{first red on $i$th spin}}\\
-  & = \sum_{i  \in \integers^+} 10 \cdot 2^{-i}
-    = 10 \cdot \sum_{i  \in \integers^+} 2^{-i} = 10 \cdot 1 = 10.
-\end{align*}
-
-So sure enough,
-\begin{equation}\label{expCsum10}
-\expect{C} \eqdef \Expect{\sum_{i \in \integers^+} C_i} = 10.
-\end{equation}
-
-But since $\expect{C_i} = 0$,
-\begin{equation}\label{sumCi0}
-\sum_{i \in \integers^+} \expect{C_i} = \sum_{i \in \integers^+} 0 = 0.
-\end{equation}
-It seems that~\eqref{sumCi0} and~\eqref{expCsum10} contradict each
-other, but they don't.  The apparent contradiction comes from applying
-infinite linearity to conclude
-\begin{falseclm*}
-\[
-\Expect{\sum_{i \in \integers^+} C_i} = \sum_{i \in \integers^+} \expect{C_i}.
-\]
-\end{falseclm*}
-But this is a case where the convergence conditions required for
-infinite linearity don't hold.  Even though the left hand sum
-\idx{converges} (to 10) and the right hand sum converges (to 0), the
-infinite linearity Theorem~\eqref{linexp} requires that the sum of
-expectations of \emph{\idx{absolute value}s} converges.  That is,
-infinite linearity would follow if the sum
-\begin{equation}\label{sumabsC}
-\sum_{i \in \integers^+} \expect{\, \abs{C_i}\, }
-\end{equation}
-converged.  But
-\begin{align*}
-\expect{\, \abs{C_i}\, }
-  & = (\abs{10 \cdot 2^{i-1}}) \cdot \prob{\text{1st red in $i$th spin}}\\
-  &\quad  + (\abs{-10 \cdot 2^{i-1}}) \cdot \prob{\text{1st red after $i$th spin}}\\
-  &\quad  + 0 \cdot \prob{\text{1st red before the $i$th spin}}\\
-  & = (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
-       + (10 \cdot 2^{i-1}) \cdot 2^{-(i)}
-       + 0 = 10,
-\end{align*}
-so the sum~\eqref{sumabsC} diverges ---rapidly.
 
 Probability theory truly leads to this absurd conclusion: a game
 allowing an unbounded number of fair bets may not be fair in the end.
 In fact, even against an \emph{unfair} wheel, as long as there is some
 fixed positive probability of red on each spin, you are certain to win
 $\$10$ playing the Martingale strategy!
+
+\end{solution}
 
 \end{problem}
 
