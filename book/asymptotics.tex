@@ -1279,9 +1279,10 @@ Asymptotic notation is a shorthand used to give a quick measure of the
 behavior of a function $f(n)$ as $n$ grows large.  For example, the
 asymptotic notation~\idx{$\sim$} of Definition~\ref{def:sim} is a
 binary relation indicating that two functions grow at the \emph{same}
-rate.  There is also a binary relation indicating that one function
-grows at a significantly \emph{slower} rate than another.
-
+rate.  There is also a binary relation ``little oh'' indicating that
+one function grows at a significantly \emph{slower} rate than another
+and ``Big Oh'' indicating that one function grows not much more
+rapidly than another.
 
 \subsection{Little O}
 \index{o@o (little o)|see{asymptotic notation}}
@@ -1339,79 +1340,92 @@ Proofs can be found in most calculus texts.
 
 Big O is the most frequently used asymptotic notation.  It is used to
 give an upper bound on the growth of a function, such as the running
-time of an algorithm.
-\begin{definition}
-Given nonnegative functions $f, g : \reals \to \reals$, we
+time of an algorithm.  There is a standard definition of Big Oh given
+below in~\ref{def:O}, but we'll begin with an alternative definition
+that makes apparent several basic properties of Big Oh.
+
+\begin{definition}\label{def:Olimsup}
+Given functions $f, g : \reals \to \reals$ with $g$ nonnegative, we
 say that
 \[
 f = O(g)
 \]
 iff
 \[
-\limsup_{x \rightarrow \infty} f(x)/g(x) < \infty.
+\limsup_{x \rightarrow \infty} \abs{f(x)}/g(x) < \infty.
 \]
 \end{definition}
-This definition\footnote{We can't simply use the limit as
-$x \rightarrow \infty$ in the definition of $O()$, because if
-$f(x)/g(x)$ oscillates between, say, 3 and 5 as $x$ grows, then $f =
-O(g)$ because $f
-\leq 5g$, but $\lim_{x \rightarrow \infty} f(x)/g(x)$ does not exist.
-So instead of limit, we use the technical notion of $\limsup$.  In
-this oscillating case, $\limsup_{x \rightarrow \infty} f(x)/g(x) = 5$.
-
-The precise definition of $\limsup$ is
+Here we're using the technical notion of \term{limit
+  superior}\footnote{The precise definition of $\limsup$ is
 \[
 \limsup_{x \rightarrow \infty} h(x) \eqdef \lim_{x \rightarrow \infty}
 \text{lub}_{y \geq x} h(y),
 \]
-where ``lub'' abbreviates ``least upper bound.''} makes it clear that
+where ``lub'' abbreviates ``least upper bound.''} instead of just
+limit.  But because limits and lim sup's are the same when limits
+exist, this formulation makes it easy to check basic properties of Big
+Oh.  We'll take the following Lemma for granted.
+\begin{lemma}\label{limimpsup}
+If a function $f: \reals \to \reals$ has a finite or infinite limit as
+its argument approaches infinity, then its limit and limit superior
+are the same.
+\iffalse
+\[
+\lim_{x \rightarrow \infty} f(x) < \infty\ \QIMP\ \limsup_{x
+  \rightarrow \infty} f(x) = \lim_{x \rightarrow \infty} f(x).
+\fi
+\end{lemma}
+  
+Now Definition~\ref{def:Olimsup} immediately implies:
 \begin{lemma}\label{osimO}
 If $f = o(g)$ or $f \sim g$, then $f = O(g)$.
 \end{lemma}
+
 \begin{proof}
-$\lim f/g=0$ or $\lim f/g=1$ implies $\lim f/g<\infty$.
+$\lim f/g=0$ or $\lim f/g=1$ implies $\lim f/g<\infty$, so by
+  Lemma~\ref{limimpsup}, $\limsup f/g<\infty$.
 \end{proof}
+Note that the converse of Lemma~\ref{osimO} is not true.  For example,
+$2x = O(x)$, but $2x \not\sim x$ and $2x \neq o(x)$.
 
-It is easy to see that the converse of Lemma~\ref{osimO} is not true.  For
-example, $2x = O(x)$, but $2x \not\sim x$ and $2x \neq o(x)$.
-
-The usual formulation of big O spells out the definition of $\limsup$
-without mentioning it.  Namely, here is an equivalent definition:
-\begin{definition}\label{def:O}
-Given functions $f, g : \reals \to \reals$, we say that
-\[
-f = O(g)
-\]
-iff there exists a constant $c \geq 0$ and an $x_0$ such that for all $x \geq
-x_0$, $\abs{f(x)} \leq c g(x)$.
-\end{definition}
-
-This definition is rather complicated, but the idea is simple: $f(x) =
-O(g(x))$ means $f(x)$ is less than or equal to $g(x)$, except that we're
-willing to ignore a constant factor, namely, $c$, and to allow exceptions for
-small $x$, namely, $x < x_0$.
-
-We observe,
+We also have:
 \begin{lemma}
 If $f = o(g)$, then it is \emph{not} true that $g = O(f)$.
 \end{lemma}
+
 \begin{proof}
 \[
 \lim_{x \rightarrow \infty} \frac{g(x)}{f(x)} =
  \frac{1}{\lim_{x \rightarrow \infty} f(x)/g(x)} =
  \frac{1}{0} = \infty,
 \]
-so $g \neq O(f)$.
-
-\iffalse We will prove the equivalent contrapositive, i.e., that if
-$g=O(f)$ then it is not true that $f=o(g)$.  If $g=O(f)$ then there
-exists a constant $c \geq 0$ and an $x_0$ such that for all $x \geq
-x_0$, $\abs{g(x)} \leq c f(x)$.  Then for all $x \geq x_0$, we have
-that $f(x)/\abs{g(x)} = f(x)/g(x) >c>0$ (the first equality uses the
-nonnegativity of $g$).  Thus $\lim_{x \rightarrow \infty} f(x)/g(x)
->0$ and so it is not true that $f=o(g)$.  \fi
-
+so by Lemma~\ref{limimpsup}, %$\limsup_{x \rightarrow \infty} \frac{g(x)}{f(x)} = \infty$ 
+$g \neq O(f)$.
 \end{proof}
+
+We need lim sup's in Definition~\ref{def:Olimsup} to cover cases when
+limits don't exist.  For example, if $f(x)/g(x)$ oscillates between 3
+and 5 as $x$ grows, then $\lim_{x \rightarrow \infty} f(x)/g(x)$ does
+not exist, but $f = O(g)$ because $\limsup_{x \rightarrow \infty}
+f(x)/g(x) = 5$.
+
+An equivalent, more usual formulation of big O does not mention $\limsup$'s:
+\begin{definition}\label{def:O}
+Given functions $f, g : \reals \to \reals$ with $g$
+nonnegative, we say
+\[
+f = O(g)
+\]
+iff there exists a constant $c \geq 0$ and an $x_0$ such that for all
+$x \geq x_0$, $\abs{f(x)} \leq c g(x)$.
+\end{definition}
+
+This definition is rather complicated, but the idea is simple: $f(x) =
+O(g(x))$ means $f(x)$ is less than or equal to $g(x)$, except that
+we're willing to ignore a constant factor, namely, $c$, and to allow
+exceptions for small $x$, namely, $x < x_0$.  So in the case that
+$f(x)/g(x)$ oscillates between 3 and 5, $f=O(g)$ according to
+  Definition~\ref{def:O} because $f \leq 5g$.
 
 \begin{proposition}
 $100x^2 = O(x^2)$.
@@ -1446,14 +1460,20 @@ in the worst case.  This fact can be expressed concisely by saying
 that the running time is $O(n^3)$.  So this asymptotic notation allows
 the speed of the algorithm to be discussed without reference to
 constant factors or lower-order terms that might be machine specific.
-It turns out that there is another \idx{matrix
-  multiplication} procedure that uses $O(n^{2.55})$ operations.  This
-procedure will therefore be much more efficient on large enough
-matrices.  Unfortunately, the $O(n^{2.55})$-operation multiplication
-procedure is almost never used in practice because it happens to be
-less efficient than the usual $O(n^3)$ procedure on matrices of
-practical size.\footnote{It is even conceivable that there is an
-  $O(n^2)$ matrix multiplication procedure, but none is known.}
+It turns out that there is another \idx{matrix multiplication}
+procedure that uses $O(n^{2.55})$ operations.  The fact that this
+procedure is asymptotically faster indicates that it involves new
+ideas that go beyond a simply more efficient implementation of the
+$O(n^3)$ method.
+
+Of course the asymptotically faster procedure will also definitely be
+much more efficient on large enough matrices, but being asymptotically
+faster does not mean that it is a better choice.  The
+$O(n^{2.55})$-operation multiplication procedure is almost never used
+in practice because it only becomes more efficient than the usual
+$O(n^3)$ procedure on matrices of impractical size.\footnote{It is
+  even conceivable that there is an $O(n^2)$ matrix multiplication
+  procedure, but none is known.}
 
 \subsection{\index{$\Theta()$}Theta}
 
@@ -1482,9 +1502,9 @@ Theorem~\ref{thm:9S2}, we know that
 \]
 \fi
 
-The Theta notation allows us to highlight growth rates and allow
-suppression of distracting factors and low-order terms.  For example,
-if the running time of an algorithm is
+The Theta notation allows us to highlight growth rates and suppress
+distracting factors and low-order terms.  For example, if the running
+time of an algorithm is
 \[
 T(n) = 10n^3 - 20n^2 + 1,
 \]
@@ -1493,8 +1513,8 @@ then we can more simply write
 T(n) = \Theta(n^3).
 \]
 In this case, we would say that \emph{$T$ is of order $n^3$} or that
-\emph{$T(n)$ grows cubically}, which is probably what we really want
-to know.  Another such example is
+\emph{$T(n)$ grows cubically}, which is often the main thing we really
+want to know.  Another such example is
 \[
 {{\pi^23^{x-7} + \frac{(2.7x^{113} + x^9- 86)^4}{\sqrt{x}} - 1.08^{3x}}} =
 \Theta(3^x).
@@ -1647,14 +1667,6 @@ We never even defined what $O(g)$ means by itself; it should only be used
 in the context ``$f = O(g)$'' to describe a relation between functions $f$
 and $g$.
 
-\subsubsection{Lower Bound Blunder}
-
-Sometimes people incorrectly use big O in the context of a lower
-bound.  For example, they might say, ``The running time, $T(n)$, is at
-least $O(n^2)$,'' when they probably mean ``$n^2 = O(T(n))$.''
-\footnote{This would more usually be expressed as
-``$T(n) = \Omega(n^2)$.''}
-
 \subsubsection{Equality Blunder}
 
 The notation $f = O(g)$ is too firmly entrenched to avoid, but the use of
@@ -1685,17 +1697,21 @@ for some~$f(n)$ where $f(n) = O(1/n)$, and
 where $g(n) = o(1)$.  These last transgressions are OK as long as you
 (and your reader) know what you mean.
 
-\subsection{\index{$\Omega$@big omega}Omega}\label{omega_subsec}
+\subsection{\index{$\Omega$@big omega}Omega (Optional)}\label{omega_subsec}
 
-Suppose you want to make a statement of the form ``the running time of
-the algorithm is at least\dots.''  Can you say it is ``at
-least~$O(n^2)$''?  No!  This statement is meaningless since big O can
-only be used for \emph{upper} bounds.  For lower bounds, we use a
-different symbol, called ``big%
-\index{asymptotic notation!big Omega|textbf} 
-Omega.''
+Sometimes people incorrectly use Big Oh in the context of a lower
+bound.  For example, they might say, ``The running time, $T(n)$, is at
+least $O(n^2)$.''  This is another blunder!  Big Oh can only be used
+for \emph{upper} bounds.  The proper way to express the lower bound
+would be
+\[
+n^2 = O(T(n)).
+\]
+The lower bound can also be described with another special notation
+``big Omega\index{asymptotic notation!big Omega|textbf}.''
 \begin{definition}\label{def:Omega}
-Given functions $f, g : \reals \to \reals$, define
+Given functions $f, g : \reals \to \reals$ with $f$~nonnegative,
+define
 \[
     f = \Omega(g)
 \]
@@ -1713,10 +1729,9 @@ is~$T(n)$, and you want to say it is at least quadratic, say
     T(n) = \Omega(n^2).
 \]
 
-Likewise, there is also a symbol called little%
-\index{asymptotic notation!little omega|textbf} 
-omega, analogous to little o, to denote that one function grows 
-strictly faster than another function.
+There is a similar ``little \index{asymptotic notation!little
+  omega|textbf} omega'' notation for lower bounds corresponding to
+little o:
 
 \begin{definition}\label{def:omega}
 For functions $f, g: \reals \to \reals$ with $f$~nonnegative, define
@@ -1733,86 +1748,6 @@ For example, $x^{1.5} = \omega(x)$ and $\sqrt{x} = \omega(\ln^2(x))$.
 
 The little omega symbol is not as widely used as the other asymptotic
 symbols we defined.
-
-
-\begin{editingnotes}
-
-\begin{definition}\label{def:Omega}
-Given functions $f, g : \reals \to \reals$, we say that
-\[
-    f = \Omega(g)
-\]
-iff there exists a constant $c > 0$ and an $x_0$ such that for all $x
-\ge x_0$, we have $f(x) \ge c \abs{g(x)}$.
-\end{definition}
-
-In other words, $f(x) = \Omega(g(x))$ means that $f(x)$~is greater
-than or equal to~$g(x)$, except that we are willing to ignore a
-constant factor and to allow exceptions for small~$x$.
-
-If all this sounds a lot like big-Oh, only in reverse, that's because
-big-Omega is the opposite of big-Oh.  More precisely,
-
-\begin{theorem}\label{thm:9S2}
-$f(x) = O(g(x))$ if and only if $g(x) = \Omega(f(x))$.
-\end{theorem}
-
-\begin{proof}
-\begin{align*}
-\lefteqn{f(x) = O(g(x))} \quad &\\
-   & \qiff \exists c > 0, x_0. \; \forall x \ge x_0. \;
-            |f(x)| \le c g(x) 
-        && \text{(Definition~\ref{def:O})} \\
-    & \qiff \exists c > 0, x_0. \; \forall x \ge x_0. \;
-            g(x) \ge \frac{1}{c} |f(x)| \\
-    & \qiff \exists c' > 0, x_0. \; \forall x \ge x_0. \;
-            g(x) \ge c' |f(x)|
-        && \text{(set $c' = 1/c$)} \\
-    & \qiff g(x) = \Omega(f(x))
-        && \text{(Definition~\ref{def:Omega})}
-\qedhere
-\end{align*}
-\end{proof}
-
-For example, $x^2 = \Omega(x)$, \ $2^x = \Omega(x^2)$, and $x/100 =
-\Omega(100 x + \sqrt{x})$.
-
-So if the running time of your algorithm on inputs of size~$n$
-is~$T(n)$, and you want to say it is at least quadratic, say
-\[
-    T(n) = \Omega(n^2).
-\]
-
-\subsubsection{\index{$\omega$@little omega}Little Omega}
-                                   
-There is also a symbol called little-omega, analogous to little-oh, to
-denote that one function grows strictly faster than another function.
-
-\begin{definition}\label{def:omega}
-For functions $f, g: \reals \to \reals$ with $f$~nonnegative, we say
-that
-\[
-    f(x) = \omega(g(x))
-\]
-iff
-\[
-    \lim_{x \to \infty} \frac{g(x)}{f(x)} = 0.
-\]
-In other words,
-\[
-    f(x) = \omega(g(x))
-\]
-iff
-\[
-    g(x) = o(f(x)).
-\]
-\end{definition}
-
-For example, $x^{1.5} = \omega(x)$ and $\sqrt{x} = \omega(\ln^2(x))$.
-
-The little-omega symbol is not as widely used as the other asymptotic
-symbols we have been discussing.
-\end{editingnotes}
 
 \begin{problems}
 \practiceproblems
