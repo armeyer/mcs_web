@@ -1,9 +1,10 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{MQ_binary_gcd}
+  \pcomment{FP_binary_gcd}
   \pcomment{lighter version of PS_binary_gcd}
-  \pcomment{ARM 3/17/13}
+  \pcomment{By ARM 4/24/11 based on Shoup}
+  \pcomment{revised ARM 3/17/14; 5/10/14}
 \end{pcomments}
 
 \pkeywords{
@@ -19,24 +20,20 @@
 
 \begin{problem}
   The following \idx{Binary GCD} state machine computes the GCD of
-  integers $a>b>0$:
+  integers $a,b>0$:
 
-\begin{align*}
-\text{states} & \eqdef \naturals^3\\
-\text{start state} & \eqdef (a, b, 1)\\
-\text{transitions} & \eqdef \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\\
-     &\qquad \text{the first possible state according to the rules:}\\
-     &\qquad
-       \begin{cases}
-       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\\
-       (x/2, y, e)    & \text{(if $2 \divides x$)}\\
-       (x, y/2, e)    & \text{(if $2 \divides y$)}\\
-       (y, x, e)      & \text{(if $y>x$)}\\
-       (1, 0, ex)     & \text{(if $x = y$)}\\
-       (1, 0, e)      & \text{(if $y=1$)}\\
-       (x-y,y,e)      & \text{(otherwise)}.
-       \end{cases}
-\end{align*}
+\begin{align}
+\text{states}  \eqdef     &\naturals^3\notag\\
+\text{start state} \eqdef & (a, b, 1)\notag\\
+\text{transitions} \eqdef & \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\notag\\
+     &  (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\label{x2y22e}\\
+     &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\label{x2ye}\\
+     &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\label{xy2e}\\
+     &  (y, x, e)      & \text{(else if $y>x$)}\label{xyey>x}\\
+     &  (1, 0, ex)     & \text{(else if $x = y$)}\label{xyex=y}\\
+     &  (1, 0, e)      & \text{(else if $y=1$)}\label{10ey1}\\
+     &  (x-y,y,e)      & \text{(otherwise)}.\label{x-yye}
+\end{align}
 
 The predicate
 \begin{equation}\label{gcdabexy}
@@ -46,13 +43,12 @@ is claimed to be a preserved invariant of this state machine.
 
 \bparts 
 
-\ppart Verify that equation~\ref{gcdabexy} is a preserved invariant
-for the first; $(x/2,y/2,2e)$, second: $(x/2,y,e)$ and last:
-$(x-y,y,e)$ of the above transition rules.  You may assume without
-proof elementary properties of GCD, but be sure to state your
-assumptions explicitly.
+\ppart Verify that equation~\eqref{gcdabexy} is a preserved invariant
+under transition rules~\eqref{x2y22e},~\eqref{x2ye},
+and~\eqref{x-yye}.  You may assume without proof elementary properties
+of GCD, but be sure to state your assumptions explicitly.
 
-\examspace[3.5in]
+\examspace[2.5in]
 
 \begin{solution}
 To verify preserved invariance, we assume the invariant holds for
@@ -61,7 +57,7 @@ $\gcd(a,b) = e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
 
-\inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  
+\inductioncase{Case}~\eqref{x2y22e}: ($2 \divides x$ and $2 \divides y$).  
 In this case, $(x',y',e') = (x/2, y/2, 2e)$.
 
 We use the easily verified fact
@@ -80,7 +76,7 @@ Now
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: ($2 \divides x$ and 2 does not divide $y$).
+\inductioncase{Case}~\eqref{x2ye}: ($2 \divides x$ and 2 does not divide $y$).
 In this case, $(x',y',e') = (x/2,y, e)$.
 
 We use the easily verified fact
@@ -100,7 +96,7 @@ Now
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: (otherwise clause).
+\inductioncase{Case}~\eqref{x-yye}: (otherwise clause).
 In this case $(x',y',e') = (x-y,y,e)$.
 
 We use the easily verified fact that
@@ -128,20 +124,20 @@ transition is possible) are of the form $(1,0,e')$.
 The start state is not stopped since $\min(a,b)= b > 0$.  Likewise,
 the final transition rule to state $(x-y,y,e)$ is also only possible
 if $\min(x,y) = y > 0$, so another transition will be possible after
-applying this rule.  Moves by the third through sixth rules do not
-lead to stopped states, since the minimum of the new $x$ and $y$
-values remains positive.
+applying this rule.  Moves by the first~\eqref{x2y22e} through
+fourth~\eqref{xyey>x} rules do not lead to stopped states, since the
+minimum of the new $x$ and $y$ values remains positive.
 
-So only the first two rules can lead to stopped states, which in both
-cases are of the form $(1,0,e')$.
+So only the rules~\eqref{xyex=y} and~\eqref{10ey1} can lead to stopped
+states, which in both cases are of the form $(1,0,e')$.
 \end{solution}
 \fi
 
-\ppart Use equation~\ref{gcdabexy} and the Invariant Principle to
-conclude that if this machine reaches a stopped state $(1,0,e')$, then
-$e' = \gcd(a,b)$.
+\ppart Use the invariant~\eqref{gcdabexy} and the Invariant Principle
+to conclude that if this machine reaches a stopped state $(1,0,e')$,
+then $e' = \gcd(a,b)$.
 
-%\examspace[1in]
+\examspace[2in]
 \begin{solution}
 We first observe that the preserved invariant holds trivially in the
 start state $(a,b,1)$ because $\gcd(a,b) = 1\cdot\gcd(a,b)$.  The
@@ -155,8 +151,11 @@ If a stopped state $(1,0,e')$ is reachable, then the invariant implies
 as required.
 \end{solution}
 
-\ppart Prove that the first rule $(x, y, e) \to (x/2, y/2, 2e)$ is
-never executed again once any of the other rules is executed.
+\ppart Prove that rule~\eqref{x2y22e}
+\[
+(x, y, e) \to (x/2, y/2, 2e)
+\]
+is never executed after any of the other rules is executed.
 
 \hint An invariant about the parity of $x$ and $y$.
 
@@ -166,25 +165,25 @@ We claim that another preserved invariant is
 \QNOT(2 \divides x\ \QAND\ 2 \divides y).
 \end{equation}
 
-To verify this, suppose a state $(x,y,e)$ satisfies~\ref{xybev}.  Then
+To verify this, suppose a state $(x,y,e)$ satisfies~\eqref{xybev}.  Then
 first rule will not be executed.
 
-Suppose the second rule gets executed leading to state $(x/2, y ,e)$.
-Then $x$ must be even and $y$ must be odd, and so the resulting
-satisfies~\ref{xybev} since $y$ is odd.
+Suppose the second rule gets executed resulting in state $(x/2, y ,e)$.
+Then $x$ must be even and $y$ must be odd, and so this state
+satisfies~\eqref{xybev} since $y$ is odd.
 
-Suppose the last rule gets executed leading to state $(x-y,y,e)$.
-Then if $y$ is odd this state satisfies~\ref{xybev}, and if $y$ is
-even, then $x$ must be odd, so this state satisfies~\ref{xybev}
+Suppose the last rule gets executed resulting in state $(x-y,y,e)$.
+Then if $y$ is odd this state satisfies~\eqref{xybev}, and if $y$ is
+even, then $x$ must be odd, so this state satisfies~\eqref{xybev}
 because $x-y$ must be odd.
 
-The verification that~\ref{xybev} is preserved by the other rules
+The verification that~\eqref{xybev} is preserved by the other rules
 follows by similar routine reasoning.
 
 Now if the first rule is not executed in some state $(x,y,e)$,
-then~\ref{xybev} must hold, and since~\ref{xybev} is preserved, we can
-conclude that the first rule will never be executed in any subsequent
-state.
+then~\eqref{xybev} must hold, and since~\eqref{xybev} is preserved, we
+can conclude that the first rule will never be executed in any
+subsequent state.
 \end{solution}
 
 \eparts

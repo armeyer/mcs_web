@@ -2,9 +2,9 @@
 
 \begin{pcomments}
   \pcomment{PS_binary_gcd}
+  \pcomment{lighter version in FP_binary_gcd}
   \pcomment{By ARM 4/24/11 based on Shoup}
-  \pcomment{soln edited ARM 3/16/13}
-  \pcomment{lighter version in MQ_binary_gcd}
+  \pcomment{revised ARM 3/17/14; 5/10/14}
 \end{pcomments}
 
 \pkeywords{
@@ -19,28 +19,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  The \term{Binary GCD} state machine computes the GCD of integers $a
-  > b > 0$ using only division by 2 and subtraction, which makes it
-  run very efficiently on hardware that uses binary representation of
+  The \term{Binary GCD} state machine computes the GCD of integers $a,
+  b > 0$ using only division by 2 and subtraction, which makes it run
+  very efficiently on hardware that uses binary representation of
   numbers.  In practice, it runs more quickly than the more famous
   Euclidean algorithm described in Section~\bref{sec: Euclid}.
 
-\begin{align*}
-\text{states} & \eqdef \naturals^3\\
-\text{start state} & \eqdef (a, b, 1)\\
-\text{transitions} & \eqdef \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\\
-     &\qquad \text{the first possible state according to the rules:}\\
-     &\qquad
-       \begin{cases}
-       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\\
-       (x/2, y, e)    & \text{(if $2 \divides x$)}\\
-       (x, y/2, e)    & \text{(if $2 \divides y$)}\\
-       (y, x, e)      & \text{(if $y>x$)}\\
-       (1, 0, ex)     & \text{(if $x = y$)}\\
-       (1, 0, e)      & \text{(if $y=1$)}\\
-       (x-y,y,e)      & \text{(otherwise)}.
-       \end{cases}
-\end{align*}
+\begin{align}
+\text{states}  \eqdef     &\naturals^3\notag\\
+\text{start state} \eqdef & (a, b, 1)\notag\\
+\text{transitions} \eqdef & \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\notag\\
+     &  (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\label{psx2y22e}\\
+     &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\label{psx2ye}\\
+     &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\label{psxy2e}\\
+     &  (y, x, e)      & \text{(else if $y>x$)}\label{psxyey>x}\\
+     &  (1, 0, ex)     & \text{(else if $x = y$)}\label{psxyex=y}\\
+     &  (1, 0, e)      & \text{(else if $y=1$)}\label{ps10ey1}\\
+     &  (x-y,y,e)      & \text{(otherwise)}.\label{psx-yye}
+\end{align}
 
 \bparts
 
@@ -51,20 +47,20 @@ possible, then $e = \gcd(a,b)$.
 
 \begin{solution}
 We claim that a preserved invariant of this machine is
-\[
+\begin{equation}\label{psgcdabexy}
 \gcd(a,b) = e\gcd(x,y).
-\]
+\end{equation}
 To show this, we assume the invariant holds for state $(x,y,e)$ and
 show that if $(x,y,e) \movesto (x',y',e')$, then $\gcd(a,b) =
 e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
 
-\inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  
+\inductioncase{Case}~\eqref{psx2y22e}: ($2 \divides x$ and $2 \divides y$).  
 In this case, $(x',y',e') = (x/2, y/2, 2e)$.
 
 We use the easily verified fact
-\begin{equation}\label{auavauv}
+\begin{equation}\label{psauavauv}
 \gcd(au,av) = a\gcd(u,v).
 \end{equation}
 
@@ -74,16 +70,16 @@ Now
   & =  e\gcd(x,y)
         & \text{(by the invariant for $(x,y,e)$)}\\
   & = e 2\gcd(x/2,y/2)
-        & \text{(by~\eqref{auavauv})}\\
+        & \text{(by~\eqref{psauavauv})}\\
   & = e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: ($2 \divides x$ and 2 does not divide $y$).
+\inductioncase{Case}~\eqref{psx2ye}: ($2 \divides x$ and 2 does not divide $y$).
 In this case, $(x',y',e') = (x/2,y, e)$.
 
 We use the easily verified fact
-\begin{equation}\label{auvvuv}
+\begin{equation}\label{psauvvuv}
 \gcd(au,v) = \gcd(u,v)
 \end{equation}
 for $a$ relatively prime to $v$.
@@ -94,12 +90,12 @@ Now
   & = e\gcd(x,y)
       & \text{(invariant for $(x,y,e)$)}\\
   & = e\gcd(x/2,y)
-      & \text{(by~\eqref{auvvuv})}\\
+      & \text{(by~\eqref{psauvvuv})}\\
   & = e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+\inductioncase{Case}~\eqref{psxyex=y}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
 Now we have
 \begin{align*}
 \gcd(a,b) 
@@ -112,11 +108,11 @@ Now we have
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}: (otherwise clause).
+\inductioncase{Case}~\eqref{psx-yye}: (otherwise clause).
 In this case $(x',y',e') = (x-y,y,e)$.
 
 We use the easily verified fact that
-\begin{equation}\label{gcdu-v}
+\begin{equation}\label{psgcdu-v}
 \gcd(u-v,v) = \gcd(u,v).
 \end{equation}
 
@@ -124,7 +120,7 @@ Now,
 \begin{align*}
 \gcd(a,b)
   & = e\gcd(x,y) & \text{(invariant for $(x,y,e)$)}\\
-  & = e\gcd(x-y,y) & \text{(by~\eqref{gcdu-v})}\\
+  & = e\gcd(x-y,y) & \text{(by~\eqref{psgcdu-v})}\\
   & = e'\gcd(x',y'),
 \end{align*}
 proving that the invariant holds for $(x',y',e')$.
@@ -136,20 +132,58 @@ preserved invariant holds trivially in the start state $(a,b,1)$
 because $\gcd(a,b) = 1\cdot\gcd(a,b)$.  We conclude that the preserved
 invariant holds in every reachable state.
 
-We claim that only the first two rules can lead to stopped states,
-which in both cases are of the form $(1,0,e')$.  If such a state is
-reachable, then the invariant implies
+We claim that only the rules~\eqref{psxyex=y} and~\eqref{ps10ey1} can
+lead to stopped states, which in both cases are of the form
+$(1,0,e')$.  If such a state is reachable, then the invariant implies
 \[
 \gcd(a,b) = e'\gcd(1,0) = e',
 \]
 as required.
 
-To see why these are the only stopped states, note that the final
-transition rule to state $(x-y,y,e)$ is only possible if $x>y>0$, so
-another transition will be possible after applying this rule.  A
-transition is also possible from the start state.  Moves by the first
-through fourth rules do not lead to stopped states, since the minimum
-of the new $x$ and $y$ values remains positive.
+To see why these are the only stopped states, note that transition
+rule~\eqref{psx-yye} to state $(x-y,y,e)$ is only possible if $x>y>0$,
+so another transition will be possible after applying this rule.  A
+transition is also possible from the start state.  Moves by the
+first~\eqref{psx2y22e} through fourth~\eqref{psxyey>x} rules do not
+lead to stopped states, since the minimum of the new $x$ and $y$
+values remains positive.
+\end{solution}
+
+\ppart Prove that rule~\eqref{psx2y22e}
+\[
+(x, y, e) \to (x/2, y/2, 2e)
+\]
+is never executed after any of the other rules is executed.
+
+\begin{staffnotes}
+\hint An invariant about the parity of $x$ and $y$.
+\end{staffnotes}
+
+\begin{solution}
+We claim that another preserved invariant is
+\begin{equation}\label{psxybev}
+\QNOT(2 \divides x\ \QAND\ 2 \divides y).
+\end{equation}
+
+To verify this, suppose a state $(x,y,e)$ satisfies~\eqref{psxybev}.  Then
+rule~\eqref{psx2y22e} will not be executed.
+
+Suppose the second rule gets executed leading to state $(x/2, y ,e)$.
+Then $x$ must be even and $y$ must be odd, and so this state
+satisfies~\eqref{psxybev} since $y$ is odd.
+
+Suppose the last rule gets executed leading to state $(x-y,y,e)$.
+Then if $y$ is odd this state satisfies~\eqref{psxybev}, and if $y$ is
+even, then $x$ must be odd, so this state satisfies~\eqref{psxybev}
+because $x-y$ must be odd.
+
+The verification that~\eqref{psxybev} is preserved by the other rules
+follows by similar routine reasoning.
+
+Now if rule~\eqref{psx2y22e} is not executed in some state $(x,y,e)$,
+then~\eqref{psxybev} must hold, and since~\eqref{psxybev} is
+preserved, we can conclude that rule~\eqref{psx2y22e} will never be
+executed in any subsequent state.
 \end{solution}
 
 \ppart Prove that the machine reaches a final state in at most
@@ -166,46 +200,6 @@ one from the other yielding an even value of $x$, and the third
 transition will halve $x$.  So after at most $3(\log a + \log b)$
 transitions, one of $x$ and $y$ must have been reduced to 1, after
 which there can be at most one more transition.
-\end{solution}
-
-\ppart Prove that the first rule $(x, y, e) \to (x/2, y/2, 2e)$ is
-never executed again once any of the other rules is executed.
-
-\hint An invariant about the parity of $x$ and $y$.
-
-
-\ppart Prove that the first rule $(x, y, e) \to (x/2, y/2, 2e)$ is
-never executed again once any of the other rules is executed.
-
-\begin{staffnotes}
-\hint An invariant about the parity of $x$ and $y$.
-\end{staffnotes}
-
-\begin{solution}
-We claim that another preserved invariant is
-\begin{equation}\label{xybev}
-\QNOT(2 \divides x\ \QAND\ 2 \divides y).
-\end{equation}
-
-To verify this, suppose a state $(x,y,e)$ satisfies~\ref{xybev}.  Then
-first rule will not be executed.
-
-Suppose the second rule gets executed leading to state $(x/2, y ,e)$.
-Then $x$ must be even and $y$ must be odd, and so the resulting
-satisfies~\ref{xybev} since $y$ is odd.
-
-Suppose the last rule gets executed leading to state $(x-y,y,e)$.
-Then if $y$ is odd this state satisfies~\ref{xybev}, and if $y$ is
-even, then $x$ must be odd, so this state satisfies~\ref{xybev}
-because $x-y$ must be odd.
-
-The verification that~\ref{xybev} is preserved by the other rules
-follows by similar routine reasoning.
-
-Now if the first rule is not executed in some state $(x,y,e)$,
-then~\ref{xybev} must hold, and since~\ref{xybev} is preserved, we can
-conclude that the first rule will never be executed in any subsequent
-state.
 \end{solution}
 
 
