@@ -32,17 +32,17 @@
      &\qquad \text{the first possible state according to the rules:}\\
      &\qquad
        \begin{cases}
-       (1, 0, ex)     & \text{(if $x = y$)}\\
-       (1, 0, e)      & \text{(if $y=1$)},\\
-       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)},\\
+       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\\
        (x/2, y, e)    & \text{(if $2 \divides x$)}\\
        (x, y/2, e)    & \text{(if $2 \divides y$)}\\
        (y, x, e)      & \text{(if $y>x$)}\\
+       (1, 0, ex)     & \text{(if $x = y$)}\\
+       (1, 0, e)      & \text{(if $y=1$)}\\
        (x-y,y,e)      & \text{(otherwise)}.
        \end{cases}
 \end{align*}
 
-\bparts 
+\bparts
 
 \ppart Use the Invariant Principle \iffalse
 (Section~\bref{subsec:invariant})\fi to prove that if this machine
@@ -59,19 +59,6 @@ show that if $(x,y,e) \movesto (x',y',e')$, then $\gcd(a,b) =
 e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
-
-\inductioncase{Case}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
-Now we have
-\begin{align*}
-\gcd(a,b) 
-    & = e\gcd(x,x) 
-          & \text{(by the invariant for $(x,x,e)$)}\\
-    & = ex\\
-    & = ex\gcd(1,0)
-          & \text{(since $\gcd(1,0) = 1$)}\\
-    & =  e'\gcd(x',y'),
-\end{align*}
-which shows that the invariant holds for $(x',y',e')$.
 
 \inductioncase{Case}: ($2 \divides x$ and $2 \divides y$).  
 In this case, $(x',y',e') = (x/2, y/2, 2e)$.
@@ -112,6 +99,19 @@ Now
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
+\inductioncase{Case}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+Now we have
+\begin{align*}
+\gcd(a,b) 
+    & = e\gcd(x,x) 
+          & \text{(by the invariant for $(x,x,e)$)}\\
+    & = ex\\
+    & = ex\gcd(1,0)
+          & \text{(since $\gcd(1,0) = 1$)}\\
+    & =  e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
 \inductioncase{Case}: (otherwise clause).
 In this case $(x',y',e') = (x-y,y,e)$.
 
@@ -144,11 +144,11 @@ reachable, then the invariant implies
 \]
 as required.
 
-To see why these are the only stopped states, note that The final
+To see why these are the only stopped states, note that the final
 transition rule to state $(x-y,y,e)$ is only possible if $x>y>0$, so
 another transition will be possible after applying this rule.  A
-transition is also possible from the start state.  Moves by the third
-through sixth rules do not lead to stopped states, since the minimum
+transition is also possible from the start state.  Moves by the first
+through fourth rules do not lead to stopped states, since the minimum
 of the new $x$ and $y$ values remains positive.
 \end{solution}
 
@@ -167,6 +167,47 @@ transition will halve $x$.  So after at most $3(\log a + \log b)$
 transitions, one of $x$ and $y$ must have been reduced to 1, after
 which there can be at most one more transition.
 \end{solution}
+
+\ppart Prove that the first rule $(x, y, e) \to (x/2, y/2, 2e)$ is
+never executed again once any of the other rules is executed.
+
+\hint An invariant about the parity of $x$ and $y$.
+
+
+\ppart Prove that the first rule $(x, y, e) \to (x/2, y/2, 2e)$ is
+never executed again once any of the other rules is executed.
+
+\begin{staffnotes}
+\hint An invariant about the parity of $x$ and $y$.
+\end{staffnotes}
+
+\begin{solution}
+We claim that another preserved invariant is
+\begin{equation}\label{xybev}
+\QNOT(2 \divides x\ \QAND\ 2 \divides y).
+\end{equation}
+
+To verify this, suppose a state $(x,y,e)$ satisfies~\ref{xybev}.  Then
+first rule will not be executed.
+
+Suppose the second rule gets executed leading to state $(x/2, y ,e)$.
+Then $x$ must be even and $y$ must be odd, and so the resulting
+satisfies~\ref{xybev} since $y$ is odd.
+
+Suppose the last rule gets executed leading to state $(x-y,y,e)$.
+Then if $y$ is odd this state satisfies~\ref{xybev}, and if $y$ is
+even, then $x$ must be odd, so this state satisfies~\ref{xybev}
+because $x-y$ must be odd.
+
+The verification that~\ref{xybev} is preserved by the other rules
+follows by similar routine reasoning.
+
+Now if the first rule is not executed in some state $(x,y,e)$,
+then~\ref{xybev} must hold, and since~\ref{xybev} is preserved, we can
+conclude that the first rule will never be executed in any subsequent
+state.
+\end{solution}
+
 
 \eparts
 
