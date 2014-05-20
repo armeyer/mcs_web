@@ -177,6 +177,7 @@
 \RequirePackage{textcomp}
 \RequirePackage{verbatim}
 \RequirePackage{index}
+\RequirePackage{cases}
 %\RequirePackage{makeidx}
 
 \RequirePackage{times}
