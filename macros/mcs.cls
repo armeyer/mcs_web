@@ -1349,6 +1349,11 @@
 \newcommand{\finbin}{\strings{\set{0,1}}}
 \newcommand{\binw}{\infstrings{\set{0,1}}}
 \newcommand{\twdone}{\mathbb{F}}
+\newcommand{\Zintv}[2]{\Zintvcc{#1}{#2}}
+\newcommand{\Zintvcc}[2]{[#1..#2]}
+\newcommand{\Zintvoc}[2]{(#1..#2]}
+\newcommand{\Zintvco}[2]{[#1..#2)}
+\newcommand{\Zintvoo}[2]{(#1..#2)}
 
 %% Math -- Arithmetic
 
