@@ -1,0 +1,85 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_nim_strategy}
+  \pcomment{F14.ps2}
+  \pcomment{edited ARM 9/23/14}
+\end{pcomments}
+
+\pkeywords{
+  Nim
+  xor
+  binary
+  strategy
+  state_machines
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Nim is a game played between two players with three piles of stones.
+Players alternate removing stones.  A player picks a pile and removes
+any positive number of stones.  The goal is to be the last player to
+take a stone.
+
+The winning strategy in Nim requires computing a Nim sum.  A
+Nim sum of numbers $r$, $s$ and $t$ is computed by taking the binary
+representation of the three numbers and combining these into a single
+binary string by applying $\QXOR$ bit-wise.
+
+For example, the Nim sum of $2, 7$ and $9$ is
+\[\begin{array}{ccccr}
+   &   & 1 & 0 & \text{(binary rep of 2)}\\
+   & 1 & 1 & 1 & \text{(binary rep of 7)}\\
+ 1 & 0 & 0 & 1 & \text{(binary rep of 9)}\\
+\hline
+ 1 & 1 & 0 & 0 & \text{(Nim sum)}
+\end{array}\]
+
+\bparts
+
+\ppart Prove that if the Nim sum of the numbers of stones in each pile
+is zero, then any move will result in Nim sum that is not zero.
+
+\begin{solution}
+When a player removes stones from a pile, the binary representation must change
+in at least one digit, otherwise the number of stones would be the same.  At that
+digit, the xor can no longer be zero since the bit has flipped.  The Nim sum is
+then non-zero.
+\end{solution}
+
+\ppart Prove that if the Nim sum is not zero that it is always
+possible to make the Nim sum zero with one move.
+
+\begin{solution}
+ Let the Nim sum be $t$.  Let $d$ be the position of the
+  most significant bit of the Nim sum.  One of the piles must have
+  this bit non-zero; pick one of them.  It has $s$ stones remaining.
+  Remove stones so that it has $s \oplus t$ stones remaining, where
+  $\oplus$ is the bit-wise $\QXOR$ of the binary representations of
+  $s$ and $t$.  Such move is always possible because bit $d$ will be
+  zero in $s \oplus t$, so it will be less than $s$.  This results in
+  a Nim sum of zero because the Nim sum of the other two piles stays
+  the same, $s \oplus t$ and the third pile has $s \oplus t$ stones
+  left, so the Nim sum is zero.
+\end{solution}
+
+\ppart Conclude that if the game begins with a non-zero Nim sum, then
+the first player has a winning strategy.
+
+\begin{solution}
+The first player can remove stones such that the Nim sum is zero.
+Either this results in no stones left or the second player must make a
+move that results in a non-zero Nim sum.  There must be at least one
+stone left because the Nim sum is non-zero, so the second player has
+not won.  This is the same situation as the start except there are
+less stones.  The result follows from induction on the number of
+stones.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
