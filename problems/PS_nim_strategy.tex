@@ -1,0 +1,95 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_nim_strategy}
+  \pcomment{F14.ps2}
+  \pcomment{edited ARM 9/24/14}
+\end{pcomments}
+
+\pkeywords{
+  Nim
+  xor
+  binary
+  strategy
+  state_machines
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Nim is a game played between two players with three piles of stones.
+Players alternate removing stones.  A player picks a pile and removes
+any positive number of stones.  The goal is to be the last player to
+take a stone.
+
+The winning strategy in Nim requires computing a Nim sum.  A
+Nim sum of numbers $r$, $s$ and $t$ is computed by taking the binary
+representation of the three numbers and combining these into a single
+binary string by applying $\QXOR$ bit-wise.
+
+For example, the Nim sum of $2, 7$ and $9$ is
+\[\begin{array}{ccccr}
+   &   & 1 & 0 & \text{(binary rep of 2)}\\
+   & 1 & 1 & 1 & \text{(binary rep of 7)}\\
+ 1 & 0 & 0 & 1 & \text{(binary rep of 9)}\\
+\hline
+ 1 & 1 & 0 & 0 & \text{(Nim sum)}
+\end{array}\]
+
+\bparts
+
+\ppart Prove that if the Nim sum of the numbers of stones in each pile
+is zero, then any move will result in Nim sum that is not zero.
+
+\begin{solution}
+When a player removes stones from a pile, some digit of the binary
+representation of the number of stones in the pile must change.  This
+implies that the corresponding digit of the Nim sum---that is, the Nim
+sum digit at the position of the changed digit---must itself change,
+and since it was zero, it must become one.  That makes the Nim sum
+nonzero.
+\end{solution}
+
+\ppart Prove that if the Nim sum is not zero that it is always
+possible to make the Nim sum zero with one move.
+
+\begin{solution}
+ Let the Nim sum be $s$.  Say the high order bit of $s$ occurs at the
+ $n$th bit.  Since the $n$th bit of the Nim sum is one, the number of
+ stones in least one of the piles must also have a one in its $n$th
+ bit.  Say one such pile has $p$ stones.
+
+ Let $p'$ be integer whose binary representation is the Nim sum of $s$
+ and $p$.  Now the binary representation of $p'$ has the same same
+ digits as $p$ in positions above the $n$th, and has $n$th bit zero.
+ Since $p$ has $n$th bit one, it follows that $p$ is larger than $p'$.
+ 
+ So it's possible to remove stones to reduce the pile of $p$ stones to
+ $p'$ stones.  The Nim sum of the piles now becomes the old Nim sum
+ with $p$ replaced by the Nim sum of $p$ and $s$.  So the new Nim sum
+ is the Nim sum of the old Nim sum and $s$, namley, the Nim sum of $s$
+ and $s$, which is zero.
+\end{solution}
+
+\ppart Conclude that if the game begins with a nonzero Nim sum, then
+the first player has a winning strategy.
+
+\hint Describe a preserved invariant that the first player can
+maintain.
+
+\begin{solution}
+The first player can remove stones such that the Nim sum is zero.
+With this strategy by the first player, the Nim sum being nonzero on
+the first player's turn and zero on the second player's turn becomes a
+preserved invariant of the game.  Since the total number of stones
+decreases at every move, the game must eventually end with no stones,
+and this can only happen on the second player's turn.  That is, the
+second player must lose.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput
