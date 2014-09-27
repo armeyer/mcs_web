@@ -20,58 +20,85 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-Nim is a game played between two players with three piles of stones.
-Players alternate removing stones.  A player picks a pile and removes
-any positive number of stones.  The goal is to be the last player to
-take a stone.
+Nim is a game played between two players starting with three equal
+size piles of stones.  A player's move consists of removing one or
+more stones from a single pile.  Players alternate moves, and the
+loser is the one who is left with no stones to remove.
 
-The winning strategy in Nim requires computing a Nim sum.  A
-Nim sum of numbers $r$, $s$ and $t$ is computed by taking the binary
-representation of the three numbers and combining these into a single
-binary string by applying $\QXOR$ bit-wise.
+It turns out there is a winning strategy for the first player that is
+easy to carry out but is not obvious.  So as long as you're the first
+player, it's likely going to be a long time before your opponent
+figures out why you keep winning.
 
-For example, the Nim sum of $2, 7$ and $9$ is
-\[\begin{array}{ccccr}
-   &   & 1 & 0 & \text{(binary rep of 2)}\\
-   & 1 & 1 & 1 & \text{(binary rep of 7)}\\
+To explain the winning strategy, we need to think of a number in two
+ways: as a nonnegative integer and as the bit string equal to the
+binary representation of the number---possibly with leading zeroes.
+
+For example, the $\QXOR$ of \emph{numbers} $r,s,...$ is defined in
+terms of their binary representations: combine the corresponding bits
+of the binary representations of $r, s,...$ using $\QXOR$, and then
+interpret the resulting bit-string as a number.  For example,
+\[
+2 \QXOR 7 \QXOR 9 = 12
+\]
+because, taking $\QXOR$'s down the columns, we have
+\[\begin{array}{ccccl}
+ 0 & 0 & 1 & 0 & \text{(binary rep of 2)}\\
+ 0 & 1 & 1 & 1 & \text{(binary rep of 7)}\\
  1 & 0 & 0 & 1 & \text{(binary rep of 9)}\\
 \hline
- 1 & 1 & 0 & 0 & \text{(Nim sum)}
+ 1 & 1 & 0 & 0 & \text{(binary rep of 12)}
 \end{array}\]
+
+The $\QXOR$ of the numbers of stones in the piles is called their
+\emph{Nim sum}.
 
 \bparts
 
-\ppart Prove that if the Nim sum of the numbers of stones in each pile
-is zero, then any move will result in Nim sum that is not zero.
+\ppart\label{zS-nzS} Prove that if the Nim sum of the piles is zero,
+then any one move will leave a nonzero Nim sum.
 
 \begin{solution}
-When a player removes stones from a pile, some digit of the binary
-representation of the number of stones in the pile must change.  This
-implies that the corresponding digit of the Nim sum---that is, the Nim
-sum digit at the position of the changed digit---must itself change,
-and since it was zero, it must become one.  That makes the Nim sum
-nonzero.
+When a player removes stones from a pile, the binary representation of
+the number of stones in the pile changes.  Since the other piles stay
+the same, the bits in the Nim sum change at the positions where bits
+changed in the binary representation.  Since all the bits in the Nim
+sum were initially equal to zero, the changed bits must have become
+ones.  That makes the Nim sum nonzero.
 \end{solution}
 
-\ppart Prove that if the Nim sum is not zero that it is always
-possible to make the Nim sum zero with one move.
+\ppart\label{if-r>sxt} Prove that if the piles are of size $r, s$ and
+$t$, and $r > (s \QXOR t)$, then there is a move that makes the Nim sum
+equal to zero.
 
 \begin{solution}
- Let the Nim sum be $s$.  Say the high order bit of $s$ occurs at the
- $n$th bit.  Since the $n$th bit of the Nim sum is one, the number of
- stones in least one of the piles must also have a one in its $n$th
- bit.  Say one such pile has $p$ stones.
+  Note that $q \QXOR q = 0$ for any number $q$.  So just remove
+  stones from the pile of size $r$ until it is of size $s \QXOR t$.
+  That results in a Nim sum equal to
+  \[
+   (s \QXOR t) \QXOR s \QXOR t = (s \QXOR t) \QXOR (s \QXOR t) = 0.
+  \]
+\end{solution}
 
- Let $p'$ be integer whose binary representation is the Nim sum of $s$
- and $p$.  Now the binary representation of $p'$ has the same same
- digits as $p$ in positions above the $n$th, and has $n$th bit zero.
- Since $p$ has $n$th bit one, it follows that $p$ is larger than $p'$.
- 
- So it's possible to remove stones to reduce the pile of $p$ stones to
- $p'$ stones.  The Nim sum of the piles now becomes the old Nim sum
- with $p$ replaced by the Nim sum of $p$ and $s$.  So the new Nim sum
- is the Nim sum of the old Nim sum and $s$, namley, the Nim sum of $s$
- and $s$, which is zero.
+\ppart\label{nz-r>sxt} Prove that if the Nim sum is not zero, then one
+of the piles is bigger than the $\QXOR$ of the sizes of the other two
+piles.
+
+\begin{solution}
+ Let the piles be of sizes $r,s$ and $t$.  Suppose the high order
+ digit of the Nim sum, that is, the leftmost 1 in the binary
+ representation of $r \QXOR s \QXOR t$, occurs at the $n$th position.
+ Since this bit of the Nim sum equals 1, at least one of $r$, $s$ and
+ $t$ must also have a 1 for its $n$th bit.
+
+ It's safe to assume that $r$ is a number whose $n$th bit is 1.  This
+ implies that the $n$th bit of $s \QXOR t$ must be 0.  Also, since
+ each bit of $r \QXOR s \QXOR t$ above the $n$th is zero, each bit of
+ $r$ above the $n$th must equal the corresponding bit of $s \QXOR t$.
+
+ So $r$ and $s \QXOR t$ are the same above the $n$th bit, and $r$ is
+ bigger at the $n$th bit.  This implies that $r > s \QXOR t$, as
+ required.
 \end{solution}
 
 \ppart Conclude that if the game begins with a nonzero Nim sum, then
@@ -81,13 +108,24 @@ the first player has a winning strategy.
 maintain.
 
 \begin{solution}
-The first player can remove stones such that the Nim sum is zero.
-With this strategy by the first player, the Nim sum being nonzero on
-the first player's turn and zero on the second player's turn becomes a
-preserved invariant of the game.  Since the total number of stones
-decreases at every move, the game must eventually end with no stones,
-and this can only happen on the second player's turn.  That is, the
-second player must lose.
+By part~\eqref{zS-nzS}, whenever it is the second player's turn to
+move, and the Nim sum is zero, the second player will leave a Nim sum
+that is not zero.
+
+By parts~\eqref{if-r>sxt} and~\eqref{nz-r>sxt}, whenever it is the
+first player's turn to move, and the Nim sum is not zero, the first
+player can leave the Nim sum equal to zero.
+
+If the first player always moves to set a nonzero Nim sum to zero,
+then the Nim sum being nonzero on the first player's turn and zero on
+the second player's turn is a preserved invariant of the game.  Also,
+the Nim sum at the start is nonzero since the piles start off of equal
+size.
+
+Since the total number of stones decreases at every move, the game
+must eventually end with no stones and hence Nim sum zero.  By the
+preserved invariant, this can only happen on the second player's turn.
+That is, the second player must lose.
 \end{solution}
 
 \eparts
