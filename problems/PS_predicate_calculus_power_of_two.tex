@@ -17,24 +17,130 @@
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\isprime}{\text{\sc{is-prime}}}
-\newcommand{\ispowerofprime}{\text{\sc{is-power-of-prime}}}
-\newcommand{\hastwoprimefactors}{\text{\sc{has-two-prime-factors}}}
+\newcommand{\isprime}{\text{\sc{Prime}}}
+\newcommand{\primepower}{\text{\sc{Prime-power}}}
+\newcommand{\twoprimes}{\text{\sc{Two-primes}}}
 
 \begin{problem}
   Express each of the following predicates and propositions in formal
-  logic notation.  The domain of discourse is the nonnegative integers,
-  $\naturals$.  Moreover, in addition to the propositional operators,
-  variables and quantifiers, you may define predicates using addition,
-  multiplication, and equality symbols, and nonnegative integer
-  \emph{constants} $\mtt{0}, \mtt{1},\dots$, but no \emph{exponentiation}
-  (like $x^y$).  For example, the predicate ``n is an even number''
-  could be defined by either of the following formulas:
-\[
-\exists m.\; (2m = n), \qquad \exists m.\; (m + m = n).
-\]
+  logic notation.  The domain of discourse is the nonnegative
+  integers, $\naturals$.  Moreover, in addition to the propositional
+  operators, variables and quantifiers, you may define predicates
+  using addition, multiplication, and equality symbols, but no
+  \emph{exponentiation} (like $x^y$) and no integer \emph{constants}
+  like $\mtt{0}$ or $\mtt{1}$.
 
+  For example, the predicate ``$x \geq y$'' could be expressed by the
+  following logical formula
+  \[
+  \exists w.\, (y + w = x).
+  \]
+
+  Now that we can express $\geq$, it's OK to use it to express other
+  predicates.  For example, the predicate $x < y$ can now be
+  expressed as
+  \[
+  y \geq x \QAND \QNOT(x = y).
+  \]
+  
+  For each of the predicates below, describe a logical formula to
+  express it.  It is OK to use in the logical formula any of the
+  predicates previously expressed.
+  
 \begin{problemparts}
+
+\ppart $x = \mtt{1}$.
+
+\begin{solution}
+We could say there is only one number less than $x$:
+\[
+\exists z.\, z < x\ \QAND \forall y.\, y < x\ \QIMPLIES\ y = z.
+\]
+Alternatively,
+\[
+x \cdot x = x
+\]
+works nicely. 
+\end{solution}
+
+\examspace[1in]
+
+\ppart $m$ is a divisor of $n$ (notation: $m \divides n$)
+
+\begin{solution}
+\[
+m \divides n 
+\eqdef\quad 
+\exists k.\; k \cdot m = n
+\]
+\end{solution}
+
+\examspace[1in]
+
+\problempart
+$n$ is a prime number.
+
+\begin{solution}
+\[
+\isprime(n)
+\eqdef\quad 
+(n\neq 1)\ \QAND\ \forall m.\; (m \divides n) \QIMPLIES (m=1 \QOR m=n).
+\]
+Note that $n\neq 1$ is an abbreviation of the formula $\QNOT(n=1)$.
+\end{solution}
+
+\examspace[1in]
+
+\problempart 
+$n$ is a power of a prime.
+
+\begin{solution}
+A number $n$ is a power of a prime $p$ iff its only prime factor is
+$p$.  So,
+\[
+\primepower(n) \eqdef
+   \quad \exists p.\,[\isprime(p) \QAND
+      (\forall m.\; (m \divides n \QAND \isprime(m)) \QIMPLIES m = p].
+\]
+Notice that this correctly handles the fact that 1 is a zero power of
+a prime, because if $n=1$, then no prime $m$ divides $n$.
+\end{solution}
+
+\inbook{
+\examspace[1in]
+
+\problempart
+$n$ has exactly two distinct prime factors.
+
+\begin{solution}
+A $n$ has exactly two distinct prime factors if it has two distinct
+prime factors, and every prime factor is equal to one of these two.  So,
+\begin{align*}
+\lefteqn{\twoprimes(n) \eqdef}\\
+& \exists p, q.\. \isprime(p) \QAND\ \isprime(q) \QAND\ p \divides n \QAND\ q \divides n \QAND\\
+& \forall r.\, (isprime(r) \QAND r \divides n) \QIMPLIES (r = p \QXOR r = q).
+\end{align*}
+
+Alternatively, a number $n$ has exactly two distinct prime factors iff
+$n = jk$, where $j$ and $k$ are powers of \emph{distinct} primes.  So,
+\begin{align*}
+\lefteqn{\twoprimes(n) \eqdef}\\
+   & \exists j, k.\, n = jk\ \QAND\ \ispowerofprime(j) \QAND\ \ispowerofprime(k) \QAND\\
+   & \exists p,q.\, \isprime(p) \QAND \isprime(q)\ \QAND p \neq q\ \QAND\ p \divides j\ \QAND\ q \divides k.
+\end{align*}
+
+\end{solution}
+}
+
+\end{problemparts}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
 \iffalse
 \problempart 
 $n$ is the sum of two cubes (a cube is a number equal to $k^3$ for some
@@ -69,61 +175,3 @@ One formula is $\forall y.\; xy=y$.  Another is $(x \cdot x = x) \conj (x
 \neq 0)$.
 \end{solution}
 \fi
-
-\ppart $m$ is a divisor of $n$ (notation: $m \divides n$)
-
-\begin{solution}
-\[
-m \divides n 
-\eqdef\quad 
-\exists k.\; k \cdot m = n
-\]
-\end{solution}
-
-\problempart 
-$n$ is a prime number.
-
-\begin{solution}
-\[
-\isprime(n)
-\eqdef\quad 
-(n\neq 1)\ \QAND\ \forall m.\; (m \divides n) \QIMPLIES (m=1 \QOR m=n).
-\]
-Note that $n\neq 1$ is an abbreviation of the formula $\QNOT(n=1)$.
-\end{solution}
-
-\problempart 
-$n$ is a power of a prime.
-
-\begin{solution}
-Suppose that $n$ is a power of a prime $p$ (i.e., $n = p^k$ for
-some $k > 0$). Then every divisor of $n$ (say, $m > 1$)
-  is of the form $m = p^j$ for some $j \leq k$. Therefore, $m$ is itself divisible by $p$. In
-  formal logic notation, we have:
-\[
-\ispowerofprime(n) 
-\eqdef\quad
-\exists p.\,[\isprime(p) \QAND (\forall m.\; (m \divides n \QAND m \neq 1)
-\QIMPLIES p \divides m)].
-\]
-\end{solution}
-
-\problempart
-$n$ has exactly two distinct prime factors.
-
-\begin{solution}
-Suppose that $n$ has exactly two distinct prime factors. Then $n =
-pq$, where $p$ and $q$ are powers of {\em distinct} primes. The
-distinctness property ensures that $p$ cannot be a divisor of $q$, and vice versa. In
-formal logic notation, we have:   
-\[
-\exists p, q.\,[n=pq~\QAND~\ispowerofprime(p)~\QAND~\ispowerofprime(q)~\QAND~\QNOT\left((p \divides q) \QOR (q \divides p) \right)].
-\]
-\end{solution}
-
-\end{problemparts}
-\end{problem}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Problem ends here
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
