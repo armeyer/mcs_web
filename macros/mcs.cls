@@ -2647,6 +2647,14 @@
     % \symbolfootnote[0]{Illustrations by Geoffrey Allen Hyche.}%
 }
 
+\newcommand{\bookcopyright}{%
+    \symbolfootnote[0]{\resizebox{!}{0.15in}{\href{http://creativecommons.org/licenses/by-sa/3.0/}{\includegraphics{by-sa}}}~\bookcopyrightyear,
+  \bookcopyrightnames.  This work is available under the terms of the
+  \href{http://creativecommons.org/licenses/by-sa/3.0/}{Creative
+    Commons Attribution-ShareAlike 3.0 license}.}
+    % \symbolfootnote[0]{Illustrations by Geoffrey Allen Hyche.}%
+}
+
 
 \iffalse
 \newcommand{\coursecopyright}{\resizebox{!}{0.15in}{\href{http://creativecommons.org/licenses/by-sa/3.0/}{\includegraphics{by-sa}}}~\coursecopyrightyear,
@@ -2654,7 +2662,6 @@
   \href{http://creativecommons.org/licenses/by-sa/3.0/}{Creative
     Commons Attribution-ShareAlike 3.0 license}.}
 \fi
-
 
 \newcommand{\coursecopyrightyear}{%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
@@ -2664,7 +2671,19 @@
 \newcommand{\coursecopyrightnames}{%
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}}
+\renewcommand{\coursecopyrightnames}{\href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}}
+
+
+\newcommand{\bookcopyrightnames}{%
+  \message{^^JBookright names are *INCORRECT*.^^J^^J}}
+
+\renewcommand{\bookcopyrightnames}{Eric Lehman, F Tom Leighton, \href{http://people.csail.mit.edu/meyer}{Albert R~Meyer}}
+
+\newcommand{\bookcopyrightyear}{%
+  \message{^^JBookright year is *INCORRECT*.^^J^^J}}
+
+\renewcommand{\bookcopyrightyear}{2015}
+
 
 
 % Formats the top matter (title+headers), given the paper supertitle,
