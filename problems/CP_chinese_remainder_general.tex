@@ -22,9 +22,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-The general version of the Chinese Remainder theorem
-\inbook{(Problem~\bref{CP_chinese_remainder})} extends to more than two
-relatively prime moduli.  Namely,
+The general version of the Chinese Remainder
+theorem\inhandout{\footnote{The \term{Chinese Remainder Theorem}
+    asserts that if $a, b$ are relatively prime and greater than 1,
+    then for all $m,n$, there is a \emph{unique} $x \in
+    \Zintvco{0}{ab}$ such that
+  \begin{align*}
+   x &\equiv m \pmod a,\\
+   x &\equiv n \pmod b.
+  \end{align*}
+This was proved in
+Problem~\bref{CP_chinese_remainder}.}\inbook{(Problem~\bref{CP_chinese_remainder})}
+  extends to more than two relatively prime moduli.  Namely,
 \begin{theorem*}[General Chinese Remainder]
 Suppose $a_1,\dots,a_k$ are integers greater than 1 and each is
 relatively prime to the others.  Let $n \eqdef a_1 \cdot a_2 \cdots
@@ -40,32 +49,25 @@ The proof is a routine induction on $k$ using a fact that follows
 immediately from unique factorization: if a number is relatively prime
 to some other numbers, then it is relatively prime to their product.
 
-Now suppose an $n$-bit number, $N$, was a product of relatively prime
-$k$-bit numbers, where $n$ was big, but $k$ was small enough to be
-handled by cheap and available arithmetic hardware units.  Suppose a
-calculation requiring a large number of additions and multiplications
-modulo $N$ had to be performed starting with some small set of $n$-bit
-numbers.  For example, suppose we wanted to compute
-\[
-\rem{\ (x-3)^{110033}((y+7)^{27123} - z^{4328})\ }{N}
-\]
-which would require several dozen $n$-bit operations starting from the
-three numbers $x,y,z$.
-
-Doing a multiplication or addition modulo $N$ directly requires
-breaking up the $n$-bit numbers $x,y,z$ and all the intermediate
-results of the mod $N$ calculation into $k$-bit pieces, using the
-hardware to perform the additions and multiplications on the pieces,
-and then reassembling the $k$-bit results into an $n$-bit answer after
-each operation.
+Now suppose $n$ was large, but each of the factors $a_i$ was small
+enough to be handled by cheap and available arithmetic hardware units.
+Suppose a calculation requiring a large number of additions and
+multiplications modulo $n$ needs to be performed.  Doing a single
+multiplication or addition modulo $n$ of two large numbers $x$ and $y$
+in this setting requires breaking up the $x$ and $y$ into pieces small
+enough to be handled by the arithmetic units, using the arithmetic
+units to perform additions and multiplications on (many) pairs of
+small pieces, and then reassembling the pieces into an answer.  And
+this process of breakup and reassembly has to be performed for each
+addition and multiplication that needs to be performed on large
+numbers.
 
 Explain how the General Chinese Remainder Theorem offers a far more
 efficient approach to performing the required operations.
 
 \begin{solution}
-Suppose $N= a_1\cdot a_2 \cdots a_m$ where the $a_i$'s are relatively
-prime $k$-bit numbers.  Represent any $n$-bit numbers, $x$, as a
-vector
+Represent any ``large'' number $x \in \Zintvco{0}{n}$ by its
+\emph{residue representation}:
 \[
 (\rem{x}{a_1}, \rem{x}{a_2},\dots, \rem{x}{a_m}).
 \]
@@ -76,27 +78,33 @@ $x+y$ is represented by
 \[
 (x_1+y_1,x_2+y_2, \dots, x_m+y_m),
 \]
-and likewise for $x \cdot y$.  So with this representation, additions
-and multiplications of $n$-bit numbers can be performed by the
-hardware units without need to break apart and reassemble the $n$-bit
-numbers to perform each operation.  Moreover, the $k$-bit operations
-can be performed \emph{in parallel}.  This is sometimes referred to as
-\term{residue arithmetic}.
+and likewise for $x \cdot y$.
 
-Doing residue arithmetic involves an initial cost of converting $x$,
-$y$, and $z$ into the vectors of their remainders, but which requires
-$m$ different GCD computations with $n$-bit numbers for each of $x$,
-$y$, and $z$.  When the vector representation of the final value, $v$,
-is found, it must be converted back into an $n$-bit representation;
-this requires another $m$ different extended-GCD computations with
-$n$-digit numbers.  But these conversion are one time only for $x$,
-$y$ and $z$, so their costs will be outweighed by the savings in doing
-a large number of mod $N$ operations on the vector representations of
-$x$, $y$ and $z$.
+So by maintaining this residue representation, successive additions
+and multiplications of large numbers can be performed by the hardware
+units without need to further break large numbers into pieces or to
+reassemble small pieces back into large numbers after each operations.
+Moreover, operations on the pieces can be performed \emph{in
+  parallel}.
 
+Doing the calculations using residue representation involves an
+initial cost of converting each given ``large'' number $x$ into $k$
+``small'' pieces.  This requires just $k$ divisions of the large
+number by different small numbers.  No further conversions are needed
+to do all the multiplications and additions and arrive at the residue
+representation of the final answer, $v$.
+
+To finish, the residue representation of $v$ must be converted back
+into a standard (decimal or binary) representation of $v$.  This
+conversion is a little more complicated than the forward conversion of
+a large number into its residue representation---it turns out to
+require about the same effort as a single multiplication of large
+numbers---but this backward conversion is done only once, so its costs
+will be outweighed by the savings gained sticking to residue
+representation throughout the rest of the calculation.
 \end{solution}
 
-\begin{staffnotes}
+\begin{editingnotes}
 This problem started out aiming to ask for an induction proof of the
 General Chinese Remainder Theorem, assuming the Chinese Remainder
 Theorem for $k=2$.  Most of the proof appears below, but it turned out
@@ -136,12 +144,10 @@ x_{k+1} \equiv x_k \equiv m_i \pmod{a_i}
 \]
 for $1 \le i \le k$.  Hence, $x_{k+1}$ satisfies~\eqref{aemiaik+1}.
 
-
 UNIQUENESS ARGUMENT TBA.
 
 \end{proof}
-
-\end{staffnotes}
+\end{editingnotes}
 
 \end{problem}
 
