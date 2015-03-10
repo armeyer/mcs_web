@@ -23,7 +23,7 @@
 
 \begin{problem}
 The general version of the Chinese Remainder
-theorem\inhandout{\footnote{The \term{Chinese Remainder Theorem}
+Theorem\inhandout{\footnote{The \term{Chinese Remainder Theorem}
     asserts that if $a, b$ are relatively prime and greater than 1,
     then for all $m,n$, there is a \emph{unique} $x \in
     \Zintvco{0}{ab}$ such that
@@ -31,9 +31,10 @@ theorem\inhandout{\footnote{The \term{Chinese Remainder Theorem}
    x &\equiv m \pmod a,\\
    x &\equiv n \pmod b.
   \end{align*}
-This was proved in
-Problem~\bref{CP_chinese_remainder}.}\inbook{(Problem~\bref{CP_chinese_remainder})}
-  extends to more than two relatively prime moduli.  Namely,
+See Problem~\bref{CP_chinese_remainder}.}}\inbook{(see
+  Problem~\bref{CP_chinese_remainder})} extends to more than two
+relatively prime moduli.  Namely,
+
 \begin{theorem*}[General Chinese Remainder]
 Suppose $a_1,\dots,a_k$ are integers greater than 1 and each is
 relatively prime to the others.  Let $n \eqdef a_1 \cdot a_2 \cdots
@@ -49,21 +50,28 @@ The proof is a routine induction on $k$ using a fact that follows
 immediately from unique factorization: if a number is relatively prime
 to some other numbers, then it is relatively prime to their product.
 
-Now suppose $n$ was large, but each of the factors $a_i$ was small
+The General Chinese Remainder Theorem is the basis for an efficient
+approach to performing a long series of additions and multiplications
+on ``large'' numbers.
+
+Namely, suppose $n$ was large, but each of the factors $a_i$ was small
 enough to be handled by cheap and available arithmetic hardware units.
-Suppose a calculation requiring a large number of additions and
-multiplications modulo $n$ needs to be performed.  Doing a single
-multiplication or addition modulo $n$ of two large numbers $x$ and $y$
-in this setting requires breaking up the $x$ and $y$ into pieces small
-enough to be handled by the arithmetic units, using the arithmetic
-units to perform additions and multiplications on (many) pairs of
-small pieces, and then reassembling the pieces into an answer.  And
-this process of breakup and reassembly has to be performed for each
-addition and multiplication that needs to be performed on large
+Suppose a calculation requiring many additions and multiplications
+needs to be performed.  To do a single multiplication or addition of
+two large numbers $x$ and $y$ in the usual way in this setting would
+involve breaking up the $x$ and $y$ into pieces small enough to be
+handled by the arithmetic units, using the arithmetic units to perform
+additions and multiplications on (many) pairs of small pieces, and
+then reassembling the pieces into an answer.  Moreover, the order in
+which these operations on pieces can be performed is contrained by
+dependence among the pieces---because of ``carries,'' for example.
+And this process of breakup and reassembly has to be performed for
+each addition and multiplication that needs to be performed on large
 numbers.
 
-Explain how the General Chinese Remainder Theorem offers a far more
-efficient approach to performing the required operations.
+Explain how the General Chinese Remainder Theorem can be applied to
+perform a long series of additions and multiplications on ``large''
+numbers much more efficiently than the usual way described above.
 
 \begin{solution}
 Represent any ``large'' number $x \in \Zintvco{0}{n}$ by its
@@ -78,30 +86,32 @@ $x+y$ is represented by
 \[
 (x_1+y_1,x_2+y_2, \dots, x_m+y_m),
 \]
-and likewise for $x \cdot y$.
+and $x \cdot y$ is represented by
+\[
+(x_1 \cdot y_1,x_2 \cdot y_2, \dots, x_m \cdot y_m).
+\]
 
-So by maintaining this residue representation, successive additions
-and multiplications of large numbers can be performed by the hardware
-units without need to further break large numbers into pieces or to
-reassemble small pieces back into large numbers after each operations.
-Moreover, operations on the pieces can be performed \emph{in
-  parallel}.
+By maintaining this residue representation, successive additions and
+multiplications of large numbers can be performed by the hardware
+units without need to reassemble small pieces back into large numbers
+after each operations.  Moreover, operations on the pieces can be
+performed \emph{in parallel}.
 
 Doing the calculations using residue representation involves an
 initial cost of converting each given ``large'' number $x$ into $k$
-``small'' pieces.  This requires just $k$ divisions of the large
-number by different small numbers.  No further conversions are needed
-to do all the multiplications and additions and arrive at the residue
-representation of the final answer, $v$.
+``small'' pieces.  This just requires dividing $x$ by each of the
+$a_i$.  No further conversions are needed to do all the
+multiplications and additions and arrive at the residue representation
+of the final answer, $v$.
 
 To finish, the residue representation of $v$ must be converted back
 into a standard (decimal or binary) representation of $v$.  This
 conversion is a little more complicated than the forward conversion of
 a large number into its residue representation---it turns out to
 require about the same effort as a single multiplication of large
-numbers---but this backward conversion is done only once, so its costs
-will be outweighed by the savings gained sticking to residue
-representation throughout the rest of the calculation.
+numbers in the usual way---but this backward conversion is done only
+once, so its costs will be outweighed by the savings gained sticking
+to residue representation throughout the rest of the calculation.
 \end{solution}
 
 \begin{editingnotes}
