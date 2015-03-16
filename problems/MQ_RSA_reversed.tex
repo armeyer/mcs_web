@@ -1,37 +1,71 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-    \pcomment{RSA_reversed}
+    \pcomment{MQ_RSA_reversed}
+    \pcomment{revised ARM 3/15/15}
 \end{pcomments}
 
-\begin{problem}
+\pkeywords{
+  RSA
+  modulo
+  encrypt
+  decrypt
+  exponent
+}
 
-%% type: short-answer
-%% title: RSA reversed
+\begin{problem}
+Suppose users Alice and Bob are using the RSA cryptosystem to send
+secure messages.  So both have published public keys and have private
+keys known only to themselves.  Using RSA, Alice can certainly send
+Bob a secret message over public channels.  But a concern for Bob is
+how he knows that the message he gets is actually from Alice as
+opposed to some imposter claiming to be Alice.  So Alice and Bob want
+a way where Alice can attach an unforgeable ``signature'' to her
+message to Bob.
+
+To do this, Alice will first encrypt her message to Bob using her
+private key as though it was Bob's public key.  Then she will take
+this private-key encrypted message and encrypt it again actually using
+Bob's public key.  She then sends this double-encrypted message to Bob
+over a public channel.
 
 \bparts
 
-For communication between two users $A$ and $B$, if $A$ generates the keys, 
-the RSA encryption scheme allows $B$ to send $A$ a message 
-encrypted by the public key that cannot be eavesdropped, 
-but since the public key is public, a third party $C$ can pretend to be $B$ 
-and send $A$ a message encrypted by the public key.
-In this problem we will see RSA can also prevent forged messages 
-when the keys are used in reverse.
-Using the same keys $A$ had generated, consider when $A$ sends $B$ a message 
-encrypted using the private key.
+\ppart Explain how Bob can read the original message from Alice.  (Let
+$(n_A,e_A)$ be Alice's public key and $d_A$ her private key.  Likewise
+for $(n_B,e_B)$ and $d_B$.  Assume message are in
+$\Zintvco{0}{\min(n_A,n_B)}$.
 
-\ppart
-User $B$ can decrypt the message using the public key.
-Explain why this works.
+\examspace[3in]
 
 \begin{solution}
-The normal RSA scheme decrypt messages using the property
-$\rem{\rem{m^{e}}{n}^d}{n} = \rem{m^{ed}}{n} = m$.
-With the keys reversed, the message can still be decrypted, because
-$\rem{\rem{m^{d}}{n}^e}{n} = \rem{m^{de}}{n} = m$.
+Alice takes her message $m$ and first encrypts it into a message $m_1$
+using her private key $d_A$:
+\[
+m_1 \eqdef \rem{m^{d_A}}{n_A}.
+\]
+Then she encrypts $m_1$ into $m_2$ using Bob's public key:
+\[
+m_2 eqdef \rem{m_1^{e_B}}{n_B}.
+\]
+
+When Bob receives $m_2$, he can compute 
+\[
+\rem{m_2^{d_B}}{n_B} = m_1  \qquad \text{(Bob's RSA decoding of $m_2$)}
+\]
+using his private key.  But since he knows Alice's public key, he can now compute
+\begin{align*}
+m_3 \eqdef \rem{m_1^{e_A}}{n_A}
+  &  = \rem{\paren{\rem{m^{d_A}}{n_A}}^{e_A}}{n_A}\\
+  &  = \rem{\paren{m^{d_A}}^{e_A}}{n_A}\\
+  &  = \rem{m^{d_Ae_A}}{n_A}\\
+  &  = \rem{m^{e_Ad_A}}{n_A}\\
+  &  = \rem{\paren{m^{e_A}}^{d_A}}{n_A} & \text{(Alice's RSA decoding of $m^{e_A}$)}\\
+  & = m.
+\end{align*}
 \end{solution}
 
+\iffalse
 \ppart
 %n = p * q = 29 * 37 = 1073 
 %phi(n) = 28 * 26 = 1008
@@ -42,12 +76,19 @@ what is the original message?
 \begin{solution}
 The original message is $\rem{33^5}{1073} = 937$
 \end{solution}
+\fi
 
-\ppart
-Explain in words why $B$ can be confident that this message is not forged.
+\ppart Briefly explain why Bob can be confident, assuming RSA is
+secure, that the message he receives from Alice cannot be read by
+anyone listening on the public channel, and moreover, that the message
+came from Alice rather than some imposter.
+
+\examspace[2in]
 
 \begin{solution}
-Because only $A$ knows the private key.
+
+\TBA{Because only $A$ knows the private key.}
+
 \end{solution}
 
 \eparts
