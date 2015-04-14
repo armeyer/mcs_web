@@ -1,0 +1,141 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_magic_trick_4cards}
+  \pcomment{subset of PS_magic_trick_4cards}
+\end{pcomments}
+
+\pkeywords{
+  magic
+  degree_constrained
+  modulo
+  mod_4
+  bipartite
+  matching
+  card_magic
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+\newcommand{\pcard}[1]{\,\fbox{\parbox[c][.5in][c]{.3in}{\centering#1}}\,}
+
+Section~\bref{4_card_trick_subsec} explained why it is not possible to
+perform a four-card variant of the hidden-card magic trick with one
+card hidden.  But the Magician and her Assistant are determined to
+find a way to make a trick like this work.  They decide to change the
+rules slightly: instead of the Assistant lining up the three unhidden
+cards for the Magician to see, he will line up all four cards with one
+card face down and the other three visible.  We'll call this the
+\term{face-down four-card trick}.
+
+For example, suppose the audience members had selected the cards
+$9\heartsuit$, $10\diamondsuit$, $A\clubsuit$, $5\clubsuit$.  Then the
+Assistant could choose to arrange the 4 cards in any order so long as
+one is face down and the others are visible.  Two possibilities are:
+\begin{center}
+\pcard{$A\clubsuit$}\pcard{?}\pcard{$10\diamondsuit$}\pcard{$5\clubsuit$}
+
+\pcard{?}\pcard{$5\clubsuit$}\pcard{$9\heartsuit$}\pcard{$10\diamondsuit$}
+\end{center}
+
+\bparts
+
+\ppart Explain how to model this face-down four-card trick as a
+matching problem, and show that there must be a bipartite matching
+which theoretically will allow the Magician and Assistant to perform
+the trick.
+
+\begin{solution}
+We proceed as in Section~\bref{4_card_trick_subsec} by modeling the
+trick as a bipartite matching problem.  The vertices $L$ are the
+possible $\binom{52}{4}$ sets of 4 cards, representing the possible
+sets of cards selected by the audience.  The vertices $R$ correspond
+to the information available to the Magican, namely, the collection of
+all possible sequences of 3 cards along with a ``?'' indicating the
+position of the hidden card, as in the figure above.  There are $52
+\cdot 51 \cdot 50$ possible sequences of visible cards and 4 positions
+for ``?,'' so $R$ has $52 \cdot 51 \cdot 50 \cdot 4$ vertices.
+
+\begin{staffnotes}
+It is not necessary to calculate $\card{L}$ or $\card{R}$.  These
+numbers were just worked out to help clarify the definitions of $L,R$.
+\end{staffnotes}
+
+There is an edge between $l \in L$ and $r \in R$ if the set of visible
+cards in $r$ is a subset of $l$.  A matching from $L$ to $R$ would
+represent a unique way to encode each set of 4 cards as a sequence of
+3 visible cards and a ``?.''.  But for each $l \in L$,
+\[
+\degr{l} = \binom{4}{3} 3! \cdot 4 = 96
+\]
+and for each $r \in R$,
+\[
+\degr{r} = \binom{52-3}{1} = 49.
+\]
+So the graph is \idx{degree-constrained} and, according to
+Theorem~\bref{lem:no_bottleneck_degree_constrained}
+satisfies Hall's matching condition and so has a matching.
+\end{solution}
+
+\begin{staffnotes}
+A good test of understanding is to ask students how big a deck would
+still have a matching by this reasoning.  The degree 96 of the $L$
+vertices does not depend on deck size.  The degree of the $R$ vertices
+is $\text{deck-size} - 3$, so even with deck-size of 99, the graph
+remains degree-constrained and hence has a matching.
+\end{staffnotes}
+
+\ppart There is actually a simple way to perform the face-down
+four-card trick.\footnote{This elegant method was devised in Fall '09
+  by student Katie E Everett.}
+
+\textbox{
+\textbf{Case 1}. \emph{there are two cards with the same suit}: Say
+there are two $\spadesuit$ cards.  The Assistant proceeds as in the
+original card trick: he puts one of the $\spadesuit$ cards \emph{face
+  up as the first card}.  He will place the second $\spadesuit$ card
+\emph{face down}.  He then uses a permutation of the face down card
+and the remaining two face up cards to code the offset of the face
+down card from the first card.
+
+\textbf{Case 2}. \emph{all four cards have different suits}: Assign
+numbers $0,1,2,3$ to the four suits in some agreed upon way.  The
+Assistant computes, $s$, the sum modulo 4 of the ranks of the four
+cards, and chooses the card with suit $s$ to be placed \emph{face down
+  as the first card}.  He then uses a permutation of the remaining
+three face-up cards to code the rank of the face down
+card.}
+
+Explain how in Case 2.\ the Magician can determine the face down card
+from the cards the Assistant shows her.
+
+\begin{solution}
+The Magician sees that Case 2 applies because the first card is face
+down, so she knows that the hidden card must have the suit that is not
+among the visible three suits of the face-up cards.  So the Magician
+knows the suit of the face-down card and hence the number, $s$,
+assigned to that suit.
+
+Let $t$ be the mod 4 sum of the ranks of the three face-up cards.
+Since $s$ was chosen by the Assistant to be the sum mod 4 of the ranks
+of all four cards, the Magician knows that the rank of the face-down
+card is congruent to $s-t \pmod 4$.  Since at most four numbers from 1
+to 13 can be congruent to each other mod 4, the six possible
+permutations of the three face-up cards are more than enough to encode
+which of the four possible numbers congruent to $s - t \pmod 4$ is the
+rank of the hidden card.
+
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
