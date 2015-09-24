@@ -3227,6 +3227,31 @@
     \fi
     \fi}
 
+\newcommand{\conflictmidterm}[2][\stamp]{%
+    \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{conflictmidtrms#2}{}{Staff Solutions to Conflict Midterm Exam #2}
+    \else
+    \ifshowsolutions
+        \paper[#1]{conflictmidtrms#2}{}{Solutions to Conflict Midterm Exam #2}
+    \else
+        \exampaper[#1]{conflictmidtrm#2}{Conflict Midterm Exam #2}
+    \fi
+    \fi}
+
+\newcommand{\conflictmidtermsecond}[2][\stamp]{%
+    \theoremsunderproblems
+    \ifshowstaffnotes
+    \paper[#1]{conflict2midtrms#2}{}{Staff Solutions to 2nd Conflict Midterm Exam #2}
+    \else
+    \ifshowsolutions
+        \paper[#1]{conflict2midtrms#2}{}{Solutions to 2nd Conflict Midterm Exam #2}
+    \else
+        \exampaper[#1]{conflict2midtrm#2}{2nd Conflict Midterm Exam #2}
+    \fi
+    \fi}
+
+
 % Starts a Practice Quiz, given its number. Asks whether solutions
 % should be included. If the answer is yes, the corresponding
 % solutions paper is started. (Use \showsolutions or \hidesolutions
