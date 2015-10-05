@@ -1,0 +1,272 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{TP_sub_one_with_two_of_opposite_color}
+  \pcomment{proposed for midterm II, Fall15}
+  \pcomment{author: Zoran Dzunic}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  derived_variable
+  induction
+  congruences
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+``Token replacing'' is  single player game that starts with one black token.
+In each move, a player can replace one black token with two white tokens
+or replace one white token with two black tokens.
+There is no further labeling of the tokens of the same color (e.g., we
+don't care which of the black tokens appeared first, second, etc.),
+and the order of tokens does not matter (e.g., sequence 'bbw' is
+the same as sequence 'bwb').
+
+\bparts
+
+\ppart
+Model this game as a state machine, carefully defining the set of
+states, the start state and the possible state transitions.
+\hint Be sure to state the conditions of the state transitions.
+\begin{solution}
+A state of this game is fully described with a pair of nonnegative integer
+numbers $(n_b, n_w)$, where $n_b$ and $n_w$ are the numbers of black and
+white tokens, respectively. State transitions are of the form
+$(n_b, n_w) \rightarrow (n_b-1, n_w+2)$ if $n_b > 0$, and
+$(n_b, n_w) \rightarrow (n_b+2, n_w-1)$ if $n_w > 0$ 
+\end{solution}
+
+\examspace[2.0in]
+
+{\color{red} VARIANT 1}
+
+\ppart
+Let $n$ denote the total number of tokens, $n_b$ the number of black tokens,
+and $n_w$ the number of white tokens at any step. Which of the following
+are invariants:
+\begin{enumerate}
+\item $n_b + n_w \equiv 1 \pmod{3}$ \hfill\examrule[0.5in]
+\item $n_w - n_b \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
+\item $n_b - n_w \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
+\item $2 n_b - n \equiv 1 \pmod{3}$ \hfill\examrule[0.5in]
+\item $n_b + n \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
+\end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+\item $n_b + n_w \equiv 1 \pmod{3}$ -- {\bf False}
+\item $n_w - n_b \equiv 2 \pmod{3}$ -- {\bf True}
+\item $n_b - n_w \equiv 2 \pmod{3}$ -- {\bf False}
+\item $2 n_b - n \equiv 1 \pmod{3}$ -- {\bf True}
+\item $n_b + n \equiv 2 \pmod{3}$ -- {\bf True}
+\end{enumerate}
+\end{solution}
+
+\ppart
+Which of the preceding are preserved invariants?
+
+\begin{solution}
+All except for the first one. All invariants are also preserved invariants.
+In addition, $n_b - n_w \equiv 2 \pmod{3}$ is preserved since $n_b - n_w$
+changes by $+3$ or $-3$ in each step.
+On the other hand, $n_b + n_w \equiv 1 \pmod{3}$ is not a preserved invariant
+since $n_b + n_w = n$ can be any positive integer.
+\end{solution}
+
+\examspace[1.0in]
+
+\ppart
+Using induction on $n$, prove that all states that satisfy any invariant
+and for which $n_b, n_w \ge 0$ are reachable.
+
+\begin{solution}
+\inductioncase{Base case}: ($n = 1$).
+The only valid state for $n=1$ is $(n_b, n_w) = (1,0)$, which is the starting
+state and is therefore reachable.
+
+\inductioncase{Inductive step}:
+Assume that the induction hypothesis holds for $n \ge 1$.
+Let $(n'_b, n'_w)$ be a state for which $n'_b + n'_w = n+1$, $n_b \ge 0$, $n_w \ge 0$,
+and the invariant is satisfied.
+Either $n'_b \ge 2$ or $n'_w \ge 2$ is true, which we prove by cases. If $n+1=2$,
+the only possible state is $(n'_b, n'_w) = (0, 2)$. If $n+1 > 2$, then by assuming
+$n'_b \le 1$ and $n'_w \le 1$, $n+1 = n'_b + n'_w \le 2$ must hold, which is
+a contradiction.
+As a consequence, either state $(n'_b-2, n'_w+1)$ or state $(n'_b+1, n'_w-2)$
+is a valid state with $n$ tokens and must be reachable by the assumption.
+Since there is a transition form that state to $(n'_b, n'_w)$, $(n'_b, n'_w)$
+is also reachable.
+\end{solution}
+
+\examspace[4.0in]
+
+\ppart
+Why do you think the proof above holds regardless of what the invariant is?
+
+\begin{solution}
+Any invariant must hold for all reachable states.
+\end{solution}
+
+\examspace[1.0in]
+
+{\color{red} VARIANT 2}
+
+\ppart
+Let $n$ denote the total number of tokens, $n_b$ the number of black tokens,
+and $n_w$ the number of white tokens at any step.
+
+Prove that $n_w - n_b \equiv 2 \pmod{3}$ is a state invariant.
+
+\begin{solution}
+The start state is $(n_b, n_w) = (1, 0)$, so $n_w - n_b = -1 \equiv 2 \pmod{3}$.
+Now, assume that the invariant holds for state $(n_b, n_w)$.
+If a black token is substituted, then a tranisition is made to the state
+$(n'_b, n'_w) = (n_b-1, n_w+2)$, and
+$n'_w - n'_b = n_w+2 - (n_b-1) = n_w - n_b + 3 \equiv n_w - n_b \equiv 2 \pmod{3}$.
+If a white token is substituted, then a tranisition is made to the state
+$(n'_b, n'_w) = (n_b+2, n_w-1)$, and
+$n'_w - n'_b = n_w-1 - (n_b+2) = n_w - n_b - 3 \equiv n_w - n_b \equiv 2 \pmod{3}$.
+In both cases, the variant is preserved.
+\end{solution}
+
+\examspace[2.0in]
+
+\ppart
+Prove that $S = \{(n_b, n_w) \,|\, n_b \ge 0, n_w \ge 0, n_w - n_b \equiv 2 \pmod{3}\}$ is the set
+of all reachable states.
+
+\hint{Use induction on $n$.}
+
+\begin{solution}
+We will prove this by induction on $n$.
+
+\inductioncase{Induction Hypothesis}:
+Let $S(n) = \{(n_b, n_w) \,|\, n_b + n_w = n, n_b \ge 0, n_w \ge 0, n_w - n_b \equiv 2 \pmod{3}\}$.
+$P(n) ::= Set S(n) \text{contains all reachable states with} n \text{tokens.}, n \ge 1$ 
+
+\inductioncase{Base case}: ($n = 1$).
+The only valid state for $n=1$ is $(n_b, n_w) = (1,0)$, which is the starting
+state and is therefore reachable. $(1, 0) \in S(1)$, and so the hypothesis $P(1)$
+is true.
+
+\inductioncase{Inductive step}:
+Assume that the induction hypothesis $P(n)$ holds for $n \ge 1$, i.e.,
+$\forall (n_b, n_w) \in S(n)$, $(n_b, n_w)$ is the set of reachable states with $n$ tokens.
+
+All reachable states with $n+1$ tokens are in $S(n+1)$ since they must satisfy the definition
+of $S(n+1)$ (recall that $n_w - n_b \equiv 2 \pmod{3}$ is an invariant and must hold
+for all states).
+
+Now, we prove that every state in $S(n+1)$ is reachable.
+
+Let $(n'_b, n'_w) \in S(n+1)$.
+Either $n'_b \ge 2$ or $n'_w \ge 2$ is true, which we prove by cases. If $n+1=2$,
+the only possible state is $(n'_b, n'_w) = (0, 2)$. If $n+1 > 2$, then by assuming
+$n'_b \le 1$ and $n'_w \le 1$, $n+1 = n'_b + n'_w \le 2$ must hold, which is
+a contradiction.
+If $n'_b \ge 2$, then $(n'_b-2, n'_w+1) \in S(n)$
+since $n'_w+1 - (n'_b-2) = n'_w-n'_b+3 \equiv n'_w - n'_b \equiv 2\pmod{3}$,
+and thefore $(n'_b, n'_w)$ is reachable by a transition from $(n'_b-2, n'_w+1)$
+(by replacing a white token).
+Similarly, if $n'_w \ge 2$, then $(n'_b+1, n'_w-2) \in S(n)$,
+and $(n'_b, n'_w)$ is reachable by a transition from $(n'_b+1, n'_w-2)$
+(by replacing a black token).
+\end{solution}
+
+\examspace[4.0in]
+
+{\color{red} VARIANT 3 (harder)}
+
+\ppart
+Let $n$ denote the total number of tokens, $n_b$ the number of black tokens,
+and $n_w$ the number of white tokens at any step.
+
+Write down any invariant variable that is a function of $n_b$ and $n_w$.
+
+\begin{solution}
+$n_w - n_b \equiv 2 \pmod{3}$ (equivalent expressions can be made).
+\end{solution}
+
+\examspace[1in]
+
+\ppart
+Prove that it is indeed an invariant.
+
+\begin{solution}
+The start state is $(n_b, n_w) = (1, 0)$, so $n_w - n_b = -1 \equiv 2 \pmod{3}$.
+Now, assume that the invariant holds for state $(n_b, n_w)$.
+If a black token is substituted, then a tranisition is made to the state
+$(n'_b, n'_w) = (n_b-1, n_w+2)$, and
+$n'_w - n'_b = n_w+2 - (n_b-1) = n_w - n_b + 3 \equiv n_w - n_b \equiv 2 \pmod{3}$.
+If a white token is substituted, then a tranisition is made to the state
+$(n'_b, n'_w) = (n_b+2, n_w-1)$, and
+$n'_w - n'_b = n_w-1 - (n_b+2) = n_w - n_b - 3 \equiv n_w - n_b \equiv 2 \pmod{3}$.
+In both cases, the variant is preserved.
+\end{solution}
+
+\examspace[2.0in]
+
+\ppart
+Describe the set of all reachable states.
+
+\begin{solution}
+$S = \{(n_b, n_w) \,|\, n_b \ge 0, n_w \ge 0, n_w - n_b \equiv 2 \pmod{3}\}$
+\end{solution}
+
+\examspace[1.0in]
+
+\ppart
+Prove that it is indeed the set of all reachable states.
+
+\hint{Use induction on $n$.}
+
+\begin{solution}
+We will prove this by induction on $n$.
+
+\inductioncase{Induction Hypothesis}:
+Let $S(n) = \{(n_b, n_w) \,|\, n_b + n_w = n, n_b \ge 0, n_w \ge 0, n_w - n_b \equiv 2 \pmod{3}\}$.
+$P(n) ::= Set S(n) \text{contains all reachable states with} n \text{tokens.}, n \ge 1$ 
+
+\inductioncase{Base case}: ($n = 1$).
+The only valid state for $n=1$ is $(n_b, n_w) = (1,0)$, which is the starting
+state and is therefore reachable. $(1, 0) \in S(1)$, and so the hypothesis $P(1)$
+is true.
+
+\inductioncase{Inductive step}:
+Assume that the induction hypothesis $P(n)$ holds for $n \ge 1$, i.e.,
+$\forall (n_b, n_w) \in S(n)$, $(n_b, n_w)$ is the set of reachable states with $n$ tokens.
+
+All reachable states with $n+1$ tokens are in $S(n+1)$ since they must satisfy the definition
+of $S(n+1)$ (recall that $n_w - n_b \equiv 2 \pmod{3}$ is an invariant and must hold
+for all states).
+
+Now, we prove that every state in $S(n+1)$ is reachable.
+
+Let $(n'_b, n'_w) \in S(n+1)$.
+Either $n'_b \ge 2$ or $n'_w \ge 2$ is true, which we prove by cases. If $n+1=2$,
+the only possible state is $(n'_b, n'_w) = (0, 2)$. If $n+1 > 2$, then by assuming
+$n'_b \le 1$ and $n'_w \le 1$, $n+1 = n'_b + n'_w \le 2$ must hold, which is
+a contradiction.
+If $n'_b \ge 2$, then $(n'_b-2, n'_w+1) \in S(n)$
+since $n'_w+1 - (n'_b-2) = n'_w-n'_b+3 \equiv n'_w - n'_b \equiv 2\pmod{3}$,
+and thefore $(n'_b, n'_w)$ is reachable by a transition from $(n'_b-2, n'_w+1)$
+(by replacing a white token).
+Similarly, if $n'_w \ge 2$, then $(n'_b+1, n'_w-2) \in S(n)$,
+and $(n'_b, n'_w)$ is reachable by a transition from $(n'_b+1, n'_w-2)$
+(by replacing a black token).
+\end{solution}
+
+\examspace[4.0in]
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
