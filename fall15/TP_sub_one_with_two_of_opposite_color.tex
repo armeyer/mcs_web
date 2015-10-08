@@ -18,10 +18,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-``Token replacing'' is  single player game that starts with one black token.
-In each move, a player can replace one black token with two
-indistinguishable white tokens
-or replace one white token with two indistinguishable black tokens.
+``Token replacing'' is single player game using a set of tokens, each
+  colored black or white.  Except for color, the tokens are
+  indistinguishable.  In each move, a player can replace one black
+  token with two white tokens, or replace one white token with two
+  black tokens.
+
+  We can model this game as a state machine whose states are pairs
+  $(n_b,n_w)$ where $n_b \geq 0$ equals the number of black tokens and
+  $n_w \geq 0$ equals the number of white tokens.
 
 \iffalse
 There is no further labeling of the tokens of the same color (e.g., we
@@ -48,18 +53,20 @@ $(n_b, n_w) \rightarrow (n_b+2, n_w-1)$ if $n_w > 0$
 \examspace[2.0in]
 \fi
 
-{\color{red} VARIANT 1}
+%{\color{red} VARIANT 1}
 
-\ppart Let $n_b$ be the number of black tokens, and $n_w$ the number of
-white tokens\iffalse, and $n \eqdef n_b + n_w$ be the total number of
-tokens\fi at any step.  Which of the following are preserved invariants:
+\ppart Put a check next to each of the following predicates that are
+preserved invariants:
 
 \begin{enumerate}
 \item $n_b + n_w \equiv 1 \pmod{3}$ \hfill\examrule[0.5in]
+
 \item $n_w - n_b \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
+
 \item $n_b - n_w \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
 %\item $2 n_b - n \equiv 1 \pmod{3}$ \hfill\examrule[0.5in]
 %\item $n_b + n \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
+
 \item $2n_b + n_w \equiv 2 \pmod{3}$ \hfill\examrule[0.5in]
 \end{enumerate}
 
@@ -71,25 +78,28 @@ tokens\fi at any step.  Which of the following are preserved invariants:
 %\item $2 n_b - n \equiv 1 \pmod{3}$ -- {\bf True}
 \item $2n_b + n_w \equiv 2 \pmod{3}$ -- {\bf True}
 \end{enumerate}
+
+\TBA{Proof and counterexamples}
 \end{solution}
 
 \iffalse
-\ppart
+\ppart  
 Which of the preceding are true for the start state?
 
 \begin{solution}
 \begin{enumerate}
-\item $n_b + n_w \equiv 1 \pmod{3}$ -- {\bf True}
-\item $n_w - n_b \equiv 2 \pmod{3}$ -- {\bf True}
-\item $n_b - n_w \equiv 2 \pmod{3}$ -- {\bf False}
-\item $2 n_b - n \equiv 1 \pmod{3}$ -- {\bf True}
-\item $n_b + n \equiv 2 \pmod{3}$ -- {\bf True}
+\item $n_b + n_w = 1\equiv 1 \pmod{3}$ -- {\bf True}
+\item $n_w - n_b = -1\equiv 2 \pmod{3}$ -- {\bf True}
+\item $n_b - n_w = 1 \not\equiv 2 \pmod{3}$ -- {\bf False}
+\item $2 n_b + n_w = 2 \not\equiv 1 \pmod{3}$ -- {\bf False}
+%\item $n_b + n \equiv 2 \pmod{3}$ -- {\bf True}
 \end{enumerate}
 \end{solution}
 \fi
 
-\ppart
-Which of the preceding predicates are true for all reachable states?
+\ppart Suppose the game starts with one black token and no white
+tokens.  Put a check next to each of the following predicates that are
+true for all reachable states.
 
 \begin{staffnotes}
 If needed, provide the following hint.
@@ -98,9 +108,6 @@ If needed, provide the following hint.
 \end{staffnotes}
 
 \begin{solution}
-By the invariant principle, a predicate is true for all reachable states if it is both
-a preserved invariant and true for the start state.
-
 \begin{enumerate}
 \item $n_b + n_w \equiv 1 \pmod{3}$ -- {\bf False}
 \item $n_w - n_b \equiv 2 \pmod{3}$ -- {\bf True}
@@ -108,21 +115,34 @@ a preserved invariant and true for the start state.
 %\item $2 n_b - n \equiv 1 \pmod{3}$ -- {\bf True}
 \item $2n_b + n_w \equiv 2 \pmod{3}$ -- {\bf True}
 \end{enumerate}
+
+ The first and third predicates are false in the start state and so
+ are not true of all reachable states.  The second and fourth
+ predicates are true in the start state and are also preserved
+ invariants, so by the invariant principle, they true for all
+ reachable states.
 \end{solution}
 
 \examspace[1.0in]
 
-\ppart Let $n \eqdef n_b + n_w$ be the total number of tokens at any step.
-Let $R(n)$ be the reachable sates
+\ppart Let
+\[
+R(n) \eqdef \set{\text{reachable states }(n_b,n_w) \suchthat n =  n_b+n_w}.
+\]
+Here ``reachable'' refers to states reachable starting with exactly
+one black token.
 
 Define
 \[
-R(n) \eqdef \set{(n_b, n_w) \suchthat n_b + n_w = n \QAND
+S(n) \eqdef \set{(n_b, n_w) \suchthat n_b + n_w = n \QAND
 \iffalse n_b \ge 0, n_w \ge 0,\fi
 n_w - n_b \equiv 2 \pmod{3}}.
 \]
-Prove by induction on $n$ that $R(n)$ equals the reachable states for
-which $n_b+n_w = n$.
+
+Prove by induction on $n$ that
+\[
+R(n)=S(n).
+\]
 
 \iffalse
 Let $P$ be any predicate above that is true for all reachable states. This predicate may also be
@@ -130,41 +150,48 @@ true for some unreachable states.  Using induction on $n$, prove that all states
 $P$ and for which $n_b, n_w \ge 0$ are reachable.
 \fi
 
+\examspace{5in}
+
 \begin{solution}
-The induction hypothesis is~\eqre
-\inductioncase{Base case}: ($n = 1$).
-Since $n$ increases as every step, the only reachable state with $n=1$ is
-the start state $(1,0)$.  Since $R(1) = \set{(1,0)}$, we conclude that
-this base case is true.
+The induction hypothesis is that $R(n)=S(n)$.
 
-
-The only valid state for $n=1$ is $(n_b, n_w) = (1,0)$, which is the starting
-state and is therefore reachable ($P((1,0))$ must hold by definition).
+\inductioncase{Base case}: ($n = 1$).  Since $n$ increases as every
+step, the only reachable state with $n=1$ is the start state $(1,0)$,
+so $R(1) = \set{(1,0)}$.  But $S(1)$ also equals $\set{(1,0)}$ by
+definition, which proves this base case.
 
 \inductioncase{Inductive step}:
+
 Assume that the induction hypothesis holds for $n \ge 1$.
-Let $(n'_b, n'_w)$ be a state for which $n'_b + n'_w = n+1$, $n_b \ge 0$, $n_w \ge 0$,
-and $P$ is true.
-Either $n'_b \ge 2$ or $n'_w \ge 2$ is true, which we prove by cases. If $n+1=2$,
-the only possible state is $(n'_b, n'_w) = (0, 2)$. If $n+1 > 2$, then by assuming
-$n'_b \le 1$ and $n'_w \le 1$, $n+1 = n'_b + n'_w \le 2$ must hold, which is
-a contradiction.
-As a consequence, either state $(n'_b-2, n'_w+1)$ or state $(n'_b+1, n'_w-2)$
-is a valid state with $n$ tokens and must be reachable by the assumption.
-Since there is a transition form that state to $(n'_b, n'_w)$, $(n'_b, n'_w)$
-is also reachable.
+
+Suppose $(n'_b, n'_w) \in S(n+1)$ (and/or $(n'_b, n'_w) \in R(n+1)$??)
+for some $n \geq 1$.  Then either $n'_b \ge 2$ or $n'_w \ge 2$.
+
+TBA{REVISE:}
+
+We prove this by cases.  If $n+1=2$, the only \textbf{POSSIBLE
+  STATE??} is $(n'_b, n'_w) = (0, 2)$.  If $n+1 > 2$, then by assuming
+$n'_b \le 1$ and $n'_w \le 1$, $n+1 = n'_b + n'_w \le 2$ must hold,
+which is a contradiction.
+
+As a consequence, either state $(n'_b-2, n'_w+1)$ or state $(n'_b+1,
+n'_w-2)$ is a valid state with $n$ tokens and must be reachable by the
+assumption.  Since there is a transition form that state to $(n'_b,
+n'_w)$, $(n'_b, n'_w)$ is also reachable.
 \end{solution}
 
 \examspace[4.0in]
 
+\iffalse
 \ppart
 Why do you think the proof above holds regardless of which predicate above you chose?
 
 \begin{solution}
 Any of the given predicates is preserved in a ``reverse'' move.
 \end{solution}
+\fi
 
-\examspace[1.0in]
+%\examspace[1.0in]
 
 {\color{red} VARIANT 2}
 
@@ -232,6 +259,7 @@ and $(n'_b, n'_w)$ is reachable by a transition from $(n'_b+1, n'_w-2)$
 \end{solution}
 
 \examspace[4.0in]
+\iffalse
 
 {\color{red} VARIANT 3 (harder)}
 
@@ -315,6 +343,7 @@ and $(n'_b, n'_w)$ is reachable by a transition from $(n'_b+1, n'_w-2)$
 \end{solution}
 
 \examspace[4.0in]
+\fi
 
 \eparts
 \end{problem}
