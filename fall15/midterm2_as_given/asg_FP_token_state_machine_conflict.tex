@@ -1,0 +1,196 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_token_state_machine_conflict}
+  \pcomment{proposed for midterm II, Fall15}
+  \pcomment{author: Zoran Dzunic, edited ARM}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  derived_variable
+  induction
+  congruences
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  ``Token replacing'' is a single player game using a set of tokens,
+  each colored black or white.  Except for color, the tokens are
+  indistinguishable.  %The game starts with one black token.
+  In each move, a player can replace one black token with two
+  white tokens, or replace one white token with two black tokens.
+
+% Zoran: I somehow prefer to introduce the start state here, as it may
+% be hinting too much if introduced in part (b). Also, I came up
+% with another part of the problem for which it may be better to
+% have the start state fixed as part of rules.
+
+  We can model this game as a state machine whose states are pairs
+  $(n_b,n_w)$ where $n_b \geq 0$ equals the number of black tokens,
+  and $n_w \geq 0$ equals the number of white tokens.
+  
+ Let us assume that the game starts with one black token, that is,
+ state $(1,0)$.
+
+\bparts
+
+\ppart Define the predicate $T(n_b,n_w)$ by the rule:
+\[
+T(n_b,n_w) \eqdef\  [n_w - n_b  \equiv 2 \pmod{3}].
+\]
+Prove that $T$ is true for all reachable states.
+
+\examspace[2.5in]
+
+\begin{solution}
+The predicate is true for the start state since $n_w - n_b = 0-1 \equiv
+2 \pmod{3}$.
+
+Next we show that $T$ is a preserved invariant.
+
+So suppose $T(n_b, n_w)$ holds.  The only two possible transitions are
+into a state $(n'_b,n'_w)$ equal to $(n_b - 1, n_w + 2)$ or $(n_b +
+2, n_w - 1)$.  But since
+\[
+n'_w - n'_b = n_w - n_b \pm 3 \equiv n_w - n_b \pmod{3} \equiv 2 \pmod{3},
+\]
+we have $T(n'_b,n'_w)$, which proves that $T$ is invariant.
+
+Since the predicate is a preserved invariant and true for the start
+state, it is true for all reachable states by the invariant principle.
+\end{solution}
+
+\ppart
+Does the same hold for the predicate $n_b - n_w \equiv 2 \pmod{3}$? Explain.
+
+\examspace[0.5in]
+\examspace
+
+\begin{solution}
+No. This predicate is not true for the start state.
+\end{solution}
+
+\ppart
+\begin{claim*}
+If $T(n_b, n_w)$, then state $(n_b, n_w)$ is reachable from the start
+state $(1, 0)$.
+\end{claim*}
+
+Note that this claim is different from the fact that $T$ is a
+preserved invariant.
+
+The proof will be by induction in $n$ using induction hypothesis $P(n) \eqdef$
+\[
+ \forall (n_b, n_w) \in \naturals^2.\,
+ [(n_b + n_w = n) \QAND  T(n_b,n_w)]
+     \QIMPLIES (n_b,n_w) \text{ is reachable}.
+\]
+
+The base cases will be when $n \leq 2$.  Assuming that the base cases have been verified,
+complete the \inductioncase{Induction Step}:
+
+\examspace[3in]
+
+\begin{solution}
+
+%\begin{proof}
+
+%\inductioncase{Inductive step}:
+Assume that the induction hypothesis holds for some $n \ge 2$. 
+We need to show that for any state $(n_b, n_w) \in \naturals^2$
+such that $n_b+n_w=n+1$ and $n_w-n_b \equiv 2 \pmod{3}$,
+that state is reachable.
+
+Let $(n_b, n_w)$ be an arbitrary such state. Then, either $n_b \ge 2$
+or $n_w \ge 2$ must hold (easy to prove by contradiction).
+Let us assume $n_b \ge 2$ holds.
+Then, $(n'_b, n'_w) = $(n_b-2, n_w+1)$ is a valid state ($\in \naturals^2$)
+and satisfies  the predicate since $n'_w- n'_b = n_w+1 - (n_b-2) = n_w - n_b + 3 \equiv 2 \pmod{3}$.
+Therefore, $(n'_b, n'_w)$ is reachable by the induction hypothesis
+and $(n_b, n_w)$ is reachable by a single transition from it.
+Similar holds when $n_w \ge 2$.
+
+We conclude that in any case $(n_b, n_w)$ is reachable, which completes
+the induction step.
+
+%\inductioncase{Inductive step}: We need to show that if $T(n_b,n_w)$
+%holds, then $(n_b, n_w)$ is reachable.
+%
+%By the base cases, we may assume that.  Suppose $n_b + n_w = n+1$ and $n_w - n_b
+%\equiv 2 \pmod{3}$.  We want to show that 
+%
+%By the observation above, $(n_b, n_w)$ is reachable if both $n_b < 2$
+%and $n_w < 2$, so we need only consider the case when either $n_b
+%\geq 2$ or $n_w \geq 2$.
+%
+%In the case that $n_b \geq 2$, we have $n_b-2 \geq 0$,
+%$(n_b-2)+(n_w+1) = n$, and
+%\[
+%(n_b-2)-(n_w+1) = n_b-n_w -3 \equiv n_b-n_w \equiv 2 \pmod{3}.
+%\]
+%So by induction hypothesis $P(n)$, we have that $(n_b-2,n_w+1)$ is
+%reachable.  But $(n_b-2,n_w+1)$ transitions in one step to
+%$(n_b,n_w)$, so $(n_b,n_w)$ is reachable.
+%
+%The same argument applies in the case that $n_w \geq 2$.
+%
+%We conclude that in any case $(n_b,n_w)$ is reachable, which completes
+%the induction step.
+
+%\end{proof}
+
+\end{solution}
+
+Now verify the {\bf base cases} by proving $P(n)$ for $n \leq 2$.
+
+\examspace[3in]
+\examspace
+
+\begin{solution}
+
+\inductioncase{Base case}: ($n = 0$). 
+The only state that has $n_b + n_w = 0$ is $(0, 0)$,
+but it does not satisfy the predicate, so this case holds vacuously.
+
+\inductioncase{Base case}: ($n = 1$). 
+The only state that has $n_b + n_w = 1$ and satisfies the predicate is $(1, 0)$,
+which is reachable as a start state.
+
+\inductioncase{Base case}: ($n = 2$). 
+The only possible states with $n=2$ are $(0, 2)$, $(1, 1)$ and $(2, 0)$,
+out of which only $(2, 0)$ satisfied the predicate. $(0, 2)$ is reachable
+from $(1, 0)$ by replacing a black token.
+
+\end{solution}
+
+\iffalse
+\ppart
+For each predicate above, how would you modify the game such that
+it is true for all reachable states?
+
+%\examspace[2.0in]
+
+\begin{solution}
+\begin{enumerate}
+\item Change the rules such that each token is replace with 4 tokens of opposite color instead.
+\item No change.
+\item Start with any state for which this predicate is satisfied, e.g., $(0, 1)$ or $(2, 0)$.
+\item No change.
+\item Start with any state for which $n_b + n_w > 5$, e.g., $(3, 3)$.
+\item Change the rules such that each token is replace with 1 token of opposite color instead.
+\end{enumerate}
+\end{solution}
+\fi
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
