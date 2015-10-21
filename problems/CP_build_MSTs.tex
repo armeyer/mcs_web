@@ -3,8 +3,8 @@
 \begin{pcomments}
   \pcomment{CP_build_MSTs}
   \pcomment{ARM 10/27/11}
-  \pcomment{F11.cp9m}
-  \pcomment{figure addded 10/20/15}
+  \pcomment{F11.cp9m, F15.cp8w}
+  \pcomment{figure addded, revised ARM 10/21/15}
 \end{pcomments}
 
 \pkeywords{
@@ -45,7 +45,7 @@ w(v_{j,i}) & \eqdef 1+\frac{i+4j}{100}.
 %\begin{center}
 \begin{figure}[h]
 \includegraphics[height=4in]{4x4-array.pdf}
-\caption{4x4 array graph}
+\caption{The 4x4 array graph $G$}
 \label{fig:4x4}
 \end{figure}
 %\end{center}
@@ -64,35 +64,31 @@ spanning tree of $G$.  (This is Kruskal's MST algorithm.)
   Lemma~\bref{lem:edgeextends}.}
 
 \begin{staffnotes}
-This problem can become a tedious time-sink.  If it takes more than 20
-minutes, abort it, and explain the black-white coloring rules that
-justify the first two parts.
+Students are often unclear about the ``gray edge'' rule.  If the
+problem drags, coaches can explain how the rule applies here and in
+the next part, and let students work it out for the last part.
 \end{staffnotes}
 
 \begin{solution}
 
-The edge weights are listed in the order in which the edges with those
-weight were chosen by the given algorithm.
 \begin{staffnotes}
-\TBA{CHECK THE ANSWER}
-
+\inhandout{From the text: An edge does not create a cycle iff it
+  connects different components.  The edge chosen by Kruskal's
+  algorithm will become the minimum weight gray edge of a black-white
+  coloring when the components it connects are assigned different
+  colors.}
 \end{staffnotes}
-\[
-0,.01,.02,.03,.04,.05,.06,.07,.08,.09,.010,.011,1,1.01,1.02
-\]
 
-\inhandout{From the text: An edge does not create a cycle iff it connects
-different components.  The edge chosen by Kruskal's algorithm will be
-the minimum weight gray edge when the components it connects are
-assigned different colors.}
+\[
+0,\ .01,\ .02,\ .03,\ .04,\ .05,\ .06,\ .07,\ .08,\ .09,\ .10,\ .11,\ 1,\ 1.01,\ 1.02
+\]
 
 \end{solution}
 
 \ppart Grow an MST for $G$ by starting with the tree consisting of the
-single vertex incident to the edges with weights 0.01 and 0.05 and
-successively adding the minimum weight edge with exactly one endpoint
-in the tree.  Stop when the tree spans $G$.  (This is Prim's MST
-algorithm.)
+single vertex $u$ and then successively adding the minimum weight edge
+with exactly one endpoint in the tree.  Stop when the tree spans $G$.
+(This is Prim's MST algorithm.)
 
 \inhandout{For any step in Prim's procedure, describe a black-white
   coloring of the graph components so that the edge Prim chooses is
@@ -102,58 +98,52 @@ algorithm.)
 \begin{solution}
 
 \begin{staffnotes}
+From the text: This is the algorithm that comes from coloring the
+growing tree white and all the vertices not in the tree black.  Then
+the gray edges are the ones with exactly one endpoint in the tree.
 
-%$h_{0,2}h_{1,2}h_{2,2}v_{0,1}h_{0,1}h_{1,1}h_{2,1}v_{0,0}h_{0,0}h_{1,0}h_{2,0}v_{0,2}h_{0,3}h_{1,3}h_{2,3}$
-
-\TBA{NEEDS CHECKING:}
-
+Old soln:
 \[
-.01, .05, .09, 1, 0, .04, .08, .09, 1, .02, .06, .10, 1.02, .03, .07, .011
+h_{0,2}h_{1,2}h_{2,2}v_{0,1}h_{0,1}h_{1,1}h_{2,1}v_{0,0}h_{0,0}h_{1,0}h_{2,0}v_{0,2}h_{0,3}h_{1,3}h_{2,3}
 \]
 
 \end{staffnotes}
 
+\[
+.01,\ .05,\ .09,\ 1,\ 0,\ .04,\ .08,\ .09,\ 1.01,\ .02,\ .06,\ .10,\ 1.02,\ .03,\ .07,\ .11
+\]
 
-\inhandout{From the text: This is the algorithm that comes from coloring the
-growing tree white and all the vertices not in the tree black.  Then
-the gray edges are the ones with exactly one endpoint in the tree.
-}
 \end{solution}
 
-
-\ppart Grow an MST for $G$ by regarding the vertices at
-\begin{itemize}
-\item the upper left corner,
-\item the upper right corner, and
-\item bottom, one in from the left,
-\end{itemize}
-as three 1-vertex trees.  Successively add, for each tree in
-parallel, the minimum weight edge among the edges with one endpoint in
-the tree.  Continue as long as there is no edge between two trees,
-then go back to applying the general gray-edge method until the
-parallel trees merge to form a spanning tree of $G$.  (This is 6.042's
-parallel MST algorithm.)
-
+\ppart The 6.042 ``parallel'' MST algorithm can grow an MST for $G$
+by starting with the upper left corner vertex along with the vertices
+labelled $v$ and $w$.  Regard each of the three vertices as one-vertex
+trees.  Successively add, for each tree in parallel, the minimum
+weight edge among the edges with one endpoint in the tree and the
+other endpoint not in any tree.  Continue until there are no more
+eligible edges---that is, all remaining edges connect two trees---then
+go back to applying the general gray-edge method until the parallel
+trees merge to form a spanning tree of $G$.
 \begin{solution}
 
-\TBA{UPDATE EDGE NAMES}
+\TBA{enter remaing parallel edge weights}
 
 Done in parallel:
+\begin{align*}
+\text{ul} & :\  0,\ .04,\ .08,\\
+       v  & :\ .03,\ .07,\ 1.02,\\
+       w  & :\ .09,\ .05,\ .01,\\
+\end{align*}
 
-T1@(0,0): $h_{0,0}h_{1,0}h_{2,0}v_{0,0}h_{0,1}h_{1,1}h_{2,1}$
-
-T2@(0,3): $h_{0,3}h_{2,3}v_{0,2}h_{0,2}h_{1,2}h_{2,2}v_{0,1}$ (merges with T1)
-
-T3@(2,3): $h_{1,3}$ (merges with T2)
 \end{solution}
 
 \ppart Verify that you got the same MST each time.
+Problem~\bref{PS_unique_MST} explains why there is a unique MST for
+any finite, connected, weighted graph where no two edges have the same
+weight.
 
 \begin{solution}
 They are the same---if no mistake was made.
-Problem~\bref{PS_unique_MST} explains why there is a unique MST for
-any finite connected weighted graph where no two edges have the same
-weight.
 \end{solution}
 
 \eparts
