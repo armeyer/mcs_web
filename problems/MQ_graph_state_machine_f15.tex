@@ -1,0 +1,272 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{MQ_graph_state_machine_f15}
+  \pcomment{variant of MQ_graph_state_machine}
+  \pcomment{Proposed by ZDz for Miderm 3 in F15}
+\end{pcomments}
+
+\pkeywords{
+graphs,
+state_machines,
+connectivity,
+well_order,
+termination,
+partial_correctness
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+ 
+We apply the following operation to a \textbf{simple graph} $G$:
+pick two vertices $u \neq v$ such that either
+\begin{enumerate}
+\item there is an edge of $G$ between $u$ and $v$, and there is also a path
+from $u$ to $v$ which does \emph{not} include this edge; in this case,
+delete the edge $\edge{u}{v}$.
+
+\item there is no path from $u$ to $v$; in this case, add the edge
+  $\edge{u}{v}$.
+\end{enumerate}
+
+Keep repeating these operations until it is no longer possible to find two
+vertices $u \neq v$ to which an operation applies.
+
+Let $n \geq 2$ be the number of nodes of $G$.
+
+%Assume the vertices of $G$ are the integers $1,2,\dots,n$ for some $n \geq
+%2$.  This procedure can be modelled as a state machine whose states are
+%all possible simple graphs with vertices $1,2,\dots,n$.  $G$ is the start
+%state, and the final states are the graphs on which no operation is
+%possible.
+
+\bparts
+
+\ppart
+What is the maximum possible number of times operation 2.\ will be applied? Explain.
+
+\examspace[1.5in]
+
+\begin{solution}
+Operation 2.\ is applied when there is no path between two vertices, which is the
+case if they belong to different connected components. By adding an edge between
+them, these two components are connected and become a single component.
+Therefore, every time operation 2.\ is applied, the number of connected components
+is reduced by 1. Since there can be at most $n$ different connected components
+to begin with (if there are no edges in $G$), operation 2.\ will be applied
+at most $n-1$ times.
+\end{solution}
+
+\ppart
+What is the maximum possible number of times operation 1.\ will be applied? Explain.
+(Finding an upper bound is fine.)
+%You will receive partial credit if you find an upper bound that you can justify, instead
+%of the exact number.
+
+\examspace[1.5in]
+
+\begin{solution}
+When operation 1.\ is applied, the number of edges is decreased by 1. Since
+there can be at most ${n \choose 2}$ edges to begin with and at most
+$n-1$ eyes can be added by operation 2., operation 1.\ will be invoked
+no more than ${n \choose 2} + n-1$ times.
+\end{solution}
+
+\begin{staffnotes}
+Proving an exact max is not easy. It would actually be easier to first conclude that
+the procedure terminate with a tree (using upper bound as in previous solution,
+and then utilize that to have a shorter proof for this one.
+\begin{solution}
+First, note that edges added by operation 2.\ are never deleted because they are only added
+between two nodes that are not connected. If nodes $u$ and $v$ are not connected and
+an edge is added between them, this edge would be removed only if there was
+another path between them that does not contain edge $\edge{u}{v}$. However,
+such path could not exist before adding edge $\edge{u}{v}$, and could not be
+created after adding this edge. To show the latter, let us assume to the contrary
+that a path between $u$ and $v$ that does not contain edge $\edge{u}{v}$ is
+created after adding this edge. Let $u - w_1 - w_2 - \lodts - w_k - v$ be that path,
+and let $\edge{w_i}{w_{i+1}}$ be the last edge on it that was added.
+However, before adding this edge, $w_i$ was connected to $u$ and $w_{i+1}$ was
+connected to $v$ and the edge $\edge{u}{v}$ existed, implying that
+there was a path from $w_i$ to $w_{i+1}$. Therefore, edge $\edge{w_i}{w_{i+1}}$
+could not have been added by operation 2., and hence a contradiction.
+We conclude that edges that are added are never deleted.
+
+When operation 1.\ is applied, the number of edges is decreased by 1, and it
+cannot be applied if there is no cycle in the graph, which is when the graph is a forest.
+The maximum number of deletions is achieved when $G$ has the most edges to start with,
+i.e., if it is a complete graph. In that case, $G$ contains ${n \choose 2}$ edges and
+edges will be removed until it remains a tree, i.e., when it contains $n-1$ edges.
+Therefore, operation 1.\ can be applied at most
+${n \choose 2} - (n-1) = n(n-1)/2 - (n-1) = (n-1)(n-2)/2 = {n-1\choose 2}$ times.
+
+To show that this is indeed maximum, we argue by cases. If $G$ is connected
+but not complete, the same number of edges will remain in the end, but the starting
+number will be smaller, and thus fewer edges would be deleted.
+If $G$ is not connected, then edges will be added between connected components
+until $G$ becomes connected. These edges will not be removed, and thus we know
+that in the end there will be $n-1$ edges that were never removed, which reduces
+to the previous case.
+\end{solution}
+\end{staffnotes}
+
+\ppart
+Conclude that starting from any graph, $G$, the procedure above terminates.
+(Note that you can argue about this even if you did not solve previous parts,
+by utilizing what their statements imply.)
+
+\examspace[1in]
+
+\begin{solution}
+In the previous two parts, we showed that both operations can be applied
+only a finite number of times, and thus the procedure must terminate in
+finite number of steps.
+\end{solution}
+
+\ppart Prove that the procedure always terminates with a graph that is a tree.
+
+\examspace[2in]
+
+\begin{solution}
+We use the characterization of a tree as a cycle-free,
+connected, simple graph.
+
+A final graph must be connected, because otherwise there would be two
+vertices with no path between them, and then a transition adding the edge
+between them would be possible.
+
+A final graph can't have a cycle, because deleting any edge on the
+cycle would be a possible operation.
+\end{solution}
+
+%\ppart
+%
+%Let $G$ be the graph with vertices $\set{1,2,3,4}$ and edges
+%\[
+%\set{\set{1,2},\set{3,4}}
+%\]
+%How many possible final states are reachable from start state
+%$G$? \hfill \examrule{1in}
+%
+%\begin{solution}It's not possible to delete any edge.  The procedure can only
+%add an edge connecting exactly one of vertices 1 or 2 to exactly one of
+%vertices 3 or 4, and then terminate.  So there are four possible final
+%states.
+%\end{solution}
+%
+%\ppart
+%\label{derived} On the line next to each of the derived
+%state variables below, indicate the \emph{strongest} property from the
+%list below that the variable is guaranteed to satisfy, no matter what the
+%starting graph $G$ is.  The properties are:
+%\begin{center}
+%\begin{tabular}{ccc}
+%\emph{constant} & \emph{increasing} & \emph{decreasing}\\
+%\emph{nonincreasing} & \emph{nondecreasing} & \emph{none of these}
+%\end{tabular}
+%\end{center}
+%
+%For any state, let $e$ be the number of edges in it, and let $c$ be the
+%number of \textbf{connected components} it has.  Since $e$ may increase or
+%decrease in a transition, it does not have any of the first four
+%properties.  The derived variables are:
+%\begin{enumerate}
+%
+%\item[0)] $e$ \hfill \underline{\emph{none of these}}
+%
+%
+%\item[i)] $c$ \hfill \examrule{1.0in}
+%
+%\begin{solution}
+%nonincreasing
+%\end{solution}
+%
+%\item[ii)]  $c+e$ \hfill \examrule{1.0in}
+%
+%\begin{solution}
+%nonincreasing
+%\end{solution}
+%
+%\item[iii)] $2c+e$ \hfill \examrule{1.0in}
+%
+%\begin{solution}
+%decreasing
+%\end{solution}
+%
+%\begin{editingnotes}
+%USABLE ONLY IF LEXICOGRAPHIC ORDER IS BACK IN TEXT
+%\item[iv)] $(c,e)$, under the \textbf{lexicographic order} on $\naturals \cross \naturals$.
+%\hfill \examrule{1.0in}
+%\end{editingnotes}
+%
+%\item[iv)] $c+\frac{e}{e+1}$
+%\hfill \examrule{1.0in}
+%
+%\begin{solution}
+%decreasing
+%\end{solution}
+%
+%\end{enumerate}
+%
+%\ppart
+%Explain why, starting from any state, $G$, the procedure
+%terminates.  If your explanation depends on answers you gave to part~(b),
+%you must justify those answers.
+%
+%\begin{solution}
+%The derived variable iii) is a natural-number valued variable and is
+%decreasing, so by Theorem~\bref{th:decr}, the procedure must terminate.
+%
+%\emph{Alternative answer}: derived variable iv) is decreasing, and its
+%values are all in the set $\naturals + \twdone$ shown in
+%Section~\bref{to1_well-order} to be a well ordered set of real
+%numbers.
+%
+%\begin{editingnotes}
+%under the lexicographic order on $\naturals \cross \naturals$
+%which we know from Problem Set 6 is a well ordered set.
+%\end{editingnotes}
+%
+%To show that the variable iii) decreases, note that the rule for
+%deleting an edge ensures that the connectedness relation does not change,
+%so neither does the number of connected components; therefore the variable
+%decreases by one when an edge is deleted.  The rule for adding an edge
+%ensures that the number of connected components decreases by one, so the
+%variable changes by $-2$ for the reduced number of components and $+1$ for
+%the added edge, for a net decrease of 1.
+%
+%Variable iv) decreases when an edge is deleted and the number of
+%components stays the same.   The rule for adding an edge
+%ensures that the number of connected components decreases by one, so the
+%variable changes by $-1$ for the reduced number of components and
+%increases by an amount $(e+1)/(e+2) - e/(e+1) < 1$ for
+%the added edge, for a net decrease.
+%\end{solution}
+%
+%\ppart Prove that any final state must be an \textbf{unordered tree}
+%on the set of vertices, that is, a spanning tree.
+%
+%\begin{solution}
+%We use the characterization of a tree as a cycle-free,
+%connected, simple graph.
+%
+%A final state must be connected, because otherwise there would be two
+%vertices with no path between them, and then a transition adding the edge
+%between them would be possible, contradicting finality of the state.
+%
+%A final state can't have a cycle, because deleting any edge on the
+%cycle would be a possible transition.
+%\end{solution}
+
+\eparts
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
