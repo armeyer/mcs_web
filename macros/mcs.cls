@@ -1501,6 +1501,19 @@
     }%
 }
 
+\newcommand{\odds}[1]{\operatorname{Odds}(#1)}
+
+\newcommand{\oddscond}[2]{%
+    \ifinner
+        \settoheight{\strutheight}{$#1 #2$}%
+    \else
+        \settoheight{\strutheight}{$\displaystyle#1 #2$}%
+     \fi
+    \odds{
+        #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
+    }%
+}
+
 \newcommand{\Ex}{\operatorname{Ex}}
 
 \newcommand{\expect}[1]{\Ex[#1]}
