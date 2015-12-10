@@ -1342,6 +1342,7 @@
 \newcommand{\naturals}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\Zmod}[1]{\mathbb{Z}_{#1}}
+\newcommand{\Zmods}[1]{\mathbb{Z}^*_{#1}}
 \newcommand{\rationals}{\mathbb{Q}}
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
@@ -1368,9 +1369,10 @@
 \newcommand{\qcnt}[2]{\operatorname{qcnt}(#1,#2)}
 %\newcommand{\pring}[1]{\Zmod{#1}}
 \newcommand{\inzmod}[1]{\ (\Zmod{#1})}
+\newcommand{\inzmods}[1]{\ (\Zmods{#1})}
 %\newcommand{\powermod}[3]{{#1}^{#2} \inzmod{#3}}
 %\newcommand{\relpr}[1]{\operatorname{gcd1}\set{#1}}
-\newcommand{\relpr}[1]{\Zmod{#1}^*}
+\newcommand{\relpr}[1]{\Zmods{#1}}
 \newcommand{\ordmod}[2]{\operatorname{ord}(#1,#2)}
 \newcommand{\expof}[2]{\nu_#1(#2)}
 
