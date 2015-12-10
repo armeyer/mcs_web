@@ -20,96 +20,115 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-``Double Token Replacing'' is a process for updating a set of tokens,
-  each colored black or white, starting from a single black token.  At
+``Switch Token Replacing'' is a process for updating a set of black
+  and white tokens.  The process starts with a single black token.  At
   each step,
-\begin{itemize}
+
+\renewcommand{\theenumi}{\roman{enumi}}
+\renewcommand{\labelenumi}{(\theenumi)}
+
+\begin{enumerate}
 \item one black token can be replaced with two white tokens, or
-\item one white token can be replaced with two black tokens, or
-\item the number of both black and white tokens can be doubled (multiplied by two).
-\end{itemize}
+\item if the numbers of white and black tokens are not the same, the
+  colors of all the tokens can be switched: all the black tokens
+  become white, and the white tokens become black.
+\end{enumerate}
 
   We can model this game as a state machine whose states are pairs
-  $(n_b,n_w)$ where $n_b \geq 0$ equals the number of black tokens,
-  and $n_w \geq 0$ equals the number of white tokens.  So the start
-  state is $(1,0)$.
+  $(b,w)$ of nonnegative integers, where $b$ equals the number of
+  black tokens, and $w$ equals the number of white tokens.  So the
+  start state is $(1,0)$.
 
 \bparts
   
-\ppart
-Define the predicate $F(n_b,n_w)$ by the rule:
+\ppart \inbook{Indicate}\inhandout{Circle} each of the following
+states can be reached from the start state in \emph{exactly} two
+steps:
 \[
-F(n_b,n_w) \eqdef\  n_b > 0 \QAND\ [n_b - n_w  = 1\text{ or } 2 \inzmod{3}].
+(0,0),\ (1,0),\ (0,1),\ (1,1),\ (0,2),\ (2,0),\ (2,1),\ (1,2),\ (0,3),\ (3,0)
 \]
 
-Prove that if $F(n_b,n_w)$ is true, the state $(n_b,n_w)$ is reachable
-from the state state.
+\begin{solution}
+\[(0,2),\ (2,0),\ (2,1)\]
+\end{solution}
+
+\ppart
+Define the predicate $F(b,w)$ by the rule:
+\[
+F(b,w) \eqdef\ [b - w  \not\equiv 0 \pmod{3}].
+\]
+
+Prove the following
+\begin{claim*}
+If $F(b,w)$, then state $(b,w)$ is reachable from the state state.
+\end{claim*}
 
 \examspace[3.5in]
 
 \begin{solution}
-The proof of the Claim will be by induction in $n$ using induction
-hypothesis $P(n) \eqdef$
+The proof will be by induction in $n$ using induction hypothesis $P(n)
+\eqdef$
 \[
  \forall (n_b, n_w).\,
  [(n_b + n_w = n) \QAND  F(n_b,n_w)]
      \QIMPLIES (n_b,n_w) \text{ is reachable}.
 \]
 
-The base cases will be when $n \leq 2$.
-
 \begin{proof}
-\inductioncase{Base case} ($n \leq 2$):
-There are only two states with $n \leq 2$ that satisfy $F$:
-\[
-(1,0),\ (2,0).
-\]
-But $(1,0)$ is reachable since it is the start state, and $(2,0)$ is
-reachable by doubling the start state.  This proves $P(n)$ for $n \leq 2$. 
 
-\inductioncase{Inductive step}: Suppose $n \ge 2$ and $n_b + n_w =
-n+1$ and $F(n_b,n_w)$ holds.  We want to show that $(n_b, n_w)$ is
+\inductioncase{Base case} ($n \leq 1$):
+There are only two states with $n \leq 1$ that satisfy $F$:
+\[
+(1,0),\ (0,1).
+\]
+But $(1,0)$ is reachable since it is the start state, and $(0,1)$ is
+reachable in one step by switching white and black tokens.
+
+\inductioncase{Inductive step}: Suppose $b + w = n+1$ for some $n \geq
+1$ and $F(b,w)$ holds.  We want to show that $(b, w)$ is reachable.
+
+Now $F(b,w)$ implies that $b \neq w$, and since $n+1 \geq 2$, either
+$b \geq 2$ or $w \geq 2$.  Since $(b,w)$ is reachable iff $(w,b)$ is
+reachable, we can assume that $w \geq 2$.  This implies that
+$(b+1,w-2)$ is a state that transitions to $(b,w)$ in one step.
+So we need only show that $(b+1,w-2)$ is reachable.
+
+Now $F(b+1,w-2)$ holds because 
+\[
+(b+1)-(w-2) = (b-w) + 3  \equiv b-w \not\equiv 0 \pmod{3}.
+\]
+Also, since
+\[
+(b+1)+(w-2) = (b+w) - 1 = n,
+\]
+we conclude by induction hypothesis $P(n)$ that $(b+1,w-2)$ is
 reachable.
-
-Since $n+1 \geq 3$, either $n_b \geq 2$ or $n_w \geq 2$.
-
-In the case that $n_b \geq 2$, we have $n_b-2 \geq 0$, so
-$(n_b-2,n_w+1)$ is a state.  If $n_B - 2 >0$, then $F(n_b-2,n_w+1)$ holdss
-because
-\[
-(n_b-2)-(n_w+1) = n_b-n_w -3 = n_b-n_w  = 1\text{ or } 2 \inzmod{3}.
-\]
-Since
-\[
-(n_b-2)+(n_w+1) = n_b+n_w - 1 = n,
-\]
-we conclude by induction hypothesis $P(n)$ that $(n_b-2,n_w+1)$ is
-reachable.  But $(n_b-2,n_w+1)$ transitions in one step to
-$(n_b,n_w)$, which proves that $(n_b,n_w)$ is reachable.
-
-In the case that $n_b-2 = 0$, \TBA{$n_b = 0$}
-
-The same argument applies in the case that $n_w \geq 2$.
-
-We conclude that in any case $(n_b,n_w)$ is reachable, which completes
-the induction step.
 \end{proof}
-
-To understand the difference between this problem and proving that $T$
-is a preserved invariant, it may be helpful to think about the problem
-of making different postage amounts, for example using 6 and 15 cent
-stamps\inbook{ (Problem~\bref{FP_6_and_15_cent_stamps_by WOP})}.  An
-easy invariant proof confirms the fact that every makeable postage
-amount is divisible by three.  This preserved invariant for postage
-corresponds to invariance of $T$ for reachable token machine states.
-
-A very different fact is that \emph{every} (large enough) amount of
-postage that is divisible by three is actually makeable from 6 and 15
-cent stamps.  Postage \emph{makeability} for amounts divisible by
-three corresponds to \emph{reachability} of token machine states
-satisfying $T$.
 \end{solution}
 
+\ppart Explain why $(11^{6^{7777}}, 5^{10^{88}})$ is \emph{not}
+  reachable.
+
+\hint We have not proved that $F$ is a preserved invariant, so you may
+not assume it.
+
+\begin{solution}
+It is easy to see that $\rem{b-w}{3}$ remains unchanged by the
+transitions, which implies that $F$ is indeed a preserved invariant.
+Since $F$ holds for the start state $(1,0)$, it follows that it holds
+for all reachable states.
+
+We claim that $F(11^{6^{7777}}, 5^{10^{88}})$ is false, which proves that
+$(11^{6^{7777}}, 5^{10^{88}})$ is not reachable.
+
+To prove $\QNOT(F(11^{6^{7777}}, 5^{10^{88}}))$, note that $11 \equiv
+2 \equiv 5 \pmod{3}$, so both $11^{6^{7777}}$ and $5^{10^{88}}$ are
+congruent to $2^{\text{even number}} \equiv 1 \pmod{3}$.  So
+\[
+11^{6^{7777}} - 5^{10^{88}} \equiv 1 - 1 = 0 \pmod{3},
+\]
+as claimed.
+\end{solution}
 
 \eparts
 
