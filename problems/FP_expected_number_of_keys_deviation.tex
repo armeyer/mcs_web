@@ -1,0 +1,97 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_expected_number_of_keys_deviation}
+  \pcomment{subset of PS_n_keys}
+  \pcomment{overlaps FP_expected_number_of_keys}
+  \pcomment{ARM 12/12/15}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  Chebyshev
+  asymptotic
+  little_oh
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A man has a set of $n$ keys, one of which fits the door to his
+apartment.  He tries a key at random, and if it does not fit the door,
+he simply puts it back; so he might try the same ill-fitting key
+several times.  He continues until he finds the one right key that
+fits.
+
+Let $T$ be the number of times he tries keys until he finds the right
+key.
+
+\bparts
+
+\ppart What is $\expect{T}$? \hfill \examrule{0.7in}
+
+\hint mean time to failure
+
+\examspace[0.5in]
+
+\begin{solution}
+Take finding the right key to be a ``failure''.  So the probability of
+failure on the any given try, given ``success'' on the previous tries, is
+$1/n$.  Therefore $\expect{T} = 1/(1/n) = n$.
+\end{solution}
+
+\ppart What is $\variance{T}$? \hfill \examrule{0.7in}
+\begin{solution}
+The formula~(\bref{var_time_to_fail}) for $\variance{T}$ is
+$\frac{1-p}{p^2}$ which in this case is
+\[
+\frac{1-1/n}{(1/n)^2} = \frac{n-1}{n}.
+\]
+\end{solution}
+
+\ppart Use the Chebyshev Bound to show that
+\begin{equation}\label{T2nO1n2}
+\pr{T \geq 2n} = O\paren{\frac{1}{n^2}}.
+\end{equation}
+
+\examspace[1.2in]
+
+\begin{solution}
+\begin{align*}
+\pr{T \geq 2n}
+   & = \pr{T -n \geq n}\\
+   & \leq \pr{\abs{T - n} \geq n}\\
+   & \leq \frac{\variance{T}}{n^2}
+      & \text{(Chebyshev)}\\
+   & = \frac{(n-1)/n}{n^2}\\
+   & \leq frac{1}{n^2}.
+\end{align*}
+\end{solution}
+
+\ppart Derive a bound for $\pr{T \geq 2n}$ that is asymptotically
+smaller than the bound~\eqref{T2nO1n2} derived from Chebyshev's
+bound.
+
+\begin{solution}
+Let $p \eqdef 1/n$ and $q \eqdef 1-p$.
+\begin{align*}
+\pr{T \geq 2n}
+  & = \sum{k=0}^\infty \pr{T= 2n+k}\\
+  & = \sum{k=0}^\infty p^{2n+k-1}q\\
+  & = \frac{q}{p^{2n-1}} \sum{k=0}^\infty p^k\\
+  & = \frac{q}{p^{2n-1}}\cdot \frac{1}{1-p}
+        & \text{(geometric series)}\\
+  & = \frac{1}{p^{2n-1}}.
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput
