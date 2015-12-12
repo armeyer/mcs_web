@@ -3,13 +3,15 @@
 \begin{pcomments}
   \pcomment{CP_expected_number_of_keys}
   \pcomment{subset of PS_n_keys}
-  \pcomment{from: S08.cp14m}
+  \pcomment{from: S08.cp14m, F15.final}
+  \pcomment{revised ARM 12/12/15}
 \end{pcomments}
 
 \pkeywords{
   random_variable
   expectation
   indicator_variable
+  failure
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -17,47 +19,135 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-A man has a set of $n$ keys, one of which fits the door to his apartment.
-He tries the keys until he finds the correct one.  Give the expectation
-for the number of keys he tries if
+A man has a set of $n$ keys, one of which fits the door to his
+apartment.  He tries the keys randomly until he finds the key that
+fits.  Let $T$ be the number of times he tries keys until he finds the
+right key.
 
 \bparts
 
-\ppart he tries the keys at random (possibly repeating a key tried
-earlier)
+\ppart Suppose each time he tries a key that does not fit the door, he
+simply puts it back.  This means he might try the same ill-fitting key
+several times before he finds the right key.  What is $\expect{T}$?
+
+\hint mean time to failure
+
+\examspace[1in]
 
 \begin{solution}
-This is a mean time to failure problem if finding a key is taken
-to be a ``failure''.  The probability of failure on the $i$th try, given
-``success'' on the previous tries, is $1/n$, so if $T$ is the number of
-tries to find the right key, then $\expect{T} = 1/(1/n) =n$.
+Take finding the right key to be a ``failure''.  So the probability of
+failure on the any given try, given ``success'' on the previous tries, is
+$1/n$.  Therefore $\expect{T} = 1/(1/n) = n$.
+\end{solution}
+\eparts
+\medskip
+
+Now suppose he throws away each ill-fitting key that he tries.  That
+is, he chooses keys randomly from \emph{among those he has not yet
+  tried}.  This way he is sure to find the right key within $n$ tries.
+
+\bparts
+
+\ppart\label{mkleft} If he hasn't found the right key yet and there
+are $m$ keys left, what is the probability that he will find the right
+key on the next try?
+\begin{solution}
+\[
+\frac{1}{m}.
+\]
 \end{solution}
 
-\ppart he chooses keys randomly from among those he has not yet tried.
+\ppart\label{prT>kT>k1} Given that he did not find the right key on
+his first $k-1$ tries, verify that the probability that he does not
+find it on the $k$th trial is given by
+\[
+\prcond{T > k}{T > k-1} = \frac{n-k}{n-(k-1)}.
+\]
+
+\examspace[1.0in]
 
 \begin{solution}
-$T=k$ means that the man picks the wrong key on the first trial, and he
-picks the wrong key on the second trial, etc, and he picks the right key on
-the $k$-th trial.  Let $K_i$ be the indicator random variable for the $i$th
-trial, namely, $K_i=1$ if he picks the right key on the $i$th trial, and $0$
-otherwise.  Then
+Given that the right key has not been picked in the first $k-1$
+trials, there are $n-(k-1)$ keys left, so by part~\eqref{mkleft}, the
+probability that the $k$th trial is also not the right key is
 \[
-\pr{T=k} = \pr{K_1=0\ \&\ K_2=0\ \&\cdots\&\ K_{k-1}=0\ \&\ K_k=1}
+1- \frac{1}{n-(k-1)} = \frac{n-k}{n-(k-1)}.
 \]
-By the Product Rule (Section~\bref{product_rule_subsec}) we can compute
+\end{solution}
+
+\ppart Prove that 
+\begin{equation}\label{T>kn-kn}
+\pr{T > k} =  \frac{n-k}{n}.
+\end{equation}
+
+\hint This can be argued directly, but if you don't see how, induction
+using part~\eqref{prT>kT>k1} will work.
+
+\examspace[2.0in]
+
+\begin{solution}
+
+Suppose the man keeps going until he has tried all $n$ keys.  In this
+case, it's clear that the right key is equally likely to come up on
+each try, hence the probability that it comes up after the $k$th try is
+\[
+(n-k)\cdot \frac{1}{n} = \frac{n-k}{n}.
+\]
+
+Alternatively, we can prove~\eqref{T>kn-kn} by induction on $k$,
+using~\eqref{T>kn-kn} as the induction hypothesis.
+
+\inductioncase{Base case} {$k=0$}: He has to try at least one key,
+which means $\pr{T>0} = 1 = (n-0)/n$, so~\eqref{T>kn-kn} holds in this
+  case.
+
+\inductioncase{Inductive step}:
+We must show that for $k\geq 0$,
+\[
+\pr{T > k+1} =  \frac{n-(k+1)}{n}.
+\]
+
+Now we have
 \begin{align*}
-\pr{T=k}
-= & \pr{K_1=0} \prcond{K_2=0}{K_1=0} \prcond{K_3=0}{K_1=0\ \&\ K_2=0} \cdots\\
-  & \qquad \cdots \prcond{K_k=1}{K_1=0\ \&\cdots\&\ K_{k-1}=0}\\
-= & \frac{n-1}{n}\ \frac{n-2 }{n-1}\
-\frac{n-3 }{n-2}\ \cdots\ \frac{n-k+1}{n-k+2}\ \frac{1}{n-k+1}\\
-= & \frac{1}{n}
+\pr{T > k+1}
+ & = \prcond{T > k+1}{T > k} \cdot \pr{T > k}
+        & \text{(Conditional Product Rule)} \\
+ & = \frac{n-(k+1)}{n-k} \cdot \pr{T > k}
+        & \text{(part~\eqref{prT>kT>k1})}\\
+ & = \frac{n-(k+1)}{n-k}\frac{n-k}{n}
+        & \text{(induction hypothesis)}\\
+ & = \frac{n-(k+1)}{n}.
 \end{align*}
-So
+\end{solution}
+
+\ppart Conclude that in this case
+\[
+\expect{T} = \frac{n+1}{2}.
+\]
+
+\examspace[1.5in]
+
+\begin{solution}
+We've already argued that
+\[
+\pr{T = k} = \frac{1}{n}.
+\]
+This can also be proved using~\eqref{T>kn-kn}:
+\begin{align*}
+\pr{T = k} 
+  & = \pr{T > k-1} - \pr{T > k}\\
+  & = \frac{n-(k-1)}{n} - \frac{n-k}{n}\\
+  & = \frac{1}{n}.
+\end{align*}
+Therefore,
 \[
 \expect{T} = \sum_{k=1}^n k \cdot \pr{T=k}  = \frac{1}{n}\sum_{k=1}^n{k} = \frac{n+1}{2}.
 \]
+
 \end{solution}
 
 \eparts
+
 \end{problem}
+
+\endinput
