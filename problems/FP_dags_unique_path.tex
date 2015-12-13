@@ -1,0 +1,153 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_dags_unique_path}
+  \pcomment{ZDz 12/13/15}
+  \pcomment{f15.final}
+\end{pcomments}
+
+\pkeywords{
+  counting
+  probability
+  expectation
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $S_n$ denote the set of all DAGs with $n$ nodes such that there
+are no two different paths between any pair of nodes.
+
+\bparts
+ 
+ 
+\ppart
+Let's apply the following transformation step to a graph $G \in S_n$.
+Find vertices $u, v, w$ such that $u \rightarrow v \rightarrow w$
+and replace edge $v \rightarrow w$ with edge $u \rightarrow w$.
+If there is no such triple of vertices, nothing is done.
+Prove that such obtained graph is also in $S_n$.
+
+\examspace[3in]
+
+\begin{solution}
+Let $H$ be a graph after a transformation step.
+We need to prove that $H$ does not contain a pair
+of vertices, $x$ and $y$, such that there are two different paths from
+$x$ to $y$. Since that holds in $G$, we only need to check if
+the added edge, $u \rightarrow w$, creates an additional path
+from $x$ to $y$. Let us assume it does. If there are
+two paths between $x$ and $y$ in $H$, one of them, $p_1$, must
+contain $u \rightarrow w$, while the other one, $p_2$ cannot contain
+$v \rightarrow w$ since $v \rightarrow w$ is not in $H$.
+$p_2$ also cannot contain $u \rightarrow w$ since that would
+imply that there were two different paths either between $x$ and $u$,
+or between $w$ and $y$ in $G$. Therefore $p_2$ is a path in $G$ as well.
+However, by replacing $u \rightarrow w$ with $u \rightarrow v$
+and $v \rightarrow w$ in $p_1$, $p_1$ would become a path in $G$
+and still be different from $p_2$ ($p_2$ does not contain $v \rightarrow w$),
+which would imply that there are two different paths between
+$x$ and $y$ in $G$ -- contradiction.
+\end{solution}
+ 
+ 
+\ppart
+Find an example of a graph $G \in S_n$ such that after applying the
+transformation, the number of triples $u \rightarrow v \rightarrow w$
+increases.
+
+\examspace[2in]
+
+\begin{solution}
+$G$ with the set of edges $\set{a \rightarrow c, b \rightarrow c, c \rightarrow d, d \rightarrow e}$.
+Triples are $a \rightarrow c \rightarrow d$, $b \rightarrow c \rightarrow d$ and $c \rightarrow d \rightarrow e$.
+After apply transformation to $c \rightarrow d \rightarrow e$, the obtained graph has edges
+$\set{a \rightarrow c, b \rightarrow c, c \rightarrow d, c \rightarrow e}$ and triples
+$a \rightarrow c \rightarrow d$, $b \rightarrow c \rightarrow d$, $a \rightarrow c \rightarrow e$
+and  $b \rightarrow c \rightarrow e$.
+\end{solution}
+
+
+\ppart
+Show that, by starting from graph $G \in S_n$, the procedure that repeatedly applies
+transformation steps above until there are no more triples $u \rightarrow v \rightarrow w$
+will still terminate.
+
+\hint{Consider the number of pairs of nodes with path relation.}
+
+\examspace[3in]
+
+\begin{solution}
+By applying a transformation to $G$ on $u \rightarrow v \rightarrow w$,
+path from $v$ to $w$ is removed (there could not exist an alternative path
+due to the definition of $S_n$). On the other hand, no other path relation
+is added. To prove that, let us assume for the sake of contradicition
+that there is an added path relation from $x$ to $y$. Then, the path from
+$x$ to $y$, $p$, must include the added edge, $u \rightarrow w$.
+By replacing $u \rightarrow w$ with $u \rightarrow v$
+and $v \rightarrow w$ in $p$, a path from $x$ to $y$ in $G$ is obtained.
+However, we assumed that there was no such path, hence a contradiction. 
+Therefore, we showed that the number of pairs of nodes with path
+relation is strictly decreasing. Since that number is a nonnegative integer,
+the procedure must terminate.
+\end{solution}
+
+
+\ppart
+Let $m_n$ be the maximum number of edges of any graph from $S_n$.
+Let $T_n \subset S_n$ be the set of DAGs in which there are no
+three vertices $u, v, w$ such that $u \rightarrow v \rightarrow w$.
+Show that there is a graph in $T_n$ that has $m_n$ edges.
+
+\examspace[2in]
+
+\begin{solution}
+Let us assume that $G$ is a graph in $S_n$ with $m_n$ edges.
+By applying the transformation steps above, the number of edges
+does not change. At the end of the procedure, a graph from $T_n$
+is obtained (otherwise, there is a path $u \rightarrow v \rightarrow w$
+and transformation can still be applied). That graph has $m_n$ edges.
+\end{solution}
+
+
+\ppart
+What is $m_n$ (as a function of $n$)?
+
+\hint{Note that there are two types of nodes in a graph from $T_n$
+-- those with in-degree 0, and those with out-degree 0.}
+
+\examspace[3in]
+
+\begin{solution}
+Let $G$ be a graph from $T_n$. Then, no vertex in $G$ can have both
+incoming and outgoing edges (a path of the form $u \rightarrow v \rightarrow w$
+would exist otherwise).
+Let $A$ be the set of vertices of $G$ with in-degree 0.
+Let $B$ be the set of vertices of $G$ with out-degree 0.
+Then, all edges in $G$ must go from a vertex in $A$ to a vertex in $B$.
+The number of edges is maximized if there is an edge between all
+pairs of vertices from $A \times B$ (it is easy to show that such a graph
+is still in $T_n$). The number of edges is then $|A| \cdot |B|$.
+Since $|A| + |B| = n$, $|A| \cdot |B|$ is maximized when $|A|$ is
+an integer closest possible to $n/2$.
+For even $n$, the maximum number of edges attained by a graph
+from $T_n$ is obtained when $|A| = n/2$, and is equal to $n^2/4$.
+For odd $n$, it is obtained when $|A| = (n-1)/2$,
+and is equal to $(n-1)(n+1)/4 = (n^2-1)/4$.
+The maximum number of edges can be written compactly
+as $m_n = \floor{n^2/4}$, for any $n$.
+Due to the result shown in the previous part, that is also the maximum
+number of edges of any graph in $S_n$. 
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
