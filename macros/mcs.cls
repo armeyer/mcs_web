@@ -3346,7 +3346,7 @@
   \fi
 }
 
-\iffalse   %FIX
+\iffalse
 \newcommand{\makeupfinal}[2][\stamp]{%
   \theoremsunderproblems
   \ifshowstaffnotes
