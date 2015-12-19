@@ -3322,10 +3322,10 @@
   \theoremsunderproblems
   %\useexamproblems
   \ifshowstaffnotes
-  \paper[#1]{cfes1}{}{Staff Solutions to Conflict Final 1}
+  \paper[#1]{cfe1s}{}{Staff Solutions to Conflict Final 1}
   \else
   \ifshowsolutions
-  \paper[#1]{cfes1}{}{Solutions to Conflict Final 1}
+  \paper[#1]{cfe1s}{}{Solutions to Conflict Final 1}
   \else
   \exampaper[#1]{cfe1}{Conflict Final 1}
   \fi
@@ -3336,10 +3336,10 @@
   \theoremsunderproblems
   %\useexamproblems
   \ifshowstaffnotes
-  \paper[#1]{cfes2}{}{Staff Solutions to Conflict Final 2}
+  \paper[#1]{cfe2s}{}{Staff Solutions to Conflict Final 2}
   \else
   \ifshowsolutions
-  \paper[#1]{cfes2}{}{Solutions to Conflict Final 2}
+  \paper[#1]{cfe2s}{}{Solutions to Conflict Final 2}
   \else
   \exampaper[#1]{cfe2}{Conflict Final 2}
   \fi
