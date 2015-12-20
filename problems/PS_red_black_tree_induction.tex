@@ -2,7 +2,8 @@
 
 \begin{pcomments}
   \pcomment{PS_red_black_tree_induction}
-  \pcomment{12/12/15 by Zoran & ARM}
+  \pcomment{same as FP_ but without hint}
+  \pcomment{12/20/15 by ARM suggested by Zoran}
 \end{pcomments}
 
 \pkeywords{
@@ -20,77 +21,113 @@
 \newcommand{\RBT}{\text{RBT}}
 
 \begin{problem} \mbox{}
-The set \RBT\ of \emph{Red-black trees} is defined recursively as follows:
+The set \RBT\ of \emph{Red-Black Trees} is defined recursively as follows:
 
-\inductioncase{Base case(s)}:
-\[
-\ang{\redl}, \ang{\blackl} \in \RBT.
-\]
+\inductioncase{Base cases}:
+\begin{itemize}
+\item $\ang{\redl} \in \RBT$, and
+\item $\ang{\blackl} \in \RBT$.
+\end{itemize}
 
-\inductioncase{Constructor case(s)}:
+\inductioncase{Constructor cases}:
 $A, B$ are \RBT's, then
 \begin{itemize}
 \item if $A, B$ start with \blackl, then $\ang{\redl, A, B}$ is an \RBT.
 \item if $A, B$ start with \redl, then $\ang{\blackl, A, B}$ is an \RBT.
 \end{itemize}
 
-Prove by structural induction that if an \RBT $T$ has $r_T$ \redl\ labels and $b_T$ \blackl\ labels and $T$ starts with \redl,
-then
-\begin{equation}\label{nT3leqrT}
+For any \RBT\ $T$, let
+\begin{itemize}
+\item $r_T$ be the number of \redl\ labels in $T$,
+\item $b_T$ be the number of \blackl\ labels in $T$, and
+\item $n_T \eqdef r_T + b_T$ be the total number of labels in $T$.
+\end{itemize}
+
+Prove that
+\begin{equation}\label{nT3red}
+\text{If}\ T\ \text{starts with a}\ \redl\ \text{label},\ \text{then}\
 \frac{n_T}{3} \leq r_T \leq \frac{2n_T +1}{3},
 \end{equation}
-where $n_T \eqdef r_A+b_A$.
+
+\medskip
+
+\hint \[n/3 \leq r\quad \QIFF\quad (2/3)n \geq n-r\]
 
 \begin{solution}
 \begin{proof}
-The induction hypothesis will be
-\begin{align*}
-[T \text{ starts with } & \redl \QIMPLIES\ \frac{n_T}{3} \leq r_T \leq \frac{2n_T + 1}{3}]\quad \QAND\\
-[T \text{ starts with } & \blackl \QIMPLIES\ \frac{n_T}{3} \leq b_T \leq \frac{2n_T + 1}{3}].
-\end{align*}
+The proof will be by structural induction on the definition of \RBT's.
+The induction hypothesis will be~\eqref{nT3red} along with the
+symmetric statement for \blackl:
+\begin{equation}\label{nT3black}
+\text{If}\ T\ \text{starts with a}\ \blackl\ \text{label},\ \text{then}\
+\frac{n_T}{3} \leq b_T \leq \frac{2n_T +1}{3}.
+\end{equation}
 
 \inductioncase{Base case(s)}:
 \begin{itemize}
+
 \item ($T = \ang{\redl}$).  Then $r=1, b=0, n=1$ and
 \[
-\frac{1}{3} \leq 1 = \frac{2\cdot 0 0+1}{3}
+\frac{1}{3} \leq 1 = \frac{2\cdot 0 + 1}{3},
 \]
-as required.
-\item ($T = \ang{\blackl}$).  Now $r=0, b=1, n=1$ and the required
-  inequality holds similarly.
+so~\eqref{nT3red} holds, as required.
+
+\item ($T = \ang{\blackl}$).  Now $r=0, b=1, n=1$, so~\eqref{nT3black}
+  holds similarly.
 \end{itemize}
 
 \inductioncase{Constructor case(s)}:
 \begin{itemize}
 
 \item ($T = \ang{\redl, A, B}$).  The constructor rules imply that
-  $A,B$ are \RBT's that start with \blackl.  Now we have by induction that
-\begin{align}
-\frac{n_A}{3} & \leq b_A \leq \frac{2n_A + 1}{3}]\label{nA3bA},\\
-\frac{n_B}{3} & \leq b_B \leq \frac{2n_B + 1}{3}]\label{nB3bB}.
-\end{align}
-Adding these, we get
-\[\begin{array}{rlcl}
-\frac{n_A}{3}+ \frac{n_B}{3} & \leq b_A+b_B & \leq & \frac{2n_A + 1}{3}+\frac{2n_b + 1}{3},\notag\\\
-\frac{n_A+n_b}{3} & \leq b_A+b_B & \leq & \frac{2(n_A + n_b + 1)}{3},\notag\\
-\frac{n_T-1}{3} & \leq b_T & \leq & \frac{2n_T}{3}.\label{nT13}
+  $A,B$ are \RBT's that start with \blackl.  Now we have by induction
+  hypothesis~\eqref{nT3black} that
+\[\begin{array}{rcccl}
+\dfrac{n_A}{3} & \leq & b_A & \leq &\dfrac{2n_A + 1}{3}\\
+\dfrac{n_B}{3} & \leq & b_B & \leq &\dfrac{2n_B + 1}{3}.
 \end{array}\]
 
-Subtracting each of the terms in~\eqref{nT13} from $n_T$ reverses the
-inequalities and yields
+Adding these, we get
 \begin{align*}
-n_T -\frac{n_T - 1}{3} & \geq n_T - b_T  \geq n_T -\frac{2n_T}{3},\\
-\frac{2n_T + 1}{3} &  \geq r_T  \geq \frac{n_T}{3},
+\frac{n_A+n_b}{3}
+   & =     \frac{n_A}{3} + \frac{n_B}{3}\\
+   & \leq  b_A           + b_B\notag\\
+   & \leq  \frac{2n_A + 1}{3}+\frac{2n_b + 1}{3}\\
+   &  = \frac{2(n_A + n_b + 1)}{3}.
 \end{align*}
-which proves~\eqref{nT3leqrT}.
+But
+\begin{align*}
+n_T - 1 & = n_A+n_b,\\
+b_T & = b_A + b_B,\\
+n_T & = n_A + n_b + 1,
+\end{align*}
+and so,
+\begin{equation}\label{nT13leq}
+\frac{n_T - 1}{3}  \leq   b_T  \leq   \frac{2n_T}{3}.
+\end{equation}
+Now, as suggested by the hint, subtracting each of the three terms
+in~\eqref{nT13leq} from $n_T$ reverses the inequalities and yields
+\[
+n_T -\frac{n_T - 1}{3}  \geq  n_T - b_T  \geq   n_T -\frac{2n_T}{3}.
+\]
+But $n_T - b_T = r_T$, and simplifying the fractions, we conclude that
+\[
+\frac{2n_T + 1}{3}      \geq    r_T     \geq   \frac{n_T}{3}
+\]
+which proves~\eqref{nT3red}
 
-\item ($T = \ang{\blackl, A, B}$).  Follows from the previous case By a symmetric argument.
+\item ($T = \ang{\blackl, A, B}$).  Now~\eqref{nT3black} follows by a
+  symmetric argument.
+
 \end{itemize}
+
+We conclude by structural induction that both~\eqref{nT3red}
+and~\eqref{nT3black} hold for all $T \in \RBT$.
 
 \end{proof}
 
-An alternative approach would be to just use~\eqref{nT3leqrT} as the induction hypothesis and 
-consider constructor cases
+An alternative approach would be to just use~\eqref{nT3red} as the
+induction hypothesis and consider constructor cases
 \[
 T = \begin{cases}
     \ang{\redl, \ang{\blackl, A_1,A_2}, \ang{\blackl, B_1,B_2}},\\
@@ -99,7 +136,6 @@ T = \begin{cases}
     \ang{\redl, \ang{\blackl}, \ang{\blackl}}.\\
     \end{cases}
 \]
-
 \end{solution}
 
 \end{problem}
