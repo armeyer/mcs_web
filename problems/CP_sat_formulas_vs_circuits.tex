@@ -2,57 +2,85 @@
 
 \begin{pcomments}
     \pcomment{CP_sat_formulas_vs_circuits}
-    \pcomment{by ARM 2/17/13}
+    \pcomment{by ARM 2/17/13, revised 2/7/16}
 \end{pcomments}
 
 \pkeywords{
   satisfiable
   circuit
   digital_circuit
-  3CNF
-  propositional_variable
-  Boolean_function
+  proposition
+  formula
 }
 
 \begin{problem}
-It doesn't matter whether we formulate the SAT problem
-(Section~\bref{{SAT_sec}} in terms of propositional formulas or
-digital circuits.  Here's why:
+The circuit-SAT problem is the problem of determining, for any given
+digital circuit with one output wire, whether there are truth values
+that can be fed into the circuit input wires which will lead the
+circuit to give output \true.
 
-Let $f$ be a Boolean function of $k$ variables.  That is,
-$f:\set{\true,\false}^k\to \set{\true,\false}$.  Let $P$ be a
-propositional formula that has, among its variables, propositional
-variables labelled $X_1, \dots, X_k$.  For any truth values
-$b_1,\dots,b_k \in \set{\true, \false}$, we let $P(b_1,\dots,b_k)$
-be the result of substituting $b_i$ for all occurrences of $X_i$ in
-$P$, for $1 \leq i \leq k$.
+It's easy to see that any efficient way of solving the circuit-SAT
+problem would yield an efficient way to solve the usual SAT problem
+for propositional formulas (Section~\bref{SAT_sec}).  Namely, for any
+formula $F$, just construct a circuit $C_F$ using that computes the
+values of the formula.  Then there are inputs for which $C_F$ gives
+output true iff $F$ is satisfiable.  Constructing $C_F$ from $F$ is
+easy, using a binary gate in $C_F$ for each propositional connective
+in $F$.  So an efficient circuit-SAT procedure leads to an efficient
+SAT procedure.
 
-If $P_f$ is a formula such that $P_f(b_1,\dots,b_k)$ is satisfiable
-exactly when $f(b_1,\dots,b_k) = \true$, we'll say that $P_f$
-\emph{SAT-represents} $f$.
+It's also true that any efficient way of solving the regular SAT
+problem for formulas would yield an efficient way to solve the
+circuit-SAT problem, but this requires a somewhat trickier argument.
 
-Suppose there is a \idx{digital circuit} using two-input, one-output
-binary gates (like the circuits for binary addition in
-Problems~\bref{CP_binary_adder_logic}
-and~\bref{PS_faster_adder_logic}) that has $n$ wires and computes the
-function $f$.  Explain how to construct a formula $P_f$ of size $cn$
-that SAT-represents $f$ for some small constant $c$.  (Letting $c =6$
-will work).
+The basic idea is that given any digital circuit $C$ with binary gates
+and one output, we can assign a distinct variable to each wire of $C$.
+Then for each gate of $C$, we can set up a propositional formula that
+represents the constraints that the gate places on the values of its
+input and output wires.  For example, for an \QAND\ gate with input
+wire variables $P$ and $Q$ and output wire variable $R$, the
+constraint proposition would be
+\begin{equation}\label{AQBIC}
+(P \QAND\ Q) \QIFF R.
+\end{equation}
 
-Conclude that the SAT problem for digital circuits---that is,
-determining if there is some set of input values that will lead a
-circuit to give output 1---is no more difficult than the SAT problem
-for propositional formulas.
+\bparts
 
-\hint Introduce a new variable for each wire.  The idea is similar to
-the one used in Problem~\bref{PS_equisatisfiable_3CNF} to show that
-satisfiablity of 3CNF propositional formmulas is just as hard as for
-arbitrary formulas.
+\ppart Given a circuit $C$, explain how to construct a formula $F_C$
+such that $F_C$ is satisfiable iff $C$ gives output \true\ for some
+set of input values.
 
 \begin{solution}
-We can assign a variable to each input wire to any gate. For each gate, with input wire variables $A$ and $B$ and output $C$, we can set up a proposition that represents the constraint of the gate. So, if for example the gate is an AND gate, the proposition is $(A \wedge B) \iff C$. There are $n$ total wires, and no two gates have the same output wire. So, there are at most $n$ propositions that correspond to all the gates. The AND of all these proposition together with the single variable corresponding to the output wire will be satisfiable if and only if the circuit is too. Thus, it satisfies the requisites to SAT-represent the circuit function. This means that, given any circuit-SAT problem, we can reduce it to an equivalent formula-SAT problem, so if we can solve formula-SAT efficiently we can do the same for circuit-SAT. This means that circuit-SAT is no harder than formula-SAT.
+The product, $P$, of all the gate constraints will have the property
+that, for any assignment of truth values to the input variables of the
+circuit, $P$ will be \true\ iff each wire variable has the value that
+the circuit would compute for that wire.
+
+Suppose $Q$ is the variable corresponding to the output wire of the
+circuit.  Let $F_C$ be
+\[
+F_C \eqdef P \QAND Q.
+\]
+Now for any truth assignment for the input wire variables, $F_C$ will
+be \true\ iff $C$ would output \true\ for those inputs, and moreover
+each wire variable in $F_C$ is assigned the value that $C$ would
+compute for that wire.
+
+That is, there are inputs for which $C$ gives output \true\ iff $F_C$
+is satisfiable.
 \end{solution}
 
+\ppart Conclude that any efficient way of solving SAT would yield an
+efficient way to solve circuit-SAT.
+
+\begin{solution}
+The formula $F_C$ can be read off a diagram for the circuit $C$, and
+the size of $F_C$ will be proportional to the number of wires in $C$.
+So an efficient SAT procedure leads to an efficient circuit-SAT
+procedure: given $C$ construct $F_C$ and use the efficient SAT
+procedure on $F_C$
+\end{solution}
+\eparts
 \end{problem}
 
 \endinput
