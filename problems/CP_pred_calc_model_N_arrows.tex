@@ -1,0 +1,330 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_pred_calc_model_N_arrows}
+\end{pcomments}
+
+\pkeywords{
+  predicate
+  logic
+  nonnegative
+  model
+}
+
+\newcommand{\nextel}{\emph{next}}
+\newcommand{\prev}{\emph{prev}}
+\newcommand{\numerl}[1]{\textbf{\~#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $\numerl{0}$ be a constant symbol, $\nextel()$ and $\prev()$ be
+function symbols taking one argument.
+
+The aim of this problem is to develop a series of predicate formulas
+using only these symbols whose models must contain contain a ``copy''
+of the consecutive nonnegative integers $\naturals$.  Moreover, the
+model must assign $\nextel()$ and $\prev()$ to be the plus one and minus
+one functions on the copy.
+
+Before we start, it helps to picture any model for these symbols by
+representing each domain element $e$ as a point, with an arrow
+labelled $\nextel$ going out of $e$ and going into $\nextel(e)$, and
+another arrow labelled $\prev$ going out of $e$ and into $\prev(e)$.
+Since the model must interpret the symbols $\next$ and $\prev$ as
+total functions on the domain, we can see that every point has exactly
+one $\next$-arrow, and exactly one $\prev$-arrow, going out of it.
+
+Our first objective will be to find some elements that make up the
+copy of $\naturals$.  We want them to look like a infinite sequence of
+distinct points each of which has a $\next$-arrow going to the next
+point in the sequence.  Since $\next$ is supposed to act like plus one
+and $\prev$ like minus one, we require that if a $\next$-arrow goes
+into an element $e$, then the $\prev$-arrow going out of $e$ goes back
+to the beginning of the $\next$-arrow.  There is a simple way to
+express the requirement as a predicate formula:
+\begin{equation}\label{previnvnext}
+\forall x.\, \prev(\nextel(x)) = x\ .
+\end{equation}
+Notice that the $\prev$-arrow out of a point could not go back to the
+beginning of a $\next$-arrow coming in more than one $\next$-arrow was
+coming in.  So~\eqref{previnvnext} implies that at most one
+$\next$-arrow can go into any element.  Another way to say this is
+that $\next$-arrows that go out from different points have to go into
+different points:
+\begin{equation}\label{next1to1}
+\forall x,y.\, \nextel(x) = \nextel(y)\ \QIMPLIES\ x = y.
+\end{equation}
+
+So we have just deduced that~\eqref{previnvnext}
+implies~\eqref{next1to1}.  In other words
+\[
+\text{\eqref{previnvnext}} \QIMPIES\ \text{\eqref{next1to1}}
+\]
+is a valid formula.
+
+The elements in the copy of $\naturals$ we are looking for are easy to
+specify: they will be elements we get by starting at the $\numerl{0}$
+element by following $\next$-arrows, corresponding to starting at zero
+and repeatedly adding one.  Specifically, we can introduce some
+convenient abbreviations for some actual terms using just the allowed
+symbols:
+\begin{align*}
+\numerl{1} & \eqdef \nextel(\numerl{0})\\
+\numerl{2} & \eqdef \nextel(\numerl{1})\\
+\numerl{3} & \eqdef \nextel(\numerl{2})\\
+           &\vdots
+\end{align*}
+For example, $\numerl{3}$ is an abbreviation for an actual term using
+the allowed symbols:
+\[
+\nextel(\nextel(\nextel(\numerl{0}))).
+\]
+The values that a model gives to these numerals will be called its
+\emph{numeral values}.  We will use the numeral values to be the
+elements in the copy of $\naturals$ we are look to create, with the
+integer $n \in \naturals$ corresponding to the value of the numeral
+$\numerl{n}$, and with $\next$ and $\prev$ acting like plus one and
+minus one functions.
+
+But this won't work yet.  There is nothing so far that prevents all
+the numerals having the same value.  (You should check this yourself
+right now.)  We might try to fix this by requiring that no
+$\next$-arrow can begin and end at the same element, but there still
+could be a pair of elements, each of which was ``plus one'' of the
+other.  That is, the model might satisfy:
+\[
+\exists x, y.\, \nextel(x) = y \QAND \nextel(y) = x.
+\]
+We could go on to forbid two $\next$-arrows in a cycle like this, but
+then there might be a cycle of three:
+\[
+\exists x, y,z.\, \nextel(x) = y \QAND\ \nextel(y) = z \QAND\ \nextel(z) = x\ .
+\]
+
+
+
+====================
+At this point, we actually have ensured that any model satisfying just
+the two formulas~\eqref{previnvnext} and~\eqref{zeronosuccessor} has
+the desired copy of $\naturals$.
+
+
+We want the interpretation of $\numerl{0}$ to be an element that is
+not ``plus one'' of anything.  By convention ``subtracting'' one from
+zero should have no effect.  This is also easy to say:
+\begin{equation}\label{zeronosuccessor}
+\forall x. \next(x) \new \numerl{0} \QAND \prev{\numerl{0}} = \numerl{0}.
+\end{equation}
+
+
+
+
+Now we will make $\nextel$ act like the ``add one'' function on values
+of these terms.  In particular, adding one to two different elements
+will result in two different elements:
+\begin{equation}\label{next1to1}
+\forall x,y.\, x \neq y \QIMPLIES\ \nextel(x) \neq \nextel(y)\ .
+\end{equation}
+We also make $\prev$ act like the ``subtract one'' function on these
+values, namely subtracting one from zero has no effect:
+\begin{equation}\label{prev00}
+\prev(\numerl{0})= \numerl{0},
+\end{equation}
+and otherwise adding one undoes subtracting one.
+
+\bparts
+
+Write a predicate formula expressing the requirement that adding one
+undoes subtracting one from nonzero elements.
+\begin{solution}
+\begin{equation}\label{previnvnext}
+\forall x.\, \prev(\nextel(x)) = x\ .
+\end{equation}
+
+
+
+
+To start, we can introduce some abbreviations for certain terms called
+\emph{numerals} built up using these symbols: namely, let
+\begin{align*}
+\numerl{1} & \eqdef \nextel(\numerl{0})\\
+\numerl{2} & \eqdef \nextel(\numerl{1})\\
+\numerl{3} & \eqdef \nextel(\numerl{2})\\
+           &\vdots
+\end{align*}
+
+Now we will make $\nextel$ act like the ``add one'' function on values
+of these terms.  In particular, adding one to two different elements
+will result in two different elements:
+\begin{equation}\label{next1to1}
+\forall x,y.\, x \neq y \QIMPLIES\ \nextel(x) \neq \nextel(y)\ .
+\end{equation}
+We also make $\prev$ act like the ``subtract one'' function on these
+values, namely subtracting one from zero has no effect:
+\begin{equation}\label{prev00}
+\prev(\numerl{0})= \numerl{0},
+\end{equation}
+and otherwise adding one undoes subtracting one.
+
+\bparts
+
+\ppart\label{previnvnext-part} Write a predicate formula expressing
+the requirement that adding one undoes subtracting one from nonzero elements.
+\begin{solution}
+\begin{equation}\label{previnvnext}
+\forall x\neq \numerl{0}.\, \nextel(\prev(x)) = x\ .
+\end{equation}
+\end{solution}
+
+\iffalse
+\ppart Write a formula expressing the fact that subtracting one from
+two different nonzero elements will result in two different elements.
+
+I was going to add ``Explain why this formula is implied the earlier
+ones,'' but no time to check and problem long enough already.
+
+\begin{solution}
+\begin{equation}\label{prev1to1}
+\forall x,y \neq \numerl{0}.\, x \neq y \QIMPLIES\ \prev(x) \neq \prev(y)\ .
+\end{equation}
+\end{solution}
+\fi
+
+
+\eparts
+
+Now we are pretty much done: any interpretation that satisifies these
+formulas must assign different domain elements to each of the
+numerals, and interpretations of $\nextel$ and $\prev$ must act like
+plus one and minus one on these elements.
+
+But although the values of the numerals in every model satisfying the
+formulas of~\eqref{next1to1}, \eqref{prev00}, and
+part~\eqref{previnvnext-part} form a copy of $\naturals$, a model may
+have other elements that lead to strange behavior.  For example, a
+model satisfying all the above formulas could have \emph{two} copies
+that act like $\naturals$, with $\nextel$ and $\prev$ acting like add
+one and subtract one on each copy.  In this model, there would be two
+elements that act like zero.
+
+So let's fix this:
+\bparts
+
+\ppart Write a formula that forces there to be only one copy of
+$\naturals$ in the model.
+
+\begin{solution}
+It's enough to say there is only one element that can start a copy:
+\begin{equation}\label{uniqz}
+\forall x.\, \prev(x) = x \QIMPLIES x = \numerl{0}.
+\end{equation}
+\end{solution}
+\eparts
+
+But there still might be other elements with funny properties.  For
+example, there might be two elements, each of which was ``plus one''
+of the other:
+\[
+\exists x, y.\, \nextel(x) = y \QAND \nextel(y) = x.
+\]
+or a cycle of three:
+\[
+\exists x, y,z.\, \nextel(x) = y \QAND\ \nextel(y) = z \QAND\ \nextel(z) = x\ .
+\]
+We could easily write a formula forbidding such cycles of length
+three, or forbidding cycles of any given length, but we would need an
+infinite number of formulas to forbid cycles of all lengths.
+
+To forbid all finite cycles using only a fixed number of formulas, we
+will need something further: we will allow a relation symbol
+$L(\ ,\ )$ and make it act like a less-than relation.  For this
+purpose, it's suggestive to write $x\, L\, y$ instead of $L(x,y)$.
+Then one requirement will be that for all $n,m \in \naturals$, if $n <
+m$, then $\numerl{n}\, L\, \numerl{m}$ must be true.  But we also want
+$L$ to define a relation that has the ``less-than'' properties on all
+domain elements.  For example, we will say that adding one makes
+numbers bigger with the formula
+\begin{equation}\label{Lnext}
+\forall x.\ x\,L\,\nextel(x).
+\end{equation}
+
+\iffalse  CHECK THIS:
+\bparts
+
+\ppart Explain why the formulas above imply 
+\begin{equation}\label{Lprev}
+\forall x\neq \numerl{0}.\ \prev(x)\,L\,x\ .
+\end{equation}
+
+\begin{solution}
+If $x\,L\,\nextel(x)$ and $x \neq \numerl{0}$, then
+\end{solution}
+\eparts
+\fi
+
+Then we can forbid all finite cycles by requiring
+\begin{equation}\label{irrform}
+\forall x.\, \QNOT(x\, L\, x)\ .
+\end{equation}
+
+\bparts
+
+\ppart Write down formulas of predicate calculus with only the symbols
+above whose models must have properties as much like $\naturals$ as
+you can manage.  In particular, make sure that all models of your
+formulas force $L$ to mean $<$ on the numeral values and ensure
+that~\eqref{irrform} implies there are no finite cycles of
+$\nextel$'s.  (If you think you have formulas whose only models are
+exactly like $\naturals$, look again, because that is impossible.)
+
+\begin{solution}
+Assert that $L$ is \emph{transitive}
+\[
+\forall x,y,z.\, (x\,L\,y \QAND y\,L\,z) \QIMPLIES x\,L\,z,
+\]
+
+Further every two different elements are related by $L$ one way or the
+other:
+\begin{equation}\label{trichot}
+\forall x,y.\, x\,L\,y \QOR y\,L\,x \QOR x = y.
+\end{equation}
+
+Now the only models of all these formulas has the a copy of
+$\naturals$ along with some two-way infinite chains
+\[
+\dots c_{-2}\, L \, c_{-1}\, L\, c_0\, L\, c_1\, L\, c_2\, \dots.
+\]
+
+All the elements in one of these chains must be $L$-bigger than all
+the numeral values.  Also,~\eqref{trichot} ensures all these chains
+will have the property that every element of one chain will be $L$ of
+every member of the other chain.  So the chains themselves are
+``ordered'' by $L$, but there is nothing further that can be said of
+how chains are ordered: there might be none, some finite number, or
+even an infinite number of them.  And the chains might be ordered
+among themselves like the integers, or nonnegative integers, or real
+numbers,\dots.
+
+\end{solution}
+
+\ppart Describe a model that satisfies all your formulas but has
+elements that are not the numeral values.
+
+\begin{solution}
+The numeral values along with a single two-way infinite chain of
+successive elements ordered by $L$ is an example for the formulas
+given above.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
