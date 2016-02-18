@@ -14,7 +14,7 @@
 }
 
 \newcommand{\lnthb}[1]{\text{lnth}(#1)}
-\newcommand{\contrr}[1]{\hat{#1}}
+\newcommand{\contrr}[1]{\widehat{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem starts here
@@ -56,7 +56,7 @@ subtractions performed until $\contrr{N}$ is reduced to 1 or 0.  Then
 execute an assignment command $R := N$.
 
 This requires no other counters besides $N,Q,R$ if the contents of $N$
-don't have to be preserves.  Otherwise, Two extra counters would be
+don't have to be preserves.  Otherwise, two extra counters would be
 needed to save the initial contents of $N$ and restore it at the end.
 \end{solution}
 
@@ -99,17 +99,21 @@ with the ones described above.
 
 \eparts
 
-By using numbers whose binary representations are of the form
-\begin{equation}\label{binreg}
-10^{r_n} \dots 10^{r_3}10^{r_2}10^{r_1}10^{r_0}1\cdots
+Suppose $R_0,R_1,R_2,R_3,\dots,R_n$ are $n+1$ distinct counters.  We
+can represent the contents of all these counters with a binary string
+of the form
+\begin{equation}\label{bincode}
+10^{\contrr{R_n}}10^{\contrr{R_{n-1}}}1 \dots 10^{\contrr{R_2}}10^{\contrr{R_1}}10^{\contrr{R_0}}1.
 \end{equation}
-to represent the contents of $n+1$ counters
-$R_0,R_1,R_2,R_3,\dots,R_n$, a Counter Machine with a fixed number of
-counters can simulate a machine with counters
-$R_0,R_1,R_2,R_3,\dots,R_n$.
+In other words, the 1's divide the string into blocks of 0's, and the
+length of block $i$ is $\contrr{R_i}$.  Now this binary string is the binary
+representation of some nonnegative integer $s \in \naturals$, and so
+the single number $s$ encodes all the numbers $\contrr{R_0},\contrr{R_1},\dots,\contrr{R_n}$.
 
-To see how, suppose a Counter Machine has a counter $S$ containing a
-number whose binary representation is of the form~\eqref{binreg}.
+With a counter $S$ containing the code number $s$, a single counter
+machine with a fixed number of counters can simulate the operations of
+an $n+1$ counter machine.  The rest of this problem illustrate how
+this works.
 
 \bparts
 
@@ -122,32 +126,42 @@ R_0 := R_0 - 1.
 \begin{solution}
 Simulate the successive commands
 \begin{align*}
-S := \quotient(S,2);\\
-\textbf{ if } \remainder(S,2) = 0 \textbf{  then } S:= \quotient(S,2);\\
-S := 2*S+1.
+S & := \quotient(S,2);\\
+  & \qquad \text{\%delete the right hand 1 in the binary rep}\\
+\textbf{ if } & \remainder(S,2) = 0 \textbf{  then } S:= \quotient(S,2);\\
+  & \qquad  \text{\%delete a 0, if any, from the right hand block of 0's}\\
+S & := 2*S+1.\\
+  & \qquad  \text{\%put the 1 back on the right end of the string}\\
 \end{align*}
 \end{solution}
 
 \ppart Let $T$ be another register and assume $n\geq 1$.  Describe how
 a Counter Machine could execute the ``test $R_1$ for zero'' command:
-\[
-\textbf{if } R_1 = 0 \textbf{ then } T := 0 \textbf{ else } T := 1.
-\]
+\begin{equation}\label{ifzT}
+\textbf{if } R_1 = 0 \textbf{ then } T := 1 \textbf{ else } T := 0.
+\end{equation}
 
 \begin{solution}
 Save the contents of $S$.  Do the assignment command
 \[
-S :=\quotient(S,2).
+S :=\quotient(S,2)
 \]
+which removes the 1 on the right hand end of the code string~\eqref{bincode}.
 Then repeat
 \[
 S := \quotient(S,2)
 \]
-until $\contrr{S} = 0$.  Finally,
+until $\remainder(S,2) = 1$.  This removes all the 0's in block 0 as
+well as the 1 at the end of the block.  So $S$ now contains a number
+whose binary representation ends with $0^{\contrr{R_1}}$.  This means
+$\contrr{R_1}=0$ iff the binary representation of $\contrr{S}$ ends
+with the 1 at the left end of block 1.  That is $\contrr{R_1}=0$ iff
+$\remainder(\contrr{S},2) = 1$.  So the simulation of the
+command~\eqref{ifzT} can be completed by executing
 \[
-T := \remainder(S,2).
+T := \remainder(S,2),
 \]
-Then restore the original contents of $S$.
+and then restoring the original contents of $S$.
 \end{solution}
 
 \ppart Let $x \eqdef \contrr{X}$ and suppose $x \leq n$.  Describe how
@@ -163,7 +177,8 @@ R_{x} : = R_{x} + 1.
 \begin{solution}
 Let $H,L$ be extra counters.  Execute the commands
 \[
-H := 10^{r_n}10^{r_{n-1}}1 \dots 10^{r_x};\quad L:= 10^{r_{x-1}}10^{r_{x-21}}1 \dots 10^{r_0}1.
+H := 10^{\contrr{R_n}}10^{\contrr{R_{}n-1}}1 \dots 10^{\contrr{R_x}};\quad
+L := 10^{\contrr{R_{}x-1}}10^{\contrr{R_{}x-21}}1 \dots 10^{\contrr{R_0}}1.
 \]
 This can be done by taking quotients and remainders by 2 of $S$ to
 simulate reading the successive bits of the binary representation of

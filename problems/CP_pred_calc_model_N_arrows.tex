@@ -2,6 +2,7 @@
 
 \begin{pcomments}
   \pcomment{CP_pred_calc_model_N_arrows}
+  \pcomment{ARM 2/17/6}
 \end{pcomments}
 
 \pkeywords{
@@ -9,6 +10,7 @@
   logic
   nonnegative
   model
+  arrow
 }
 
 \newcommand{\nextel}{\emph{next}}
@@ -26,16 +28,19 @@ function symbols taking one argument.
 The aim of this problem is to develop a series of predicate formulas
 using only these symbols whose models must contain contain a ``copy''
 of the consecutive nonnegative integers $\naturals$.  Moreover, the
-model must assign $\nextel()$ and $\prev()$ to be the plus one and minus
-one functions on the copy.
+model must assign $\nextel()$ and $\prev()$ to be the plus-one and
+minus-one functions on the copy.
 
-Before we start, it helps to picture any model for these symbols by
+Before we start, it helps to picture a model for these symbols by
 representing each domain element $e$ as a point, with an arrow
 labelled $\nextel$ going out of $e$ and going into $\nextel(e)$, and
 another arrow labelled $\prev$ going out of $e$ and into $\prev(e)$.
-Since the model must interpret the symbols $\next$ and $\prev$ as
-total functions on the domain, we can see that every point has exactly
-one $\next$-arrow, and exactly one $\prev$-arrow, going out of it.
+The model must interpret the symbols $\next$ and $\prev$ as total
+functions on the domain.  This means that
+\begin{quote}
+every point has exactly one $\next$-arrow, and exactly one
+$\prev$-arrow, going out of it.
+\end{quote}
 
 Our first objective will be to find some elements that make up the
 copy of $\naturals$.  We want them to look like a infinite sequence of
@@ -44,16 +49,17 @@ point in the sequence.  Since $\next$ is supposed to act like plus one
 and $\prev$ like minus one, we require that if a $\next$-arrow goes
 into an element $e$, then the $\prev$-arrow going out of $e$ goes back
 to the beginning of the $\next$-arrow.  There is a simple way to
-express the requirement as a predicate formula:
+express this requirement as a predicate formula:
 \begin{equation}\label{previnvnext}
 \forall x.\, \prev(\nextel(x)) = x\ .
 \end{equation}
-Notice that the $\prev$-arrow out of a point could not go back to the
-beginning of a $\next$-arrow coming in more than one $\next$-arrow was
-coming in.  So~\eqref{previnvnext} implies that at most one
-$\next$-arrow can go into any element.  Another way to say this is
-that $\next$-arrows that go out from different points have to go into
-different points:
+Notice that if more than one $\next$-arrow went into an element, the
+$\prev$-arrow out of a point could go back to the beginning of only to
+one of them, which means the beginning of the other arrow would be a
+counter-example to~\eqref{previnvnext}.  So~\eqref{previnvnext}
+implies that at most one $\next$-arrow can go into any element.
+Another way to say this is that $\next$-arrows that go out from
+different points have to go into different points:
 \begin{equation}\label{next1to1}
 \forall x,y.\, \nextel(x) = \nextel(y)\ \QIMPLIES\ x = y.
 \end{equation}
@@ -66,45 +72,89 @@ implies~\eqref{next1to1}.  In other words
 is a valid formula.
 
 The elements in the copy of $\naturals$ we are looking for are easy to
-specify: they will be elements we get by starting at the $\numerl{0}$
-element by following $\next$-arrows, corresponding to starting at zero
-and repeatedly adding one.  Specifically, we can introduce some
-convenient abbreviations for some actual terms using just the allowed
-symbols:
+specify: they will be elements that correspond to starting at zero and
+repeatedly adding one.  That is, the elements in our copy of
+$\naturals$ will be obtained by starting at the $\numerl{0}$ element
+then by following consecutive $\next$-arrows.  More precisely, lets
+define some convenient abbreviations for some actual terms that use
+the given symbols:
 \begin{align*}
 \numerl{1} & \eqdef \nextel(\numerl{0})\\
 \numerl{2} & \eqdef \nextel(\numerl{1})\\
 \numerl{3} & \eqdef \nextel(\numerl{2})\\
            &\vdots
 \end{align*}
-For example, $\numerl{3}$ is an abbreviation for an actual term using
-the allowed symbols:
+For example, $\numerl{3}$ is an abbreviation for an actual term:
 \[
 \nextel(\nextel(\nextel(\numerl{0}))).
 \]
+
 The values that a model gives to these numerals will be called its
 \emph{numeral values}.  We will use the numeral values to be the
-elements in the copy of $\naturals$ we are look to create, with the
+elements in the copy of $\naturals$ we are trying to create, with the
 integer $n \in \naturals$ corresponding to the value of the numeral
 $\numerl{n}$, and with $\next$ and $\prev$ acting like plus one and
 minus one functions.
 
 But this won't work yet.  There is nothing so far that prevents all
-the numerals having the same value.  (You should check this yourself
-right now.)  We might try to fix this by requiring that no
+the numerals having the same value.  In other words, the formulas
+above do not imply that $\next(x) \neq x$.  (You should check this
+yourself right now.)  We might try to fix this by requiring that no
 $\next$-arrow can begin and end at the same element, but there still
 could be a pair of elements, each of which was ``plus one'' of the
 other.  That is, the model might satisfy:
 \[
 \exists x, y.\, \nextel(x) = y \QAND \nextel(y) = x.
 \]
-We could go on to forbid two $\next$-arrows in a cycle like this, but
+We could go on to forbid a length two cycle of $\next$-arrows like this, but
 then there might be a cycle of three:
 \[
 \exists x, y,z.\, \nextel(x) = y \QAND\ \nextel(y) = z \QAND\ \nextel(z) = x\ .
 \]
+It turns out that something we want to do anyway will fix this
+problem.
+
+\bparts
+
+\ppart\label{zero-part} So far we haven't said anything that will make
+the interpretion of $\numerl{0}$ behave like zero, namely, that zero
+is not plus-one of anything, and that, by convention, subtracting one
+from zero has no effect.  Write a predicate formula expressing the
+fact that the interpretion of $\numerl{0}$ has these properties.
+\begin{solution}
+\[
+\QNOT(\exists x.\, \next(x) = \numerl{0}) \QAND
+\prev(\numerl{0}) = \numerl{0}).
+\]
+\end{solution}
+\eparts
+
+At this point, we actually have ensured that any model satisfying just
+the formulas~\eqref{previnvnext},~\eqref{zeronosuccessor}, and
+part~\eqref{zero-part} must have the desired copy of $\naturals$.
+
+\bparts
+
+\ppart Explain why two different numerals must have different values
+in any such model.
+
+\hint A sequence of consecutive $\next$-arrows can't end at 
+
+\begin{solution}
+If $\numerl{n}$ and $\numerl{m}$ have equal values, 
+
+\end{solution}
+
+We also make $\prev$ act like the ``subtract one'' function on these
+values, namely subtracting one from zero has no effect:
+\begin{equation}\label{prev00}
+\prev(\numerl{0})= \numerl{0},
+\end{equation}
+and otherwise adding one undoes subtracting one.
 
 
+
+\iffalse
 
 ====================
 At this point, we actually have ensured that any model satisfying just
@@ -112,12 +162,6 @@ the two formulas~\eqref{previnvnext} and~\eqref{zeronosuccessor} has
 the desired copy of $\naturals$.
 
 
-We want the interpretation of $\numerl{0}$ to be an element that is
-not ``plus one'' of anything.  By convention ``subtracting'' one from
-zero should have no effect.  This is also easy to say:
-\begin{equation}\label{zeronosuccessor}
-\forall x. \next(x) \new \numerl{0} \QAND \prev{\numerl{0}} = \numerl{0}.
-\end{equation}
 
 
 
@@ -318,6 +362,7 @@ The numeral values along with a single two-way infinite chain of
 successive elements ordered by $L$ is an example for the formulas
 given above.
 \end{solution}
+\fi
 
 \eparts
 
