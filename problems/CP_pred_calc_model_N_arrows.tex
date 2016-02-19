@@ -13,10 +13,13 @@
   arrow
 }
 
-\newcommand{\nextel}{\emph{next}}
-\newcommand{\prev}{\emph{prev}}
-\newcommand{\numerl}[1]{\textbf{\~#1}}
-\newcommand{\nextarrow}{\stackrel{\nextel}{\longrightarrow}}
+\newcommand{\zerosym}{\textbf{\~#1}}
+\newcommand{\nextsym}{\textbf{next}}
+\newcommand{\nextfun}{\textit{nextf}}
+\newcommand{\prevsym}{\textbf{prev}}
+\newcommand{\prevfun}{\textit{prevf}}
+\newcommand{\numerl}[1]{\text{\~#1}}
+\newcommand{\nextarrow}{\stackrel{\nextsym}{\longrightarrow}}
 \newcommand{\prevarrow}{\stackrel{\prev}{\longleftarrow}}
 \newcommand{\nparrow}{\stackrel{\nextarrow}{\prevarrow}}
 
@@ -25,36 +28,35 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-Let $\numerl{0}$ be a constant symbol, $\nextel()$ and $\prev()$ be
+Let $\zerosym$ be a constant symbol, $\nextsym$ and $\prevsym$ be
 function symbols taking one argument.
 
-The aim of this problem is to develop a series of predicate formulas
-using only these symbols whose models must contain contain a ``copy''
-of the consecutive nonnegative integers $\naturals$.  Moreover, the
-model must assign $\nextel()$ and $\prev()$ to be the plus-one and
-minus-one functions on the copy.
-
-Before we start, it helps to picture a model for these symbols by
-representing each domain element $e$ as a point, with an arrow
-labelled $\nextel$ going out of $e$ and going into $\nextel(e)$, and
-another arrow labelled $\prev$ going out of $e$ and into $\prev(e)$.
-The model must interpret the symbols $\next$ and $\prev$ as total
-functions on the domain.  This means that
+We can picture any model for these symbols by representing domain
+elements as points.  The model must interpret $\zerosym$ as some point
+$e_0$.  It also interprets the symbols $\nextsym$ and $\prevsym$ as
+total functions $\nextfun$ and $\prevfun$ on the domain.  We can
+picture the functions by having an arrow labelled $\nextsym$ go out
+from each point $e$ into the point $\nextfun(e)$, and an arrow
+labelled $\prevsym$ go out from each $e$ into $\prevfun(e)$.  In
+particular,
 \begin{quote}
-every point has exactly one $\next$-arrow, and exactly one
-$\prev$-arrow, going out of it.
+every point has exactly one $\nextsym$-arrow, and exactly one
+$\prevsym$-arrow, going out of it.
 \end{quote}
 
-Our first objective will be to find some elements that make up a copy
-of $\naturals$.  This means that the domain of the model includes an
-infinite sequence of distinct points with a $\next$-arrow going from
-each point to the next in the sequence:
+The aim of this problem is to develop a series of predicate formulas
+using just the symbols $\zerosym$, $\nextsym$ and $\prevsym$ such that
+every model satisfying these formulas will contain contain a copy of
+the consecutive nonnegative integers $\naturals$.  That is, the domain
+of the model includes an infinite sequence of distinct points starting
+with $e_0$, with a $\next$-arrow going from each point to the next in
+the sequence:
 \[
 e_0 \nextarrow e_1 \nextarrow e_2 \nextarrow  \dots \nextarrow e_n \nextarrow \dots.
 \]
-Since $\next$ is supposed to act like plus one and $\prev$ like minus
-one, we require that if a $\next$-arrow goes into an element $e$, then
-the $\prev$-arrow going out of $e$ goes back to the beginning of the
+That is, $\nextfun$ acts like plus one.  We also want $\prevfun$ to act
+like minus one: whenever a $\next$-arrow goes into an element $e$,
+then the $\prev$-arrow out of $e$ goes back to the beginning of the
 $\next$-arrow:
 \begin{equation}\label{Ncopyshape}
 e_0 \nparrow e_1 \nparrow e_2 \nparrow  \dots \nparrow e_n \nparrow \dots.
@@ -63,78 +65,80 @@ e_0 \nparrow e_1 \nparrow e_2 \nparrow  \dots \nparrow e_n \nparrow \dots.
 There is a simple way to express this requirement as a predicate
 formula:
 \begin{equation}\label{previnvnext}
-\forall x.\, \prev(\nextel(x)) = x\ .
+\forall x.\, \prevsym(\nextsym(x)) = x\ .
 \end{equation}
-Notice that if more than one $\next$-arrow went into an element, the
-$\prev$-arrow out of a point could go back to the beginning of only to
-one of them, which means the beginning of the other arrow would be a
-counter-example to~\eqref{previnvnext}.  So~\eqref{previnvnext}
-implies that at most one $\next$-arrow can go into any element.
-Another way to say this is that $\next$-arrows that go out from
-different points have to go into different points:
+Formula~\eqref{previnvnext} means that the $\prevsym$-arrow out of any
+point $e$ goes back to the beginning of any $\nextsym$-arrow into $e$.
+Of course this will not be possible if there is more than one
+$\nextsym$-arrow into $e$.  So~\eqref{previnvnext} implies that at
+most one $\next$-arrow can go into any point $e$.  Another way to say
+this is that $\next$-arrows that go out from different points have to
+go into different points:
 \begin{equation}\label{next1to1}
-\forall x,y.\, \nextel(x) = \nextel(y)\ \QIMPLIES\ x = y.
+\forall x,y.\, \nextsym(x) = \nextsym(y)\ \QIMPLIES\ x = y.
 \end{equation}
 
-So we have just deduced that~\eqref{previnvnext}
-implies~\eqref{next1to1}.  In other words
+So if a model satisfies~\eqref{previnvnext}, then it will
+satisfy~\eqref{next1to1}.  In other words,
 \[
 \text{\eqref{previnvnext}} \QIMPIES\ \text{\eqref{next1to1}}
 \]
-is a valid formula.
+is a \emph{valid formula}.
 
-The elements in the copy of $\naturals$ we are looking for are easy to
-specify: they will be elements that correspond to starting at zero and
-repeatedly adding one.  That is, the elements in our copy of
-$\naturals$ will be obtained by starting at the point that is the
-interpretation of $\numerl{0}$ and following consecutive
-$\next$-arrows.  More precisely, lets define some convenient
-abbreviations for some actual terms that using the allowed symbols:
-\begin{align*}
-\numerl{1} & \eqdef \nextel(\numerl{0})\\
-\numerl{2} & \eqdef \nextel(\numerl{1})\\
-\numerl{3} & \eqdef \nextel(\numerl{2})\\
-           &\vdots
-\end{align*}
-For example, $\numerl{3}$ is an abbreviation for an actual term:
+There are some standard terms called \emph{numerals} used to describe
+the elements $e_0, e_1,\dots$ in \eqref{Ncopyshape}.  Namely, the
+numeral for $e_0$ will be $\zerosym$, and the numeral for $e_n$ will
+be the application of $\nextsym$ to $\zerosym$ $n$ times.
+\iffalse
 \[
-\nextel(\nextel(\nextel(\numerl{0}))).
+\zerosym, \nextsym(\zerosym), \nextsym(\nextsym(\zerosym)),
+\nextsym(\nextsym(\nextsym(\zerosym))), dots.
+\]
+\fi 
+
+We'll refer to the numeral for $e_n$ as $\numerl{n}$.  For example,
+$\numerl{3}$ is the numeral:
+\[
+\nextsym(\nextsym(\nextsym(\zerosym))).
 \]
 
+
+\iffalse
 The values that a model gives to these numerals will be called its
 \emph{numeral values}.  We will use the numeral values to be the
 elements $e_0,e_1,\dots$ in the copy~\eqref{Ncopyshape} of $\naturals$
 we are trying to create, with $e_n$ being the value of $\numerl{n}$.
+\fi
 
-But this won't work yet.  There is nothing so far that prevents all
-the numerals having the same value.  In other words, the formulas
-above do not even imply that $\next(x) \neq x$.  (You should check
-this yourself right now.)  We might try to fix this by requiring that
-no $\next$-arrow can begin and end at the same element, but there
-still could be a pair of elements, each of which was ``plus one'' of
-the other.  That is, the model might satisfy:
+But we don't quite have the desired situation pictured
+in~\eqref{Ncopyshape}: there is nothing so far that prevents all the
+numerals having the same value.  In other words, the formulas above do
+not even imply that $\next(x) \neq x$.  (You should check this
+yourself right now.)  We might try to fix this by requiring that no
+$\next$-arrow can begin and end at the same element, but there still
+could be a pair of elements, each of which was $\nextfun$ of the
+other.  That is, the model might satisfy:
 \[
-\exists x, y.\, \nextel(x) = y \QAND \nextel(y) = x.
+\exists x, y.\, \nextsym(x) = y \QAND \nextsym(y) = x.
 \]
-We could go on to forbid a length two cycle of $\next$-arrows like this, but
-then there might be a cycle of three:
+We could go on to forbid a length two cycle of $\next$-arrows like
+this, but then there might be a cycle of three:
 \[
-\exists x, y,z.\, \nextel(x) = y \QAND\ \nextel(y) = z \QAND\ \nextel(z) = x\ ,
+\exists x, y,z.\, \nextsym(x) = y \QAND\ \nextsym(y) = z \QAND\ \nextsym(z) = x\ ,
 \]
-and so on.  Fortunately, it turns out that something we want to do
-anyway will fix this problem.
+and so on.  Fortunately, there is something we want to do anyway will
+fix this problem: we haven't yet said anything that will make the
+interpretion, $e_0$, of $\zerosym$ behave like zero.
 
 \bparts
 
-\ppart\label{zero-part} So far we haven't said anything that will make
-the interpretion of $\numerl{0}$ behave like zero, namely, that zero
-is not plus-one of anything.  Also, by convention, subtracting one
-from zero has no effect.  Write a predicate formula expressing the
-fact that the interpretion of $\numerl{0}$ has these properties.
+\ppart\label{zero-part} Write a predicate formula expressing the fact
+that the value of $\zerosym$ not plus-one of anything.  Also, by
+convention, subtracting one from zero has no effect.
 \begin{solution}
 \[
-\QNOT(\exists x.\, \next(x) = \numerl{0}) \QAND
-\prev(\numerl{0}) = \numerl{0}).
+\QNOT(\exists x.\, \next(x) = \zerosym) \QAND
+\prev(\zerosym) = \zerosym).
 \]
 \end{solution}
 \eparts
@@ -155,7 +159,7 @@ the other well-ordering and the given formulas.
 
 An arrow explanation goes as follows:
 \begin{proof}
-Suppose we start at the point denoted by $\numerl{0}$ and proceed to
+Suppose we start at the point denoted by $\zerosym$ and proceed to
 generate a sequence of points by following successive $\next$-arrows
 out of each point and into the next.  These points are, by definition,
 the values of all the numerals.  But the formula of
@@ -171,41 +175,46 @@ A more formal argument from formulas~\eqref{previnvnext} and
 part~\eqref{zero-part} uses the Well Ordering Principle.
 \begin{proof}
 Suppose to the contrary that two different numerals had the same value
-in some interpretation satisfying ~\eqref{previnvnext} and
+in some interpretation satisfying~\eqref{previnvnext} and
 part~\eqref{zero-part}.  Then there is a minimum $n \in \naturals$
 such that $\numerl{n}$ has the same value as numeral $\numnerl{m}$ for
-some $m > n$.
+some $n < m$.
 
 But $n \neq 0$ because by part~\eqref{zero-part}, the interpretation
 of $\numnerl{0}$ is not $\next$ of anything, while all the other
 numerals are by definition $\next$ of the previous numeral.
 
-Now with $n,m>0$, by~\eqref{previnvnext} the interpretation of the
-numerals will satisfy
+Now with $n,m>0$ the interpretation
+of the numerals will satisfy
 \begin{align}
-\prev(\numerl{n}) & \eqdef \prev(\next(\numerl{n-1}) = \numerl{n-1},\notag\\
-\prev(\numerl{m}) & \eqdef \prev(\next(\numerl{m-1}) = \numerl{m-1},\notag\\
-\numerl{n} &  = \numerl{m}\ \QIMPLIES \numerl{n-1} = \numerl{m-1},\label{n-1 better}
+\prev(\numerl{n}) & \eqdef \prev(\next(\numerl{n-1}) = \numerl{n-1}
+& \text{(by~\eqref{previnvnext})},\label{nneqn-1}\\
+\prev(\numerl{m}) & \eqdef \prev(\next(\numerl{m-1}) = \numerl{m-1},
+& \text{(by~\eqref{previnvnext})},\label{mmeqm-1}
 \end{align}
-contradicting the minimality of $n$.
-
-Since the assumption that two different numerals had different values
-led to a contradiction, we conclude that in every model
-satisfying~\eqref{previnvnext} and part~\eqref{zero-part}, the
-numerals all have different values.\footnote{A more careful look at
-this argument reveals \mrel{without appeal to Well Ordering}, that
-for $n\neq m \in \naturals$, there is a simple formal proof of the
-formula
+So by~\label{nneqn-1},~\label{mmeqm-1}, the assumption that
+$\numerl{n} = \numerl{m}$ is true in the model implies
 \[
-\QNOT(\numer{n} = \numer{m})
+ \numerl{n-1} = \numerl{m-1}
 \]
-using part~\eqref{zero-part} once and~\eqref{previnvnext} $n$ times.
+is also true, contradicting the minimality of $n$.
 
-
+So the assumption leads to a contradiction, and we conclude that in
+every model satisfying~\eqref{previnvnext} and part~\eqref{zero-part},
+the numerals all have different values.\footnote{A careful look
+at this argument reveals that for each $n\neq m \in \naturals$,
+there is a direct proof that
+  \[
+  \QNOT(\numer{n} = \numer{m})
+   \]
+using part~\eqref{zero-part} once and~\eqref{previnvnext} $n$ times
+\emph{without} appeal to Well Ordering.  This observation leads to the
+conclusion that provability even in a very limited proof system with
+just a few axioms and elementary logical rules, without Well Ordering
+or Induction, is undecidable.}
 \end{proof}
 \end{solution}
 
-====================
 At this point, we actually have ensured that any model satisfying just
 the two formulas~\eqref{previnvnext} and~\eqref{zeronosuccessor} has
 the desired copy of $\naturals$.
@@ -215,16 +224,16 @@ the desired copy of $\naturals$.
 
 
 
-Now we will make $\nextel$ act like the ``add one'' function on values
+Now we will make $\nextsym$ act like the ``add one'' function on values
 of these terms.  In particular, adding one to two different elements
 will result in two different elements:
 \begin{equation}\label{next1to1}
-\forall x,y.\, x \neq y \QIMPLIES\ \nextel(x) \neq \nextel(y)\ .
+\forall x,y.\, x \neq y \QIMPLIES\ \nextsym(x) \neq \nextsym(y)\ .
 \end{equation}
 We also make $\prev$ act like the ``subtract one'' function on these
 values, namely subtracting one from zero has no effect:
 \begin{equation}\label{prev00}
-\prev(\numerl{0})= \numerl{0},
+\prev(\zerosym)= \zerosym,
 \end{equation}
 and otherwise adding one undoes subtracting one.
 
@@ -234,7 +243,7 @@ Write a predicate formula expressing the requirement that adding one
 undoes subtracting one from nonzero elements.
 \begin{solution}
 \begin{equation}\label{previnvnext}
-\forall x.\, \prev(\nextel(x)) = x\ .
+\forall x.\, \prev(\nextsym(x)) = x\ .
 \end{equation}
 
 
@@ -243,22 +252,22 @@ undoes subtracting one from nonzero elements.
 To start, we can introduce some abbreviations for certain terms called
 \emph{numerals} built up using these symbols: namely, let
 \begin{align*}
-\numerl{1} & \eqdef \nextel(\numerl{0})\\
-\numerl{2} & \eqdef \nextel(\numerl{1})\\
-\numerl{3} & \eqdef \nextel(\numerl{2})\\
+\numerl{1} & \eqdef \nextsym(\zerosym)\\
+\numerl{2} & \eqdef \nextsym(\numerl{1})\\
+\numerl{3} & \eqdef \nextsym(\numerl{2})\\
            &\vdots
 \end{align*}
 
-Now we will make $\nextel$ act like the ``add one'' function on values
+Now we will make $\nextsym$ act like the ``add one'' function on values
 of these terms.  In particular, adding one to two different elements
 will result in two different elements:
 \begin{equation}\label{next1to1}
-\forall x,y.\, x \neq y \QIMPLIES\ \nextel(x) \neq \nextel(y)\ .
+\forall x,y.\, x \neq y \QIMPLIES\ \nextsym(x) \neq \nextsym(y)\ .
 \end{equation}
 We also make $\prev$ act like the ``subtract one'' function on these
 values, namely subtracting one from zero has no effect:
 \begin{equation}\label{prev00}
-\prev(\numerl{0})= \numerl{0},
+\prev(\zerosym)= \zerosym,
 \end{equation}
 and otherwise adding one undoes subtracting one.
 
@@ -268,7 +277,7 @@ and otherwise adding one undoes subtracting one.
 the requirement that adding one undoes subtracting one from nonzero elements.
 \begin{solution}
 \begin{equation}\label{previnvnext}
-\forall x\neq \numerl{0}.\, \nextel(\prev(x)) = x\ .
+\forall x\neq \zerosym.\, \nextsym(\prev(x)) = x\ .
 \end{equation}
 \end{solution}
 
@@ -281,7 +290,7 @@ ones,'' but no time to check and problem long enough already.
 
 \begin{solution}
 \begin{equation}\label{prev1to1}
-\forall x,y \neq \numerl{0}.\, x \neq y \QIMPLIES\ \prev(x) \neq \prev(y)\ .
+\forall x,y \neq \zerosym.\, x \neq y \QIMPLIES\ \prev(x) \neq \prev(y)\ .
 \end{equation}
 \end{solution}
 \fi
@@ -291,7 +300,7 @@ ones,'' but no time to check and problem long enough already.
 
 Now we are pretty much done: any interpretation that satisifies these
 formulas must assign different domain elements to each of the
-numerals, and interpretations of $\nextel$ and $\prev$ must act like
+numerals, and interpretations of $\nextsym$ and $\prev$ must act like
 plus one and minus one on these elements.
 
 But although the values of the numerals in every model satisfying the
@@ -299,7 +308,7 @@ formulas of~\eqref{next1to1}, \eqref{prev00}, and
 part~\eqref{previnvnext-part} form a copy of $\naturals$, a model may
 have other elements that lead to strange behavior.  For example, a
 model satisfying all the above formulas could have \emph{two} copies
-that act like $\naturals$, with $\nextel$ and $\prev$ acting like add
+that act like $\naturals$, with $\nextsym$ and $\prev$ acting like add
 one and subtract one on each copy.  In this model, there would be two
 elements that act like zero.
 
@@ -312,7 +321,7 @@ $\naturals$ in the model.
 \begin{solution}
 It's enough to say there is only one element that can start a copy:
 \begin{equation}\label{uniqz}
-\forall x.\, \prev(x) = x \QIMPLIES x = \numerl{0}.
+\forall x.\, \prev(x) = x \QIMPLIES x = \zerosym.
 \end{equation}
 \end{solution}
 \eparts
@@ -321,11 +330,11 @@ But there still might be other elements with funny properties.  For
 example, there might be two elements, each of which was ``plus one''
 of the other:
 \[
-\exists x, y.\, \nextel(x) = y \QAND \nextel(y) = x.
+\exists x, y.\, \nextsym(x) = y \QAND \nextsym(y) = x.
 \]
 or a cycle of three:
 \[
-\exists x, y,z.\, \nextel(x) = y \QAND\ \nextel(y) = z \QAND\ \nextel(z) = x\ .
+\exists x, y,z.\, \nextsym(x) = y \QAND\ \nextsym(y) = z \QAND\ \nextsym(z) = x\ .
 \]
 We could easily write a formula forbidding such cycles of length
 three, or forbidding cycles of any given length, but we would need an
@@ -341,7 +350,7 @@ $L$ to define a relation that has the ``less-than'' properties on all
 domain elements.  For example, we will say that adding one makes
 numbers bigger with the formula
 \begin{equation}\label{Lnext}
-\forall x.\ x\,L\,\nextel(x).
+\forall x.\ x\,L\,\nextsym(x).
 \end{equation}
 
 \iffalse  CHECK THIS:
@@ -349,11 +358,11 @@ numbers bigger with the formula
 
 \ppart Explain why the formulas above imply 
 \begin{equation}\label{Lprev}
-\forall x\neq \numerl{0}.\ \prev(x)\,L\,x\ .
+\forall x\neq \zerosym.\ \prev(x)\,L\,x\ .
 \end{equation}
 
 \begin{solution}
-If $x\,L\,\nextel(x)$ and $x \neq \numerl{0}$, then
+If $x\,L\,\nextsym(x)$ and $x \neq \zerosym$, then
 \end{solution}
 \eparts
 \fi
@@ -370,7 +379,7 @@ above whose models must have properties as much like $\naturals$ as
 you can manage.  In particular, make sure that all models of your
 formulas force $L$ to mean $<$ on the numeral values and ensure
 that~\eqref{irrform} implies there are no finite cycles of
-$\nextel$'s.  (If you think you have formulas whose only models are
+$\nextsym$'s.  (If you think you have formulas whose only models are
 exactly like $\naturals$, look again, because that is impossible.)
 
 \begin{solution}
