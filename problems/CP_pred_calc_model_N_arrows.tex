@@ -18,10 +18,11 @@
 \newcommand{\nextfun}{\textit{nextf}}
 \newcommand{\prevsym}{\textbf{prev}}
 \newcommand{\prevfun}{\textit{prevf}}
-\newcommand{\numerl}[1]{\text{\~#1}}
+\newcommand{\numerl}[1]{\widetilde{\text{#1}}}
 \newcommand{\nextarrow}{\stackrel{\nextsym}{\longrightarrow}}
 \newcommand{\prevarrow}{\stackrel{\prevsym}{\longleftarrow}}
 \newcommand{\nparrow}{\stackrel{\nextarrow}{\prevarrow}}
+\newcommand{\ltsym}{\mrel{\textbf{<}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem starts here
@@ -61,6 +62,9 @@ $\nextsym$-arrow:
 \begin{equation}\label{Ncopyshape}
 e_0 \nparrow e_1 \nparrow e_2 \nparrow  \dots \nparrow e_n \nparrow \dots.
 \end{equation}
+Not shown is a further $\prevsym$-arrow self-loop from $e_0$ to $e_0$,
+reflecting the convention for nonnegative integers that subtracting
+from zero has no effect.
 
 There is a simple way to express this requirement as a predicate
 formula:
@@ -88,7 +92,7 @@ is a \emph{valid formula}.
 There are some standard terms called \emph{numerals} used to describe
 the elements $e_0, e_1,\dots$ in \eqref{Ncopyshape}.  Namely, the
 numeral for $e_0$ will be $\zerosym$, and the numeral for $e_n$ will
-be the application of $\nextsym$ to $\zerosym$ $n$ times.
+be the application $n$ times of $\nextsym$ to $\zerosym$.
 
 We'll refer to the numeral for $e_n$ as $\numerl{n}$.  For example,
 $\numerl{3}$ is the numeral:
@@ -105,35 +109,41 @@ by requiring that no $\nextsym$-arrow can begin and end at the same
 element, but there still could be a pair of numeral values, each of which
 was $\nextfun$ of the other.  That is, the model might satisfy:
 \[
-\nextsym\nextsym(\zerosym) = \zerosym.
+\nextsym(\nextsym(\zerosym)) = \zerosym.
 \]
-We could go on to forbid a length two cycles of $\nextsym$-arrows
-among the values of numerals, but then there might be a cycle
-of three:
+We could go on to forbid such length two cycles of $\nextsym$-arrows,
+but then there might be a cycle of three:
+\iffalse
 \[
 \exists x, y,z.\, \nextsym(x) = y \QAND\ \nextsym(y) = z \QAND\ \nextsym(z) = x\ ,
 \]
+\fi
+
+\[
+\nextsym(\nextsym(\nextsym(\zerosym))) = \zerosym,
+\]
 and so on.  Fortunately, there is something we want to do anyway will
-fix this problem: we haven't yet said anything that will make the
-interpretion, $e_0$, of $\zerosym$ behave like zero.
+fix this potentia; problem with the numeral values : we haven't yet
+provided a formula that will make the interpretion, $e_0$, of
+$\zerosym$ behave like zero.
 
 \bparts
 
 \ppart\label{zero-part} Write a predicate formula expressing the fact
-that the value of $\zerosym$ not plus-one of anything.  Also, by
+that the value of $\zerosym$ is not plus-one of anything.  Also, by
 convention, subtracting one from zero has no effect.
 \begin{solution}
 \[
-\QNOT(\exists x.\, \next(x) = \zerosym) \QAND
+\QNOT(\exists x.\, \nextsym(x) = \zerosym) \QAND
 \prevsym(\zerosym) = \zerosym).
 \]
 \end{solution}
 \eparts
 
-Combining the formulas of part~\eqref{zero-part}
-and~\eqref{previnvnext} now imply that the numeral values will yield
-the copy~\eqref{Ncopyshape} of $\naturals$ we want.  All that's
-needed is to show that the values of all the numerals are distinct.
+The formulas of part~\eqref{zero-part} and~\eqref{previnvnext}
+together imply that the numeral values will yield the
+copy~\eqref{Ncopyshape} of $\naturals$ we want.  To verify this, we
+just need to show that the values of all the numerals are distinct.
 
 \bparts
 
@@ -168,15 +178,15 @@ such that $\numerl{n}$ has the same value as numeral $\numerl{m}$ for
 some $n < m$.
 
 But $n \neq 0$ because by part~\eqref{zero-part}, the interpretation
-of $\numerl{0}$ is not $\nextfun$ of anything, while all the other
+of $\zerosym$ is not $\nextfun$ of anything, while all the other
 numerals are by definition $\nextfun$ of the previous numeral.
 
 Now with $n,m>0$ the interpretation
 of the numerals will satisfy
 \begin{align}
-\prevsym(\numerl{n}) & \eqdef \prevsym(\next(\numerl{n-1}) = \numerl{n-1}
+\prevsym(\numerl{n}) & \eqdef \prevsym(\nextsym(\numerl{n-1})) = \numerl{n-1}
 & \text{(by~\eqref{previnvnext})},\label{nneqn-1}\\
-\prevsym(\numerl{m}) & \eqdef \prevsym(\next(\numerl{m-1}) = \numerl{m-1},
+\prevsym(\numerl{m}) & \eqdef \prevsym(\nextsym(\numerl{m-1})) = \numerl{m-1},
 & \text{(by~\eqref{previnvnext})},\label{mmeqm-1}
 \end{align}
 So by~\eqref{nneqn-1},~\eqref{mmeqm-1}, the assumption that
@@ -210,17 +220,27 @@ desired copy of $\naturals$.
 
 As explained in lecture, specifying that a model has a copy of
 $\naturals$ is enough to prove undecidability of the validity problem
-for predicate formulas.  But the formulas above do not ensure models
-behave much like $\naturals$.  The issue is that in forcing there to
-be a copy of $\naturals$ in the model, we have put no constraints on
-what else might appear.  For example, there might be two separate
-copies of $\naturals$.  Saying that there is only one zero-like
-element, namely only one element that is not in range of $\nextfun$
-prevents that:
+for predicate formulas.  But the formulas above do not ensure that
+models behave much like $\naturals$.  For example, there might be two
+separate copies of $\naturals$.
 
+We can stifle this particular possibility of extra copies of
+$\naturals$ pretty easily.  Any such copy has to start with a
+zero-like element, namely one that is not in range of $\nextfun$.
+So we just assert that there is the only zero-like element.
+
+\bparts
+
+\ppart Write a formula such that any model has only one copy of
+$\naturals$.
+
+\begin{solution}
 \begin{equation}\label{uniquezero}
-\forall x.\, x \neq \zerosym\ \QIMPLIES \exists y.\, \nextsym(y) = x
+\forall x.\, \QNOT(\exists y.\, \nextsym(y) = x)\ \QIMPLIES\ x = \zerosym.
 \end{equation}
+\end{solution}
+
+\eparts
 
 From this point on, we'll consider only models that satisfy
 equations~\eqref{previnvnext},part~\eqref{zero-part},
@@ -228,111 +248,149 @@ and~\eqref{uniquezero}.
 
 \bparts
 
-\ppart Explain why every such model has exactly one copy of
-$\naturals$.
-\begin{solution}
-A copy must start with a point with no $\nextsym$-arrow coming in, and
-only $e_0$ has this property.
-\end{solution}
-
 \ppart Prove that
 \begin{equation}\label{nextinvprev}
-  \forall x.\, x \neq \zerosym\ \QIMPLIES\ \nextsym(\prevsym(x)) = x\ .
+  \forall x \neq \zerosym.\ \nextsym(\prevsym(x)) = x.
 \end{equation}
 
 \begin{solution}
-\TBA{revise}
-We know that every element $e neq e_0$ equals
-$\nextfun(e')$.  So $\nextfun(\prevfun(e)) =
-\nextfun(\prevfun(\nextfun(e'))) = \nextfun(e') \eqdef e$
+We know that every element $e \neq e_0$ equals
+$\nextfun(e')$ for some $e'$.  So
+\begin{align*}
+\nextfun(\prevfun(e))
+   & = \nextfun(\prevfun(\nextfun(e')))
+        & \text{(def of $e'$)}\\
+   & = \nextfun(e')
+        & \text{(by~\eqref{previnvnext})}\\  
+   & = e.
+        & \text{(def of $e'$)}.
+\end{align*}
 \end{solution}
 
-\ppart\label{x=nx} Show that there is a model in which $\exists x.\, x = \nextsym(x)$ is true.
+\ppart\label{x=nx} Describe a model that satisfies $\exists x.\, x =
+\nextsym(x)$.
 
 \begin{solution}
-\TBA{revise}
-
+\begin{staffnotes}
+More explanation would be helpful.
+\end{staffnotes}
 $\naturals \union \set{\infty}$ will serve.
-
 \end{solution}
 
 \eparts
 
+The above formulas serve to control the properties of the numeral
+values that make up our copy~\eqref{Ncopyshape} of $\naturals$, but
+they do not do much to ensure that all the elements in the domain have
+properties like the numeral values.
 
-But there still might be other elements with funny properties.  For
-example, there might be two elements, each of which was ``plus one''
-of the other:
+ For example, there might still be a $\nextsym$ cycle of non-numeral
+ values.  For example,
+\begin{equation}\label{n3x=x}
+\exists x.\, \nextsym(\nextsym(\nextsym(x))) = x.
+\end{equation}
+might still be satisfiable.
+
+We can forbid models from having finite cycles of $\nextsym$-arrows
+like~\eqref{x=nx} or~\eqref{n3x=x} if we introduce another symbol
+into formulas, namely, the binary relation symbol $\ltsym$.  Our
+objective will be to force $\ltsym$ to act like the less-than
+relation, $<$ on numbers.  For this purpose, it's suggestive to write
+$x \ltsym y$ instead of $\textbf{ltsym}(x,y)$.
+
+One requirement will be that $\ltsym$ behave as expected in the copy
+of $\naturals$.  Namely, for all $n,m \in \naturals$, if $n < m$, then
+$\numerl{n}\ltsym \numerl{m}$ must be true.  But we also want $\ltsym$
+to define a relation that has the ``less-than'' properties on all
+domain elements.  One key property is called \emph{transitivity}
 \[
-\exists x, y.\, \nextsym(x) = y \QAND \nextsym(y) = x.
+\forall x,y,z.\, (x \ltsym y \QAND y\ltsym z) \QIMPLIES x\ltsym z.
 \]
-
-To forbid models from satisfying~\eqref{x=nx} or having longer finite
-cycles of $\nextsym$-arrows, we need to use another symbol.  We will
-now allow the binary relation symbol $L(\ ,\ )$ .  Our objective will
-be to force $L$ to act like the less-than relation, $<$.  For this
-purpose, it's suggestive to write $x\, L\, y$ instead of $L(x,y)$.
-Then one requirement will be that for all $n,m \in \naturals$, if $n <
-m$, then $\numerl{n}\, L\, \numerl{m}$ must be true.  But we also want
-$L$ to define a relation that has the ``less-than'' properties on all
-domain elements.  For example, we will say that adding one makes
-numbers bigger with the formula
-\begin{equation}\label{Lnext}
-\forall x.\ x\,L\,\nextsym(x).
-\end{equation}
-
-Then we can forbid all finite cycles by requiring
-\begin{equation}\label{irrform}
-\forall x.\, \QNOT(x\, L\, x)\ .
-\end{equation}
 
 \bparts
 
-\ppart Write down formulas of predicate calculus with only the symbols
-above whose models must have properties as much like $\naturals$ as
-you can manage.  In particular, make sure that all models of your
-formulas force $L$ to mean $<$ on the numeral values and ensure
-that~\eqref{irrform} implies there are no finite cycles of
-$\nextsym$'s.  (If you think you have formulas whose only models are
-exactly like $\naturals$, look again, because that is impossible.)
+\ppart Another key property is that the $\ltsym$ relation interacts
+properly with $\nextsym$, namely, that if $y$ can be obtained by
+repeatedly adding one to $x$, then $x \ltsym y$.  Write a formula that
+ensures $\ltsym$ has this property.
 
 \begin{solution}
-Assert that $L$ is \emph{transitive}
-\[
-\forall x,y,z.\, (x\,L\,y \QAND y\,L\,z) \QIMPLIES x\,L\,z,
-\]
-
-Further every two different elements are related by $L$ one way or the
-other:
-\begin{equation}\label{trichot}
-\forall x,y.\, x\,L\,y \QOR y\,L\,x \QOR x = y.
+It's enough to say that $\ltsym$ respects adding one only once,
+because if doing it once is OK, transitivity will imply that repeated
+adding will be OK.  So we just write:
+\begin{equation}\label{Lnext}
+\forall x.\ x \ltsym \nextsym(x),
 \end{equation}
-
-Now the only models of all these formulas has the a copy of
-$\naturals$ along with some two-way infinite chains
+along with
 \[
-\dots c_{-2}\, L \, c_{-1}\, L\, c_0\, L\, c_1\, L\, c_2\, \dots.
+\forall x.\, \zerosym \ltsym x.
 \]
-
-All the elements in one of these chains must be $L$-bigger than all
-the numeral values.  Also,~\eqref{trichot} ensures all these chains
-will have the property that every element of one chain will be $L$ of
-every member of the other chain.  So the chains themselves are
-``ordered'' by $L$, but there is nothing further that can be said of
-how chains are ordered: there might be none, some finite number, or
-even an infinite number of them.  And the chains might be ordered
-among themselves like the integers, or nonnegative integers, or real
-numbers,\dots.
-
 \end{solution}
 
-\ppart Describe a model that satisfies all your formulas but has
-elements that are not the numeral values.
+\eparts
+
+Now we see that if an element is in a cycle of $\nextsym$-arrows, then
+by transitivity, it will be $\ltsym$ itself.  By forbidding this, we
+also forbid $\nextsym$-arrow cycles.
+
+\bparts
+
+\ppart Write a formula that in unsatisfiable in an model with a cycle
+of $\nextsym$-arrows.
 
 \begin{solution}
-The numeral values along with a single two-way infinite chain of
-successive elements ordered by $L$ is an example for the formulas
-given above.
+By the preceding discussion, The following formula will do the job:
+\begin{equation}\label{irrform}
+\forall x.\, \QNOT(x\ltsym x)
+\end{equation}
 \end{solution}
+
+\ppart The final key property is \emph{trichotomy}: every given
+element is either bigger or smaller than each other element.  Write a
+formula that expresses trichotomy.
+
+\begin{solution}
+\begin{equation}\label{trichot}
+\forall x,y.\, x\ltsym y\ \QOR\ y \ltsym x\ \QOR\ x = y.
+\end{equation}
+\end{solution}
+
+\eparts
+
+At this point, the only models that satisfy all the above formulas
+must have a single copy of $\naturals$ along with some two-way
+infinite chains
+\[
+\nextarrow \dots c_{-2} \nextarrow c_{-1} \nextarrow c_0 \nextarrow
+c_1 \nextarrow c_2 \nextarrow \dots.
+\]
+
+The trichotomy property,~\eqref{trichot} ensures all these chains will
+have the property that every element of one chain will be $\ltsym$ of
+every member of the other chain.  So the chains themselves are
+``ordered'' by $ltsym$.
+
+\bparts
+\ppart Verify that the set $\reals$ of real numbers is a model
+satisfying all the above formulas.
+
+\begin{solution}
+Easy to check formula by formula.
+\end{solution}
+
+\begin{staffnotes}
+Could require zero is $\ltsym$ everything, so only $\reals^{\geq 0}$
+will be a model.  Might not want stuff between $x$ and $\nextfun(x)$:
+\[
+\forall x, y.\, \QNOT(x \ltsym y \ltsym \nextsym(x)).
+\]
+
+There is nothing further that can be said of how chains are ordered:
+there might be none, some finite number, or even an infinite number of
+them.  And the chains might be ordered among themselves like the
+integers, nonnegative integers, real numbers,\dots.
+
+\end{staffnotes}
 
 \eparts
 
@@ -384,4 +442,31 @@ ones,'' but no time to check and problem long enough already.
 If $x\,L\,\nextsym(x)$ and $x \neq \zerosym$, then
 \end{solution}
 \eparts
+\fi
+
+\iffalse
+\ppart Explain why every such model has exactly one copy of
+$\naturals$.
+\begin{solution}
+A copy must start with a point with no $\nextsym$-arrow coming in, and
+only $e_0$ has this property.
+\end{solution}
+\fi
+
+\iffalse
+ Write down formulas of predicate calculus with only the symbols
+above whose models must have properties as much like $\naturals$ as
+you can manage.  In particular, make sure that all models of your
+formulas force $\ltsym$ to mean $<$ on the numeral values and ensure
+that~\eqref{irrform} implies there are no finite cycles of
+$\nextsym$'s.  (If you think you have formulas whose only models are
+exactly like $\naturals$, look again, because that is impossible.)
+
+All the elements in one of these chains must be $ltsym$ all the
+numeral values.
+, but there is nothing further that can be said
+of how chains are ordered: there might be none, some finite number, or
+even an infinite number of them.  And the chains might be ordered
+among themselves like the integers, or nonnegative integers, or real
+numbers,\dots.
 \fi
