@@ -1207,7 +1207,7 @@
 \newcommand{\mopt}[1]{\ensuremath{\mathop{\mathrm{#1}}}}
 \newcommand{\mbint}[1]{\ensuremath{\mathbin{\mathrm{#1}}}}
 \newcommand{\mrelt}[1]{\ensuremath{\mathrel{\mathrm{#1}}}}
-\newcommand{\mtt}[1]{\mathtt{#1}}
+\newcommand{\mtt}[1]{\ensuremath{\mathtt{#1}}}
 
 %% Math -- Logic
 

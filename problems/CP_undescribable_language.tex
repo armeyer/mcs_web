@@ -1,14 +1,11 @@
 \documentclass[problem]{mcs}
-
 \begin{pcomments}
   \pcomment{CP_undescribable_language}
   \pcomment{from: S09.cp2r}
-  \pcomment{Can only be used AFTER pred calculus and the referenced class
-    problem.  Needs handy copy of Russell Paradox}
-  \pcomment{revised by ARM 2/13/11}
-
+  \pcomment{Can only be used AFTER pred calculus.
+    Needs handy copy of Russell Paradox}
+  \pcomment{revised by ARM 2/13/11, 3/1/16}
 \end{pcomments}
-
 \pkeywords{
   Russell
   paradox
@@ -16,50 +13,103 @@
   binary
   logic
 }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcommand{\desc}{\text{desc}} % \def\all0s{\textbf{all-0s}}
+
 \begin{problem}
-  \newcommand{\desc}{\mopt{strings}}
-%  \def\all0s{\textbf{all-0s}}
+There is a famous paradox about describing numbers which goes as
+follows:
 
-  The method used to prove Cantor's Theorem that the power set is
-  ``bigger'' than the set, leads to many important results in logic
-  and computer science.  In this problem we'll apply that idea to
-  describe a set of binary strings that can't be described by ordinary
-  logical formulas.  To be provocative, we could say that we will
-  describe an undescribable set of strings!
+There are only so many possible definitions of nonnegative integers
+that can be written out in English using no more than 161 characters
+from the Roman alphabet, punctuation symbols, and spaces.  So there
+have to be an infinite number of nonnegative integers that don't have
+such short definitions.  By the Well Ordering Principle, there must be
+a \emph{least} nonnegative integer $n$ that has no such short
+definition.  But wait a minute,
+\begin{quote}
+``The \emph{least} nonnegative integer that cannot be defined in
+  English using at most 161 characters from the Roman alphabet,
+  punctuation symbols, and spaces.''
+\end{quote}
+is a definition of $n$ that uses 161 characters (count 'em).  So $n$
+can't exist, and the Well Ordering Principle is unsound!
 
-  The following logical formula illustrates how a formula can describe a set of strings.  The formula
-  \begin{equation}%\tag{\all0s} %\label{no1}
-    \QNOT[\exists y.\, \exists z.\, s = y1z] \tag{$\text{no-1s}(s)$},
-  \end{equation}
-  where the variables range over the set, \bins, of finite binary
-  strings, 
-says that the binary string, $s$, does not contain a 1.
+Now this ``paradox'' doesn't stand up to reason because it rests on
+the decidedly murky concept of a ``definition in English.''  As usual,
+when you don't know what you're talking about, reaching contradictory
+conclusions is to be expected.
 
-  We'll call such a predicate formula, $G(s)$, about strings a
-  \emph{string formula}, and we'll use the notation $\desc(G)$ for the set
-  of binary strings with the property described by $G$.  That is,
-\[
-\desc(G) \eqdef \set{s \in \bins \suchthat G(s)}.
-\]
+But we can extract from this paradox a well-defined and interesting
+theorem about definability in predicate logic.  The method we use is
+essentialy the same as the one used to prove Cantor's
+Theorem~\bref{powbig}, \iffalse that the power set is ``bigger'' than
+the set\fi and it leads to many other important results about the
+logical limits of mathematics and computer science.  In particular,
+we'll present a simple and precise description of a set of binary
+strings that can't be described by ordinary logical formulas.  In
+other words, we will give a precise description of an undescribable
+set of strings, which sounds paradoxical, but won't be when we look at
+it more closely.
+
+Let's start by illustrating how a logical formula can describe the set
+of binary strings that do not contain a \mtt{1}:
+\begin{equation}%\tag{\all0s} %\label{no1}
+  \QNOT[\exists y.\, \exists z.\, s = y\mtt{1}z]\,.
+  \tag{$\text{no-1s}$}
+\end{equation}
+So the strings $s$ described by formula~(no-1s) are exactly the
+strings consisting solely of \mtt{0}'s.
+
+Formula~(no-1s) is an example of a ``string formula'' of the kind we
+will use to describe properties of binary strings.  More precisely, an
+\emph{atomic} string formula is a formula, like ``$s = y\mtt{1}z$''
+above, that is of the general form
+ \[
+  ``xy\dots z = uv\dots w''
+ \]
+where $x,y,\dots,z,u,v,\dots,w$ may be the constants \mtt{0},\mtt{1},
+or may be variables ranging over the set, \bins, of finite binary
+strings.  A string formula in general is one like~(no-1s),
+built up from atomic formulas using quantifiers and propositional
+connectives.
+
+When $G(s)$ is a string formula, we'll use the notation $\desc(G)$ for
+the set of binary strings $s$ that satisfy $G$.  That is,
+  \[
+  \desc(G) \eqdef \set{s \in \bins \suchthat G(s)}.
+  \]
 A set of binary strings is \emph{describable} if it equals $\desc(G)$
-for some string formula, $G$.  So the set, $0^*$, of finite strings of
-0's is describable because it equals
-$\desc(\text{no-1s})$.\footnote{$\text{no-1s}$ and similar formulas
-  were examined in Problem~\bref{CP_assertions_about_binary_strings},
-  but it is not necessary to have done that problem to do this one.}
+for some string formula, $G$.  For example, the set $\strings{0}$ of
+finite strings of 0's is describable because
+ \[
+ \desc(\text{(no-1s)}) = \strings{0}.
+ \]
 
-The idea of representing data in binary is a no-brainer for a computer
-scientist, so it won't be a stretch to agree that any string formula can
-be represented by a binary string.  We'll use the notation $G_{x}$ for
-the string formula with binary representation $x \in \bins$.  The details
-of the representation don't matter, except that there ought to be a
-display procedure that can actually display $G_{x}$ given $x$.
+The next important idea comes from the observation that a string
+formula itself is a syntactic object, consisting of a string of
+characters over some standard character alphabet.  Now coding
+characters of an alphabet into binary strings is a familiar idea.  For
+example, the characters of the ASCII alphabet have a standard coding
+into the length eight binary strings.  Once its individual characters
+are coded into binary, a complete string formula can be coded into a
+binary string by concatenating the binary codes of its consecutive
+characters---a very familiar idea to a computer scientist.
 
+Now suppose $x$ is a binary string that codes some formula $G_x$.  The
+details of how we extract $G_x$ from its code $x$ don't matter
+much---we only require that there is some procedure to actually
+display the string formula $G_{x}$ given its code $x$.
+
+It's technically convenient to treat every string as the code of a
+string formula, so if $x$ is not a binary string we would get from a
+string formula, we'll arbitrarily define $G_x$ to be the
+formula~\text{(no-1s)}.
+
+\iffalse
 Standard binary representations of formulas are often based on
 character-by-character translation into binary, which means that only
 a sparse set of binary strings actually represent string formulas.  It
@@ -69,24 +119,37 @@ procedure so it displays some default formula, say $\text{no-1s}$,
 when it gets a binary string that isn't a standard representation of a
 string formula.  With this tweak, \emph{every} binary string, $x$,
 will now represent a string formula, $G_{x}$.
+\fi
 
 Now we have just the kind of situation where a Cantor-style diagonal
 argument can be applied, namely, we'll ask whether a string describes a
 property of \emph{itself}!  That may sound like a mind-bender, but all
-we're asking is whether $x \in \desc(G_{x})$.
+we're asking is whether
+\[
+G_x(x)
+\]
+is true, or equivalently whether
+\[
+x \in \desc(G_{x}).
+\]
 
-For example, using character-by-character translations of formulas into
-binary, neither the string $0000$ nor the string $10$ would be the binary
-representation of a formula, so the display procedure applied to either of
-them would display $\text{no-1s}$.  That is, $G_{0000} = G_{10} =
-\text{no-1s}$ and so $\desc(G_{0000})= \desc(G_{10}) = 0^*$.  This means
-that
+For example, using character-by-character translations of formulas
+into binary, neither the string $0000$ nor the string $10$ would be
+the binary representation of a formula, so our convention implies that
+\[
+G_{0000} = G_{10} \eqdef \text{formula~(no-1s)}.
+\]
+So
+\[
+\desc(G_{0000})= \desc(G_{10}) = \strings{0}.
+\]
+This means that
 \[
 0000 \in \desc(G_{0000}) \quad\text{and}\quad 10 \notin \desc(G_{10}).
 \]
 
-Now we are in a position to give a precise mathematical description
-of an ``undescribable'' set of binary strings, namely, let
+Now we are in a position to give a precise mathematical description of
+an ``undescribable'' set of binary strings, namely:
 \begin{theorem*}
 Define
 \begin{equation}\label{Udefxngx}
@@ -95,46 +158,61 @@ U \eqdef \set{x \in \bins \suchthat\ x \notin \desc(G_{x})}.
 The set $U$ is not describable.
 \end{theorem*}
 
-Use reasoning similar to Cantor's Theorem~\bref{powbig}
-\inhandout{(repeated below)} to prove this Theorem.
+Use reasoning similar to Cantor's Theorem~\bref{powbig} to prove this
+Theorem.
+
+\hint Suppose $U =\desc{G_{x_U}}$.
 
 \begin{solution}
-By definition~\eqref{Udefxngx}, 
+Suppose to the contrary that $U$ was describable.  This means there is
+some string formula describing $U$, and that string formula would have
+a binary code $x_U \in \bins$.  In other words
+\[
+U = \desc{G_{x_U}}.
+\]
+Another way to phrase this is to say that, by definition of $x_U$,
+\begin{equation}\label{xuxdgxu}
+x \in U \qiff x \in \desc(G_{x_U})
+\end{equation}
+for all $x \bins$.
+
+Also, by definition of $U$, we have
 \begin{equation}\label{xUiffxGx}
-x \in U \qiff x \notin \desc(G_{x}).
+x \in U \qiff x \notin \desc(G_{x}) 
 \end{equation}
 for $x\in \bins$.
 
-Also, $U = \desc(G_{x_U})$ by assumption.  This means:
-\begin{equation}\label{xUqxGx}
-x \in U \qiff x \in \desc(G_{x_U}).
-\end{equation}
-
-Combining~\eqref{xUqxGx} and~\eqref{xUiffxGx}, we have
+Combining~\eqref{xuxdgxu} and~\eqref{xUiffxGx}, we conclude that
 \begin{equation}\label{xdGiff}
 x \notin \desc(G_{x}) \iff x \in \desc(G_{x_U}),
 \end{equation}
-for all $x\in \bins$.  Now plugging in $x_U$
-for $x$ in~\eqref{xdGiff} gives an immediate contradiction.
+for all $x\in \bins$.
 
-So there cannot be any formula that describes $U$.
+Now plugging in $x_U$ for $x$ in~\eqref{xdGiff} gives an immediate
+contradiction:
+\[
+x_U \notin \desc(G_{x_U}) \iff x_U \in \desc(G_{x_U}).
+\]
 \end{solution}
-\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
 
 \inhandout{
 \textbox{
 \begin{center}
 \large Cantor's Theorem
-
 \textbf{There is no bijection between any set $A$ and its powerset
 $\power(A)$.}
 \end{center}
-
 \begin{proof}
   We show that if $g$ is a total function from $A$ to $\power(A)$,
   then $g$ does not have the $[\ge 1\ \text{in}]$, surjection
   property, and so is certainly not a bijection.
-
   Define
   \[
   A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
@@ -142,7 +220,6 @@ $\power(A)$.}
   Since $g$ is total, $A_g$ is a well-defined subset of $A$, which
   means it is a member of $\power(A)$.  We claim $A_g$ is not in the
   range of $g$, and so $g$ is not a surjection.
-
   To prove that $A_g \notin \range{g}$, assume to the contrary that it
   was in $\range{g}$.  That is,
 \[
@@ -156,13 +233,5 @@ for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
 \[
 a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
 \]
-
 \end{proof}
 }}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Problem ends here
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\endinput
