@@ -1424,7 +1424,7 @@
 \newcommand{\meval}[2]{\mopt{eval}(#1,#2)}  %if changed, also update \text{eval}'s in text
 \newcommand{\msubst}[2]{\mopt{subst}(#1,#2)}  %#2[x \leftarrow #1]}
 
-\newcommand{\prodsym}{\ast}
+\newcommand{\prodsym}{\ensuremath{\mathbin{\mathrm{\textbf{\ast}}}}}
 \newcommand{\minussym}{\ensuremath{\mathop{\mathrm{\textbf{-}}}}}
 \newcommand{\sumsym}{\ensuremath{\mathbin{\mathrm{\textbf{+}}}}}
 
