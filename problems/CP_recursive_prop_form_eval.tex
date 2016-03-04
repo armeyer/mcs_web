@@ -6,7 +6,8 @@
 \end{pcomments}
 
 \pkeywords{
-  propositional formula
+  propositional_formula
+  propositional_variable
   recursive
   environment
   structural_induction
@@ -14,7 +15,7 @@
   evaluate
 }
 
-\newcommand{\vrbls}[1]{\mopt{vars}(#1)}
+\newcommand{\pvrbls}[1]{\mopt{pvar}(#1)}
 \newcommand{\ANDsym}{\ensuremath{\mathbin{\mathrm{\textbf{And}}}}}
 \newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
 
@@ -24,13 +25,13 @@ In this problem we'll need to be careful about the propositional
 appear in formulas.  We'll restrict ourselves to formulas with
 connective \emph{symbols} \ANDsym\ and \NOTsym, since we know every
 propositional formula is equivalent to one with only these
-connectives.
+connectives.  We will also allow the constant symbols \True, and \False.
 
 \bparts
 
 \ppart Give a simple recursive definition of \emph{propositional
-  formula} and the set of propositional \emph{variables that appear}
-in it.
+  formula} $F$ and the set $\pvrbls{F}$ of propositional
+\emph{variables that appear} in it.
 
 \begin{solution}
 
@@ -38,12 +39,12 @@ in it.
 \begin{itemize}
 
 \item A propositional \emph{variable}, $P$, is a propositional formula
-  and the set $\vrbls{P}$ of variables that appear in it is $\set{P}$.
+  and the set $\pvrbls{P}$ of variables that appear in it is $\set{P}$.
 
 \item A propositional \emph{constants} \True, \False\ are propositional
   formulas, and
 \[
-\vrbls{\True} = \vrbls{\False} \eqdef \emptyset.
+\pvrbls{\True} = \pvrbls{\False} \eqdef \emptyset.
 \]
 
 \end{itemize}
@@ -52,10 +53,10 @@ in it.
 formulas, then so are
 \begin{itemize}
 
-\item $(F \ANDsym\ G)$, and $\vrbls{(F \ANDsym G)} \eqdef \vrbls{F} \union
-  \vrbls{G}$.
+\item $(F \ANDsym\ G)$, and $\pvrbls{(F \ANDsym G)} \eqdef \pvrbls{F} \union
+  \pvrbls{G}$.
 
-\item $\NOTsym(F)$, and $\vrbls{\NOTsym(F)} \eqdef \vrbls{F}$.
+\item $\NOTsym(F)$, and $\pvrbls{\NOTsym(F)} \eqdef \pvrbls{F}$.
 \end{itemize}
 \end{solution}
 
@@ -72,14 +73,15 @@ e: V \to \set{\true,\false}.
 
 \ppart Give a recursive definition of the \emph{truth value},
 $\meval{F}{e}$, of propositional formula $F$ in an environment $e$
-over a set of variables $V \supseteq \vrbls{F}$.
+over a set of variables $V \supseteq \pvrbls{F}$.
 
 \begin{solution}
 
 \inductioncase{Base cases:}
 \begin{align*}
-\meval{P}{e} & \eqdef e(P)\\
-\meval{c}{e} & \eqdef c \text{ for } c = \True, \False.
+\meval{P}{e} & \eqdef e(P),\\
+\meval{\True}{e} & \eqdef \true,\\
+\meval{\False}{e} & \eqdef \false.\\
 \end{align*}
 
 \inductioncase{Constructor cases:} If $F,G$ are propositional
@@ -109,20 +111,20 @@ variables in a formula.
 \begin{solution}
 \begin{definition*}
 The truth value of a propositional formula $F$ \emph{depends only on
-  the truth values of $\vrbls{F}$} iff
+  the truth values of $\pvrbls{F}$} iff
 
 \begin{itemize}
 \item $V_1$ and $V_2$ are sets of variables,
 \item $e_1$ and $e_2$ are environments for $V_1$ and $V_2$, respectively,
-\item $V_1 \intersect V_2 \supseteq \vrbls{F}$, and
-\item $\forall P \in \vrbls{F}.\, e_1(P) = e_2(P)$,
+\item $V_1 \intersect V_2 \supseteq \pvrbls{F}$, and
+\item $\forall P \in \pvrbls{F}.\, e_1(P) = e_2(P)$,
 \end{itemize}
 \[
 \text{implies that }\meval{F}{e_1} = \meval{F}{e_2}.
 \]
 \end{definition*}
 
-To prove that the value of a $F$ depends only on the values of $\vrbls{F}$, suppose
+To prove that the value of a $F$ depends only on the values of $\pvrbls{F}$, suppose
 $V_1,V_2,e_1,e_2$ are as above, then
 
 \inductioncase{Base case} ($F$ is a variable $P$).   Then
@@ -156,21 +158,41 @@ so
      & \text{(def of eval)}\\
   & = \meval{F}{e_2}.
 \end{align*}
+\begin{staffnotes}
+We've made implicit use of the fact  that
+\[
+\pvrbls{G} \subseteq \pvrbls{G \ANDsym H}
+\]
+by definition of $\pvrbls{F}$.
+\end{staffnotes}
 
 \inductioncase{Constructor case} ($F$ is $\NOTsym(G)$).  Similar,
 easier proof.
 \end{solution}
 
+\iffalse
 \ppart Prove by structural induction that if $F$ and $G$ are valid,
 then so in $F \ANDsym G$.
+\begin{solution}
 
-\TBA{\dots}
+\end{solution}
+\fi
 
-\ppart Prove by structural induction that a formula $F$ is valid iff
-$\NOTsym(F)$ is unsatisfiable.
+\ppart Now we can formally define $F$ being \emph{valid}.  Namely, $F$ is valid iff
+\[
+\forall e.\, \meval{F}{e} = \true.
+\]
+
+Give a similar formal definition of formula $G$ being
+\emph{unsatisfiable}.  Then use the definition of eval to prove that a
+formula $F$ is valid iff $\NOTsym(F)$ is unsatisfiable.
 
 \begin{solution}
-Let $e$ range over environments on $\vrbls{F}$.
+Let $e$ range over environments on $\pvrbls{G}$.  Then $G$ is
+unsatisfiable iff
+\[
+\QNOT(\exists e.\,\meval{G}{e} = \true)
+\]
 
 \begin{align*}
 F \text{is valid} 

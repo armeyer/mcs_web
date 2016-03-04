@@ -1,4 +1,148 @@
-\pcomment{CP_recursive_prenex}
+\documentclass[problem]{mcs}
 
-assume in unique var form: be careful  F OR G may not be in unique var when F,G are
-but id F OR G is uniqvar, then so is F, G.
+\begin{pcomments}
+  \pcomment{CP_recursive_prenex}
+  \pcomment{ARM 3/4/16}
+\end{pcomments}
+
+\pkeywords{
+  predicate_formula
+  recursive
+  free_varianble
+  structural_induction
+}
+
+\newcommand{\fvrbls}{\ensuremath{\mathop{\mathrm{fvar}}}}
+\newcommand{\ANDsym}{\ensuremath{\mathbin{\mathrm{\textbf{And}}}}}
+\newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
+\newcommand{\IMPsym}{\ensuremath{\mathbin{\mathrm{\textbf{Implies}}}}}
+\newcommand{\xbod}{\ensuremath{\mathop{\mathrm{bod}}}}
+\newcommand{\qnts}{\ensuremath{\mathop{\mathrm{qnt}}}}
+
+\begin{problem}
+
+\bparts
+
+\ppart\label{recpred} Give a recursive definition of the set of all
+predicate formulas whose only the propositional connectives are
+$\ANDsym, \NOTsym$, and $\IMPsym$, and whose only ``atomic'' formulas
+are of the form $R(x)$ and $S(x,y)$ where $R$ and $S$ are fixed
+predicate symbols and $x,y$ may be any variable symbols, not
+necessarily distinct.
+
+\begin{solution}
+
+\inductioncase{Base cases} The ``atomic formula'' described above are
+predicate formula.
+
+\inductioncase{Constructor step}:  If $F$ and $G$ are predicate formulas, then so are
+\begin{align*}
+ \NOTsym(F),
+ (F \ANDsym G),
+ (F \IMPsym G),
+ (\exists x.\, F)
+ (\forall x.\, F)
+\end{align*}
+
+\end{solution}
+
+\ppart Based on part~\eqref{recpred}, give a recursive definition of
+the set $\fvrbls(F)$ of \emph{free variables} in a predicate formula
+$F$.  (A variable $x$ is free if it has an occurrence that is not
+inside any subformula of the form $\exists x.[\dots]$ or $\forall
+x.[\dots]$.)
+
+\begin{solution}
+\inductioncase{Base cases} 
+\begin{align*}
+\fvrbls(R(x))& \eqdef \set{x},\\
+\fvrbls(S(x,y))& \eqdef \set{x,y}.
+\end{align*}
+
+\inductioncase{Constructor cases}
+\begin{align*}
+\fvrbls(\NOTsym(F))   & \eqdef \fvrbls(F),\\
+\fvrbls((F \ANDsym G)) & \eqdef \fvrbls(F) \union \fvrbls(G),\\
+\fvrbls((F \IMPsym G)) & \eqdef \fvrbls(F) \union \fvrbls(G),\\
+\fvrbls(\exists x.\, F) & \eqdef \fvrbls(F) - \set{x},\\
+\fvrbls(\forall x.\, F) &  \eqdef \fvrbls(F) - \set{x}.
+\end{align*}
+
+\end{solution}
+
+\ppart Assume $F$ has the property that for each variable $x$, there
+is at most one occurrence of either a ``$\forall x$'' or an ``$\exists
+x$,'' and that if $x$ is a free variable, there is no occurrence of a
+``$\forall x$'' or an ``$\exists x$'' anywhere else in the formula.
+(That is, $F$ satisfies the unique variable convention of
+Problem~\bref{CP_variable_convention}.)  Define a recursive procedure
+to convert any predicate formula $F$ into an equivalent \emph{prenex
+  formula} of the form
+\[
+\qnts(F).\,\xbod(F),
+\]
+where $\xbod(F)$ is a quantier-free formula, and $\qnts{F}$ is a
+(possibly empty) sequence of quantifiers
+\[
+Q_1 x_1.\, Q_2 x_2.\, \dots Q_n x_n.\, 
+\]
+where $Q_i$ is ``$\forall$'' or ``$\exists$,'' and the $x_i$'s are
+distinct variables.  You may use the notation $\overline{\qnts(F)}$
+for the sequence
+\[
+\overline{Q_1} x_1.\, \overline{Q_2} x_2.\, \dots \overline{Q_n} x_n.\, 
+\]
+were $\overline{\forall} \eqdef \exists$ and $\overline{\exists}
+\eqdef \forall$.
+
+For example, the variable convention ensures that if $(Q x. F)$ is a
+subformula somewhere, then there are no free occurrences of $x$
+anywhere.  Therefore,
+\[
+(Q x. F) \ANDsym G\quad  \text{is equivalent to} \quad Q x. (F \ANDsym G),
+\]
+because we can think of $G$ as simply being \True\ or \False.  This
+justfies the following definitions of $\xbod$ and $\qnts$ for the
+\ANDsym\ case
+\begin{align*}
+\xbod((F \ANDsym G)) & \eqdef (\xbod(F) \ANDsym \xbod(G)),\\
+\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G)
+\end{align*}
+
+which explains why the definition of $\qnts((F \ANDsym G))$ and
+$\xbod((F \ANDsym G))$ preserves equivalence. 
+
+
+\begin{solution}
+\inductioncase{Base cases} 
+\begin{align*}
+\xbod(R(x)) & \eqdef R(x),\\
+\qnts(R(x)) & \eqdef \emptystring,\\
+\xbod(S(x,y))& \eqdef S(x,y),\\
+\qnts(S(x,y)) & \eqdef \emptystring.
+\end{align*}
+
+\inductioncase{Constructor cases}
+\begin{align*}
+\xbod(\NOTsym(F))   & \eqdef \NOTsym(\xbod(F)),\\
+\qnts(\NOTsym(F)))   & \eqdef \overline{\qnts}(F),\\
+\xbod((F \ANDsym G)) & \eqdef (\xbod(F) \ANDsym \xbod(G)),\\
+\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G)\\
+\xbod((F \IMPsym G)) & \eqdef \xbod(F) \IMPsym \xbod(G),\\
+\qnts((F \IMPsym G)) & \eqdef \overline{\qnts(F)},\qnts(G)\\
+\xbod(\exists x.\, F) & \eqdef \xbod(F)\\
+\qnts(\exists x.\, F) & \eqdef \exists x,\qnts(F)\\
+\xbod(\forall x.\, F) &  \eqdef \xbod(F)\\
+\qnts(\forall x.\, F) & \eqdef \forall x,\qnts(F).
+\end{align*}
+
+\end{solution}
+\begin{staffnotes}
+The variable convention justifies the other cases similarly.
+\end{staffnotes}
+
+\eparts
+
+\end{problem}
+
+\endinput 
