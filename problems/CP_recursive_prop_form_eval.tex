@@ -2,7 +2,7 @@
 
 \begin{pcomments}
   \pcomment{CP_recursive_prop_form_eval}
-  \pcomment{ARM 3/2/16}
+  \pcomment{ARM 3/4/16}
 \end{pcomments}
 
 \pkeywords{
@@ -25,7 +25,7 @@ In this problem we'll need to be careful about the propositional
 appear in formulas.  We'll restrict ourselves to formulas with
 connective \emph{symbols} \ANDsym\ and \NOTsym, since we know every
 propositional formula is equivalent to one with only these
-connectives.  We will also allow the constant symbols \True, and \False.
+connectives.  We will also allow the constant symbols \True\ and \False.
 
 \bparts
 
@@ -100,45 +100,63 @@ assumption.
 
 \bparts
 
+\ppart Give an example of a propositional formula containing the
+variable $P$ but whose truth value does not depend on $P$.  Now give a
+rigorous definition of the assertion that ``the truth value of 
+propositional formula $F$ does not depend on propositional variable $P$.''
+
+\hint Let $e_1,e_2$ be two environments whose values agree on all
+variables other than $P$.
+
+\begin{solution}
+A simple example is the formula $P \ANDsym \NOTsym(P)$ whose truth
+value is $\false$ in all environments.
+
+Not ``depending on $P$'' means that whether $P$ is \true\ or \false,
+the truth value of $F$ comes out the same.  More precisely this means
+that if two environments agree on the truth values of all variables
+other than $P$, then the value of $F$ is the same in both
+environments:
+\begin{definition*}
+The truth value of a propositional formula \emph{$F$ does not depend
+  on propositional variable $P$} iff whenever $e_1, e_2$ are
+environments over $V_0 \supseteq \pvrbls{F} \union \set{P}$ and $e_1(Q)
+= e_2(Q)$ for all variables $Q \in V_0$ other than $P$, then
+\[
+ \meval{F}{e_1} = \meval{F}{e_2}.
+\]
+\end{definition*}
+\end{solution}
+
 \ppart Give a rigorous definition of the assertion that ``the truth
 value of a propositional formula only depends on the truth values of
 the variables that appear in it,'' and then prove it by structural
 induction on the definition of propositional formula.
 
-\hint Think about two different environments whose values agree on the
-variables in a formula.
-
 \begin{solution}
 \begin{definition*}
 The truth value of a propositional formula $F$ \emph{depends only on
-  the truth values of $\pvrbls{F}$} iff
-
-\begin{itemize}
-\item $V_1$ and $V_2$ are sets of variables,
-\item $e_1$ and $e_2$ are environments for $V_1$ and $V_2$, respectively,
-\item $V_1 \intersect V_2 \supseteq \pvrbls{F}$, and
-\item $\forall P \in \pvrbls{F}.\, e_1(P) = e_2(P)$,
-\end{itemize}
-\[
-\text{implies that }\meval{F}{e_1} = \meval{F}{e_2}.
-\]
+  the truth values of $\pvrbls{F}$} iff for all $P \notin \pvrbls{F}$,
+$F$ does not depend on $P$.
 \end{definition*}
 
-To prove that the value of a $F$ depends only on the values of $\pvrbls{F}$, suppose
-$V_1,V_2,e_1,e_2$ are as above, then
+To prove that all formulas $F$ have this property, suppose $P \notin
+\pvrbls{F}$, and $e_1, e_2$ are environments over $V_0 \supseteq
+\pvrbls{F} \union \set{P}$ and $e_1(Q) = e_2(Q)$ for all variables $Q
+\in V_0$ other than $P$.  Then we will prove by structural induction on
+$F$ that
+\begin{equation}\label{Fe1Fe2}
+ \meval{F}{e_1} = \meval{F}{e_2}.
+\end{equation}
 
-\inductioncase{Base case} ($F$ is a variable $P$).   Then
-\begin{align*}
-\meval{F}{e_1} & \eqdef e_1(P)\\
-  & = e_2(P) & \text{(by hypothesis)}\\
-  & = \meval{F}{e_2} & \text{(by def of eval)}
-\end{align*}
 
-\inductioncase{Base case} ($F$ is a constant \True).   Then
+\inductioncase{Base case} $F$ can't be the variable $P$, so the only
+cases are when $F$ is a truth constant. Now if $F$ is \True, then
 \[
-\meval{F}{e_1} = \meval{\True}{e_1} \eqdef \true = \meval{F}{e_2},
+ \meval{F}{e_1} \eqdef \true =  \meval{F}{e_2}, 
 \]
-and likewise for \False.
+by definition of eval.  The same reasoning applies if $F$ is \False,
+proving that~\eqref{Fe1Fe2} holds on the base case.
 
 \inductioncase{Constructor case} ($F$ is $(G \ANDsym H)$).  Then by
 structural induction hypothesis,
@@ -149,7 +167,6 @@ structural induction hypothesis,
 so
 \begin{align*}
 \meval{F}{e_1}
-  & = \meval{(G \ANDsym H)}{e_1}\\
   & = \meval{G}{e_1} \QAND\ \meval{H}{e_1}
      & \text{(def of eval)}\\
   & = \meval{G}{e_2} \QAND\ \meval{H}{e_2}
@@ -158,6 +175,8 @@ so
      & \text{(def of eval)}\\
   & = \meval{F}{e_2}.
 \end{align*}
+proving~\eqref{Fe1Fe2} in this case.
+
 \begin{staffnotes}
 We've made implicit use of the fact  that
 \[
@@ -170,19 +189,11 @@ by definition of $\pvrbls{F}$.
 easier proof.
 \end{solution}
 
-\iffalse
-\ppart Prove by structural induction that if $F$ and $G$ are valid,
-then so in $F \ANDsym G$.
-\begin{solution}
-
-\end{solution}
-\fi
-
-\ppart Now we can formally define $F$ being \emph{valid}.  Namely, $F$ is valid iff
+\ppart Now we can formally define $F$ being \emph{valid}.  Namely, $F$
+is valid iff
 \[
 \forall e.\, \meval{F}{e} = \true.
 \]
-
 Give a similar formal definition of formula $G$ being
 \emph{unsatisfiable}.  Then use the definition of eval to prove that a
 formula $F$ is valid iff $\NOTsym(F)$ is unsatisfiable.
