@@ -1,0 +1,115 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_circuit_data-type}
+  \pcomment{ARM draft 3/5/16}
+\end{pcomments}
+
+\pkeywords{
+  circuit
+  recursive
+  structural_induction
+  evaluate
+}
+
+\newcommand{\llist}[]{{\mathop{\mathrm{list(#1)}}}}
+\newcommand{\lcons}[2]{{\mathop{\mathrm{cons(#1,#2)}}}}
+
+\newcommand{\cwout}{\textbf{O}}
+\newcommand{\wirs}{\ensuremath{W}}
+\newcommand{\bgat}{\ensuremath{\text{gates}}}
+\newcommand{\reccirc}{\text{DigCirc}}
+\newcommand{\cwin}[1]{{\mathop{\mathrm{inputs(#1)}}}}
+\newcommand{\ctern}[1]{{\mathop{\mathrm{internal(#1)}}}}
+\newcommand{\bools}{\set{\true, \false}}
+
+\begin{problem}
+We can explain in a simple and precise way how digital circuits work,
+and gain the powerful proof method of structural induction to verify
+their properties, by defining digital circuits as a recursive data
+type, $\reccirc$, consisting of a list of \emph{gate connections}.
+
+Let $\wirs$ be a set $w_0,w_1,\dots$ whose elements are called
+\emph{wires}, and $\bgat \eqdef \set{\QAND, \QOR, \QXOR}$ be a set
+whose elements are called \emph{2-input gates}.  Let $\cwout \notin
+\wirs$ be an object called the \emph{output}.
+
+\TBA{FIGURE showing new gate $G$ connecting to inputs of circuit $C$.}
+
+\begin{definition*}
+The set of digital circuit $\reccirc$, and their inputs and internal
+wires, are defined recursively as follows:
+
+\inductioncase{Base cases:}
+\begin{itemize}
+\item If $G \in \bgat, x, y \in \wirs$, then $C \eqdef \llist{(x,y,G)} \in \reccirc$, and
+\begin{align*}
+\cwin{C} \eqdef \set{x,y},\\
+\ctern{C} \eqdef \emptyset.
+\end{align*}
+
+\item If $x \in \wirs$, then $C \eqdef \list{(\QNOT,x)} \in \reccirc$, and
+\begin{align*}
+\cwin{C} \eqdef \set{x},\\
+\ctern{C} \eqdef \emptyset.
+\end{align*}
+\end{itemize}
+
+\inductioncase{Constructor cases:}
+If
+\begin{align*}
+C & \in \reccirc,\\
+I &\subseteq \cwin{C}, I \neq \emptyset,\\
+x, y &\in \wirs - \tern{C} \union \cwin{C},
+\end{align*}
+then $D \in \reccirc$, where
+
+\begin{itemize}
+
+\item
+$D \eqdef \lcons{(x,y, G, I)}{C}$ and
+\begin{align*}
+G & \in \bgat,\\
+\cwin{D}  & \eqdef \set{x,y} \union \cwin{C} - I,\\
+\ctern{D} & \eqdef \ctern{C} \union I.
+\end{align*}
+
+\item
+$D \eqdef \llist{(x, \QNOT, I)}{C}$ and
+\begin{align*}
+\cwin{D}  & \eqdef \set{x,y} \union \cwin{C} - I,\\
+\ctern{D} & \eqdef \ctern{C} \union I.
+\end{align*}
+\end{itemize}
+\end{definition*}
+
+Define a \emph{wire assignment} of $C$ to be a function
+\[
+A: \cwin{C} \union \ctern{C) \union {\cwout}} \to \bools
+\]
+such that \TBA{\dots}
+
+\bparts
+
+\ppart Sanity check: prove that $\cwin{C} \intersect \ctern{C} =
+\emptyset$.
+
+\ppart Define an \emph{environment} for $C$ to be a function $e:
+\cwin{C} \to \bools$.  Prove that if two wire assignments for $C$
+restricted to $\cwin{C}$ equal the same environment, then the wire
+assignments are equal.  So any circuit $C$ defines a function from
+environments for its inputs to $\bools$.
+
+\ppart Define recursive procedure to find propositional formula $E_C$
+with propositional variables $\cwin{C}$ equivalent (same function on
+environments) to $C$.
+
+\ppart Give examples where $E_c$ is exponentially larger than $C$.
+
+
+
+\eparts
+
+\end{problem}
+
+\endinput
