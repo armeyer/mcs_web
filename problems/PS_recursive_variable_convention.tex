@@ -1,0 +1,200 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_recursive_variable_convention}
+  \pcomment{draft by ARM 3/6/16}
+\end{pcomments}
+
+\pkeywords{
+  quantifiers
+  predicate_calculus
+  logical_formula
+  variable
+  free_variable
+  bound_variable
+  unique_variable
+  variable_convention
+  rename
+}
+
+\newcommand{\UV}{\ensuremath{\mathop{\text{UV}}}}
+\newcommand{\leftv}{\mathop{\mathrm{left}}}
+\newcommand{\rightv}{\mathop{\mathrm{right}}}
+\newcommand{\newv}{\ensuremath{\mathop{\mathrm{newvar}}}}
+\newcommand{\renm}[3]{\subst{#1}{#2}{#3}}
+\newcommand{\FV}[1]{\mathop{\text{FV}}(#1)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+In all modern programming languages, re-using the same procedure names
+or procedure parameters within different procedure declarations
+doesn't cause trouble.  The programming language's ``scoping'' rules
+eliminate any ambiguity about which procedure names or procedure
+parameters bind to which declarations in any particular context.  It's
+always safe to choose whatever names you like, and your procedure will
+behave as if your chosen names were unique, and never appeared
+elsewhere.
+
+The same thing happens in predicate formulas.  A variable $x$ may
+appear at different places under the control of different $\forall x$
+or $\exists x$ quantifiers, but there are standard rules for figuring
+out which quantifier controls which occurrence of $x$.  In fact, there
+is a way to rename variables to make explicit which quantifier governs
+which occurrence without changing the meaning of the formula or its
+structure.  An example of this was given in
+Problem~\bref{CP_variable_convention}.
+
+In this problem, we give a recursive definition of a renaming function
+\UV\ that converts any predicate formula $F$ into an \emph{equivalent}
+formula $\UV(F)$ that satisfies the \emph{unique variable convention}:
+
+\begin{staffnotes}
+Equivalence is given to mean \emph{has the same truth value in all
+  models}, but we have not gone into details.  Could use of recursive
+def of $M \turnstyle F$.
+\end{staffnotes}
+
+\begin{itemize}
+
+\item For every variable $x$ occurring in $\UV(F)$, there is at most
+  one quantified occurrence of $x$, that is, at most one occurrence of
+  either ``$\forall x$'' or ``$\exists x$,'' and moreover, ``$\forall
+  x$'' and ``$\exists x$'' don't both occur, and
+
+\item if there is a subformula of $\UV(F)$ of the form $\forall x.G$
+  or the form $\exists x.G$, then all the occurrences of $x$ that
+  appear anywhere in the whole formula are within the subformula.
+
+\end{itemize}
+
+The definition of \UV\ will be recursive in the definition of predicate
+formulas as a recursive data type.  Namely,
+\begin{definition*}
+Predicate formulas are defined recursively as follows:
+
+BASE: $P(u,\dots,v)$
+
+CONSTRUCTORS: $\QNOT(F)$, $(F \QAND G)$, $\forall x.\, F$, $\exists x.\, F$.
+\end{definition*}
+
+To define the function \UV, we need an operation that mindlessly
+renames variables (free and bound).  We recursively define
+$\renm{F}{x}{y}$ to be a mindless renaming all occurrences of $x$ in
+$F$ to $y$:
+
+\begin{definition*}
+The renaming $\renm{F}{x}{y}$ is defined recursively as follows:
+For variables $x,y,z$,
+\begin{align*}
+\renm{x}{x}{y}\ & \eqdef y,\\
+\renm{z}{x}{y}\ & \eqdef z
+  & \text{(for $z$ different from $x$)}.
+\end{align*}
+
+BASE:
+\[
+\renm{P(u,\dots,v)}{x}{y}\ \eqdef P(\renm{u}{x}{y}, \dots, \renm{v}{x}{y}).
+\]
+
+CONSTRUCTORS:
+\begin{align*}
+\renm{\QNOT(G)}{x}{y}       &\eqdef \QNOT(\renm{G}{x}{y}),\\
+\renm{(G \QAND\ H)}{x}{y}   &\eqdef (\renm{G}{x}{y} \QAND\ \renm{G}{x}{y}),\\
+\renm{\forall u.\, G}{x}{y} &\eqdef \forall \renm{u}{x}{y}.\, \renm{G}{x}{y},\\
+\renm{\exists u.\, G}{x}{y} &\eqdef \exists \renm{u}{x}{y}.\, \renm{G}{x}{y}.
+\end{align*}
+\end{definition*}
+
+To define the Unique Variable Convention transform, we will actually
+need the function \UV\ to take two arguments, the formula $F$ to be
+converted, and a set $V$ of already-used variables that have to be
+avoided.  Moreover, $\UV(F,V)$ will return a pair of results,
+$\leftv(\UV(F,V))$ will be a converted formula satisfying the unique
+variable convention, and $\rightv(\UV(F,V))$ will be the set $V$
+extended with all the variables that appear in $\leftv(\UV(F,V))$.
+These are the variables which must be avoided when renaming other
+formulas.
+
+We assume that a function \newv\ is available, with the property that
+for any finite set $V$ of variables, $\newv(V)$ is a ``new'' variable
+not in $V$.
+
+\begin{definition*}
+BASE: ($F = P(u,\dots,v)$): 
+\begin{align*}
+\leftv(\UV(F,V)) & \eqdef F,\\
+\rightv(\UV(F,V))& \eqdef V \union \set{u,\dots, v}.
+\end{align*}
+
+CONSTRUCTORS:
+
+Case $(F = \QNOT(G))$:
+\begin{align*}
+\leftv(\UV(F,V)) & \eqdef \QNOT(\leftv(\UV(G,V))),\\
+\rightv(\UV(F,V))& \eqdef \rightv(\UV(G,V)).
+\end{align*}
+
+Case $F = (G \QAND H)$:
+Let $V' \eqdef \rightv(\UV(G,V))$.
+\begin{align*}
+\leftv(\UV(F,V)) & \eqdef ( \leftv(\UV(G,V)) \QAND \leftv[\, \UV(H,V')\, ] ),\\
+\rightv(\UV(F,V))& \eqdef \rightv(\UV[H,V')).
+\end{align*}
+
+Case $(F = Q\, x.\, G)$ where $Q = \exists, \forall$:
+Let $y \eqdef \newv(V)$, $V' \eqdef V\union \set{y}$.
+\begin{align*}
+\leftv(\UV(F,V)) & \eqdef Q\, y.\, \renm{(\leftv(\UV(G,V')))}{x}{y},\\
+\rightv(\UV(F,V))& \eqdef \rightv(\UV(G,V')).
+\end{align*}
+\end{definition*}
+
+\bparts
+
+\ppart \TBA{DO AN EXAMPLE}.
+
+\ppart A predicate formula defines a property of its ``free''
+variables, so converting it to an equivalent formula should leave the
+same set of free variables.
+
+To be precise, we define the \emph{free variables} $\FV{F}$ of a
+predicate formula $F$ recursively on the definition of formulas:
+\begin{definition*}
+\begin{align*}
+\FV{x} &\eqdef \set{x},\\
+\FV{c} &\eqdef \emptyset  & \text{$c$ is constant},\\
+\FV{Q\, x.\, G} &\eqdef \FV{G} - \set{x},
+     & \text{where $Q$ is $\exists$ or $\forall$}\\
+\FV{\QNOT(G)} &\eqdef \FV{G},\\
+\FV{(G \QAND\, H)} &\eqdef \FV{G} \union \FV{H}.
+\end{align*}
+\end{definition*}
+
+Prove that
+\[
+\FV{F} = \FV{\UV(F,V)}
+\]
+for all sets of variables $V$.
+
+\ppart Prove that $\UV(F,V)$ contains no occurrence of any variable in $V$.
+
+\ppart When there is no need to avoid a particular set of variables,
+the \UV\ function will convert a formula back into a standard one: prove that
+\[
+\UV(\UV(F,V), \emptyset) = \UV(F,\emptyset)
+\]
+for all formulas $F$ and sets $V$ of variables.
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
