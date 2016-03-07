@@ -1128,6 +1128,10 @@
 \newcommand{\STR}[1]{\texttt{#1}}
 \newcommand{\CMD}[1]{\textsc{\bf#1}}
 
+\newcommand{\nohalt}{\text{\small{No-halt}}}
+\newcommand{\asciibet}{\text{ASCII}}
+\newcommand{\asciistr}{\strings{\asciibet}}
+
 % Reverted from en-dash to em-dash under duress.
 
 \ifftlbranch
