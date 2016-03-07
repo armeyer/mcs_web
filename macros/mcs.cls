@@ -1254,6 +1254,13 @@
 \newcommand{\QNAND}{\mopt{\textsc{nand}}}
 \newcommand{\QNOR}{\mopt{\textsc{nor}}}
 
+\newcommand{\fvrbls}{\ensuremath{\mathop{\mathrm{fvar}}}}
+\newcommand{\ANDsym}{\ensuremath{\mathbin{\mathrm{\textbf{And}}}}}
+\newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
+\newcommand{\IMPsym}{\ensuremath{\mathbin{\mathrm{\textbf{Implies}}}}}
+
+
+
 \newcommand{\nand}{\mathbin{\mid}}
 
 \newcommand{\Rule}[2]{%

@@ -1,63 +1,56 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{CP_recursive_prenex}
-  \pcomment{ARM 3/4/16}
+   \pcomment{CP_recursive_prenex}
+   \pcomment{depends on CP_prenex} 
+   \pcomment{PS_recursive_variable_convention is a sequel}
+   \pcomment{ARM 3/4/16}
 \end{pcomments}
 
-\pkeywords{
-  predicate_formula
-  recursive
-  free_varianble
-  structural_induction
-}
+\pkeywords{ predicate_formula recursive free_varianble structural_induction }
 
-\newcommand{\fvrbls}{\ensuremath{\mathop{\mathrm{fvar}}}}
-\newcommand{\ANDsym}{\ensuremath{\mathbin{\mathrm{\textbf{And}}}}}
-\newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
-\newcommand{\IMPsym}{\ensuremath{\mathbin{\mathrm{\textbf{Implies}}}}}
 \newcommand{\xbod}{\ensuremath{\mathop{\mathrm{bod}}}}
 \newcommand{\qnts}{\ensuremath{\mathop{\mathrm{qnt}}}}
 
 \begin{problem}
+Defining predicate formulas as a recursive data type leads to straightforward
+recursive definitions of free variables, prenex forms, and many other formula
+properties.
 
-\bparts
+There is little loss of generality in keeping to predicate formulas whose only
+propositional connectives are $\ANDsym, \NOTsym$, and $\IMPsym$, and whose
+only atomic formulas are predicate symbols applied to variables.\footnote{That
+  is, formulas without function symbols or the equality symbol
+  ``$\mathbf{=}$.''}
 
-\ppart\label{recpred} Give a recursive definition of the set of all
-predicate formulas whose only the propositional connectives are
-$\ANDsym, \NOTsym$, and $\IMPsym$, and whose only ``atomic'' formulas
-are of the form $R(x)$ and $S(x,y)$ where $R$ and $S$ are fixed
-predicate symbols and $x,y$ may be any variable symbols, not
-necessarily distinct.
+\begin{definition*}
+\inductioncase{Base case}: $P(u,\dots,v)$ is a predicate formula, where $P$ is a
+predicate symbol and $u,\dots,v$ are variable symbols, not necessarily distinct.
 
-\begin{solution}
-
-\inductioncase{Base cases} The ``atomic formula'' described above are
-predicate formula.
-
-\inductioncase{Constructor step}:  If $F$ and $G$ are predicate formulas, then so are
-\begin{align*}
+\inductioncase{Constructor step}: 
+If $F$ and $G$ are predicate formulas, then so are
+\[
  \NOTsym(F),
  (F \ANDsym G),
  (F \IMPsym G),
- (\exists x.\, F)
- (\forall x.\, F)
-\end{align*}
+ (\exists x.\, F),
+ (\forall x.\, F),
+\]
+where $x$ is a variable.
+\end{definition*}
 
-\end{solution}
+\bparts
 
-\ppart Based on part~\eqref{recpred}, give a recursive definition of
-the set $\fvrbls(F)$ of \emph{free variables} in a predicate formula
-$F$.  (A variable $x$ is free if it has an occurrence that is not
-inside any subformula of the form $\exists x.[\dots]$ or $\forall
-x.[\dots]$.)
+\ppart Give a recursive definition of the set $\fvrbls(F)$ of \emph{free
+  variables} in a predicate formula $F$.  (A variable $x$ is free iff it has an
+occurrence that is not inside any subformula of the form $\exists x.[\dots]$ or
+$\forall x.[\dots]$.)
 
 \begin{solution}
 \inductioncase{Base cases} 
-\begin{align*}
-\fvrbls(R(x))& \eqdef \set{x},\\
-\fvrbls(S(x,y))& \eqdef \set{x,y}.
-\end{align*}
+\[
+\fvrbls(P(u,\dots,v)) \eqdef \set{u,\dots,v}.
+\]
 
 \inductioncase{Constructor cases}
 \begin{align*}
@@ -67,17 +60,14 @@ x.[\dots]$.)
 \fvrbls(\exists x.\, F) & \eqdef \fvrbls(F) - \set{x},\\
 \fvrbls(\forall x.\, F) &  \eqdef \fvrbls(F) - \set{x}.
 \end{align*}
-
 \end{solution}
 
-\ppart Assume $F$ has the property that for each variable $x$, there
-is at most one occurrence of either a ``$\forall x$'' or an ``$\exists
-x$,'' and that if $x$ is a free variable, there is no occurrence of a
-``$\forall x$'' or an ``$\exists x$'' anywhere else in the formula.
-(That is, $F$ satisfies the \emph{unique variable convention} of
-Problem~\bref{CP_variable_convention}.)  Define a recursive procedure
-to convert any predicate formula $F$ into an equivalent \emph{prenex
-  formula} of the form
+\eparts
+
+A predicate formula is in \emph{prenex form} when all its quantifiers
+appear at the beginning of the formula; some examples were given in
+Problem~\bref{CP_prenex}.  More formally, a \emph{prenex formula} is a predicate
+formula of the form
 \[
 \qnts(F).\,\xbod(F),
 \]
@@ -87,12 +77,32 @@ where $\xbod(F)$ is a quantier-free formula, and $\qnts{F}$ is a
 Q_1 x_1.\, Q_2 x_2.\, \dots Q_n x_n.\, 
 \]
 where $Q_i$ is ``$\forall$'' or ``$\exists$,'' and the $x_i$'s are
-distinct variables.  You may use the notation $\overline{\qnts(F)}$
-for the sequence
+distinct variables.
+
+It is easy to convert a formula into an equivalent prenex formula if the given
+formula satisfies the \emph{unique variable convention}: for each variable $x$,
+there is at most one occurrence of either a ``$\forall x$'' or an ``$\exists
+x$,'' and that if $x$ is a free variable, there is no occurrence of a
+``$\forall x$'' or an ``$\exists x$'' anywhere else in the formula.  (A way of
+renaming variables to convert a formula into an equivalent one satisfying the
+unique variable convention was illustrated in
+Problem~\bref{CP_variable_convention}.  The general renaming procedure is given
+in Problem~\bref{PS_recursive_variable_convention}.)
+
+\bparts
+
+\ppart Let $F$ be a predicate formula satisfying the unique variable convention.
+Define a recursive procedure based on the recursive definition of predicate
+formulas that converts $F$ into an equivalent prenex formula whose body is the
+same as $F$'s with the quantifiers erased.  (That is, the propositional
+connectives of $F$ don't change, in contrast to the method suggested in
+Problem~\bref{CP_prenex}.)
+
+It will help to use the notation ``$\overline{\qnts(F)}$'' for the sequence
 \[
 \overline{Q_1} x_1.\, \overline{Q_2} x_2.\, \dots \overline{Q_n} x_n.\, 
 \]
-were $\overline{\forall} \eqdef \exists$ and $\overline{\exists}
+where $\overline{\forall} \eqdef \exists$ and $\overline{\exists}
 \eqdef \forall$.
 
 For example, the variable convention ensures that if $(Q x. F)$ is a
@@ -112,10 +122,8 @@ $\xbod((F \ANDsym G))$ preserves equivalence:
 \begin{solution}
 \inductioncase{Base cases} 
 \begin{align*}
-\xbod(R(x)) & \eqdef R(x),\\
-\qnts(R(x)) & \eqdef \emptystring,\\
-\xbod(S(x,y))& \eqdef S(x,y),\\
-\qnts(S(x,y)) & \eqdef \emptystring.
+\xbod(P(u,\dots,v))& \eqdef P(u,\dots,v),\\
+\qnts(P(u,\dots,v)) & \eqdef \emptystring.
 \end{align*}
 
 \inductioncase{Constructor cases}
@@ -123,7 +131,8 @@ $\xbod((F \ANDsym G))$ preserves equivalence:
 \xbod(\NOTsym(F))   & \eqdef \NOTsym(\xbod(F)),\\
 \qnts(\NOTsym(F)))   & \eqdef \overline{\qnts}(F),\\
 \xbod((F \ANDsym G)) & \eqdef (\xbod(F) \ANDsym \xbod(G)),\\
-\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G)\\
+\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G)
+      &\text{(concatenation of the quantifier lists)}\\
 \xbod((F \IMPsym G)) & \eqdef \xbod(F) \IMPsym \xbod(G),\\
 \qnts((F \IMPsym G)) & \eqdef \overline{\qnts(F)},\qnts(G)\\
 \xbod(\exists x.\, F) & \eqdef \xbod(F)\\
@@ -131,8 +140,8 @@ $\xbod((F \ANDsym G))$ preserves equivalence:
 \xbod(\forall x.\, F) &  \eqdef \xbod(F)\\
 \qnts(\forall x.\, F) & \eqdef \forall x,\qnts(F).
 \end{align*}
-
 \end{solution}
+
 \begin{staffnotes}
 The variable convention justifies the other cases similarly.
 \end{staffnotes}
