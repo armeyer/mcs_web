@@ -1131,6 +1131,7 @@
 \newcommand{\nohalt}{\text{\small{No-halt}}}
 \newcommand{\asciibet}{\text{ASCII}}
 \newcommand{\asciistr}{\strings{\asciibet}}
+\newcommand{\rcg}[1]{\ensuremath{\mathop{\mathrm{lang}(#1)}}}
 
 % Reverted from en-dash to em-dash under duress.
 

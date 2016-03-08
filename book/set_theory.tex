@@ -723,52 +723,56 @@ able to analyze!
 
 To be precise about this, let's call a programming procedure---written
 in your favorite programming language---C++, or Java, or Python---a
-\emph{string procedure} when it is applicable to strings over a
-standard alphabet, the 256 character ASCII alphabet, for example.
-\iffalse When a string procedure applied to an ASCII string halts,
-we'll say the procedure halts on the string.  If it runs forever, then
-we'll say does not halt on the string.\fi As a simple example, you
-might think about how to write a string procedure that halts precisely
-when it is applied to a \emph{double letter} ASCII string, namely, a
-string in which every character occurs twice in a row.  For example,
-\texttt{aaCC33}, and \texttt{zz++ccBB} are double letter strings, but
-\texttt{aa;bb}, \texttt{b33}, and \texttt{AAAAA} are not.
+\emph{string procedure} when it is applicable to strings in the set
+\asciistr\ of strings over the 256 character \asciibet\ alphabet.
 
-We'll call a set of strings \emph{recognizable} if there is a string
-procedure that halts when it is applied to any string in that set and
-does not halt when applied to any string not in the set.  For example,
-we've just agreed that the set of double letter strings is recognizable.
+As a simple example, you might think about how to write a string
+procedure that halts precisely when it is applied to a \emph{double
+  letter} string in \asciistr, namely, a string in which every
+character occurs twice in a row.  For example, \texttt{aaCC33}, and
+\texttt{zz++ccBB} are double letter strings, but \texttt{aa;bb},
+\texttt{b33}, and \texttt{AAAAA} are not.
 
-Let $\asciistr$ be the set of (finite) strings of ASCII characters.
-There is no harm in assuming that every program can be written using
-only the ASCII characters; they usually are.  When a string $s
-\in \asciistr$ is actually the ASCII description of some string
+If the computation that happens when a procedure applied to a string
+eventually comes to a halt, the procedure is said to \emph{recognize}
+the string.  In this context, a set of strings a commonly called a
+(formal) \emph{language}.  We let $\rcg{P}$ to be the language
+recognized by procedure $P$:
+\[
+\rcg{P} \eqdef \set{s \in \asciistr \suchthat P \text{ applied to } s
+  halts}
+\]
+A language is called \emph{recognizable} when it equals $\rcg{P}$ for
+some string procedure $P$.  For example, we've just agreed that the
+set of double letter strings is recognizable.
+
+There is no harm in assuming that every program can be written as a
+string in \asciistr; they usually are.  When a string $s \in
+\asciistr$ is actually the \asciibet\ description of some string
 procedure, we'll refer to that string procedure as $P_s$.  You can
-think of $P_s$ as the result of compiling $s$.\footnote{The string, $s
-  \in \asciistr$, and the procedure, $P_s$, have to be distinguished
-  to avoid a type error: you can't apply a string to string.  For
-  example, let $s$ be the string that you wrote as your program to
-  recognize the double letter strings.  Applying $s$ to a string
-  argument, say \texttt{aabbccdd}, should throw a type exception; what
-  you need to do is compile $s$ to the procedure $P_s$ and then apply
-  $P_s$ to \texttt{aabbccdd}.  \iffalse This application should result
-  in a halting computation, since \texttt{aabbccdd} is a double letter
-  string.\fi } It's technically helpful to treat \emph{every} ASCII
-string as a program for a string procedure.  So when a string $s \in
-\asciistr$ doesn't parse as a proper string procedure, we'll define
-$P_s$ to be some default string procedure---say one that never halts
-on any input.  \iffalse So if $s$ is an ill-formed string, $P_S$ will
-be a recognizer for the empty set of strings.  \fi
+think of $P_s$ as the result of compiling $s$ into something
+executable.\footnote{The string, $s \in \asciistr$, and the procedure,
+  $P_s$, have to be distinguished to avoid a type error: you can't
+  apply a string to string.  For example, let $s$ be the string that
+  you wrote as your program to recognize the double letter strings.
+  Applying $s$ to a string argument, say \texttt{aabbccdd}, should
+  throw a type exception; what you need to do is compile $s$ to the
+  procedure $P_s$ and then apply $P_s$ to \texttt{aabbccdd}.} It's
+technically helpful to treat \emph{every} string in \asciistr\ as a
+program for a string procedure.  So when a string $s \in \asciistr$
+doesn't parse as a proper string procedure, we'll define $P_s$ to be
+some default string procedure---say one that never halts on anything
+it is applied to.
 
-Focusing just on string procedures, the general Halting Problem
-is to decide, given strings $s$ and $t$, whether or not the procedure
-$P_s$ halts when applied to $t$.  We'll show that the general problem
-can't be solved by showing that a special case can't be solved,
-namely, whether or not $P_s$ applied to $s$ halts.  So, let's define
+Focusing just on string procedures, the general Halting Problem is to
+decide, given strings $s$ and $t$, whether or not the procedure $P_s$
+recognizes $t$.  We'll show that the general problem can't be solved
+by showing that a special case can't be solved, namely, whether or not
+$P_s$ recognizes $s$.
+
 \begin{definition}\label{nohalt_def}
 \begin{equation}\label{nohalt_eqdef}
-\nohalt \eqdef \set{s \in \asciistr \suchthat P_s \text{ applied to
-    $s$ does not halt}}.
+\nohalt \eqdef \set{s \in \asciistr \suchthat s \notin \rcg{P_s}} \eqdef \overline{\rcg{P_s}}.
 \end{equation}
 \end{definition}
 We're going to prove
@@ -780,37 +784,26 @@ We'll use an argument just like Cantor's in the proof of
 Theorem~\ref{powbig}.
 
 \begin{proof}
-For any string $s \in \asciistr$, let
-% define $f: \asciistr \to \power(\asciistr)$ so that
-$f(s)$ be the set of strings recognized by $P_s$:
-\[
-f(s) \eqdef \set{t \in \asciistr \suchthat P_s \text{ halts when applied to
-    $t$}}.
-\]
-By convention, we associated a string procedure, $P_s$, with every
-string, $s \in \asciistr$, which makes $f$ a total function, and by
-definition,
+By definition, 
 \begin{equation}\label{snohaltsnfs}
-s \in \nohalt \QIFF\ s \notin f(s),
+s \in \nohalt \QIFF\ s \notin \rcg{P_s},
 \end{equation}
 for all strings, $s \in \asciistr$.
 
 Now suppose to the contrary that \nohalt\ was recognizable.  This
-means there is some procedure $P_{s_0}$ that recognizes \nohalt, which
-is the same as saying that
+means there is some procedure $P_{s_0}$ that recognizes \nohalt, that is,
 \[
-\nohalt = f(s_0).
+\nohalt = \rcg{P_{s_0}}.
 \]
 Combined with~\eqref{snohaltsnfs}, we get
 \begin{equation}\label{sfs0iff}
-s \in f(s_0) \qiff s \notin f(s)
+s \in \rcg{P_{s_0}} \qiff s \notin \rcg{P_s}
 \end{equation}
 for all $s \in \asciistr$.  Now letting $s = s_0$ in~\eqref{sfs0iff}
 yields the immediate contradiction
 \[
-s_0 \in f(s_0) \qiff s_0 \notin f(s_0).
+s_0 \in \rcg{P_{s_0}} \qiff s_0 \notin \rcg{P_{s_)}.
 \]
-
 This contradiction implies that \nohalt\ cannot be recognized by any
 string procedure.
 \end{proof}
@@ -1219,3 +1212,14 @@ computer scientist should understand.
 \pinput{PS_infinite_ordinals}
 \end{problems}
 \endinput
+
+
+\iffalse When a string procedure applied to an ASCII string halts,
+we'll say the procedure halts on the string.  If it runs forever, then
+we'll say does not halt on the string.\fi
+
+\iffalse This application should result in a halting computation,
+since \texttt{aabbccdd} is a double letter string.\fi
+
+  \iffalse So if $s$ is an ill-formed string, $P_S$
+will be a recognizer for the empty set of strings.  \fi
