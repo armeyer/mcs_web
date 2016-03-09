@@ -1134,7 +1134,7 @@
 \newcommand{\finhalt}{\text{\small{Finite-halt}}}
 
 \newcommand{\asciibet}{\text{ASCII}}
-\newcommand{\asciistr}{\strings{\asciibet}}
+\newcommand{\asciistr}{\ensuremath{\strings{\asciibet}}}
 \newcommand{\rcg}[1]{\ensuremath{\mathop{\mathrm{lang}(#1)}}}
 
 % Reverted from en-dash to em-dash under duress.
