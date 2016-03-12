@@ -1,0 +1,155 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_eligible_token_state_machine}
+  \pcomment{ARM 3/10/16}
+\end{pcomments}
+
+\pkeywords{
+  state_machine
+  invariant
+  preserved_invariant
+  reachable
+  induction
+  remainder
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+\emph{Token replacing} is a single player game using a set of tokens,
+each colored black or white.  In each move, a player can replace a
+black token with three white tokens, or replace a white token with
+three black tokens.  We can model this game as a state machine whose
+states are pairs $(b,w)$ of nonnegative integers, where $b$ is the
+number of black tokens and $w$ the number of white ones.
+
+The game has two possible start states: $(5,4)$ or $(4,3)$.
+
+We call a state $(b,w)$ \emph{eligible} when
+\begin{align}
+\rem{b-w}{4} & = 1, \QAND\\
+\min\set{b,w} & \geq 3.
+\end{align}
+This problem examines the connection between eligible states and
+states that are \emph{reachable} from either of the possible start
+states.
+
+\bparts
+
+\ppart Give an example of a reachable state that is not eligible.\hfill\examrule
+\examspace[0.3in]
+
+\begin{solution}
+The state $(b,w) = (7,2)$ is directly reachable from the start state
+$(4,3)$, but it is not eligible because $\min\set{7,2} < 3$
+\end{solution}
+
+\ppart Show that the derived variable $b+w$ is strictly increasing.
+Conclude that state $(3,2)$ is not reachable.
+
+\examspace[0.8in]
+    
+\begin{solution}
+Each transition increases $b+w$ by $2$, so $b+w$ is strictly
+increasing.  Also, $b+w$ for the start states is $\geq 7$, so all
+reachable states have $b+w \geq 7$. But $3+2 < 7$, so $(3,2)$ is not
+reachable.
+\end{solution}
+  
+\ppart\label{bwebg6} Suppose $(b,w)$ is eligible and $b \geq 6$.
+Verify that $(b-3,w+1)$ is eligible.
+
+\begin{solution}
+We have $w \geq 3$ and $\rem{b-w}{4} = 1$ since $(b,w)$ is eligible.
+Therefore,
+\begin{align*}
+\min\set{{b-3,w+1}} & \geq 3
+        & \text{since}\ b \geq 6,\\
+\rem{(b-3) - (w+1)}{4} & = \rem{(b-w) -4}{4} = \rem{b-w}{4} = 1,
+\end{align*}
+which proves that $(b-3,w+1)$ is eligible.
+\end{solution}
+
+\eparts
+
+\medskip
+
+For the rest of the problem, you may---and should---\textbf{assume}
+the following Fact:
+\begin{fact*}
+If $\max{(b,w)} \leq 5$ and $(b,w)$ is eligible, then
+$(b,w)$ is reachable.
+\end{fact*}
+(This is easy to verify since there are only nine states with $(5 \geq
+b,w \geq 3)$, but don't waste time verifying.)
+
+\bparts
+
+\ppart\label{indhypP} Define the predicate $P(n)$ to be:
+\[
+\forall (b,w). [b+w = n \QAND\ (b,w)\ \text{is eligible}] \QIMPLIES (b,w)\ \text{is reachable}.
+\]
+Prove that $P(n-1) \QIMPLIES P(n+1)$ for all $n \geq 1$.
+
+\examspace[2.5in]
+
+\begin{solution}
+\begin{proof}
+To verify $P(n+1)$, we must show that for any $(b,w)$ with $b+w = n+1$,
+if $(b,w)$ is eligible, then $(b,w)$ is reachable.
+
+The Fact means we may assume $\max\set{b,w} \geq 6$.
+There are two cases, $b \geq 6$ and $w \geq 6$.
+
+In the case that $b \geq 6$, part~\eqref{bwebg6} implies that
+\[
+(b-3,w+1) \text{ is eligible}.
+\]
+Moveover $(b-3)+(w+1) = (b+w-2) = n-1$.  Now $P(n-1)$ implies that
+$(b-3,w+1)$ is reachable.  But $(b-3,w+1)$ transitions to $(b,w)$ in
+one step, proving that $(b,w)$ is reachable.
+
+In the case that $w \geq 6$, the same reasoning above shows that
+$(b+1, w-3)$ is reachable, and therefore $(b,w)$ is reachable.
+
+So in any case, $(b,w)$ is reachable, as required.
+\end{proof}
+\end{solution}
+
+\ppart Conclude that all eligible states are reachable.
+
+\examspace[0.3in]
+
+\begin{solution}
+This follows by Strong Induction, with the Fact above giving the base
+cases, and part~\eqref{indhypP} proving the induction step.
+\end{solution}
+
+\ppart Prove that $(4^7 +3 , 4^5 +1)$ is \emph{not} reachable.
+
+\examspace[1.0in]
+
+\begin{solution}
+Note that the derived variable $\rem{b-w}{4)}$ is a constant: if there
+is a transition from $(b,w)$ to $(b',w')$, then $(b'-w') = (b-w) \pm
+4$, which implies that $\rem{b'-w'}{4} = \rem{b-w}{4}$.
+
+This derived variable equals 1 for both start states and therefore
+equals 1 for all states reachable fromeither of these start states.
+
+On the other hand, this derived variable equals 2 for the state $(4^7 +3 , 4^5 +1)$:
+\[
+\rem{4^7 +3 - (4^5 +1)}{4} = \rem{(4^7 - 4^5) + 2}{4} = 2.
+\]
+which means $(4^7 +3 , 4^5 +1)$ is not reachable.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput
