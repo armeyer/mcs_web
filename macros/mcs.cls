@@ -1364,7 +1364,7 @@
 \newcommand{\reals}{\mathbb{R}}
 \newcommand{\complexes}{\mathbb{C}}
 \newcommand{\posints}{\integers^+}
-\newcommand{\finbin}{\strings{\set{0,1}}}
+\newcommand{\finbin}{\ensuremath{\strings{\set{0,1}}}}
 \newcommand{\binw}{\infstrings{\set{0,1}}}
 \newcommand{\twdone}{\mathbb{F}}
 \newcommand{\Zintv}[2]{\Zintvcc{#1}{#2}}
