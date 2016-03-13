@@ -31,8 +31,9 @@ the example of character strings.  Normally we'd take strings of
 characters for granted, but it's informative to treat them as a
 recursive data type.  In particular, strings are a nice first example
 because you will see recursive definitions of things that are easy to
-understand or that you already know, so you can focus on how the
-definitions work without having to figure out what they are for.
+understand, or that you already know, so you can focus on how the
+definitions work without having to figure out what they are supposed
+to mean.
 
 Definitions of recursive data types have two parts:
 \begin{itemize}
@@ -48,10 +49,10 @@ The definition of strings over a given character set, $A$, follows this
 pattern:
 
 \begin{definition}\label{recstring_def}
-  Let $A$ be a nonempty set called an \emph{alphabet}, whose elements are
-  referred to as \emph{characters}, \emph{letters}, or \emph{symbols}.
-  The recursive data type, $\strings{A}$, of strings over alphabet, $A$,
-  are defined as follows:
+  Let $A$ be a nonempty set called an \emph{alphabet}, whose elements
+  are referred to as \emph{characters} (also called \emph{letters},
+  \emph{symbols}, or \emph{digits}).  The recursive data type,
+  $\strings{A}$, of strings over alphabet, $A$, is defined as follows:
 \begin{itemize}
 \item \inductioncase{Base case}: the empty string, $\emptystring$, is in $\strings{A}$.
 
@@ -86,8 +87,8 @@ as special case
 
 Continuing the recursive approach, let's define the length of a string.
 \begin{definition}
-The length, $\lnth{s}$, of a string, $s$, is defined recursively
-based on the definition of $s \in \strings{A}$:
+The length, $\lnth{s}$, of a string, $s$, is defined recursively based
+on Definition~\ref{recstring_def}.
 
 \item \inductioncase{Base case}:  $\lnth{\emptystring} \eqdef\ 0$.
 
@@ -113,8 +114,8 @@ definition of concatenation.
 
 \begin{definition}\label{concat_def}
 The \term{concatenation} $s\cdot t$ of the strings $s,t \in
-\strings{A}$ is defined recursively based on the definition of $s \in
-\strings{A}$:
+\strings{A}$ is defined recursively based on
+Definition~\ref{recstring_def}:
 
 \item \inductioncase{Base case}:     % ($s=\emptystring$):
 \[
@@ -140,15 +141,66 @@ induction proof has two parts corresponding to the recursive definition:
   the constructor is applied to elements that have the property.
 \end{itemize}
 
-For example, we can verify the familiar fact that the length of the
-concatenation of two strings is the sum of their lengths using structural
-induction:
-
-\begin{theorem}\label{stAl+}
-For all $s,t \in \strings{A}$,
+For example, in the base case of the definition of
+concatenation~\ref{concat_def}, we \emph{defined} concatenation so the
+empty string was a ``left identity,'' namely, $\emptystring \cdot
+s\ \eqdef s$.  We want the empty string also to be ``right identity,''
+namely, $s \cdot \emptystring = s$.  Being a right identity is not
+part of Definition~\ref{concat_def}, but we can prove it easily by
+structural induction:
+\begin{lemma}\label{rightidempty}
 \[
-\lnth{s\cdot t} = \lnth{s} + \lnth{t}.
+s \cdot \emptystring = s
 \]
+for all $s \in \strings{A}$.
+\end{lemma}
+
+\begin{proof}
+The proof is by structural induction on the recursive
+definition~\ref{concat_def} of concatenation.  The induction
+hypothesis will be
+\[
+P(s) \eqdef\ [s \cdot \emptystring = s].
+\]
+
+\inductioncase{Base case}: ($s = \emptystring$).
+\begin{align*}
+s \cdot \emptystring
+    & = \emptystring \cdot \emptystring\\
+    & = \emptystring
+        & \text{($\emptystring$ is a left identity by Def~\ref{concat_def})}\\
+    & = s.
+\end{align*}
+
+\inductioncase{Constructor case}: ($s = a \cdot t$).
+\begin{align*}
+s \cdot \emptystring
+   & =(a \cdot t) \cdot \emptystring\\
+   & = a \cdot (t \cdot \emptystring)
+       & \text{(Constructor case of Def~\ref{concat_def})}\\
+   & = a \cdot t
+        & \text{by induction hypothesis $P(t)$}\\
+   & = s.
+\end{align*}
+So $P(s)$ holds.  This completes the proof of the constructor case,
+and we conclude by structural induction that
+equation~\eqref{rightidempty} holds for all $s \in \strings{A}$.
+\end{proof}
+
+We can also verify properties of recursive functions by structural
+induction on their definitions.  For example, let's verify the
+familiar fact that the length of the concatenation of two strings is
+the sum of their lengths:
+
+%\begin{theorem}\label{stAl+}
+%\end{theorem}
+\begin{lemma*}
+\[
+\lnth{s\cdot t} = \lnth{s} + \lnth{t}
+\]
+for all $s,t \in \strings{A}$.
+\end{lemma*}
+
 \begin{proof}
 By structural induction on the definition of $s \in \strings{A}$.   The
 induction hypothesis is
@@ -159,37 +211,35 @@ P(s) \eqdef\ \forall t \in \strings{A}.\, \lnth{s\cdot t} = \lnth{s} + \lnth{t}.
 \inductioncase{Base case} ($s = \emptystring$):
 \begin{align*}
 \lnth{s \cdot t}
-   &= \lnth{\emptystring \cdot t}\\
+   & = \lnth{\emptystring \cdot t}\\
    & = \lnth{t}
-         & \text{(def $\cdot$, base case)}\\
+         & \text{(base case of Def~\ref{concat_def} of concatenation)}\\
    & = 0 + \lnth{t}\\
    & = \lnth{s} + \lnth{t}
-         & \text{(def length, base case)}
+         & \text{(Def of $\lnth{\emptystring}$)}.
 \end{align*}
 
-\inductioncase{Constructor case}: Suppose $s \eqdef \ang{a,r}$ and assume the induction hypothesis, $P(r)$.  We must show that $P(s)$ holds:
+\inductioncase{Constructor case}: ($s \eqdef \ang{a,r}$).
 \begin{align*}
 \lnth{s \cdot t}
     & = \lnth{\ang{a, r} \cdot t}\\
     & = \lnth{\ang{a,r \cdot t}}
-        &  \text{(concat def, constructor case)}\\
+        &  \text{(constructor case of Def of concat)}\\
     & = 1 + \lnth{r \cdot t}
-        &  \text{(length def, constructor case)}\\
+        &  \text{(constructor case of def length)}\\
     & = 1 +  (\lnth{r} + \lnth{t})
-        & \text{since $P(r)$ holds}\\
+        & \text{(ind. hyp. $P(r)$)}\\
     & = (1 +  \lnth{r}) + \lnth{t}\\
     & = \lnth{\ang{a,r}} + \lnth{t}
-        & \text{(length def, constructor case)}\\
+        & \text{(constructor case, def of length)}\\
     & = \lnth{s} + \lnth{t}.
 \end{align*}
-This proves that $P(s)$ holds as required, completing the constructor
-case.  By structural induction we conclude that $P(s)$ holds for all
-strings $s \in \strings{A}$.
+This proves that $P(s)$ holds, completing the constructor case.  By
+structural induction, we conclude that $P(s)$ holds for all strings $s
+\in \strings{A}$.
 \end{proof}
 
-\end{theorem}
-
-This proof illustrates the general principle:
+These proofs illustrate the general principle:
 
 \textbox{ 
 \textboxtitle{The Principle of Structural Induction.}
@@ -211,34 +261,6 @@ then
 P(r) \text{ is true for all } r \in R.
 \]
 }
-
-\subsection{One More Thing}
-
-The number, $\cnt{c}{s}$, of occurrences of the character $c \in A$ in
-the string $s$ has a simple recursive definition based on the
-definition of $s \in \strings{A}$:
-\begin{definition}\label{countas_def} \mbox{}
-
-\inductioncase{Base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
-
-\inductioncase{Constructor case}:
-\[
-\cnt{c}{\ang{a,s}} \eqdef \begin{cases}
-                           \cnt{c}{s}  &\text{ if } a \neq c,\\
-                           1 + \cnt{c}{s} &\text{ if } a = c.
-                           \end{cases}
-\]
-
-\end{definition}
-
-We'll need the following lemma in the next section:
-\begin{lemma}\label{countas_lem}
-\[
-\cnt{c}{s \cdot t} = \cnt{c}{s} + \cnt{c}{t}.
-\]
-\end{lemma}
-The easy proof by structural induction is an exercise
-(Problem~\ref{PS_count_a_s_lem}).
 
 \begin{problems}
 \practiceproblems
@@ -402,9 +424,34 @@ out in Problem~\ref{PS_bracket_good_count}.
 
 It's pretty obvious that in order for brackets to match, there had
 better be an equal number of left and right ones.  For further
-practice, let's carefully prove this from the recursive definitions.
+practice, let's carefully prove this from the recursive definitions,
+beginning with a recursive definition of the number, $\cnt{c}{s}$, of
+occurrences of the character $c \in A$ in a string $s$:
 
-\begin{lemma*}%label{}
+\begin{definition}\label{countas_def} \mbox{}
+
+\inductioncase{Base case}: $\cnt{c}{\emptystring} \eqdef\ 0$.
+
+\inductioncase{Constructor case}:
+\[
+\cnt{c}{\ang{a,s}} \eqdef \begin{cases}
+                           \cnt{c}{s}  &\text{ if } a \neq c,\\
+                           1 + \cnt{c}{s} &\text{ if } a = c.
+                           \end{cases}
+\]
+\end{definition}
+
+The following Lemma follows directtly by structural induction on
+Definition~\ref{countas_def}.  We'll leave the proof for practice
+(Problem~\ref{PS_count_a_s_lem}).
+
+\begin{lemma}\label{countas_lem}
+\[
+\cnt{c}{s \cdot t} = \cnt{c}{s} + \cnt{c}{t}.
+\]
+\end{lemma}
+
+\begin{lemma*}
 Every string in $\RM$ has an equal number of left and right brackets.
 
 \begin{proof}
@@ -441,7 +488,6 @@ This completes the proof of the constructor case.  We conclude by
 structural induction that $P(s)$ holds for all $s \in\RM$.
 \end{proof}
 \end{lemma*}
-
 
 \iffalse
 
