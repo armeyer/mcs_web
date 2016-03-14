@@ -1268,8 +1268,6 @@
 \newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
 \newcommand{\IMPsym}{\ensuremath{\mathbin{\mathrm{\textbf{Implies}}}}}
 
-
-
 \newcommand{\nand}{\mathbin{\mid}}
 
 \newcommand{\Rule}[2]{%
