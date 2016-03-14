@@ -1356,7 +1356,7 @@
 %% Math -- Famous sets
 
 \newcommand{\naturals}{\mathbb{N}}
-\newcommand{\nngint}{\mathbb{N}}
+\newcommand{\nngint}{\ensuremath{\mathbb{N}}}
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\Zmod}[1]{\mathbb{Z}_{#1}}
 \newcommand{\Zmods}[1]{\mathbb{Z}^*_{#1}}
