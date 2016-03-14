@@ -1,7 +1,7 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-  \pcomment{FP_palindromes}
+  \pcomment{PS_palindromes}
   \pcomment{Emanuele and ARM 3/12/16}
 \end{pcomments}
 
@@ -11,9 +11,8 @@
    reverse
    concatenation
    palindrome
-}
 
-%\newcommand{\catOK}{\text{cat-OK}}
+\newcommand{\recpal}{\text{RecPal}}
 %\newcommand{\revstr}{\text{rev}}
 %\newcommand{\Zerostr}{\text{Zeroes}}
 
@@ -23,66 +22,114 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-\begin{definition}
-Let $r,s,t$ be finite binary strings, \finbin, and let $b,c \in
-\set{0,1}$ be binary digits.  This set of \finbin\ and the
-\emph{length} of $s \in \finbin$ can be defined recursively:
+The string \emph{reversal} function, $\text{rev}: \strings{A} \to
+\strings{A}$ has a simple recursive definition:
 
-\inductioncase{Base case}: $\emptystring \in \finbin$, and
-$\lnth{\emptystring} \eqdef 0$.
+\inductioncase{Base case}: $\rev{\emptystring} \eqdef \emptystring$.
 
-\inductioncase{Constructor case}: If $s \in \finbin$, then so is $sb$
-where $b \in \set{0,1}$, and $\lnth{sb} \eqdef
-\lnth{s}+1$.\footnote{The concatenation of two strings $x$ and $y$,
-  written $xy$, is the string obtained by appending $x$ to the left
-  end of $y$.  For example, the concatenation of $01$ and $101$ is
-  $01101$.}
-\end{definition}
+\inductioncase{Constructor case}: $\rev{as} \eqdef \rev{s}a$ for $s\in
+\strings{A}$ and $a\in A$.
 
-Based on this definition, we can now recursively define
-\begin{definition}
-The \emph{reversal} function, $\text{rev}: \finbin \to \finbin$ is defined follows:
+Notice that $\rev{a} = a$ for $a \in A$ by the constructor case with
+$s = \emptystring$.
 
-\inductioncase{Base case}:  $\rev{\emptystring} \eqdef \emptystring$.
+A string $s$ is a \emph{palindrome} when $\rev{s} = s$.  
 
-\inductioncase{Constructor case}: $\rev{sb} \eqdef b\rev{s}$ for
-$s\in \finbin$ and $b\in \set{0,1}$.
-\end{definition}
+The \emph{palindromes} also have a simple recursive definition as the set \recpal.
 
-The recursive definition lets is verify properties of the reverse
-function by structural induction.  For example,
-\begin{lemma*}
-\[
-\rev{bs} = \rev{s}b
-\]
-for 
-\end{lemma*}
-\begin{definition}
-The binary \emph{palindromes} are defined recursively by:
+\inductioncase{Base cases}: $\emptystring \in \recpal$ and $a \in \recpal$ for $a \in A$.
 
-\inductioncase{Base case}: $\emptystring$ is a palindrome.
+\inductioncase{Constructor case}: If $s \in \recpal$, then $asa in \recpal$
+for $a in A$.
 
-\inductioncase{Constructor case}: If $s$ is a palindrome, then so is $bsb$
-where $b \in \set{0,1}$.
-\end{definition}
+Verifying that the two definitions agree offers a nice exercise in
+structural induction and also induction on length of strings.  The
+verification rests on three basic properties of concatenation and
+reversal proved in separate
+problems\inbook{~\bref[CP_string_associativity}
+  and~\bref{CP_string_reversal}}.
+
+\begin{fact*}
+\begin{align}
+(rs = uv \QAND \lnth{r}=\lnth{u}) & \QIFF (r=u \QAND\ s = v)\label{parsefact},\\
+r\cdot (s \cdot t)) & = (r\cdot s) \cdot t,\label{assocfact}\\
+\rev{st}&  = \rev{t}\rev{s},\label{revfact}.
+\end{align}
+\end{fact*}
 
 \bparts
 
-\ppart Prove that $s = \rev{s}$ for all palindromes $s$.
+\ppart Prove that $s = \rev{s}$ for all $s \in \recpal$.
 
 \examspace[3.0in]
 
 \begin{solution}
-\TBA{needs to be checked!}
+\begin{proof}
+By structural induction on the definition \recpal,
+with induction hypothesis
+\[
+P(s)\ eqdef\ s = \rev{s}.
+\]
+
+\inductioncase{Base case}: ($s = \emptystring$ or $s \in A$).
+$P(\emptystring)$ follows immediately from the $\emptystring$ case of
+the definition of reversal.  We already observed that $\rev{a} = a$
+for $a \in A$ and so $P(a)$ holds
+
+\inductioncase{Constructor case}: ($s = ara$)
+\rev{s}
+  & = \rev{a(ra)}
+       & \text{(by~\eqref{assocfact})}\\
+  & =  \rev{ra} \cdot \rev{a}
+       & \text{(def of rev)}
+  & =  \rev{ra} a
+       & \text{($\rev{a} = a$ by def of rev)}\\
+  & =  (\rev{a}\rev{r})a
+       & \text{by~\eqref{revfact}}\\
+  & =  (a \rev{r}) a
+       & \text{($\rev{a} = a$)}\\ 
+  & =  a\rev{r}a
+          & \text{(by~\eqref{assocfact})}\\
+  & =  ara
+          & \text{(ind hyp $P(r)$)}\\
+  & = s.
+\end{proof}
 \end{solution}
 
-\ppart Prove conversely that if $s = \rev{s}$, then $s$ is a
-palindrome.
+\ppart Prove conversely that if $s = \rev{s}$, then $s \in \recpal$.
 
-\hint By induction on $\lnth{s}$.
+\hint By induction on $n = \lnth{s}$.
 
 \begin{solution}
-\TBA{needs to be checked!}
+Let
+\[
+P(n) \eqdef \forall s.\, (\lnth{s} = n \QAND s = \rev{s}) \QIMPLIES s \in \recpal.
+\]
+
+\inductioncase{Base cases}: ($n \leq 1$).  The only length 0 string is
+$\emptystring$ and $\emptystring \in \recpal$ by the base case of the
+definition of \recpal.  The only length 1 strings are elements $a \in
+A$, and $a \in \recpal$ also by definition of \recpal.
+
+\inductioncase{Inductive step}: We must show that if $s \in \strings{A}$ and
+$\lnth{s} = n+1$ for some $n>0$, and $s = \rev{s}$, then $s \in \recpal$.
+
+Since $\lnth{s} \geq 2$, we may assume $s = arb$ for some $a,b \in A$
+and $r \in \strings{A}$.  So $\lnth{r} = n-1$.  No
+\begin{align*}
+arb & = s = \rev{s}\\
+    & = \rev{a(rb)}
+        & \text{(by associativity~\eqref{assocfact})}\\
+  & = \rev{rb}a
+     & \text{(def of rev)}\\
+  & = b\rev{r}a
+      & (by~\eqref{revfact}
+\end{align*}
+But by~\eqref{parsefact}, $arb = b\rev{r}a$ implies that $a=b$ and $r
+= rev{r}$.  Now the induction hypothesis $P(r)$ implies $r \in
+\recpal$, and since $s= ara$, it follows that $s \in \recpal$ by the
+constructor case of the definition of \recpal.
+
 \end{solution}
 
 \eparts
