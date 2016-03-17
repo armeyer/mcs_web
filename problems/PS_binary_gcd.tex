@@ -2,7 +2,7 @@
 
 \begin{pcomments}
   \pcomment{PS_binary_gcd}
-  \pcomment{extended version in FP_binary_gcdb}
+  \pcomment{extended version in FP_binary_gcd}
   \pcomment{By ARM 4/24/11 based on Shoup}
   \pcomment{revised ARM 3/17/14; 5/10/14}
 \end{pcomments}
@@ -29,12 +29,12 @@
 \text{states}  \eqdef     &\naturals^3\notag\\
 \text{start state} \eqdef & (a, b, 1)\notag\\
 \text{transitions} \eqdef & \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\notag\\
-     &  (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\label{psx2y22e}\\
-     &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\label{psx2ye}\\
-     &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\label{psxy2e}\\
-     &  (x-y, y, e)    & \text{(else if $x > y$)}\label{psx>y}\\
-     &  (y-x, x, e)    & \text{(else if $y > x$)}\label{psy>x}\\
-     &  (1,   0, ex)   & \text{(otherwise ($x=y$))}.  \label{psx0ex}
+     &  (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\tag{i1}\\
+     &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\tag{i2}\\
+     &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\tag{i3}\\
+     &  (x-y, y, e)    & \text{(else if $x > y$)}\tag{i4}\\
+     &  (y-x, x, e)    & \text{(else if $y > x$)}\tag{i5}\\
+     &  (1,   0, ex)   & \text{(otherwise ($x=y$))}.\tag{i6}
 \end{align}
 
 \bparts
@@ -46,20 +46,20 @@ possible, then $e = \gcd(a,b)$.
 
 \begin{solution}
 We claim that a preserved invariant of this machine is
-\begin{equation}\label{psgcdabexy}
+\[
 \gcd(a,b) = e\gcd(x,y).
-\end{equation}
+\]
 To show this, we assume the invariant holds for state $(x,y,e)$ and
 show that if $(x,y,e) \movesto (x',y',e')$, then $\gcd(a,b) =
 e'\gcd(x',y')$.
 
 The proof is by cases according to which kind of transition occurs.
 
-\inductioncase{Case}~\eqref{psx2y22e}: ($2 \divides x$ and $2 \divides y$).  
+\inductioncase{Case}~(i1): ($2 \divides x$ and $2 \divides y$).  
 In this case, $(x',y',e') = (x/2, y/2, 2e)$.
 
-We use the easily verified fact
-\begin{equation}\label{psauavauv}
+We use the the gcd property from Lemma~\bref{lem:gcd-hold}
+\begin{equation}\tag{agcd}
 \gcd(au,av) = a\gcd(u,v).
 \end{equation}
 
@@ -69,16 +69,16 @@ Now
   & =  e\gcd(x,y)
         & \text{(by the invariant for $(x,y,e)$)}\\
   & = e 2\gcd(x/2,y/2)
-        & \text{(by~\eqref{psauavauv})}\\
+        & \text{(by~(agcd))}\\
   & = e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}~\eqref{psx2ye}: ($2 \divides x$ and 2 does not divide $y$).
+\inductioncase{Case}~(i2): ($2 \divides x$ and 2 does not divide $y$).
 In this case, $(x',y',e') = (x/2,y, e)$.
 
 We use the easily verified fact
-\begin{equation}\label{psauvvuv}
+\begin{equation}\tag{acancel}
 \gcd(au,v) = \gcd(u,v)
 \end{equation}
 for $a$ relatively prime to $v$.
@@ -89,17 +89,17 @@ Now
   & = e\gcd(x,y)
       & \text{(invariant for $(x,y,e)$)}\\
   & = e\gcd(x/2,y)
-      & \text{(by~\eqref{psauvvuv})}\\
+      & \text{(by~(acancel))}\\
   & = e'\gcd(x',y'),
 \end{align*}
 which shows that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}~\eqref{psx>y}: ($x>y, 2 \nmid x,\text{ and }2 \nmid y$)
+\inductioncase{Case}~(i4): (neither $x$ nor $y$ is even).
 
 In this case $(x',y',e') = (x-y,y,e)$.
 
 We use the easily verified fact that
-\begin{equation}\label{psgcdu-v}
+\begin{equation}\tag{gcdu-v}
 \gcd(u-v,v) = \gcd(u,v).
 \end{equation}
 
@@ -107,12 +107,12 @@ Now,
 \begin{align*}
 \gcd(a,b)
   & = e\gcd(x,y) & \text{(invariant for $(x,y,e)$)}\\
-  & = e\gcd(x-y,y) & \text{(by~\eqref{psgcdu-v})}\\
+  & = e\gcd(x-y,y) & \text{(by~(gcdu-v))}\\
   & = e'\gcd(x',y'),
 \end{align*}
 proving that the invariant holds for $(x',y',e')$.
 
-\inductioncase{Case}~\eqref{psx0ex}: ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+\inductioncase{Case}~(i6): ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
 Now we have
 \begin{align*}
 \gcd(a,b) 
@@ -132,7 +132,7 @@ preserved invariant holds trivially in the start state $(a,b,1)$
 because $\gcd(a,b) = 1\cdot\gcd(a,b)$.  We conclude that the preserved
 invariant holds in every reachable state.
 
-We claim that only rule~\eqref{psx0ex} can lead to a stopped state,
+We claim that only rule~(i6) can lead to a stopped state,
 which must be of the form $(1,0,e')$.  If such a state is reachable,
 then the invariant implies
 \[
@@ -142,12 +142,12 @@ as required.
 
 To see why this is the only stopped state, note that a transition is
 always possible from the start state, and
-transitions~\eqref{psx2y22e}--\eqref{psy>x} do not lead to stopped
+transitions~(i1)--(i5) do not lead to stopped
 states since the minimum of the new $x$ and $y$ values remains
 positive.
 \end{solution}
 
-\ppart Prove that rule~\eqref{psx2y22e}
+\ppart Prove that rule~(i1)
 \[
 (x, y, e) \to (x/2, y/2, 2e)
 \]
@@ -159,30 +159,30 @@ is never executed after any of the other rules is executed.
 
 \begin{solution}
 We claim that another preserved invariant is
-\begin{equation}\label{psxybev}
+\begin{equation}\tag{noteven}
 \QNOT(2 \divides x\ \QAND\ 2 \divides y).
 \end{equation}
 
-To verify this, suppose a state $(x,y,e)$ satisfies~\eqref{psxybev}.  Then
-rule~\eqref{psx2y22e} will not be executed in that state.
+To verify this, suppose a state $(x,y,e)$ satisfies~(noteven).  Then
+rule~(i1) will not be executed in that state.
 
-Suppose the second rule~\eqref{psx2ye} gets executed leading to state
+Suppose the second rule~(i2) gets executed leading to state
 $(x/2, y ,e)$.  Then $x$ must be even and $y$ must be odd, and so this
-state satisfies~\eqref{psxybev} since $y$ is odd.  A symmetric
-argument applies to the third rule~\eqref{psxy2e}.
+state satisfies~(noteven) since $y$ is odd.  A symmetric
+argument applies to the third rule~(i3).
 
-If rule~\eqref{psx>y} gets executed leading to state $(x-y,y,e)$.
-Then if $y$ is odd this state satisfies~\eqref{psxybev}, and if $y$ is
-even, then $x$ must be odd, so this state satisfies~\eqref{psxybev}
+If rule~(i4) gets executed leading to state $(x-y,y,e)$.
+Then if $y$ is odd this state satisfies~(noteven), and if $y$ is
+even, then $x$ must be odd, so this state satisfies~(noteven)
 because $x-y$ must be odd.  A symmetric argument applies to
-rule~\eqref{psy>x}.
+rule~(i5).
 
-Finally, rule~\eqref{psx0ex} leading to state  $(1,   0, ex)$
-trivially satisfies~\eqref{psxybev} since 1 is odd.
+Finally, rule~(i6) leading to state  $(1,0,ex)$
+trivially satisfies~(noteven) since 1 is odd.
 
-Now if rule~\eqref{psx2y22e} is not executed in some state $(x,y,e)$,
-then~\eqref{psxybev} must hold, and since~\eqref{psxybev} is
-preserved, we can conclude that rule~\eqref{psx2y22e} will never be
+Now if rule~(i1) is not executed in some state $(x,y,e)$,
+then~(noteven) must hold, and since~(noteven) is
+preserved, we can conclude that rule~(i1) will never be
 executed in any subsequent state.
 \end{solution}
 
