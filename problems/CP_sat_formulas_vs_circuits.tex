@@ -2,7 +2,9 @@
 
 \begin{pcomments}
     \pcomment{CP_sat_formulas_vs_circuits}
-    \pcomment{by ARM 2/17/13, revised 2/7/16}
+    \pcomment{subsumes PS_sat_formulas_vs_circuits}
+    \pcomment{similar idea to PS_equisatisfiable_3CNF}
+    \pcomment{by ARM 2/17/13, revised 2/7/16, 3/17/16}
 \end{pcomments}
 
 \pkeywords{
@@ -29,17 +31,33 @@ easy, using a binary gate in $C_F$ for each propositional connective
 in $F$.  So an efficient circuit-SAT procedure leads to an efficient
 SAT procedure.
 
-It's also true that any efficient way of solving the regular SAT
-problem for formulas would yield an efficient way to solve the
-circuit-SAT problem, but this requires a somewhat trickier argument.
+Conversely, there is a simple recursive procedure that will construct,
+given $C$, a formula $E_C$ that is equivalent to $C$ in the sense that
+the truth value $E_C$ and the output of $C$ are the same for every
+truth assignment of the variables.  The problem is that, in general,
+the ``equivalent'' formula $E_C$, will be \emph{exponentially larger}
+than $C$.  For the purposes of showing that satifiability of circuits
+and satifiability of formulas take rougly the same effort to solve,
+spending an exponential time translating one problem to the other
+swamps any benefit in switching from one problem to the other.
 
-The basic idea is that, given any digital circuit $C$ with binary gates
-and one output, we can assign a distinct variable to each wire of $C$.
-Then for each gate of $C$, we can set up a propositional formula that
-represents the constraints that the gate places on the values of its
-input and output wires.  For example, for an \QAND\ gate with input
-wire variables $P$ and $Q$ and output wire variable $R$, the
-constraint proposition would be
+So instead of a formula, $E_C$, that is equivalent to $C$, we aim
+instead for a formula $F_C$ that is ``equisatisfiable'' with $C$.
+That is, there will be input values that make $C$ output
+\True\ \textbf{iff} there is a truth assignment that satisfies
+$F_C$. (In fact, $F_C$ and $C$ need not even use the same variables.)
+But now we make sure that the amount of computation needed to
+construct $F_C$ is not much larger than the size of the circuit $C$.
+In particular, the size of $F_C$ will also not be much larger than
+$C$.
+
+The idea behind the construction of $F_C$ is that, given any digital
+circuit $C$ with binary gates and one output, we can assign a distinct
+variable to each wire of $C$.  Then for each gate of $C$, we can set
+up a propositional formula that represents the constraints that the
+gate places on the values of its input and output wires.  For example,
+for an \QAND\ gate with input wire variables $P$ and $Q$ and output
+wire variable $R$, the constraint proposition would be
 \begin{equation}\label{AQBIC}
 (P \QAND\ Q) \QIFF R.
 \end{equation}
@@ -49,14 +67,6 @@ constraint proposition would be
 \ppart Given a circuit $C$, explain how to easily find a formula $F_C$
 of size proportional to the number of wires in $C$ such that $F_C$ is
 satisfiable iff $C$ gives output \true\ for some set of input values.
-
-(There is a simple way to construct, given $C$, a formula that is
-equivalent to $C$ in the sense that the truth value of the formula and
-the output of $C$ are the same for every truth assignment of the
-variables.  In general, however, such a formula will be exponentially
-larger than $C$.  So instead of an equivalent formula, we aim for an
-``equisatisfiable'' formula $F_C$ that is assured to be roughly the
-size of $C$.)
 
 \begin{solution}
 The product, $P$, of all the gate constraints will have the property
