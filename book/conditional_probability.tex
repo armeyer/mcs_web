@@ -1666,7 +1666,7 @@ whenever the other four markers are simultaneously present?
 
 \newcommand{\BF}[2]{\operatorname{Bayes-factor}(#1,#2)}
 \newcommand{\testplus}{\emph{pos}}
-\newcommand{\testminus}{\emph{neg}}
+%\newcommand{\testminus}{\emph{neg}}
 \newcommand{\TB}{\emph{TB}}
 
 Let's look at some other problems like the breast cancer test of
@@ -1680,13 +1680,13 @@ tuberculosis (TB): if you have TB, the test is \emph{guaranteed} to
 detect it, and if you don't have TB, then the test will report that
 correctly 99\% of the time!
 
-In other words, let ``\TB'' be the event that a person
-has TB, ``\testplus'' be the event that the person tests
-positive for TB, and ``$\testminus$ the event that they test negative,
-that is, $\testminus \eqdef \bar{\testplus}$.  So we have,
+In other words, let ``\TB'' be the event that a person has TB,
+``\testplus'' be the event that the person tests positive for TB, so
+``$\bar{\testplus}$'' is the event that they test negative.  Now we can restate
+these guarantees in terms of conditional probabilities:
 \begin{align}
 \prcond{\testplus}{\TB} & = 1,\label{pr+TB}\\
-\prcond{\testminus}{\bar{\TB}} & = 0.99.\label{pr-barTB}
+\prcond{\bar{\testplus}}{\bar{\TB}} & = 0.99.\label{pr-barTB}
 \end{align}
 
 This means that the test produces the correct result at least 99\% of
@@ -1805,8 +1805,9 @@ and~\eqref{pr-barTB} are exactly what we need to find Bayes factor for
 the TB test:
 \begin{align*}
 \BF{\TB}{\testplus}
- & =\frac{\prcond{\testplus}{\TB}}{\prcond{\testplus}{\bar{\TB}}}\\
- &  =\frac{1}{1-\prcond{\testminus}{\bar{\TB}}} = \frac{1}{1 - 0.99} = 100.
+ & = \frac{\prcond{\testplus}{\TB}}{\prcond{\testplus}{\bar{\TB}}}\\
+ & = \frac{1}{1-\prcond{\bar{\testplus}}{\bar{\TB}}}\\
+ & = \frac{1}{1 - 0.99} = 100.
 \end{align*}
 So testing positive for TB increases the odds you have TB by a factor
 of 100, which means a positive test is significant evidence supporting
@@ -1826,7 +1827,7 @@ little over 300 million, which means
 \]
 So the odds of TB are $1/9999$.  Therefore,
 \[
-\oddscond{\TB}{\text+} = 100 \cdot \frac{1}{9,999} \approx \frac{1}{100}.
+\oddscond{\TB}{\testplus} = 100 \cdot \frac{1}{9,999} \approx \frac{1}{100}.
 \]
 In other words, even if someone tests positive for TB at the 99\%
 confidence level, the odds remain about 100 to one \emph{against}
@@ -1866,9 +1867,9 @@ judgment about you based, for example, on what personal factors he
 considers relevant to getting TB, or how serious he thinks the
 consequences of a mistaken diagnosis would be.  These are important
 medical judgments, but they are not mathematical.  Different doctors
-will make different judgments about who is like you and will report
-differing probabilities.  There is no ``true'' model of who you are,
-and there is no true individual probability of your having TB.
+will make different judgments about who is like you, and they will
+report differing probabilities.  There is no ``true'' model of who you
+are, and there is no true individual probability of your having TB.
 
 \subsection{Extreme events}
 
@@ -1909,8 +1910,9 @@ hundred heads and $H$ be the event that the biased coin was chosen.
 Now
 \begin{align*}
 \odds{H} & = \frac{2^{-50}}{1-2^{-50}} \approx 2^{-50},\\
-\BF{E}{H} & = \frac{\prcond{E}{H}}{\prcond{E}{\bar{H}}} = \frac{(99/100)^{100}}{2^{-100}} > 0.3 \cdot 2^{100},\\
-\oddscond{H}{E} & = \BF{E}{H} \cdot \odds{H} > 0.3 \cdot 2^{100} \cdot 2^{-50} = 0.3 \cdot 2^{50}.
+\BF{E}{H} & = \frac{\prcond{E}{H}}{\prcond{E}{\bar{H}}} = \frac{(99/100)^{100}}{2^{-100}} > 0.36 \cdot 2^{100},\\
+\oddscond{H}{E} & = \BF{E}{H} \cdot \odds{H}\\
+                & > 0.36 \cdot 2^{100} \cdot 2^{-50} = 0.36 \cdot 2^{50}.
 \end{align*}
 This shows that after flipping one hundred heads, the odds that the
 biased coin was chosen are overwhelming, and so with high probability
@@ -1928,18 +1930,20 @@ are ninety-nine to one in favor.
 
 \subsection{Confidence in the Next Flip}
 
-An approach to the one hundred Heads problem that does not require any
-assumptions of \emph{a priori} probabilities can be based on
-confidence.  With no assumptions about about how the tossed coin is
-chosen, we know that
+If we stick to confidence rather than probability, we don't need to
+make any Bayesian assumptions about the probability of a fair coin.
+We know that if one hundred Heads are flipped, then either the coin is
+biased, or something that virtually never happens (probability
+$2^{-100}$) has occurred.  That means we can assert that the coin is
+biased at the $1-2^{-100}$ confidence level.  In short, when one
+hundred Heads are flipped, we can be essentially 100\% confident that
+the coin is biased.
+
+\iffalse
 \begin{align*}
-\prcond{\text{100 Heads flips}}{\text{bias coin}} & = 1,\\
-\prcond{\text{100 Heads flips}}{\text{fair coin}} & = 2^{-100},
+\prcond{\text{100 Heads}}{\text{bias coin}} & = 0.36,\\
+\prcond{\text{100 Heads}}{\text{fair coin}} & = 2^{-100}.
 \end{align*}
-so the decision to reject the hypothesis that the coin is fair when
-one hundred Heads are flipped will be correct at the $1-2^{-100}$ confidence
-level.  That is, we can be virtually 100\% confident that the one hundred
-Heads came from the biased coin.
 
 Again, this decision based on confidence is unrelated to any
 probability that the coin is biased.  In fact, one of the
@@ -1947,6 +1951,7 @@ peculiarities of the concept of confidence is even if the coin was
 \emph{guaranteed} to be fair, we can still assert 100\% confidence in
 our decision to ignore that guarantee when one hundred heads get
 flipped.
+\fi
 
 \begin{problems}
 \pinput{CP_drug_confidence}
