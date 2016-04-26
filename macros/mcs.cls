@@ -1942,6 +1942,9 @@
 \newtheorem{falseclm}[theorem]{False Claim}
 \newtheorem*{falseclm*}{False Claim}
 
+\newtheorem{conject}[theorem]{Conjecture}
+\newtheorem*{conject*}{Conjecture}
+
 \newtheorem{rul}[theorem]{Rule}
 \newtheorem*{rul*}{Rule}
 
