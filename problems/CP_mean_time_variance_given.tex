@@ -20,16 +20,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-\bparts
+A computer program crashes at the end of each hour of use with
+probability $1/p$, if it has not crashed already.  Let $H$ be the
+number of hours until the first crash.
 
-\ppart\label{varH} A computer program crashes at the end of each hour
-of use with probability $1/p$, if it has not crashed already.  If $H$
-is the number of hours until the first crash, we know 
-\begin{align*}
-\expect{H}   & = \frac{1}{p},\\% & \text{(Equation~(\bref{exp_time_to_fail}))}\\
-\variance{H} & = \frac{q}{p^2},% & \text{(Equation~(\bref{var_time_to_fail}))}
-\end{align*}
-where $q \eqdef 1-p$.
+%% , we know 
+%% \begin{align*}
+%% \expect{H}   & = \frac{1}{p},\\% & \text{(Equation~(\bref{exp_time_to_fail}))}\\
+%% \variance{H} & = \frac{q}{p^2},% & \text{(Equation~(\bref{var_time_to_fail}))}
+%% \end{align*}
+%% where $q \eqdef 1-p$.
+
+\bparts
 
 \ppart\label{Cheb} What is the \idx{Chebyshev bound} on
 \[
@@ -38,10 +40,20 @@ where $q \eqdef 1-p$.
 where $x > 0$?
 
 \begin{solution}
-
 \[
-\frac{\variance{H}}{\paren{x/p}^2} = \frac{q}{p^2\paren{x/p}^2} = 
-    \frac{q}{x^2}.
+\frac{1-p}{x^2}.
+\]
+
+We know 
+\begin{align*}
+\expect{H}   & = \frac{1}{p} & \text{(by~(\bref{exp_time_to_fail}))}\\
+\variance{H} & = \frac{1-p}{p^2}, & \text{(by~(\bref{var_time_to_fail}))}.
+\end{align*}
+
+So by Chebyshev's Theorem~\bref{chebthm}, the bound on the above probability is
+\[
+\frac{\variance{H}}{\paren{x/p}^2} = \frac{1-p}{p^2\paren{x/p}^2} = 
+    \frac{1-p}{x^2}.
 \]
 \end{solution}
 
@@ -59,7 +71,7 @@ that $\abs{H - (1/p)} > (a-1)/p$ iff $H - (1/p)> (a-1)/p$ iff $H > a/p$.
 So
 \begin{align*}
 \pr{H > a/p} & = \pr{\abs{H - (1/p)} > (a-1)/p}\\
-             & \leq q/(a-1)^2 & \text{(by part~\eqref{Cheb})}.
+             & \leq (1-p)/(a-1)^2 & \text{(by part~\eqref{Cheb})}.
 \end{align*}
 \end{solution}
 
@@ -73,20 +85,26 @@ asymptotically smaller function of $a$ than the Chebyshev bound of
 part~\eqref{Hap}.
 
 \begin{solution}
-
 \[
-\pr{H > a/p} =  \sum_{k >a/p} q^{k-1}p = pq^{\floor{a/p}} \sum_0^{\infty}
-q^j = pq^{\floor{a/p}}\cdot\frac{1}{1-q} = q^{\floor{a/p}}.
+\pr{H > a/p} =  \sum_{k >a/p} (1-p)^{k-1}p = p(1-p)^{\floor{a/p}} \sum_0^{\infty}
+(1-p)^j = p(1-p)^{\floor{a/p}}\cdot\frac{1}{1-(1-p)} = (1-p)^{\floor{a/p}}.
 \]
 So
 \[
-\pr{H > a/p} \leq q^{(a-p)/p} = \paren{(1-p)^{1/p}}^{a-p} <
+\pr{H > a/p} \leq (1-p)^{(a-p)/p} = \paren{(1-p)^{1/p}}^{a-p} <
 \paren{\paren{e^{-p}}^{1/p}}^{a-p} = e^{p-a}.
 \]
 
-But Chebyshev gives $\pr{H > a/p} \leq q/(a-1)^2 = \Theta(1/a^2)$.  Since
-$e^{p-a} = o(1/a^2)$, we conclude that the actual probability is much
-smaller than we got from the Chebyshev Bound.
+But as shown in part~\eqref{Hap}, Chebyshev gives
+\[
+\pr{H > a/p} \leq (1-p)/(a-1)^2 = \Theta(1/a^2).
+\]
+Since
+\[
+e^{p-a} = \frac{p}{e^a} = o(1/a^2),
+\]
+we conclude that the actual probability is much smaller than we got
+from the Chebyshev Bound.
 \end{solution}
 
 \eparts
