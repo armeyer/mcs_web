@@ -18,12 +18,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-  Let $G$ be a simple graph.  Let $E(x,y)$ mean that $G$ has an edge
-  between vertices $x$ and $y$.  Since $G$ is simple, we have $E(x,y)
-  \QIFF\ E(y,x)$ and also $\QNOT(E(x,x))$.
+Let $G$ be a simple graph and let $B(u,v)$ mean there is an edge
+between vertices $u$ and $v$.  That is,
+\[
+B(u,v)\ \text{means}\ \edge{u}{v}\in \edge{G}.
+\]
+Since $G$ is simple, we have $B(u,v)$ iff $B(v,u)$.  Also
+$\QNOT(B(u,u)$ is valid since vertices in simple graphs do not have
+self-loops.
 
-  Let $W(x,y)$ mean that there is a length-two walk in $G$ between $x$
-  and $y$.
+Let $W(u,v)$ mean that there is a length-two walk in $G$ between $u$
+and $v$.
 
 \bparts
 
@@ -36,26 +41,32 @@ Going back and forth on edge $\edge{x}{y}$ is a length-two walk from
 $x$ to $x$.
 \end{solution}
 
-\ppart Write a predicate-logic formula defining $W(x,y)$ in terms of $E(u,v)$.
+\ppart Write a predicate-logic formula defining $W(u,v)$ in terms of
+the predicate $B(.,.)$
 
 \examspace[0.6in]
 
 \begin{solution}
 \[
-W(x,y) \eqdef \exists z.\, E(x,z) \QAND\ E(z,y).
+W(x,y) \eqdef \exists z.\, B(x,z) \QAND\ B(z,y).
 \iffalse \QAND z \neq x \QAND\ z \neq y \QAND \fi
 \]
 \end{solution}
 
+
+
 \eparts
 \medskip
+
+We assume below that $w$, $x$, $y$ and $z$ are distinct
+vertices of $G$.
 
 Now let $V$ be a fixed set of vertices and $G$ be a graph with
 $\vertices{G} = V$ constructed randomly as follows: for every two
 distinct vertices $u,v \in V$, independently include edge
 $\edge{u}{v}$ in $\edges{G}$ with probability $p$.
 
-So $\pr{E(u,v)} = p$, and $E(u,v)$ is independent of $E(r,s)$ when
+So $\pr{B(u,v)} = p$, and $B(u,v)$ is independent of $B(r,s)$ when
 $\edge{u}{v} \neq \edge{r}{s}$.
 
 \begin{staffnotes}
@@ -64,7 +75,7 @@ $\vertices{G} = V$ and $\pr{G} = p^k(1-p)^m$, where $k =
 \card{\edges{G}}$ and $m = \binom{n}{2} - k$.
 
 An event $E$ \emph{depends on an edge $\edge{u}{v}$} iff $E$ and
-$E(u,v)$ are not independent.  If two events \textbf{depend on
+$B(u,v)$ are not independent.  If two events \textbf{depend on
   disjoint sets of edges}, then they are independent.
 \end{staffnotes}
 
@@ -80,19 +91,35 @@ terms of $g, n$, and $p$.
 p^g(1-p)^{\binom{n}{2}-g},
 \]
 \end{solution}
+\eparts
+\medskip
 
+Events that depends on disjoint sets of edges will clearly be
+independent, so
+\begin{equation}\label{EandE2}
+[B(x,w) \QAND\ B(w,y)]\ \text{is independent of}\ [B(x,z) \QAND\ B(z,y)]
+\end{equation}
 
-\ppart\label{indeppairscircle} \inbook{Indicate which of} \inhandout{\textbf{Circle}} the
-event pairs below that are independent.  In each case, briefly explain
-your answer.
+%%\examspace[0.25in]
+%% \begin{solution}
+%% \True.  Since edges are chosen independently and since all the
+%% following edges are distinct, the presence of edges $\edge{x}{w},
+%% \edge{w}{y}$, is independent of the presence of edges $\edge{x}{z},
+%% \edge{z}{y}$.
+%% \end{solution}
+
+\bparts
+
+\ppart\label{indeppairscircle}
 \begin{enumerate}[i.]
 
-\item\label{ExyW} $E(x,y)$ versus $W(x,y)$ for $x \neq y$.
+\item\label{ExyW} Briefly explain why $B(x,y)$ is independent of
+  $W(x,y)$ when $x \neq y$.
 
 \examspace[0.25in]
 
 \begin{solution}
-\True.  Since there are no self-loops, the edge $\edge{x}{y}$ cannot
+Since there are no self-loops, the edge $\edge{x}{y}$ cannot
 be part of any length-two walk from $x$ to $y$.  So the existence of a
 length-two walk from $x$ to $y$ does not depend on whether this edge
 is present in $G$.
@@ -107,27 +134,16 @@ is present in $G$.
 \end{solution}
 \fi
 
-\item\label{EandE2}
-$[E(x,w) \QAND\ E(w,y)]$ versus $[E(x,z)
-  \QAND\ E(z,y)]$ for distinct vertices $w$, $x$, $y$ and $z$.
+\item\label{Wwxyz} Briefly suggest why
+$W(w,x)$ is \emph{not} independent $W(y,z)$ for distinct vertices $w$,
+  $x$, $y$ and $z$.
 
 \examspace[0.25in]
 
 \begin{solution}
-\True.  Since edges are chosen independently and since all the
-following edges are distinct, the presence of edges $\edge{x}{w},
-\edge{w}{y}$, is independent of the presence of edges $\edge{x}{z},
-\edge{z}{y}$.
-\end{solution}
-
-\item\label{Wwxyz} $W(w,x)$ versus $W(y,z)$ for distinct vertices $w$, $x$, $y$ and $z$.
-
-\examspace[0.25in]
-
-\begin{solution}
-\False.  The more randomly chosen edges there are in $G$, the more
-likely length two walks become.  Now $W(w,x)$ implies the existence of
-two edges---which might be incident to $y$ or $z$---and this makes
+The more randomly chosen edges there are in $G$, the more likely
+length two walks become.  Now $W(w,x)$ implies the existence of two
+edges---which might be incident to $y$ or $z$---and this makes
 $W(y,z)$ more likely given $W(w,x)$.
 \end{solution}
 
@@ -151,11 +167,11 @@ Let $Z \eqdef V - \set{x,y}$ be the set of all the vertices other than
 $x$ and $y$.
 \begin{align*}
 \lefteqn{\pr{\QNOT(W(x,y))}}\\
-  & = \pr{\QAND_{z \in Z} \QNOT(E(x,z) \QAND\ E(z,y))},\\
-  & = \prod_{z \in Z} \pr{\QNOT(E(x,z) \QAND\ E(z,y))},
+  & = \pr{\QAND_{z \in Z} \QNOT(B(x,z) \QAND\ B(z,y))},\\
+  & = \prod_{z \in Z} \pr{\QNOT(B(x,z) \QAND\ B(z,y))},
           & \text{(indep. by part~\eqref{indeppairscircle}.\eqref{EandE2})}\\
-  & = \prod_{z \in Z} (1 - \pr{E(x,z) \QAND\ E(z,y)}),\\
-  & = \prod_{z \in Z} (1-\pr{E(x,z)}\cdot \pr{E(y,z)}),
+  & = \prod_{z \in Z} (1 - \pr{B(x,z) \QAND\ B(z,y)}),\\
+  & = \prod_{z \in Z} (1-\pr{B(x,z)}\cdot \pr{B(y,z)}),
           & \text{(edges are independent)}\\
   & = \prod_{z \in Z} (1-p^2), \\
   & = (1-p^2)^{n-2}.
@@ -163,12 +179,12 @@ $x$ and $y$.
 \end{solution}
 
 \ppart \label{3cycle} \; Express $x$ and $y$ being on a three-cycle as
-a simple predicate formula involving $E(x,y)$ and $W(x,y)$.
+a simple predicate formula involving $B(x,y)$ and $W(x,y)$.
 
 \examspace[0.5in]
 
 \begin{solution}
-$x$ and $y$ lie on a three-cycle iff $E(x,y) \QAND\ W(x,y)$.
+$x$ and $y$ lie on a three-cycle iff $B(x,y) \QAND\ W(x,y)$.
 \end{solution}
 
 \examspace[0.15in]
@@ -186,10 +202,10 @@ three-cycle in $G$.
 p(1-r).
 \]
 
-Since $E(x,y)$ and $W(x,y)$ are independent,
+Since $B(x,y)$ and $W(x,y)$ are independent,
 \begin{align*} 
-\pr{E(x,y) \QAND\ W(x,y)}
-   & = \pr{E(x,y)} \cdot \pr{W(x,y)} \\
+\pr{B(x,y) \QAND\ W(x,y)}
+   & = \pr{B(x,y)} \cdot \pr{W(x,y)} \\
    & = p (1-r) .
 \end{align*}
 \end{solution}
@@ -206,11 +222,11 @@ Since $E(x,y)$ and $W(x,y)$ are independent,
 
 Original Solution: In this counterexample,
 \[
-W(w,x) \equiv (E(w,y) \QAND{} E(y,x)) \QOR{} (E(w,z) \QAND{} E(z,x))
+W(w,x) \equiv (B(w,y) \QAND{} B(y,x)) \QOR{} (B(w,z) \QAND{} B(z,x))
 \]
 and
 \[
-W(x,y) \equiv (E(x,w) \QAND{} E(w,y)) \QOR{} (E(x,z) \QAND{} E(z,y)).
+W(x,y) \equiv (B(x,w) \QAND{} B(w,y)) \QOR{} (B(x,z) \QAND{} B(z,y)).
 \]
 
 By symmetry, we apply inclusion-exclusion to calculate the probability
@@ -221,40 +237,40 @@ for either of these events:
 
 Now consider $\prcond{W(w,x)}{W(x,y)}$, the fraction of outcomes
 satisfying $W(x, y)$ that also satisfy $W(w, x)$.  Partition the
-outcomes satisfying $W(x, y)$ by whether they also satisfy $E(w, y)$.
-Both sides of the partition are independent of $E(y, x)$ in the sense
-formalized above, since $E(y, x)$ doesn't appear in the definition of
-$W(x, y)$.  That means that the outcomes in the subcase for $E(w, y)$
-can be partitioned into equally sized sets, one with $E(y, x)$ and the
-other with $\bar{E(y, x)}$.  Clearly every element of the first set
+outcomes satisfying $W(x, y)$ by whether they also satisfy $B(w, y)$.
+Both sides of the partition are independent of $B(y, x)$ in the sense
+formalized above, since $B(y, x)$ doesn't appear in the definition of
+$W(x, y)$.  That means that the outcomes in the subcase for $B(w, y)$
+can be partitioned into equally sized sets, one with $B(y, x)$ and the
+other with $\bar{B(y, x)}$.  Clearly every element of the first set
 satisfies $W(w, x)$, so
 \[
-\prcond{W(w, x)}{W(x, y) \QAND{} E(y, x)} \geq \frac{1}{2}.
+\prcond{W(w, x)}{W(x, y) \QAND{} B(y, x)} \geq \frac{1}{2}.
 \]
 
 --------------
   For
   $|V| = 4$ and $p = \frac{1}{2}$, we have
 \[
-W(w,x) \equiv (E(w,y) \QAND\ E(y,x)) \QOR\ (E(w,z) \QAND\ E(z,x))
+W(w,x) \equiv (B(w,y) \QAND\ B(y,x)) \QOR\ (B(w,z) \QAND\ B(z,x))
 \]
  and
 \[
-W(y,z) \equiv (E(y,x) \QAND\ E(x,z)) \QOR\ (E(y,w) \QAND\ E(w,z)).
+W(y,z) \equiv (B(y,x) \QAND\ B(x,z)) \QOR\ (B(y,w) \QAND\ B(w,z)).
 \]
 
 \[
-\prcond{W(w, x)}{W(y, z) \QAND{} (E(y,x) \QAND{} E(x,z))} = \frac{3}{4},
+\prcond{W(w, x)}{W(y, z) \QAND{} (B(y,x) \QAND{} B(x,z))} = \frac{3}{4},
 \]
 since under these conditions the formula for $W(w,x)$ simplifies to
-$E(w,y) \QOR E(w,z)$.
+$B(w,y) \QOR B(w,z)$.
 \[
-\prcond{W(w, x)}{W(y, z) \QAND\ \QNOT (E(y,x) \QAND\ E(x,z))} = \frac{1}{2}
+\prcond{W(w, x)}{W(y, z) \QAND\ \QNOT (B(y,x) \QAND\ B(x,z))} = \frac{1}{2}
 \]
-since under these conditions we know $E(y,w) \QAND\ E(w,z)$, and the
+since under these conditions we know $B(y,w) \QAND\ B(w,z)$, and the
 formula for $W(w,x)$ simplifies to 
 \[
-(E(y,x) \QOR\ E(z,x)) \QAND\ \QNOT(E(y,x) \QAND\ E(z,x)).
+(B(y,x) \QOR\ B(z,x)) \QAND\ \QNOT(B(y,x) \QAND\ B(z,x)).
 \]
 Both sides of the partition have probabilities no less than
 $\frac{1}{2}$, so $\prcond{W(w, x)}{W(y, z)} \geq \frac{1}{2}$, which
@@ -262,12 +278,12 @@ again is above $\pr{W(w, x)}$, which can be computed as $\frac{7}{16}$
 as in the prior case.
 -----------
 
-The outcomes in the subcase for $\bar{E(w, y)}$ must all have $E(x,
-z)$, so, like above partitioning them based on $E(w, z)$, we get two
-equal-size sets, where the set with $E(w, z)$ all satisfy $W(w, x)$,
+The outcomes in the subcase for $\bar{B(w, y)}$ must all have $B(x,
+z)$, so, like above partitioning them based on $B(w, z)$, we get two
+equal-size sets, where the set with $B(w, z)$ all satisfy $W(w, x)$,
 and
 \[
-\prcond{W(w, x)}{W(x, y) \QAND\ \bar{E(y, x)}} \geq \frac{1}{2}.
+\prcond{W(w, x)}{W(x, y) \QAND\ \bar{B(y, x)}} \geq \frac{1}{2}.
 \]
 The true value of $\prcond{W(w, x)}{W(x, y)}$ must lie somewhere
 between these two values, so it also must be no less than
@@ -276,7 +292,7 @@ $\frac{1}{2}$, and thus it must be greater than $\pr{W(w, x)} =
 
 \vspace{0.05in} Less complicated explanation: We want to show that
 $\prcond{W(w,x)}{W(x,y)} \neq \Pr{W(w,x)}$.  If $W(x,y)$, this
-increases the probability of $E(z,x)$ and $E(w,y)$, which can be used
+increases the probability of $B(z,x)$ and $B(w,y)$, which can be used
 for $W(w,x)$.
 
 \fi
@@ -289,12 +305,12 @@ for $W(w,x)$.
 definition of $W(x,y)$.
 
 \begin{itemize}
-\item $W(x,y) \eqdef \exists z.\ E(x,z) \QAND\ E(y,z)$
+\item $W(x,y) \eqdef \exists z.\ B(x,z) \QAND\ B(y,z)$
 \examspace[0.15in]
-\item $W(x,y) \eqdef x \neq y \QAND\ \exists z.\ E(x,z) \QAND\ E(y,z)$
+\item $W(x,y) \eqdef x \neq y \QAND\ \exists z.\ B(x,z) \QAND\ B(y,z)$
 \examspace[0.15in]
-\item $W(x,y) \eqdef \forall z.\ E(x,z) \QOR\ E(y,z)$
+\item $W(x,y) \eqdef \forall z.\ B(x,z) \QOR\ B(y,z)$
 \examspace[0.15in]
-\item $W(x,y) \eqdef \forall z.\ x \neq y \QIMPLIES\ [E(x,z) \QOR\ E(y,z)]$
+\item $W(x,y) \eqdef \forall z.\ x \neq y \QIMPLIES\ [B(x,z) \QOR\ B(y,z)]$
 \end{itemize}
 \fi

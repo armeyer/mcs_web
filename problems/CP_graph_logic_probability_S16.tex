@@ -1,0 +1,300 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_graph_logic_probability_S16}
+  \pcomment{major revision of CP_graph_logic_probability ARM 5/9/16}
+\end{pcomments}
+
+\pkeywords{
+  graph
+  logic
+  probability
+  independence
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $G$ be a simple graph with $n$ vertices, and let $B(u,v)$ mean
+there is an edge between vertices $u$ and $v$:
+\begin{align*}
+B(u,v) &\ \text{means}\ \edge{u}{v}\in \edges{G},\\
+\card{\vertices{G}} &  = n.
+\end{align*}
+
+Let $W(u,v)$ mean that there is a length-two walk in $G$ between $u$
+and $v$.
+
+\bparts
+
+\ppart Explain why $W(u,u)$ holds iff $\exists v.\ B(u,v)$.
+
+\examspace[0.5in]
+
+\begin{solution}
+A length two path from $u$ to $u$ must be a path that goes back and
+forth on some edge incident to $u$.
+\end{solution}
+
+\ppart Write a predicate-logic formula defining $W(u,v)$ in terms of
+the predicate $B(.,.)$ when $u \neq v$.
+
+\examspace[0.6in]
+
+\begin{solution}
+\[
+W(u,v) \eqdef \exists t.\, B(u,t) \QAND\ B(t,v).
+\]
+
+This formula actually works even if $u=v$.
+\end{solution}
+
+\eparts
+
+There are $e \eqdef \binom{n}{2}$ possible edges between the $n$
+vertices of $G$.  Suppose the actual edges of $\edges{G}$ are chosen
+with randomly from this set of $e$ possible edges.  Each edge is
+chosen with probability $p$, and the choices are mutually independent.
+
+\bparts
+
+\ppart Write simple formula in terms of $p, e$, and $k$ for
+$\pr{\card{\edges{G}} = k}$.
+
+\begin{center}
+\exambox{0.8in}{0.5in}{0in}
+\end{center}
+
+\examspace[0.3in]
+
+
+\begin{solution}
+\[
+\binom{e}{k} p^k(1-p)^{e-k}.
+\]
+
+The number of chosen edges has a binomial distribution.
+\end{solution}
+
+\ppart Write simple formula in terms of $p$ and $n$ for $\pr{W(u,u)}$.
+
+\begin{center}
+\exambox{0.6in}{0.5in}{0in}
+\end{center}
+
+\examspace[0.3in]
+
+\begin{solution}
+\[
+(n-1)p.
+\]
+
+$W(u,u)$ is the union of the $n-1$ disjoint events $B(u,v)$ for $v \neq u$.
+\end{solution}
+
+\eparts
+
+Let $w$, $x$, $y$ and $z$ be four distinct vertices.
+
+Because edges are chosen mutually independently, events
+that depend on disjoint sets of edges will be mutually independent.
+For example, the events
+\[
+B(w,y) \QAND B(y,x)
+\]
+and
+\[
+B(w,z) \QAND B(z,x)
+\]
+are independent since $\edge{w}{y}, \edge{y}{x}, \edge{w}{z},
+\edge{z}{x}$ are four distinct edges.
+
+\examspace
+
+\bparts
+
+\ppart  Let
+\begin{equation}\label{nottwopath}
+r \eqdef \pr{\QNOT(W(w,x))}.
+\end{equation}
+Write a simple formula for $r$ in terms of $n$ and $p$.
+
+\hint Different length-two paths between $x$ and $y$ don't share any
+edges.
+
+\begin{center}
+\exambox{1.5in}{0.5in}{0in}
+\end{center}
+
+\examspace[1.0in]
+
+\begin{solution}
+\[
+r = (1-p^2)^{n-2}.
+\]
+
+Let $Z \eqdef \vertices{G} - \set{w,x}$ be the set of $n-2$ vertices
+other than $w$ and $x$.
+\begin{align*}
+\lefteqn{\pr{\QNOT(W(w,x))}}\\
+  & = \pr{\forall z \in Z.\, \QNOT(B(w,z) \QAND\ B(z,x))}\\
+  & = \prod_{z \in Z} \pr{\QNOT(B(w,z) \QAND\ B(z,x))}
+          & \text{by the hint, the length-two paths are independent}\\
+  & = \prod_{z \in Z} (1 - \pr{B(w,z) \QAND\ B(z,x)})\\
+  & = \prod_{z \in Z} (1-\pr{B(w,z)}\cdot \pr{B(z,x)})
+          & \text{(edges are independent)}\\
+  & = \prod_{z \in Z} (1-p^2) \\
+  & = (1-p^2)^{n-2}.
+\end{align*}
+\end{solution}
+
+\ppart \label{3cycle} Vertices $x$ and $y$ being on a three-cycle can
+be expressed simply as
+\[
+B(x,y) \QAND\ W(x,y).
+\]
+Write a simple expression in terms of $p$ and $r$ for the probability
+that $x$ and $y$ lie on a three-cycle in $G$.
+
+\begin{center}
+\exambox{0.6in}{0.5in}{0in}
+\end{center}
+
+\examspace[0.5in]
+
+\begin{solution}
+\[
+p(1-r).
+\]
+
+$B(x,y)$ and $W(x,y)$ are independent since $W(x,y)$ does not depend
+on whether $\edge{x}{y}$ is an actual edge of $G$.  Therefore,
+\begin{align*} 
+\pr{B(x,y) \QAND\ W(x,y)}
+   & = \pr{B(x,y)} \cdot \pr{W(x,y)} \\
+   & = p (1-r) .
+\end{align*}
+\end{solution}
+
+\ppart\label{Wwxyz} Are $W(w,x)$ and $W(y,z)$ independent events?
+Briefly comment (proof not required).
+
+\examspace[0.75in]
+
+\begin{solution}
+The more randomly chosen edges there are in $G$, the more likely
+length two walks become.  Now $W(w,x)$ implies the existence of two
+edges---which might be incident to $y$ or $z$---and this makes
+$W(y,z)$ more likely given $W(w,x)$.
+\begin{staffnotes}
+\TBA{Derive formula for $\prcond{W(w,x)}{W(y,z)}$ and see that it
+  differs from $r$.}
+\end{staffnotes}
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
+Original Solution: In this counterexample,
+\[
+W(w,x) \equiv (B(w,y) \QAND{} B(y,x)) \QOR{} (B(w,z) \QAND{} B(z,x))
+\]
+and
+\[
+W(x,y) \equiv (B(x,w) \QAND{} B(w,y)) \QOR{} (B(x,z) \QAND{} B(z,y)).
+\]
+
+By symmetry, we apply inclusion-exclusion to calculate the probability
+for either of these events:
+\[
+\paren{\frac{1}{2}}^2 + \paren{\frac{1}{2}}^2 - \paren{ \frac{1}{2}}^4 = \frac{7}{16}.
+\]
+
+Now consider $\prcond{W(w,x)}{W(x,y)}$, the fraction of outcomes
+satisfying $W(x, y)$ that also satisfy $W(w, x)$.  Partition the
+outcomes satisfying $W(x, y)$ by whether they also satisfy $B(w, y)$.
+Both sides of the partition are independent of $B(y, x)$ in the sense
+formalized above, since $B(y, x)$ doesn't appear in the definition of
+$W(x, y)$.  That means that the outcomes in the subcase for $B(w, y)$
+can be partitioned into equally sized sets, one with $B(y, x)$ and the
+other with $\bar{B(y, x)}$.  Clearly every element of the first set
+satisfies $W(w, x)$, so
+\[
+\prcond{W(w, x)}{W(x, y) \QAND{} B(y, x)} \geq \frac{1}{2}.
+\]
+
+--------------
+  For
+  $|V| = 4$ and $p = \frac{1}{2}$, we have
+\[
+W(w,x) \equiv (B(w,y) \QAND\ B(y,x)) \QOR\ (B(w,z) \QAND\ B(z,x))
+\]
+ and
+\[
+W(y,z) \equiv (B(y,x) \QAND\ B(x,z)) \QOR\ (B(y,w) \QAND\ B(w,z)).
+\]
+
+\[
+\prcond{W(w, x)}{W(y, z) \QAND{} (B(y,x) \QAND{} B(x,z))} = \frac{3}{4},
+\]
+since under these conditions the formula for $W(w,x)$ simplifies to
+$B(w,y) \QOR B(w,z)$.
+\[
+\prcond{W(w, x)}{W(y, z) \QAND\ \QNOT (B(y,x) \QAND\ B(x,z))} = \frac{1}{2}
+\]
+since under these conditions we know $B(y,w) \QAND\ B(w,z)$, and the
+formula for $W(w,x)$ simplifies to 
+\[
+(B(y,x) \QOR\ B(z,x)) \QAND\ \QNOT(B(y,x) \QAND\ B(z,x)).
+\]
+Both sides of the partition have probabilities no less than
+$\frac{1}{2}$, so $\prcond{W(w, x)}{W(y, z)} \geq \frac{1}{2}$, which
+again is above $\pr{W(w, x)}$, which can be computed as $\frac{7}{16}$
+as in the prior case.
+-----------
+
+The outcomes in the subcase for $\bar{B(w, y)}$ must all have $B(x,
+z)$, so, like above partitioning them based on $B(w, z)$, we get two
+equal-size sets, where the set with $B(w, z)$ all satisfy $W(w, x)$,
+and
+\[
+\prcond{W(w, x)}{W(x, y) \QAND\ \bar{B(y, x)}} \geq \frac{1}{2}.
+\]
+The true value of $\prcond{W(w, x)}{W(x, y)}$ must lie somewhere
+between these two values, so it also must be no less than
+$\frac{1}{2}$, and thus it must be greater than $\pr{W(w, x)} =
+\frac{7}{16}$.
+
+\vspace{0.05in} Less complicated explanation: We want to show that
+$\prcond{W(w,x)}{W(x,y)} \neq \Pr{W(w,x)}$.  If $W(x,y)$, this
+increases the probability of $B(z,x)$ and $B(w,y)$, which can be used
+for $W(w,x)$.
+
+\fi
+
+
+
+% Exam version commented out for use as a class problem.
+\iffalse
+\ppart Circle the mathematical formula that best expresses the
+definition of $W(x,y)$.
+
+\begin{itemize}
+\item $W(x,y) \eqdef \exists z.\ B(x,z) \QAND\ B(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef x \neq y \QAND\ \exists z.\ B(x,z) \QAND\ B(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef \forall z.\ B(x,z) \QOR\ B(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef \forall z.\ x \neq y \QIMPLIES\ [B(x,z) \QOR\ B(y,z)]$
+\end{itemize}
+\fi
