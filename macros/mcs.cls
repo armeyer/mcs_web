@@ -1537,7 +1537,7 @@
 \newcommand{\expectsq}[1]{\Ex^2[#1]}
 
 \newcommand{\Expect}[1]{\Ex\left[\strut#1\right]}
-\newcommand{\Expectsq}[1]{\Ex^2\left[#1\right]}
+\newcommand{\Expectsq}[1]{\Ex^2\left[\strut#1\right]}
 
 \newcommand{\expcond}[2]{\expect{#1\mid#2}}
 
@@ -1546,16 +1546,16 @@
 \newcommand{\variance}[1]{\Var[#1]}
 \newcommand{\varsq}[1]{\Var^2[#1]}
 
-\newcommand{\Variance}[1]{\Var\left[#1\right]}
-\newcommand{\Varsq}[1]{\Var^2\left[#1\right]}
+\newcommand{\Variance}[1]{\Var\left[\strut#1\right]}
+\newcommand{\Varsq}[1]{\Var^2\left[\strut#1\right]}
 
 \newcommand{\Cov}{\operatorname{Cov}}
 
 \newcommand{\covar}[1]{\Cov[#1]}
 \newcommand{\covariance}[2]{\Cov[#1,#2]}
 
-\newcommand{\Covar}[1]{\Cov\left[#1\right]}
-\newcommand{\Covariance}[2]{\Cov\left[#1,#2\right]}
+\newcommand{\Covar}[1]{\Cov\left[\strut#1\right]}
+\newcommand{\Covariance}[2]{\Cov\left[\strut#1,#2\right]}
 
 \newcommand{\pdf}{\textsc{PDF}}
 \newcommand{\cdf}{\textsc{CDF}}
