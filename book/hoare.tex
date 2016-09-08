@@ -1,5 +1,6 @@
 \hyperdef{while}{programs}{\chapter{Reasoning About \textbf{While} Programs}}\label{while_chap}
 
+\iffalse
 \def\movesto{\mathrel{\longrightarrow}}
 \newcommand{\while}{\text{\textbf{while}}}
 \newcommand{\docomm}{\text{\textbf{do}}}
@@ -16,18 +17,19 @@
 \newcommand{\halt}{\text{\textbf{Done}}}
 \newcommand{\state}[2]{\ang{#1,\, #2}}
 \newcommand{\step}[4]{\state{#1}{#2} \movesto \state{#3}{#4}}
-\newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^*  \state{\halt}{#3}}
+\newcommand{\haltswith}[3]{\state{#1}{#2}\movesto^* \state{\halt}{#3}}
 \newcommand{\after}[3]{#1 \: \set{#2}\: #3}
+\fi
 
 Real programs and programming languages are often huge and complicated,
 making them hard to model and even harder to reason about.  Still, making
 programs ``reasonable'' is a crucial aspect of software engineering.  In
 this section we'll illustrate what it means to have a clean mathematical
 model of a simple programming language and reasoning principles that go
-with it ---if only real programming languages allowed for such simple,
+with it---if only real programming languages allowed for such simple,
 accurate modeling.
 
-\subsection{\textbf{While} Programs}
+\section{\textbf{While} Programs}
 
 The programs we'll study are called ``\term{\while\ programs}.''  We
 can define them as a recursive data type:
@@ -37,7 +39,7 @@ can define them as a recursive data type:
 \begin{itemize}
 
 \item $x \assigned e$ is a \while\ program, called an \term{assignment
-    statement}, where $x$ is a variable and $e$ is an expression.
+    statement}, where $x$ is a variable and $e$ is an \emph{expression}.
 
 \item \term{$\halt$} is a \while\ program.
 
@@ -60,13 +62,15 @@ If $C$ and $D$ are \while\ programs, and $T$ is a test, then the following are a
 \end{itemize}
 \end{definition}
 
-For simplicity we'll stick to \while\ programs operating on integers.  So by
-expressions we'll mean any of the familiar integer valued
-expressions involving integer constants and operations such as addition,
-multiplication, exponentiation, quotient or remainder.  As \term{tests},
-we'll allow propositional formulas built from basic formulas of the form
-$e \leq f$ where $e$ and $f$ are expressions.  For example, here is the
-Euclidean algorithm for $\gcd(a,b)$ expressed as a \while\ program.
+For simplicity we'll stick to \while\ programs operating on integers.
+So an \emph{expression} will be any of the familiar integer-valued
+expressions involving integer constants and operations such as
+addition, multiplication, or remainder.
+As \emph{tests}, we'll allow propositional formulas built from basic
+formulas of the form $e \leq f$ where $e$ and $f$ are expressions.
+For example, here is the Euclidean algorithm for $\gcd(a,b)$ expressed
+as a \while\ program.
+\begin{center}
 \begin{tabbing}
 XXX\=XXX\=XXX\=XXX\kill
 $\mathtt{x} \assigned a$\textbf{;} \\
@@ -77,8 +81,9 @@ $\mathtt{y} \assigned b$\textbf{;} \\
    \> $\mathtt{x} \assigned \mathtt{t}$
 \odcomm\\
 \end{tabbing}
+\end{center}
 
-\subsection{The \textbf{While} Program State Machine}
+\section{The \textbf{While} Program State Machine}
 
 A \while\ program acts as a pure command: it is run solely for its
 side effects on stored data and it doesn't return a value.  The data
@@ -93,12 +98,14 @@ integer.  More generally, the environment determines the integer value of
 each expression, $e$, and the truth value of each test, $T$.  We can think
 of an expression, $e$ as defining a function $\mean{e}:\Env \to
 \integers$, and refer to this function, $\mean{e}$ as the \term{meaning}
-of $e$, and likewise for tests.
+of $e$.  Likewise, the meaning of a test will be a function from
+environments to truth values.
 
 It's standard in programming language theory to write $\mean{e}\rho$
 as shorthand for $\mean{e}(\rho)$, that is, applying
-the \emph{meaning}, $\mean{e}$, of $e$ to $\rho$.  For example, if
-$\rho(\mathtt{x}) =4$, and $\rho(\mathtt{y}) =-2$, then
+the \emph{meaning}, $\mean{e}$, of expression $e$ to environment
+$\rho$.  For example, if $\rho(\mathtt{x}) =4$, and $\rho(\mathtt{y})
+=-2$, then
 \begin{equation}\label{x2y311}
 \mean{\mathtt{x^2+y -3}}\rho = \rho(\mathtt{x})^2 + \rho(y) -3 = 11.
 \end{equation}
@@ -142,17 +149,15 @@ environment.  The transitions of this state machine are defined
 recursively on the definition of \while\ programs.
 
 \begin{definition}
+The \term{transitions} $\step{C}{\rho}{D}{\rho'}$ of the \while\ program state
+machine are defined as follows:
 
-The transitions $\step{C}{\rho}{D}{\rho'}$ of the \while\ program state machine are
-defined as follows:
-
-\textbf{base cases:}
-
+\inductioncase{Base case:}
 \[
 \step{x \assigned e}{\rho}{\halt}{\patch{\rho}{x}{\mean{e}\rho}}
 \]
 
-\textbf{constructor cases:}
+\inductioncase{Constructor cases:}
 If $C$ and $D$ are \while\ programs, and $T$ is a test, then:
 
 \begin{itemize}
@@ -186,39 +191,46 @@ or if $\mean{T}\rho = \false$, then
 \end{itemize}
 \end{definition}
 
-Now \while\ programs are probably going to be the simplest kind of programs you will
-ever see, but being condescending about them would be a mistake.  It turns
-that \emph{every function on nonnegative integers that can be computed by
-  any program} on any machine whatsoever can also be computed by \while\ programs
-(maybe more slowly).  We can't take the time to explain how such a
-sweeping claim can be justified, but you can find out by taking a course
-in Computability Theory. % such as 6.045 or 6.840.
+Now \while\ programs are probably going to be the simplest kind of programs you
+will ever see, it would be a mistake to underestimate them.  It turns
+that \emph{every function on nonnegative integers that can be computed in any
+programming language whatsoever} can also be computed by \while\ programs
+(albeit more slowly).  We can't take the time to explain how such a sweeping
+claim can be justified, but you can find out by taking a course in Computability
+Theory. % such as 6.045 or 6.840.
 
-\subsection{Denotational Semantics}
+\section{Denotational Semantics}
 
-The net effect of starting a \while\ program in some environment is reflected in the
-final environment when the program halts.  So we can think of a \while\ program, $C$,
-aas defining a function, $\mean{C}:\Env \to \Env$, from initial
-environments to environments at halting.  The function $\mean{C}$ is
-called the \term{meaning} of $C$.
+Denotational semantics for programs involves assigning abstract values
+called their \emph{meaning} or \emph{semantics} to programs in a way
+that captures their net computational behavior.
 
+In particular, the net effect of starting a \while\ program in some
+environment is reflected in the final environment when the program
+halts.  So we can think of a \while\ program, $C$, aas defining a
+function, $\mean{C}:\Env \to \Env$, from initial environments to
+environments at halting.  The function $\mean{C}$ is called
+the \term{meaning} of $C$.
+\iffalse
 $\mean{C}$ of a \while\ program, $C$ to be a partial function from $\Env$ to $\Env$
 mapping an initial environment to the final halting environment.
+\fi
+This meaning function can be defined recursively following the
+definition of the \while\ program recursive data type.
 
-We'll need one bit of notation first.  For any function $f:S \to S$, let
-$f^{(n)}$ be the composition of $f$ with itself $n$ times where $n \in
-\naturals$.   Namely,
+We'll need one new bit of notation in the definition.  For any set
+$S$, function $f:S \to S$, and nonnegative integer $n$, let $f^{(n)}$
+be the composition of $f$ with itself $n$ times.  Namely,
 \begin{align*}
 f^{(0)} & \eqdef \ident{S}\\
 f^{(n+1)} & \eqdef f \compose f^{(n)},
 \end{align*}
 where ``$\compose$'' denotes functional composition.
 
-The recursive definition of the meaning of a program follows the
-definition of the \while\ program recursive data type.
 \begin{definition}
+The meaning function $\mean{C}$ of a \while\ program, $C$ is defined recursively with
 
-\textbf{base cases:}
+\inductioncase{Base cases:}
 \begin{itemize}
 
 \item $\mean{x \assigned e}$ is the function from $\Env$ to $\Env$ defined
@@ -236,7 +248,7 @@ $\mean{\halt}\rho \eqdef \rho$.
 
 \end{itemize}
 
-\textbf{constructor cases:}
+\inductioncase{Constructor cases:}
 If $C$ and $D$ are \while\ programs, and $T$ is a test, then:
 \begin{itemize}
 
@@ -254,7 +266,7 @@ That is,
 \mean{\condcomm{T}{C}{D}}\rho
 \eqdef
 \begin{cases}
-\mean{C}\rho & \text{if } \mean{T}\rho = \true\\
+\mean{C}\rho & \text{if } \mean{T}\rho = \true,\\
 \mean{D}\rho & \text{if } \mean{T}\rho = \false.
 \end{cases}
 \]
@@ -264,33 +276,37 @@ That is,
 \mean{\wloop{T}{C}}\rho \eqdef \mean{C}^{(n)}\rho
 \]
 where $n$ is the least nonnegative integer such that
-$\mean{T}(\mean{C}^{(n)}\rho) = \false$.  (If there is no such $n$, then
-$\mean{\wloop{T}{C}}\rho$ is undefined.)
+$\mean{T}(\mean{C}^{(n)}\rho) = \false$.  If there is no such $n$, then
+$\mean{\wloop{T}{C}}\rho$ is undefined.
 \end{itemize}
 
 \end{definition}
 
-We can use the denotational semantics of \while\ programs to reason about
-\while\ programs using structural induction on programs, and this is often
-much simpler than reasoning about them using induction on the number of
-steps in an execution.  This is OK as long as the denotational semantics
-accurately captures the state machine behavior.  In particular, using the
-notation $\movesto^*$ for the transitive closure of the transition
-relation:
-\begin{theorem}\label{sound-semantics}
+The benefit of our denotational semantics of \while\ programs is that it allows
+proving things about a \while\ program using induction on the structure of the
+program.  This often turns out to be simpler than reasoning about the
+step-by-step behavior of the program---say by using induction on the number of
+steps in an execution.  Of course we have to be sure that the denotational
+semantics is \term{sound}, that is, that it adequately captures the state
+machine behavior.  In particular, using the notation $\movesto^*$ for the
+transitive closure of the transition relation:
+
+\begin{theorem}\label{sound-semantics}[Adequacy of \while\ program semantics]
 \[
-\haltswith{C}{\rho}{\rho'} \qiff \mean{C}\rho = \rho'
+\haltswith{C}{\rho}{\rho'}\ \QIFF\ \mean{C}\rho = \rho'.
 \]
 \end{theorem}
-Theorem~\ref{sound-semantics} can be proved easily by induction; it
-appear in~Problem\ref{PS_while_program_semantic_soundness_proof}.
+Theorem~\ref{sound-semantics} can be proved in one direction by structural
+induction on \while\ programs and in the other direction by induction on the
+number of transitions in the state machine execution.  We leave the details to
+Problem~\ref{PS_while_program_semantic_soundness_proof}.
 
 \begin{problems}
 \homeworkproblems
 \pinput{PS_while_program_semantic_soundness_proof}
 \end{problems}
 
-\subsection{Logic of Programs}
+\section{Logic of Programs}
 
 A typical program specification describes the kind of inputs and
 environments the program should handle, and then describes what should
@@ -312,15 +328,13 @@ called a \term{partial correctness assertion}.
 For example, if $E$ is \while\ program above for the Euclidean
 algorithm, then the partial correctness of $E$ can be expressed as
 \begin{equation}\label{eucpc}
-\after{\paren{a, b \in \naturals\ \QAND\  \mathtt{x} \neq 0}}{C}
+\after{\paren{a, b \in \naturals\ \QAND\  \mathtt{x} \neq 0}}{E}
                    {\paren{\mathtt{x} = \gcd(a,b)}}.
 \end{equation}
 
-More precisely, notice that just as the value of an expression in an
-environment is an integer, the value of a logical formula in an
-environment is a truth value.  For example, if $\rho(\mathtt{x}) =4$,
-and $\rho(\mathtt{y}) =-2$, then by~\eqref{x2y311},
-$\mean{\mathtt{x^2+y -3}}\rho = 11$, so
+Remember that the value of a logical formula in an environment is a truth value.
+For example, if $\rho(\mathtt{x}) =4$, and $\rho(\mathtt{y}) =-2$, then
+by~\eqref{x2y311}, $\mean{\mathtt{x^2+y -3}}\rho = 11$, so
 \begin{align*}
 \mean{\exists \mathtt{z}.\, \mathtt{z} > 4 \QAND \mathtt{x}^2+\mathtt{y} -3=\mathtt{z}}\rho & = \true,\\
 \mean{\exists \mathtt{z}.\, \mathtt{z} > 13 \QAND \mathtt{x}^2+\mathtt{y} -3=\mathtt{z}}\rho & = \false.
@@ -332,9 +346,14 @@ partial correctness assertion
 \[
 \after{P}{C}{Q}
 \]
-is true proving that for all environments, $rho$, if $\mean{P}\rho$ is
+is true proving that for all environments, $\rho$,
+\[
+\mean{P}\rho \QAND\ \mean{C}\rho \text{ is defined}\ \QIMPLIES\ \mean{Q}(\mean{C}\rho).
+\]
+\iffalse
+ if $\mean{P}\rho$ is
 true, and $\haltswith{C}{\rho}{\rho'}$ for some $\rho'$, then
-$\mean{Q}\rho'$ is true.
+$\mean{Q}\rho'$ is true.\fi
 \end{definition}
 
 
@@ -357,7 +376,7 @@ specification easier to satisfy:
 The rest of the logical rules follow the recursive definition of \while\ programs.
 There are axioms for the base case commands:
 \[\begin{array}{c}
-  \after{P(x)}{x \assigned e}{P(e)}\\
+  \after{P(x)}{x \assigned e}{P(e)},\\
   \after{P}{\halt}{P},
 \end{array}\]
 and proof rules for the constructor cases:
