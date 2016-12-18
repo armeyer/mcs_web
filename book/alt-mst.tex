@@ -1,0 +1,328 @@
+
+ \iffalse In the rest of this section, subgraphs and forests will
+ always be spanning forests and spanning subgraphs of $G$, that is
+ they will have the same vertices as $G$.\fi
+
+If $e$ is an edge of $G$ and $S$ is a spanning subgraph, we'll write
+$S+e$ for the spanning subgraph with edges $\edges{S} \union \set{e}$.
+
+\begin{definition}
+Let $F$ be a pre-MST, and color the vertices in each connected
+component of $F$ either all black or all white.  At least one
+component of each color is required.  Call this a \term{solid
+  coloring}\index{coloring!solid} of $F$.  A \term{gray edge} of a
+solid coloring is an edge of $G$ with different colored endpoints.
+\end{definition}
+
+Any path in $G$ from a white vertex to a black vertex obviously must
+include a gray edge, so for any solid coloring, there is guaranteed to
+be at least one gray edge.  In fact, there will have to be at least as
+many gray edges as there are components with the same color.  Here's
+the punchline:
+
+\begin{lemma}\label{lem:edgeextends}
+An edge extends a pre-MST $F$ if it is a minimum weight gray edge in
+some solid coloring of $F$.
+\end{lemma}
+
+\begin{editingnotes}
+I think the converse can be proved by coloring the ends of an
+extending edge different colors, but this needs to be checked.  Could
+be a nice pset problem.  Would also imply uniqueness of MST when
+weights are different, since there is only one way to grow the tree
+using MST1 or MST2.
+\end{editingnotes}
+
+So to extend a pre-MST, choose any solid coloring, find the gray
+edges, and among them choose one with minimum weight.  Each of these
+steps is easy to do, so it is easy to keep extending and arrive at an
+MST.  For example, here are three known algorithms that are explained
+by Lemma~\ref{lem:edgeextends}:
+
+\begin{algorithm}\label{alg:MST1}[Prim]
+  Grow a tree one edge at a time by adding a minimum weight edge
+  among the edges that have exactly one endpoint in the tree.
+\end{algorithm}
+
+This is the algorithm that comes from coloring the growing tree white
+and all the vertices not in the tree black.  Then the gray edges are
+the ones with exactly one endpoint in the tree.
+
+\begin{algorithm}\label{alg:MST2}[Kruskal]
+  Grow a forest one edge at a time by adding a minimum weight edge
+  among the edges with endpoints in different connected components.
+\end{algorithm}
+
+An edge does not create a cycle iff it connects different components.
+The edge chosen by Kruskal's algorithm will be the minimum weight gray
+edge when the components it connects are assigned different colors.
+
+\iffalse  %earlier version
+The edges between different components are exactly the edges that are
+gray under some solid coloring, namely any coloring where the
+components it connects have different colors.
+\fi
+
+For example, in the weighted graph we have been considering, we might
+run Algorithm~\ref{alg:MST1} as follows.  Start by choosing one of the
+weight~1 edges, since this is the smallest weight in the graph.
+Suppose we chose the weight~1 edge on the bottom of the triangle of
+weight~1 edges in our graph.  This edge is incident to the same vertex
+as two weight~1 edges, a weight~4 edge, a weight~7 edge, and a
+weight~3 edge.  We would then choose the incident edge of minimum
+weight.  In this case, one of the two weight~1 edges.  At this point,
+we cannot choose the third weight~1 edge: it won't be gray because its
+endpoints are both in the tree, and so are both colored white.  But we
+can continue by choosing a weight~2 edge.  We might end up with the
+spanning tree shown in Figure~\ref{fig:5KC}, which has weight~17, the
+smallest we've seen so far.
+
+\begin{figure}
+
+\graphic{Fig_5KC}
+
+\caption{A spanning tree found by Algorithm~\ref{alg:MST1}.}
+
+\label{fig:5KC}
+
+\end{figure}
+
+Now suppose we instead ran Algorithm~\ref{alg:MST2} on our graph.  We
+might again choose the weight~1 edge on the bottom of the triangle of
+weight~1 edges in our graph.  Now, instead of choosing one of the
+weight~1 edges it touches, we might choose the weight~1 edge on the
+top of the graph.  This edge still has minimum weight, and will be
+gray if we simply color its endpoints differently, so
+Algorithm~\ref{alg:MST2} can choose it.  We would then choose one of
+the remaining weight~1 edges.  Note that neither causes us to form a
+cycle.  Continuing the algorithm, we could end up with the same
+spanning tree in Figure~\ref{fig:5KC}, though this will depend on
+the tie breaking rules used to choose among gray edges with the same
+minimum weight.  For example, if the weight of every edge in $G$ is
+one, then all spanning trees are MST's with weight
+$\card{\vertices{G}}-1$, and both of these algorithms can arrive at
+each of these spanning trees by suitable tie-breaking.
+
+\begin{editingnotes}
+Verify that Prim \& Kruskal can create every MST.
+\end{editingnotes}
+
+The coloring that explains Algorithm~\ref{alg:MST1} also justifies a more
+flexible algorithm which has Algorithm~\ref{alg:MST1} as a special case:
+\begin{algorithm}\label{alg:MST3}
+  Grow a forest one edge at a time by picking any component and adding a
+  minimum weight edge among the edges leaving that component.
+\end{algorithm}
+This algorithm allows components that are not too close to grow in
+parallel and independently, which is great for ``distributed''
+computation where separate processors share the work with limited
+communication between processors.\footnote{The idea of growing trees
+  seems first to have been developed in by Bor\.{u}vka (1926), ref
+  TBA.  Efficient MST algorithms running in parallel time $O(\log
+  \card{V})$ are described in Karger, Klein, and Tarjan (1995), ref
+  TBA.}
+
+These are examples of greedy approaches to optimization.  Sometimes
+greediness works and sometimes it doesn't.  The good news is that it
+does work to find the MST.  Therefore, we can be sure that the MST for
+our example graph has weight~17, since it was produced by
+Algorithm~\ref{alg:MST2}.  Furthermore we have a fast algorithm for
+finding a minimum weight spanning tree for any graph.
+
+Ok, to wrap up this story, all that's left is the proof that minimal
+gray edges are extending edges.  This might sound like a chore, but it
+just uses the same reasoning we used to be sure there would be a gray
+edge when you need it.
+
+\begin{proof} (of Lemma~\ref{lem:edgeextends})
+
+  Let $F$ be a pre-MST that is a subgraph of some MST $M$ of $G$, and
+  suppose $e$ is a minimum weight gray edge under some solid coloring of
+  $F$.  We want to show that $F+e$ is also a pre-MST.
+
+  If $e$ happens to be an edge of $M$, then $F+e$ remains a subgraph of
+  $M$, and so is a pre-MST.
+
+  The other case is when $e$ is not an edge of $M$.  In that case,
+  $M+e$ will be a connected, spanning subgraph.  Also $M$ has a path
+  $\walkv{p}$ between the different colored endpoints of $e$, so $M+e$
+  has a cycle consisting of $e$ together with $\walkv{p}$.  Now
+  $\walkv{p}$ has both a black endpoint and a white one, so it must
+  contain some gray edge $g \neq e$.  The trick is to remove $g$ from
+  $M+e$ to obtain a subgraph $M+e-g$.  Since gray edges by definition
+  are not edges of $F$, the graph $M+e-g$ contains $F+e$.  We claim
+  that $M+e-g$ is an MST, which proves the claim that $e$ extends $F$.
+
+\begin{editingnotes}
+  CLR illustrate $M+e-g$ in a figure, but I don't think the figure helped
+  --ARM.
+\end{editingnotes}
+
+   To prove this claim, note that $M+e$ is a connected, spanning
+   subgraph, and $g$ is on a cycle of $M+e$, so by
+   Lemma~\ref{lem:cutiffcycle}, removing $g$ won't disconnect
+   anything.  Therefore, $M+e-g$ is still a connected, spanning
+   subgraph.  Moreover, $M+e-g$ has the same number of edges as $M$,
+   so Lemma~\ref{lem:iffe=v-1} implies that it must be a spanning
+   tree.  Finally, since $e$ is minimum weight among gray
+   edges,\iffalse $w(e) \leq w(g)$, and therefore\fi
+   \[
+   w(M+e-g) = w(M) + w(e) - w(g) \leq w(M).
+   \]
+   This means that $M+e-g$ is a spanning tree whose weight is at most
+   that of an MST, which implies that $M+e-g$ is also an MST.
+\end{proof}
+
+\begin{editingnotes}
+  Verify that the converse of Lemma~\ref{lem:edgeextends} is true.
+  That is, every extending edge is a minimal gray edge for some
+  coloring.
+\end{editingnotes}
+
+Another interesting fact falls out of the proof of Lemma~\ref{lem:edgeextends}:
+\begin{corollary}\label{cor:uniqMST}
+If all edges in a weighted graph have distinct weights, then the graph has
+a \emph{unique} MST.
+\end{corollary}
+
+The proof of Corollary~\ref{cor:uniqMST} is left to Problem~\ref{PS_unique_MST}.
+
+\begin{editingnotes}
+  Another approach to proving uniqueness: show that any MST can be the
+  result of Algorithm~\ref{alg:MST1} (also true for
+  Algorithm~\ref{alg:MST2}).  But Algorithm~\ref{alg:MST1} is
+  deterministic when there are no ties, so the unique tree its
+  produces must be all the trees there are.
+\end{editingnotes}
+
+\begin{editingnotes}
+  CLR have lots of great exercises about all this.
+\end{editingnotes}
+
+\iffalse  FTL's earlier draft
+
+It's a little easier
+to prove it for Algorithm~\ref{alg:MST2}, so we'll do that one here.
+
+\begin{theorem}\label{thm:MST2}
+For any connected, weighted graph~$G$, Algorithm~\ref{alg:MST2}
+produces an MST for~$G$.
+\end{theorem}
+
+\begin{proof}
+The proof is a bit tricky.  We need to show the algorithm terminates,
+namely, if we have selected fewer than $n - 1$ edges, then we can
+always find an edge to add that does not create a cycle.  We also need
+to show the algorithm creates a tree of minimum weight.
+
+The key to doing all of this is to show that the algorithm never gets
+stuck or goes in a bad direction by adding an edge that will keep us
+from ultimately producing an MST\@.  The natural way to prove this is
+to show that the set of edges selected at any point is contained in
+some MST, in other words, we can always get to where we need to be.
+We'll state this as a lemma.
+
+\begin{lemma}\label{lemma:MST2}
+  For any $m \ge 0$, let $S$ consist of the first $m$ edges selected by
+  Algorithm~\ref{alg:MST2}.  Then there exists some MST~$T$ for~$G$ such
+  that $S \subseteq \edges{T}$, that is, the set of edges that we are
+  growing is always contained in some MST\@.
+\end{lemma}
+
+We'll prove this momentarily, but first let's see why it helps prove
+the theorem.  Assume the lemma is true.  Then how do we know
+Algorithm~\ref{alg:MST2} can always find an edge to add without
+creating a cycle?  Well, as long as there are fewer than $n - 1$ edges
+picked, there exists some edge in $\edges{T} - S$ and so there is an
+edge that we can add to~$S$ without forming a cycle.  Next, how do we
+know that we get an MST at the end?  Well, once $m = n - 1$, we know
+that $S$ will be the edges of an MST.
+
+Ok, so the theorem is an easy corollary of the lemma.  To prove the
+lemma, we'll use induction on the number of edges chosen by the
+algorithm so far.  This is very typical in proving that an algorithm
+preserves some kind of invariant condition---induct on the number of
+steps taken, namely, the number of edges added.
+
+Our inductive hypothesis $P(m)$ is the following: for any $G$ and any
+set~$S$ of $m$ edges initially selected by Algorithm~\ref{alg:MST2},
+there exists an MST $T$ of~$G$ such that $S \subseteq \edges{T}$.
+
+For the base case, we need to show $P(0)$.  In this case, $S =
+\emptyset$, so $S \subseteq \edges{T}$ holds trivially for any MST
+$T$.
+
+For the inductive step, we assume $P(m)$ holds and show that it
+implies $P(m + 1)$.  Let $e$ denote the $(m+1)$st edge selected by
+Algorithm~\ref{alg:MST2}, and let $S$ denote the first $m$ edges
+selected by Algorithm~\ref{alg:MST2}.  Let $T^*$ be the
+MST such that $S \subseteq \edges{T^*}$, which exists by the inductive
+hypothesis.  There are now two cases:
+\begin{description}
+
+\item[Case 1:] $e \in \edges{T^*}$, in which case $S \union \{e\}
+  \subseteq \edges{T^*}$, and thus $P(m+1)$ holds.
+
+\item[Case 2:]
+$e \notin \edges{T^*}$, as illustrated in Figure~\ref{fig:5KD}.  Now we need
+  to find a different MST that contains $S$ and~$e$.
+
+\begin{figure}
+
+\graphic{Fig_5KD}
+
+\caption{The graph formed by adding $e$ to $\edges{T^*}$.  Edges of~$S$ are
+  denoted with solid lines and edges of $\edges{T^*} - S$ are denoted with
+  dashed lines.}
+
+\label{fig:5KD}
+\end{figure}
+
+\end{description}
+
+What happens when we add $e$ to~$\edges{T^*}$?  Since $T^*$ is a tree,
+we get a cycle.  (Here we used part~3 of Theorem~\ref{th:treeprops}.)
+Moreover, the cycle cannot only contains edges in~$S$, since $e$ was
+chosen so that together with the edges in~$S$, it does not form a
+cycle.  This implies that $\set{e} \union \edges{T^*}$ contains a
+cycle that contains an edge $e'$ of $\edges{T^*} - S$.  For example,
+such an $e'$ is shown in Figure~\ref{fig:5KD}.
+
+Note that the weight of~$e$ is at most that of~$e'$.  This is because
+Algorithm~\ref{alg:MST2} picks the minimum weight edge that does not
+make a cycle with~$S$.  Since $e' \in \edges{T^*}$, edge $e'$ cannot
+make a cycle with~$S$, and if the weight of~$e$ were greater than the
+weight of~$e'$, Algorithm!\ref{alg:MST2} would no have selected~$e$
+ahead of~$e'$.
+
+Okay, we're almost done.  Now we'll make an MST that contains $S
+\union \set{e}$.  Let $T^{**}$ be the graph with
+\begin{align*}
+\vertices{T^{**}} & \eqdef \vertices{T},\\
+\edges{T^{**}} & \eqdef (\edges{T^*} - \set{e'}) \union \set{e}.
+\end{align*}
+That is, we swap $e$ and~$e'$ in~$\edges{T^*}$.
+
+\begin{claim}\label{claim:MST2}
+$T^{**}$ is an MST.
+\end{claim}
+
+\begin{proof}[Proof of claim]
+We first show that $T^{**}$ is a spanning tree.  $T^{**}$ is acyclic
+because it was produced by removing an edge from the only cycle in
+$T^{*} \union \set{e}$.  $T^{**}$ is connected since the edge we
+deleted from $\edges{T^*} \union \set{e}$ was on a cycle.  Since
+$T^{**}$ contains all the nodes of~$G$, it must be a spanning tree
+for~$G$.
+
+Now let's look at the weight of~$T^{**}$.  Well, since the weight
+of~$e$ was at most that of~$e'$, the weight of~$T^{**}$ is at most
+that of~$T^*$, and thus $T^{**}$ is an MST for~$G$.
+\end{proof}
+
+Since $S \union \set{e} \subseteq \edges{T^{**}}$, we have shown that
+  $P(m + 1)$ holds.  Thus, Algorithm~\ref{alg:MST2} must eventually
+  produce an MST\@.  This will happens when it adds $n - 1$ edges to
+  the subgraph it builds.
+\end{proof}
+\fi
