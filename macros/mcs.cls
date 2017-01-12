@@ -8,7 +8,7 @@
 
 \ProvidesClass{mcs}
 
-\def\currentsemester{fall16}
+\def\currentsemester{spring17}
 
 \newif\ifshowproblems
 \showproblemstrue
