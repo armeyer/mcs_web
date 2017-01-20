@@ -2077,6 +2077,26 @@
 \let\pcomments\comment
 \let\endpcomments\endcomment
 
+\newenvironment{pcomments@real}{
+    \textbf{COMMENTS:}%
+    \begin{itemize}
+}{
+    \end{itemize}%
+}
+
+\newcommand{\pcomment}{%
+    \begingroup
+        \@sanitize@keywords
+        \@pcomment
+}
+
+\newcommand{\@pcomment@real}[1]{%
+    \endgroup
+    \item#1%
+}
+
+\let\@pcomment\@pcomment@real
+
 %% pkeywords attaches a string of whitespace-delimited (including newline) 
 %%  keywords to problems and prints out the list when the standalone version 
 %%  of the problem is compiled.
@@ -2085,6 +2105,17 @@
 %%
 
 \newcommand{\pkeywords}{\gobble@text}
+
+\newcommand{\pkeywords@real}{%
+    \begingroup
+        \@sanitize@keywords
+        \@pkeywords
+}
+
+\newcommand{\@pkeywords}[1]{%
+    \endgroup
+    \textbf{keywords} = [\emph{#1}]%
+}
 
 \define@key{mcsprob}{points}{\def\mcsprob@points{#1}}
 \define@key{mcsprob}{title}{\def\mcsprob@title{#1}}
@@ -2512,6 +2543,9 @@
     \showsolutionstrue
     \showstaffnotestrue
     \let\askaboutsolutions\@empty
+    \let\pcomments\pcomments@real
+    \let\endpcomments\endpcomments@real
+    \let\pkeywords\pkeywords@real
 }
 
 \newcommand{\hidesolutions}{%
