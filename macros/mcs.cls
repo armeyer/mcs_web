@@ -593,6 +593,24 @@
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\def\@startsection#1#2#3#4#5#6{%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \@tempskipa #4\relax
+  \@afterindenttrue
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+  \if@nobreak
+    \everypar{}%
+  \else
+    \addpenalty\@secpenalty\addvspace\@tempskipa
+  \fi
+  \@ifstar
+    {\@ssect{#2}{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}%
+}
+
 \def\@sect#1#2#3#4#5#6[#7]#8{%
     \ifnum#2>\c@secnumdepth
         \let\@svsec\@empty
@@ -639,17 +657,26 @@
     \@xsect{#5}%
 }
 
-\def\@ssect#1#2#3#4#5{%
-    \@tempskipa #3\relax
+\def\@ssect#1#2#3#4#5#6{%
+    \@tempskipa #4\relax
     \ifdim \@tempskipa>\z@
         \begingroup
-            #4{\@hangfrom{\hskip #1}%
-            \interlinepenalty \@M #5\@@par}%
+            \ifnum#1 = 1
+                \parindent-\titlehang
+                \parskip\z@
+                \rule{\titlewidth}{0.5\p@}\par
+                \nobreak
+            \else
+                \parindent\z@
+            \fi
+            \leavevmode
+            #5{\@hangfrom{\hskip #2}%
+            \interlinepenalty \@M #6\@@par}%
         \endgroup
     \else
-        \def\@svsechd{#4{\hskip #1\relax #5}}%
+        \def\@svsechd{#5{\hskip #2\relax #6}}%
     \fi
-    \@xsect{#3}%
+    \@xsect{#4}%
 }
 
 %% Based on Cormen.cls
