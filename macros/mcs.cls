@@ -2539,6 +2539,8 @@
     \let\askaboutsolutions\@empty
 }
 
+%% Cf. redefinition in problem.clo
+
 \newcommand{\staffsolutions}{%
     \showsolutionstrue
     \showstaffnotestrue
