@@ -2074,14 +2074,29 @@
 %% pcomments is an itemized list environment that shows up only when
 %% the standalone version of the problem is compiled.
 
-\let\pcomments\comment
-\let\endpcomments\endcomment
+%% By default, we suppress problem comments and keywords.
 
-\newenvironment{pcomments@real}{
-    \textbf{COMMENTS:}%
-    \begin{itemize}
+\def\schedule@pcomments{%
+    \begingroup
+        \let\@tempa\@gobble
+        \ifshowsolutions
+            \ifshowstaffnotes
+                \let\@tempa\AtBeginSolutions
+            \else
+                % \let\@tempa\AtBeginDocument
+            \fi
+        \fi
+    \expandafter\endgroup
+    \@tempa
+}
+
+\newenvironment{pcomments}{%
+    \schedule@pcomments{%
+        \textbf{COMMENTS:}%
+        \begin{itemize}%
+    }%
 }{
-    \end{itemize}%
+    \schedule@pcomments{\end{itemize}}%
 }
 
 \newcommand{\pcomment}{%
@@ -2090,12 +2105,10 @@
         \@pcomment
 }
 
-\newcommand{\@pcomment@real}[1]{%
+\newcommand{\@pcomment}[1]{%
     \endgroup
-    \item#1%
+    \schedule@pcomments{\item#1}%
 }
-
-\let\@pcomment\@pcomment@real
 
 %% pkeywords attaches a string of whitespace-delimited (including newline) 
 %%  keywords to problems and prints out the list when the standalone version 
@@ -2104,9 +2117,7 @@
 %% Usage: \pkeywords{keyword_1 keyword_2 keyword_3}
 %%
 
-\newcommand{\pkeywords}{\gobble@text}
-
-\newcommand{\pkeywords@real}{%
+\newcommand{\pkeywords}{%
     \begingroup
         \@sanitize@keywords
         \@pkeywords
@@ -2114,7 +2125,7 @@
 
 \newcommand{\@pkeywords}[1]{%
     \endgroup
-    \textbf{keywords} = [\emph{#1}]%
+    \schedule@pcomments{\textbf{keywords} = [\emph{#1}]\par}%
 }
 
 \define@key{mcsprob}{points}{\def\mcsprob@points{#1}}
@@ -2429,12 +2440,18 @@
 
 \def\eatQED@elt#1#2\relax{\gdef\QED@stack{#2}}
 
+\let\@beginsolutionshook\@empty
+
+\def\AtBeginSolutions{\g@addto@macro\@beginsolutionshook}
+
 \newenvironment{format@solution}[1][Solution]{%
     \par
     \global\@just@ended@proof@false
     \pushQED{\qed}%
     \normalfont
     \topsep6\p@\@plus6\p@\relax
+    \@beginsolutionshook
+    \global\let\@beginsolutionshook\@empty
     \trivlist
         \item[\hskip\labelsep\bfseries#1\@addpunct{.}]%
         \ignorespaces
@@ -2545,9 +2562,6 @@
     \showsolutionstrue
     \showstaffnotestrue
     \let\askaboutsolutions\@empty
-    \let\pcomments\pcomments@real
-    \let\endpcomments\endpcomments@real
-    \let\pkeywords\pkeywords@real
 }
 
 \newcommand{\hidesolutions}{%
