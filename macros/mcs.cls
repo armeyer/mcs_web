@@ -191,6 +191,32 @@
 
 \RequirePackage{xr-mcs}
 
+%% \@ssect has to be defined before hyperref is loaded.
+
+\let\@currentsectionlevel\m@ne
+
+\def\@ssect#1#2#3#4#5{%
+    \@tempskipa #3\relax
+    \ifdim \@tempskipa>\z@
+        \begingroup
+            \ifnum\@currentsectionlevel = 1
+                \parindent-\titlehang
+                \parskip\z@
+                \rule{\titlewidth}{0.5\p@}\par
+                \nobreak
+            \else
+                \parindent\z@
+            \fi
+            \leavevmode
+            #4{\@hangfrom{\hskip #1}%
+            \interlinepenalty \@M #5\@@par}%
+        \endgroup
+    \else
+        \def\@svsechd{#4{\hskip #1\relax #5}}%
+    \fi
+    \@xsect{#3}%
+}
+
 \RequirePackage[
     bookmarksopen, 
     bookmarksnumbered,
@@ -606,10 +632,10 @@
   \else
     \addpenalty\@secpenalty\addvspace\@tempskipa
   \fi
+  \def\@currentsectionlevel{#2}%
   \@ifstar
-    {\@ssect{#2}{#3}{#4}{#5}{#6}}%
-    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}%
-}
+    {\@ssect{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
 
 \def\@sect#1#2#3#4#5#6[#7]#8{%
     \ifnum#2>\c@secnumdepth
@@ -655,28 +681,6 @@
         }%
     \fi
     \@xsect{#5}%
-}
-
-\def\@ssect#1#2#3#4#5#6{%
-    \@tempskipa #4\relax
-    \ifdim \@tempskipa>\z@
-        \begingroup
-            \ifnum#1 = 1
-                \parindent-\titlehang
-                \parskip\z@
-                \rule{\titlewidth}{0.5\p@}\par
-                \nobreak
-            \else
-                \parindent\z@
-            \fi
-            \leavevmode
-            #5{\@hangfrom{\hskip #2}%
-            \interlinepenalty \@M #6\@@par}%
-        \endgroup
-    \else
-        \def\@svsechd{#5{\hskip #2\relax #6}}%
-    \fi
-    \@xsect{#4}%
 }
 
 %% Based on Cormen.cls
