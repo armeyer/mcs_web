@@ -1,0 +1,134 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+\usepackage{enumerate}
+
+\setlength{\parindent}{0pt}
+
+\showsolutions
+%\hidesolutions
+
+\newcommand{\edge}[2]{#1\text{---}#2}
+\newcommand{\mfigure}[3]{\bigskip\centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}\bigskip}
+\newcommand{\eqdef}{\mathbin{::=}}
+
+\begin{document}
+
+\recitation{7}{October 5, 2016}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\insolutions{
+
+%\stamp
+
+\section*{Hall's theorem}
+
+Let $G=(V,E)$ be a bipartite graph, with left vertex set $L$ and right vertex set $R$.
+Recall that for a subset $S$ of the vertices, $N(S)$ is the set of vertices which are adjacent to some vertex in $S$:
+\[ N(S) = \{ r \in V \mid \{r, s\} \in E \text{ for some } s \in S \}. \]
+
+\textbf{Halls' theorem} says that if for every subset $S$ of $L$ we have $|N(S)| \geq |S|$, then there is a matching in $G$ that covers $L$.
+
+\section*{Problem 1}
+
+Recall that a graph is called \emph{$d$-regular} if every vertex in the graph has degree exactly $d$.
+Let $G=(V,E)$ be a $d$-regular bipartite graph, with the same number of vertices in the left part $L$ as in the right part $R$.
+
+Prove, using Hall's theorem and induction, that $G$ can be partitioned into $d$ perfect matchings. In other words, we can find $E_1, E_2, \ldots, E_d \subseteq E$, all disjoint ($E_i \cap E_j = \emptyset$) and which together form $E$, so that $E_i$ is a perfect matching of $G$ for each $1 \leq i \leq d$.
+
+\solution{
+The proof is by induction on $d$. So let
+\begin{multline*} P(d) = \text{``Any $d$-regular bipartite graph with $n/2$ left nodes and $n/2$ right nodes}\\
+    \text{can be partitioned into $d$ perfect matchings''.} \end{multline*}
+
+
+Let us take $d=0$ for the base case (the statement still makes sense). In a $0$-regular graph, there are no edges. We can indeed partition the empty set into $0$ perfect matchings! So $P(0)$ is true.
+
+So assume $P(d)$ holds; we want to prove $P(d+1)$, so let $G$ be a $(d+1)$-regular bipartite graph, with left subset $L$ and right subset $R$, where $|L|=|R|=n/2$.
+
+Let $S$ be any subset of $L$; we want to show that $|N(S)| \geq |S|$. Consider the subgraph $G'=(S \cup N(S),E')$ induced by $S \cup N(S)$. Every node of $S$ has degree $d+1$ in $G'$ (since we kept all the neighbours of $S$). Every node in $N(S)$ has degree at most $d+1$ in $G'$ (since it had degree $d+1$ in $G$, and $G'$ is a subgraph). Now count the number of edges of $G'$ in two ways, just like in class: we get
+\[ (d+1)|S| = |E'| = \sum_{v \in N(S)} \deg_{G'}(v) \leq (d+1)|N(S)|. \]
+Simplifying, $|N(S)| \geq |S|$. %(The above is the key part of the argument, and needs the most emphasis.)
+
+So Hall's condition is satisfied, and there exists some perfect matching $M$ on $G$. Now look at the subgraph $H=(V, E_H)$ obtained by removing $M$ from $G$. This is $d$-regular, since for each vertex we remove a single edge adjacent to it. So by induction, $H$ can be partitioned into $d$ perfect matchings $E_1, E_2, \ldots, E_d$. Writing $E_{d+1} = M$, we obtain that $E = E_H \cup M = E_1 \cup \cdots \cup E_{d+1}$ (and all the $E_i$'s are disjoint).
+
+This proves $P(d+1)$, and so by induction, $P(d)$ holds for all $d \geq 0$.
+}
+
+\section*{Problem 2}
+
+Given the preference lists of each boy and girl, there can be in general many different stable matchings.
+
+Consider a particular boy $i$, and let $P_i$ be the set of girls for which there is \emph{some} stable matching where this girl is matched to $i$.
+We say that boy $i$'s favorite girl in $P_i$ is his \emph{optimal mate}; this represents the best outcome for boy $i$, given that only stable matchings are allowed.
+
+Prove that The Mating Algorithm returns a matching where every boy is matched with his optimal mate.
+
+\solution{
+\begin{theorem}\label{boyopt}
+The Mating Ritual marries every man to his optimal spouse.
+\end{theorem}
+
+\begin{proof}
+By contradiction.  Assume for the purpose of contradiction that some
+man does not get his optimal spouse.  Then there must have been a day
+when he crossed off his optimal spouse---otherwise he would still be
+serenading (and would ultimately marry) her or some even more
+desirable woman.
+
+By the Well Ordering Principle, there must be a \emph{first} day when
+a man (call him ``Keith'') crosses off his optimal spouse (call her
+Nicole).
+According to the rules of the Ritual, Keith crosses off Nicole because
+Nicole has a preferred suitor (call him Tom), so
+\begin{equation}
+\text{Nicole prefers Tom to Keith.} \tag{$*$}
+\end{equation}
+
+Since this is the first day an optimal woman gets crossed off, we know
+that Tom had not previously crossed off his optimal spouse, and so
+\begin{equation}\tag{$**$}
+\text{Tom ranks Nicole at least as high as his optimal spouse.}
+\end{equation}
+By the definition of an optimal spouse, there must be some stable set
+of marriages in which Keith gets his optimal spouse, Nicole.  But then
+the preferences given in~($*$) and~($**$) imply that Nicole and Tom
+are a rogue couple within this supposedly stable set of marriages
+(think about it).  This is a contradiction.
+\end{proof}
+
+}
+
+\section*{Problem 3}
+Similarly to the previous problem, we say that the \emph{pessimal mate} of girl $j$ is her least favorite boy from the set $P_j$ of boys she can be matched to in some stable matching. 
+
+Prove that The Mating Algorithm returns a matching where every girl is matched with her pessimal mate.
+
+\solution{
+
+\begin{theorem}
+The Mating Ritual marries every woman to her pessimal spouse.
+\end{theorem}
+
+\begin{proof}
+By contradiction.  Assume that the theorem is not true.  Hence there
+must be a stable set of marriages~$\mathcal{M}$ where some woman (call
+her Nicole) is married to a man (call him Tom) that she likes less
+than her spouse in The Mating Ritual (call him Keith).  This means
+that
+\begin{equation}
+\text{Nicole prefers Keith to Tom.} \tag{+}
+\end{equation}
+
+By Theorem \ref{boyopt} and the fact that Nicole and Keith are married
+in the Mating Ritual, we know that 
+\begin{equation}\tag{++}
+\text{Keith prefers Nicole to his spouse in~$\mathcal{M}$.}
+\end{equation}
+This means that Keith and Nicole form a rogue couple in~$\mathcal{M}$,
+which contradicts the stability of~$\mathcal{M}$.
+\end{proof}
+
+}
+
+
+\end{document}

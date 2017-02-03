@@ -1,0 +1,452 @@
+\documentclass[twoside,12pt]{article}
+\newcommand{\tab}{\hspace*{2em}}
+\usepackage{light}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{verbatim}
+
+\usepackage{amsfonts}
+
+\newcommand{\lr}{l_{right}}
+\renewcommand{\ll}{l_{left}}
+
+\newcommand{\hint}[1]{({\it Hint: #1})}
+\newcommand{\card}[1]{\left|#1\right|}
+\newcommand{\union}{\cup}
+\newcommand{\lgunion}{\bigcup}
+\newcommand{\intersect}{\cap}
+\newcommand{\lgintersect}{\bigcap}
+\newcommand{\cross}{\times}
+
+
+\hidesolutions
+%\showsolutions
+
+\newlength{\strutheight}
+\newcommand{\prob}[1]{\mathop{\textup{Pr}} \nolimits \left( #1 \right)}
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#1}}\nolimits\left(#2\right)}
+\newcommand{\prcond}[2]{%
+  \ifinner \settoheight{\strutheight}{$#1 #2$}
+  \else    \settoheight{\strutheight}{$\displaystyle#1 #2$} \fi %
+  \mathop{\textup{Pr}}\nolimits\left(
+    #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
+  \right)}
+\newcommand{\cE}{\mathcal{E}}
+\renewcommand{\setminus}{-}
+\renewcommand{\complement}[1]{\overline{#1}}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+
+\begin{document}
+\problemset{2}{September 13, 2016}{Monday, September 19}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent \textbf{Reading Assignment:}   Sections 2.5-2.7, 3.0-3.4, \& 3.5 (optional)
+\\
+
+\begin{problem}{15}
+\bparts
+\ppart{5} Consider three integers x, y, z written down on a piece of paper.  Any of the integers may be replaced by the sum of the other two plus $1$.  This operation is repeated a number of times until the final result is $11031, 19871, 16343$.  Is it possible that the initial integers were $2, 4, 6$? Prove it.  
+\solution{
+No.  We prove this by considering the parity of the three integers.  Suppose that we start with three even integers.  Then after one operation, we will end up with two even integers and an odd integer.  From this point, if we choose to do the operation with one odd and one even integer, then we will end up with two even and one odd.  If we choose to do the operation with two even integers	, then we again end up with two even and one odd.  Thus, if we start with three even integers, we will always have two even and one odd integer after one operation.  Therefore, we have no way of making three odd integers from an initial configuration of three even integers. 
+}
+
+\ppart{10} Is it possible to cover a 6 x 6 board with rectangles of size 1 x 4? 
+\solution{
+It is not enough to compare the areas of the board and rectangles, since clearly the area of one of the smaller rectangles divides the area of the board.  Instead we will consider the following tiling of the board with characters $A, B, C, D$:
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+A & B & C & D & A & B\\ \hline
+B & C & D & A & B & C\\ \hline
+C & D & A & B & C & D\\ \hline
+D & A & B & C & D & A\\ \hline
+A & B & C & D & A & B\\ \hline
+B & C & D & A & B & C\\ \hline
+\end{array}
+\]
+Now each 1 x 4 rectangular tile must cover exactly one of each of $A, B, C, D$ based on our tiling.  However, there are 9 $A's$, 10 $B's$, 9 $C's$, and 8 $D's$ in our tiling, meaning that there is no way to tile a 6 x 6 board with such rectangles.
+}
+\eparts
+\end{problem}
+
+\begin{problem}{10}
+Show that in the past 1000 years, you have had an ancestor $P$ such that there was a person $Q$ who was an ancestor of both the father and mother of $P$.  You may use the following assumptions: 
+\begin{enumerate}
+\item Assume that it takes 25 years for one generation to produce an offspring.
+\item There have not been more than $10^{10}$ people on this planet over any period of $25$ years.
+\end{enumerate}
+\end{problem}
+\solution{
+We will prove this by contradiction.  Assume that there is no such $P$, $Q$ such that $Q$ is an ancestor of both the father and mother of $P$.
+
+We consider the construction of the family tree starting at a given person (This structure is commonly referred to as a complete binary tree in graph theory, and is heavily used in algorithms).  That is the root would be a given person.  Then each person has exactly two biological parents, and at most four biological grandparents and so on.  
+
+Under assumption $1$ we will add a new generation to our family tree every $25$ years and so there will be $40$ generations not including the starting person.  Now we calculate the maximum number of people in each generation.  Generation $n$ of our family tree will have at most $2^n$ people, for $n = 0, 1, \ldots$.  So over the $40$ generations, there are at most
+\begin{equation*}
+1 + 2^1 + 2^2 + \ldots + 2^{40} = 2^{41} - 1
+\end{equation*}
+people in the family tree.  Now under assumption $2$, we have that there are at most $10^{10}$ people on the planet every $25$ years.  So at most there are $40 \cdot 10^{10}$ people on the planet over the $40$ generations.  However, this leads to the contradiction since our family tree is greater than the number of people in the world over $40$ generations since
+\begin{equation*}
+40 \cdot 10^{10} < 2^{41} - 1
+\end{equation*} 
+Hence, there must be some person $P$ in the family tree such that there is another individual who is the ancestor of both the father and mother of $P$.  
+}
+
+
+
+\begin{problem}{12}
+The following problem is fairly tough until you hear a certain
+one-word clue. The solution is elegant but is slightly tricky, so don't hesitate to ask for hints!
+
+During 6.042, the students are sitting in
+an $n\times n$ grid. A sudden outbreak of beaver flu (a rare variant of bird flu that lasts forever; symptoms include year\
+ning for problem sets and craving for ice cream study sessions) causes some students to get infected. Here is
+an example where $n = 6$ and infected students are marked $\times$.
+
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\times& & & &\times & \\ \hline
+ &\times& & & & \\ \hline
+& &\times&\times& & \\ \hline
+& & & & & \\ \hline
+& &\times& & & \\ \hline
+& & &\times& &\times \\ \hline
+\end{array}
+\]
+
+\noindent Now the infection begins to spread every minute (in discrete time-steps). Two students are considered \textit{adjacent} if they
+share an edge (i.e., front, back, left or right, but NOT diagonal); thus, each student is adjacent to 2, 3 or 4 others.  A
+student is infected in the next time step if either
+
+\begin{itemize}
+\item the student was previously infected (since beaver flu lasts forever), or
+\item the student is adjacent to \textit{at least two} already-infected students.
+\end{itemize}
+
+In the example, the infection spreads as shown below.
+%
+\[
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\times& & & &\times& \\ \hline
+ &\times& & & & \\ \hline
+& &\times&\times& & \\ \hline
+& & & & & \\ \hline
+& &\times& & & \\ \hline
+& & &\times& &\times \\ \hline
+\end{array}
+\Rightarrow
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\times&\times& & &\times& \\ \hline
+\times&\times&\times& & & \\ \hline
+&\times&\times&\times& & \\ \hline
+& &\times& & & \\ \hline
+& &\times&\times& & \\ \hline
+& &\times&\times&\times&\times \\ \hline
+\end{array}
+\Rightarrow
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+\times&\times&\times& &\times& \\ \hline
+\times&\times&\times&\times& & \\ \hline
+\times&\times&\times&\times& & \\ \hline
+&\times&\times&\times& & \\ \hline
+& &\times&\times&\times& \\ \hline
+& &\times&\times&\times&\times \\ \hline
+\end{array}
+\]
+%
+In this example, over the next few time-steps, all the students in class will become infected.
+
+\begin{theorem*}
+If fewer than $n$ students in class are initially infected, the whole class will never be completely infected.
+\end{theorem*}
+
+Prove this theorem.
+
+\textit{ Hint:} To understand how a system such as the above ``evolves" over time, it is usually a good strategy to (1) identify an appropriate  property of the system at the initial stage, and (2) prove, by induction on the number of time-steps, that the property is preserved at every time-step. So look for a property (of the set of infected students) that remains invariant as time proceeds.
+
+If you are stuck, ask your recitation instructor for the one-word clue and even more hints!
+
+\solution{
+\begin{proof}
+Define the {\em perimeter} of an infected set of students to be the number of
+edges with infection on exactly one side.  Let $I$ denote the
+perimeter of the initially-infected set of students.
+
+Now we use induction on the number of time steps to prove that the
+perimeter of the infected region never increases.  Let $P(k)$ be the
+proposition that after $k$ time steps, the perimeter of the infected
+region is at most $I$.
+
+{\bf Base case:} $P(0)$ is true by definition; the
+perimeter of the infected region is at most $I$ after 0 time steps,
+because $I$ is defined to be the perimeter of the initially-infected
+region.
+
+{\bf Inductive step:} Now we must show that $P(k)$ implies
+$P(k+1)$ for all $k \geq 0$.  So assume that $P(k)$ is true, where $k \geq
+0$; that is, the perimeter of the infected region is at most $I$ after $k$
+steps.  The perimeter can only change at step $k + 1$ because some squares
+are newly infected.  By the rules above, each newly-infected square is
+adjacent to at least two previously-infected squares.  Thus, for each
+newly-infected square, at least two edges are removed from the perimenter
+of the infected region, and at most two edges are added to the perimeter.
+Therefore, the perimeter of the infected region can not increase and is at
+most $I$ after $k + 1$ steps as well.  This proves that $P(k)$ implies
+$P(k+1)$ for all $k \geq 0$.
+
+By the principle of induction, $P(k)$ is true for all $k \geq 0$.
+
+If an $n \times n$ grid is completely infected, then the perimeter of
+the infected region is $4n$.  Thus, the whole grid can become infected
+only if the perimeter is initially at least $4n$.  Since each square
+has perimeter 4, at least $n$ squares must be infected initially for the whole grid to be infected.
+\end{proof}
+
+The above proof shows that if initially $k$ students  are infected, then the perimeter of the infected region will never e\
+xceed $4k$. The largest number of students that can be contained within a region with perimeter $\leq 4k$ is equal to $k^2\
+$, therefore, if $k$ students in class are initially infected, then at most $k^2$ students will eventually be infected. This feels intuitively true after having done the previous proof. However, to give a formal proof requires some case analysi\
+s (try it!).
+}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{8}
+Can raising an irrational number $a$ to an irrational power $b$ result in a
+rational number? Provide a proof that it can by considering $\sqrt{5}^{\sqrt{2}}$
+and using proof by cases.
+\solution{
+This proof is by cases. We will consider $\sqrt{5}^{\sqrt{2}}$, and there are
+two cases.
+
+\begin{itemize}
+
+\item $\sqrt{5}^{\sqrt{2}}$ is rational. In this case, since $\sqrt{2}$ is
+irrational and $\sqrt{5}$ is irrational, we have found an $a$ and $b$ such that
+both are irrational and $a^b$ is rational.
+
+\item $\sqrt{5}^{\sqrt{2}}$ is irrational. In this case, notice that
+$(\sqrt{5}^{\sqrt{2}})^{\sqrt{2}} = \sqrt{5}^{2} = 5$. Since $\sqrt{5}^{\sqrt{2}}$
+and $\sqrt{2}$ are both irrational and $5$ is rational, we have found an
+$a$ and $b$.
+
+\end{itemize}
+
+In all cases, we have found some irrational $a$ such that when raised to an
+irrational power $b$, $a^b$ is rational.
+}
+\end{problem}
+
+\begin{problem}{10}
+For any nonempty set $C$, let $f(C)$ be the square of the product of the elements in $C$.  For example, if $C = \{ 1, 4, 5 \}$, then $f(C) = (1 \cdot 4 \cdot 5)^2 = 400$.  Show that the sum of $f(S)$ for all nonempty subsets of $\{1, 2, \ldots, n\}$ containing no consecutive elements is $ (n+1)! - 1$.  For example, if we consider $\{1, 2, 3\}$, then we have $f(\{1, 3\}) + f(\{1\}) + f(\{2\}) + f(\{3\}) = 23 = 4! - 1$.
+\end{problem}
+\solution{
+We will prove this using strong induction.  
+
+Base Case: We have that for $n = 1$, there is only one nonempty subset $S = \{1\}$.  Thus, $f(S) = 1 = (1+1)! -1$.
+
+Strong Inductive Hypothesis: Suppose that the statement holds for all $n = 1, 2, \ldots, k-1$.  
+
+Inductive Step: Suppose we consider the sum of $f(S)$ for nonempty subsets $S$ of $\{1, 2, \ldots , k\} $.  Then if we consider all subsets without element $k$, we have the sum of $f(S')$ for nonempty subsets $S'$ of $\{1, 2, \ldots k-1 \}$, which by our inductive hypothesis is just $k! - 1$.  
+
+Now if our nonempty subsets $S$ of $\{1, 2, \ldots, k\}$ include the element $k$, then they cannot include element $k-1$.  Thus we consider the sum of $f(S'')$ for nonempty subsets $S''$ of $\{1, 2, \ldots, k-2 \}$, since we can safely add back $k$ into any of these subsets.  Then by our inductive hypothesis, this gives us another $k^2((k-1)! - 1)$.  However, we must finally consider the subset $\{k\}$, which contributes $k^2$ to our sum of $f(S)$.  
+
+Adding over all the cases, we have that the sum of $f(S)$ for all nonempty subsets of $\{1, 2, \ldots, k\}$ such that $S$ contains no consecutive elements is
+\begin{equation*}
+\begin{split}
+k! - 1 + k^2((k-1)! - 1) + k^2 &= k! (1 + k) -1 - k^2 + k^2 \\
+&= (k+1)! - 1 \\
+\end{split}
+\end{equation*}
+Thus as the statement holds for $n = k$, the statement holds for all $n = 1, 2, \ldots$. 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}{10}
+  A group of $n \ge 1$ people can be divided into teams, each
+  containing either 5 or 6 people.  What is the largest $n$ for which the group cannot be divided into such teams?  Use induction to prove that your answer is correct.
+
+\solution{
+We begin by observing that the following numbers of people can be divided
+into teams with 5 or 6 people per team:
+\begin{align*}
+5 & = 5 \\
+6 & = 6 \\
+10 &= 5 + 5 \\
+11 &= 5 + 6 \\
+12 &= 6 + 6 \\
+15 &= 5 + 5 + 5 \\
+16 &= 5 + 5 + 6 \\
+17 &= 5 + 6 + 6 \\
+18 &= 6 + 6 + 6 \\
+20 &= 5 + 5 + 5 + 5 \\
+21 &= 5 + 5 + 5 + 6 \\
+22 &= 5 + 5 + 6 + 6 \\
+23 &= 5 + 6 + 6 + 6 \\
+24 &= 6 + 6 + 6 + 6 \\
+\end{align*}
+and these are the only numbers less than $25$ that can be divided into such
+teams.  Now we claim that every group of $n \ge 20$ people can be divided
+into teams, each containing either 5 or 6 people.
+
+\begin{proof}
+  The proof is by strong induction on $n$.  Let $P(n)$ be the proposition
+  that a group of $n \ge 20$ people can be divided into teams, with each
+  containing either 5 or 6 people.
+
+  \textbf{Base cases:} As shown above $P(20)$, $P(21)$, $P(22)$, and
+  $P(23)$, and $P(24)$ are true.
+
+\textbf{Inductive step:} For all $n \ge 25$, we assume that $P(20)$,
+$P(21)$, $\dots$, $P(n)$ are true in order to prove that $P(n+1)$ is true.
+
+Since $n+1 = (n-4) + 5$, a team of 5 people can be removed from the set of
+$n+1$ people, leaving $n-4 \ge 25$ people.  By induction hypothesis, the
+$n-4$ people can be further divided into disjoint teams with 5 or 6
+people.  Since this divides the $n+1$ people into teams with 5 or 6, we
+have shown that $P(n+1)$ is true.  It follows by strong induction that
+$P(n)$ holds for all $n \ge 25$.
+
+So the largest possible $n$ for which the group cannot be divided into teams of size 5 or 6 is for $n = 19$.
+\end {proof}
+}
+\end{problem}
+
+
+\begin{problem}{10}  
+The Fibonacci sequence is a sequence of integers following the recurrence $F_n = F_{n-1} + F_{n-2}$ for $n \geq 3$ with $F_1 = 1, F_2 =1$.  Show that any positive integer $S$ can be written as a sum of unique Fibonacci numbers as follows: 
+\begin{equation*}
+\begin{split}
+S = F_{a_1} + F_{a_2} + \ldots F_{a_m}  \\
+\end{split}
+\end{equation*} 
+for $2 \leq a_1 < a_2 < \ldots < a_m$.
+\end{problem}
+\solution{
+We prove this using strong induction.
+
+Base case: For $S = 1$, we have $S = F_2$.
+
+Inductive Hypothesis: Assume that $S$ can be written as $F_{a_1} + F_{a_2} + \ldots F_{a_m}$ with $2 \leq a_1 < a_2 < \ldots < a_m$ for $S = 1, 2, \ldots k-1$.
+
+Inductive Step: We will now show that $S = k$ can be written in the desired form.  Let $F_a$ be the largest Fibonacci number less than $k$.  If $k = F_a$, then we are done.  Otherwise, by our inductive hypothesis, we have that $k - F_a$ can be written as $F_{a_1} + F_{a_2} + \ldots F_{a_m}$ with $2 \leq a_1 < a_2 < \ldots < a_m$.  Further we know that $F_{a_m} \leq F_{a-1}$ since $k - F_a < F_{a+1} - F_a = F_{a-1}$.  Thus, we have that $S = k = F_{a_1} + F_{a_2} + \ldots F_{a_m} + F_a$ with $2 \leq a_1 < a_2 < \ldots < a_m < a$.
+
+Thus as the statement holds for $S = k$, it necessarily holds for all $S = 1, 2, \ldots$.  
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{problem}{25}\textit{The Well Ordering Principle (WOP)} states that ``every \textit{nonempty} set of 
+\textit{nonnegative} integers has a \textit{smallest} element." (See Section 3.1 of the text \textit{Mathematics 
+for Computer Science}.)  It captures a special property about nonnegative integers and can be extremely 
+useful in proofs.  
+
+\bparts
+\ppart{5}
+For practice, prove using the Well Ordering Principle as in class that for all nonnegative integers, $n$: 
+\begin{equation}\label{sum-to-n}
+\sum_{i=0}^{n} i = \frac{n(n+1)}{2}
+\end{equation}
+We refer to integers of the form $\frac{n(n+1)}{2}$ as \textbf{triangular numbers} (Just imagine making a triangle of dots where the first row has $1$ dot, the second row has $2$ dots, $\ldots$, and the the $n^{th}$ row has $n$ dots).
+ 
+\solution{
+\begin{proof}
+The proof uses WOP. Assume that equation \eqref{sum-to-n} is false. Then, some nonnegative integers serve as counterexamples to it.
+Let's collect these counterexamples in a set:
+$C ::= \{ n \in \mathbb{N} | \sum_{i=0}^{n} i \neq \frac{n(n+1)}{2} \}$.
+
+By our assumption that \eqref{sum-to-n} admits counterexamples, $C$ is a nonempty set
+of nonnegative integers. So, by the Well Ordering Principle, $C$ has a minimum
+element, call it $c$. That is, $c$ is the smallest counterexample to \eqref{sum-to-n}.
+
+Since $c$ is the smallest counterexample, we know that equation \eqref{sum-to-n} is false for $n = c$, but it is true for all nonnegative integers $n < c$.  However, equation \eqref{sum-to-n} is true for $n = 0$ since $\sum_{i=0}^{0} i = 0 = \frac{0(0+1)}{2}$. Hence, $c > 0$. This means $c - 1$ is a nonnegative integer, and since it is less than $c$, equation \eqref{sum-to-n} is true for $c - 1$. That is,
+
+\begin{equation}\label{sum-to-c-1}
+\sum_{i=0}^{c-1} i = \frac{(c-1)c}{2}.
+\end{equation}
+
+But then, adding $c$ to both sides of equation \eqref{sum-to-c-1} gives us
+\[
+\sum_{i=0}^{c} i
+\]
+on the left hand side. And the right hand side now equals
+\begin{align*}
+\frac{(c-1)c}{2} + c &= \frac{c(c-1) + 2c}{2} \\
+&= \frac{c(c+1)}{2}  \\
+\end{align*}
+
+That is,
+\[
+\sum_{i=0}^{c} i = \frac{c(c+1)}{2},
+\]
+which means that equation \ref{sum-to-n} does hold for c, after all! This is a contradiction, and we are done.
+
+\end{proof}
+}
+\ppart{20} A function $f(x)$ is defined as follows:
+\begin{equation*}
+\begin{split}
+f(1) = 6042 \\
+f(1) + f(2) + \ldots + f(n) = n^2f(n)
+\end{split}
+\end{equation*}
+Find $f(6042)$.  
+
+This is a tougher problem so here are a few hints:
+\begin{enumerate}
+\item Examine the first few terms of the sequence, and try to guess $f(n)$ in general.  Use induction to verify your guess.
+\item You may use the fact that $\frac{1}{k(k-1)} = \frac{1}{k-1} - \frac{1}{k}$.
+\end{enumerate}
+\solution{
+We calculate the first few values $f(1), f(2), f(3), f(4)$ so that we may see if a pattern emerges.  
+\begin{equation*}
+\begin{split}
+f(1) & = 6042 \\
+f(2) & = \frac{6042}{3} \\
+f(3) & = \frac{6042}{3 \cdot 8} + \frac{6042}{8}  = \frac{6042}{6} \\
+f(4) &= \frac{6042}{6 \cdot 15} + \frac{6042}{3 \cdot 15} + \frac{6042}{15} = \frac{6042}{10} \\
+\end{split}
+\end{equation*}
+Hence it looks like $f(n)$ is just $6042$ divided by the $n^{th}$ triangular number!  This is indeed the case, but we will prove it by strong induction.
+
+Base Case: We already know that $f(1) = 6042$, which is just $6042$ divided by the first triangular number. 
+
+Inductive Hypothesis: Assume that $f(i)$ is $6042$ divided by the $i^{th}$ triangular number for $i = 1, 2, \ldots k-1$.
+
+Inductive Step:  We now prove the statement for $i = k$.  We have from the original recursion that 
+\begin{equation*}
+\begin{split}
+(k^2 - 1)f(k) &= f(k-1) + f(k-2) + \ldots + f(2) + f(1) \\
+&= 6042 \cdot \left(\frac{2}{k(k-1)} + \frac{2}{(k-1)(k-2)}  + \ldots + \frac{2}{3 \cdot 2} + \frac{2}{2 \cdot 1}  \right)\\
+&= 6042 \cdot 2 \cdot \left(\frac{1}{k-1} - \frac{1}{k}  + \frac{1}{k-2} - \frac{1}{k-1}  + \ldots + \frac{1}{2}  - \frac{1}{3} + \frac{1}{1} - \frac{1}{2}  \right)\\
+&= 6042 \cdot 2 \cdot \left(1 - \frac{1}{k}\right) \\
+&= 6042 \cdot 2 \cdot \frac{k-1}{k} \\
+\Rightarrow f(k) &= 6042 \cdot 2 \cdot \frac{k-1}{k} \cdot \frac{1}{k^2-1} \\
+&= 6042 \cdot 2 \cdot \frac{k-1}{k} \cdot \frac{1}{(k+1)(k-1)} \\
+&= 6042 \cdot \frac{2}{(k+1)k} \\
+\end{split}
+\end{equation*}
+
+Hence, we have that $f(k)$ is indeed $6042$ divided by the $k^{th}$ triangular number as desired.  Thus as the statement holds for $i = k$ it holds for all positive integers $i$.  
+
+Thus, answering the original question $f(6042) = \frac{6042 \cdot 2	}{6042 \cdot 6043} = \frac{2}{6043}$.
+
+}
+
+\eparts
+
+\end{problem}
+
+
+\end{document}

@@ -1,0 +1,262 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+\usepackage[stable]{footmisc}
+\usepackage{enumitem}
+
+
+\showsolutions
+%\hidesolutions
+
+\newtheorem{false-theorem}[theorem]{False Theorem}
+
+\begin{document}
+
+\recitation{5}{September 28, 2016}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{The RSA Cryptosystem}
+
+\begin{enumerate}
+
+\item[\textbf{Beforehand}] The receiver creates a public key and a secret key
+as follows.
+
+\begin{enumerate}
+
+\item Generate two distinct primes, $p$ and $q$.  Since they can be
+used to generate the secret key, they must be kept hidden.
+
+\item Let $n = pq$.
+
+\item Select an integer $e$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\ The
+\emph{public key} is the pair $(e, n)$.  This should be distributed
+widely.
+
+\item Compute $d$ such that $de \equiv 1 \pmod{(p-1)(q-1)}$.  This
+can be done using the Pulverizer.\\ The
+\emph{secret key} is the pair $(d, n)$.  This should be kept hidden!
+
+\end{enumerate}
+
+\item[\textbf{Encoding}]
+Given a message~$m$, the sender first checks that $\gcd(m, n) =
+1$.\footnote{It would be very bad if $\gcd(m, n)$ equals $p$ or $q$
+since then it would be easy for someone to use the encoded message to
+compute the secret key  If $\gcd(m, n) = n$, then the encoded message
+would be~0, which is fairly useless.  For very large values of~$n$, it
+is extremely unlikely that $\gcd(m, n) \ne 1$.  If this does happen,
+you should get a new set of keys or, at the very least, add some bits
+to~$m$ so that the resulting message is relatively prime to~$n$.}
+The sender then encrypts message $m$ to produce $m^\prime$ using
+the public key:
+
+\[
+m' = \rem{m^e}{n}.
+\]
+
+\item[\textbf{Decoding}] The receiver decrypts message $m'$ back to message $m$
+using the secret key:
+\[
+m = \rem{(m')^d}{n}.
+\]
+
+\end{enumerate}
+
+
+\newpage
+\section{Let's try out RSA!}
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Go through the \textbf{beforehand} steps.
+
+\begin{itemize}
+
+\item Choose primes $p$ and $q$ to be relatively small, say in the
+range 10--40.  In practice, $p$ and $q$ might contain hundreds of
+digits, but small numbers are easier to handle with pencil and paper.
+
+\item Try $e = 3, 5, 7, \dots$ until you find something that works.
+Use Euclid's algorithm to compute the gcd.
+
+\item Find $d$ (using the Pulverizer).
+
+\end{itemize}
+
+When you're done, put your public key on the board labeled ``Public Key.''  This lets another team send you a message.
+
+\item Now send an encrypted message to another team using their
+public key.  Select your message $m$ from the codebook below:
+
+\begin{itemize}
+
+\item 2 = Greetings and salutations!
+
+\item 3 = Yo, wassup?
+
+\item 4 = You guys are slow!
+
+\item 5 = All your base are belong to us.
+
+\item 6 = Someone on \emph{our} team thinks someone on \emph{your} team
+is kinda cute.
+
+\item 7 = You \emph{are} the weakest link.  Goodbye.
+
+\end{itemize}
+
+\item Decrypt the message sent to you and verify that you received
+what the other team sent!
+
+\end{enumerate}
+
+Try to send at least two messages and to decode at least one received message.
+
+
+\newpage
+\section{Cracking RSA}
+
+$\phi(n)$ is the number of positive integers less than $n$ that are relatively prime to $n$.  In particular, if $n = pq$ for primes $p, q$, then $\phi(n) = (p-1)(q-1)$. This is referred to as Euler's totient function.
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+\item Just as RSA would be trivial to crack knowing the factorization
+into two primes of $n$ in the public key, explain why RSA would also
+be trivial to crack knowing $\phi(n)$.
+
+\solution{
+If you knew $\phi(pq) = (p-1)(q-1)$ you could find the private key~$d$
+the same way the receiver does using the Pulverizer to find
+the inverse mod $(p-1)(q-1)$ of the public key $e$.
+}
+
+\item Show that if you knew $n$, $\phi(n)$, and that $n$ was the
+product of two primes, then you could easily factor $n$.
+
+\solution{
+\emph{Hint:} Suppose $n =pq$, replace $q$ by $n/p$ in the expression for $\phi(n)$, and solve for $p$.
+\begin{align*}
+\phi(n) &  = (p-1)(q-1) = n - p - \frac{n}{p} + 1, \qquad \text{so}\\
+p \phi(n) & = p n -p^2 -n + p\\
+0 =  & p^2 + (\phi(n) -n - 1)p + n.
+\end{align*}
+
+Now we can solve for $p$ using the formula for the roots of a quadratic.
+}
+
+\end{enumerate}
+
+\newpage
+\section{Sending signed messages}
+% A more fun problem would be to actually have groups send messages to each other
+
+Suppose Alice and Bob are using the RSA cryptosystem to send secure
+messages.  Each of them has a public key visible to everyone and a
+private key known only to themselves, and using RSA in the usual way,
+they are able to send secret messages to each other over public
+channels.
+
+But a concern for Bob is how he knows that a message he gets is
+actually from Alice---as opposed to some imposter claiming to be
+Alice.  This concern can be met by using RSA to add unforgeable
+``signatures'' to messages.  To send a message $m$ to Bob with an
+unforgeable signature, Alice uses RSA encryption on her message $m$,
+but instead of using Bob's public key to encrypt $m$, she uses her own
+\emph{private} key to obtain a message $m_1$.  She then sends $m_1$ as
+her ``signed'' message to Bob.
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+
+\item Explain how Bob can read the original message $m$ from Alice's signed message $m_1$.  (Let $(n_A,e_A)$ be Alice's public key and $d_A$ her private key. %Assume $m \in \Zintvco{0}{n_A}$.)
+
+\solution{
+By definition of RSA, the message $m_1$ will be
+\[
+m_1 = \rem{m^{d_A}}{n_A},
+\]
+where $d_A$ is Alice's private key.
+
+RSA encryption is based on the choice of a private key $d$ and a
+public key $(e,n)$ which satisfy the condition that $d \cdot e \equiv
+1 \pmod{\phi(n)}$.  But this condition is symmetric in $d$ and $e$, so
+reversing their roles allows Alice's private key $d_A$ to be used to
+``encrypt'' $m$ as the message $m_1$.  Now Bob can apply RSA to $m_1$
+using Alice's public key $e_A$ in place of his private key to
+reconstruct $m$ from $m_1$:
+\[
+m = \rem{m_1^{e_A}}{n}
+\]
+}
+
+\item Briefly explain why Bob can be confident, assuming RSA is
+secure, that $m_1$ came from Alice rather than some imposter.
+
+\solution{
+The message $m$ that Bob reconstructs from $m_1$ can only have been
+``encrypted'' using Alice's private key, $d_A$.  Assuming RSA is
+secure, only Alice knows her private key $d_A$, so Bob can conclude
+the message came from Alice.
+}
+
+\item Notice that not only Bob, but \emph{anyone} can use Alice's
+public key to reconstruct her message $m$ from its signed version
+$m_1$.  So how can Alice send a secret signed message to Bob over
+public channels?
+
+\solution{
+After signing her message with her private key to obtain $m_1$, Alice
+can use RSA in the usual way to encrypt $m_1$ using Bob's public key
+and send it to Bob.  Now only Bob can read the signed message.
+}
+
+\item
+%n = p * q = 29 * 37 = 1073 
+%phi(n) = 28 * 26 = 1008
+%e,d = 605,5 
+Given the public key (5, 1073), and the encrypted message 33, 
+what is the original message?
+
+\solution{
+The original message is $rem(33^5,1073) = 937$
+}
+
+\end{enumerate}
+
+\section{Dressed to the nines.}
+% Ankur did either this exactly or somethig similar in lecture, this isn't a good problem anymore...
+
+Give a proof by induction that $10^k \equiv 1 \pmod{9}$ for all
+$k \geq 0$.  Why is a number written in decimal evenly divisible by 9
+if and only if the sum of its digits is a multiple of 9?
+
+\solution{The claim holds for $k = 0$, since $10^0 \equiv 1 \pmod{9}$.
+Suppose the claim holds for some $k \geq 0$; that is, $10^k \equiv 1
+\pmod{9}$.  Multiplying both sides by 10 gives $10^{k+1} \equiv 10
+\equiv 1 \pmod{9}$.  So the claim holds for $k+1$ as well.
+
+A number in decimal has the form:
+
+\[
+d_k \cdot 10^k + d_{k-1} \cdot 10^{k-1} + \ldots + d_1 \cdot 10 + d_0
+\]
+
+From the observation above, we know:
+
+\begin{eqnarray*}
+d_k \cdot 10^k + d_{k-1} \cdot 10^{k-1} + \ldots + d_1 \cdot 10 + d_0
+    & \equiv & d_k + d_{k-1} + \ldots + d_1 + d_0 \pmod{9} \\
+    \end{eqnarray*}
+
+    This shows something stronger: the remainder when the original number
+    is divided by 9 is equal to the remainder when the sum of the digits
+    is divided by 9.  In particular, if one is zero, then so is the other.
+}
+
+
+%\section{Modulo Operations}
+% List of true/falses of the form "is this operation allowed when we're doing modulo arithmetic" e.g. addition/subtraction/multiplication/division/exponentiation/negation/roots/distributivity/commutativity/associativity/what else...
+
+
+% Practice with Fermat's Little Theorem, Euler's Theorem
+
+
+\end{document}
+
