@@ -1,0 +1,532 @@
+\documentclass[12pt,twoside]{article}   
+\usepackage{light}
+
+\newcommand{\hint}[1]{({\it Hint: #1})}
+\newcommand{\card}[1]{\left|#1\right|}
+\newcommand{\union}{\cup}
+\newcommand{\lgunion}{\bigcup}
+\newcommand{\intersect}{\cap}
+\newcommand{\lgintersect}{\bigcap}
+\newcommand{\cross}{\times}
+
+\hidesolutions
+%\showsolutions
+
+\newlength{\strutheight}
+\newcommand{\prob}[1]{\mathop{\textup{Pr}} \nolimits \left( #1 \right)}
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#1}}\nolimits\left(#2\right)}
+\newcommand{\prcond}[2]{
+  \ifinner \settoheight{\strutheight}{$#1 #2$}
+  \else    \settoheight{\strutheight}{$\displaystyle#1 #2$} \fi%
+  \mathop{\textup{Pr}}\nolimits\left(
+    #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
+  \right)}
+\newcommand{\comment}[1]{}
+\newcommand{\cE}{\mathcal{E}}
+\renewcommand{\setminus}{-}
+\renewcommand{\complement}[1]{\overline{#1}}
+
+
+\begin{document}
+\problemset{11}{November 25, 2014}{December 4, 7pm}
+\noindent \textbf{Reading Assignment:}   Chapters 18, 19
+\\
+
+\begin{problem}{15}
+
+In this problem, we will (hopefully) be making tons of money!  Use your knowledge of probability and statistics to keep from going broke!
+
+		Suppose the stock market contains $N$ types of stocks, which can be modelled by independent random variables.  Suppose furthermore that the behavior of these stocks is modelled by a 
+		double-or-nothing coin flip.  That is, stock $S_i$ has half probability of doubling its value and half probability of going to $0$.  The stocks all cost a dollar, and you have
+		$N$ dollars.  Say you only keep these stocks for one time-step (that is, at the end of this timestep, all stocks would have doubled in value or gone to $0$). 
+
+\bparts
+	\ppart{3} 
+		What is your expected amount of money if you spend all your money on one stock?  Your variance?
+		
+		\solution{
+			The stock doubles on a coin flip, so your expected final amount is $.5(2N) + .5(0) = N$. Your variance is calculated as
+			$E[(X - \mu)^2]$.  This, when we take into account the probability distribution of the stock, is 
+			
+			$$1/2(2N - N)^2 + 1/2(0 - N)^2 = N^2$$
+		}
+		\ppart{3}
+		Suppose instead you diversified your purchases and bought $N$ shares of all different stocks. What is your expected amount of money then?  Your variance?
+		
+		\solution{
+			The amount of money you have in stocks is $X_1 + X_2 + \ldots + X_N$, where $X_i$ is a random variable describing how much money you have in stock $i$.  The amount of
+			money you expect to have is 
+			$$E[\sum_{i=1}^N X_i] = \sum_{i=1}^N E[X_i]$$
+			But $E[X_i] = 2 * 1/2 + 0 * 1/2 = 1$, so this sum turns out to be $N$ again.
+			
+			As for variance, recall that $Var(\sum X_i) = \sum Var(X_i)$ if the random variables $X_i$ are independent (which they are in this case).  The variance of a single $X_i$ is
+			$$1/2 * (2 - 1)^2 + 1/2*(0 - 1)^2 = 1$$
+			so the variance of your entire portfolio is $N$. 
+		}
+		\ppart{3}
+		The money that you have invested came from your financially conservative mother.  As a result, your goals are much aligned with hers.  Given this,
+		which investment strategy should you take?
+		\solution{
+			Your mother prefers to have less risk, and so would like the stock with less variance.  This is the strategy associated with (b). 
+		}
+		\ppart{3}
+		Now instead say that you make money on rolls of dice.  Specifically, you play a game where you roll a standard six-sided dice, and get paid an amount (in dollars) equal to
+		 the number that comes up.  What is	your expected payoff?  What is the variance?
+		\solution{
+		The expected payoff is $1/6(1 + 2 + 3 + 4 + 5 + 6) = 3.5$.
+		The variance is 
+		$$1/6(2.5^2 + 1.5^2 + .5^2 + .5^2 + 1.5^2 + 2.5^2) = 35/12$$
+		}
+		\ppart{3}
+		We change the rules of the game so that your payoff is the cube of the number that comes up.  In that case, what is your expected payoff?  What is its variance?
+		\solution{
+		Your expected earnings is $1/6(1 + 8 + 27 + 64 + 125 + 216) = 441/6$.
+		To calculate variance, we can simplify by noting that $Var(X) = E[X^2] - E^2[X]$.  So the variance is
+		$$1/6(1 + 64 + 27^2 + 64^2 + 125^2 + 216^2) - (441//6)^2 = 67171/6 - 194481/36 = 208545/36 \approx 5792$$
+		}
+\eparts
+
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%spring 04 cp14w
+
+\begin{problem}{8}
+Here are seven propositions:
+%
+\[
+\begin{array}{rcrcr}
+x_1 & \vee & x_3 & \vee & \neg x_7 \\
+\neg x_5 & \vee & x_6 & \vee & x_7 \\
+x_2 & \vee & \neg x_4 & \vee & x_6 \\
+\neg x_4 & \vee & x_5 & \vee & \neg x_7 \\
+x_3 & \vee & \neg x_5 & \vee & \neg x_8 \\
+x_9 & \vee & \neg x_8 & \vee & x_2 \\
+\neg x_3 & \vee & x_9 & \vee & x_4
+\end{array}
+\]
+%
+Note that:
+
+\begin{enumerate}
+
+\item Each proposition is the OR of three terms of the form $x_i$ or
+the form $\neg x_i$.
+
+\item The variables in the three terms in each proposition are all
+different.
+
+\end{enumerate}
+
+\noindent Suppose that we assign true/false values to the variables
+$x_1, \ldots, x_9$ independently and with equal probability.
+
+\bparts
+
+\ppart{4} What is the expected number of true propositions?
+
+\solution{Each proposition is true unless all three of its terms are
+false.  Thus, each proposition is true with probability:
+%
+\[
+1 - \paren{\frac{1}{2}}^3 = \frac{7}{8}
+\]
+
+Let $T_i$ be an indicator for the event that the $i$-th proposition is
+true.  Then the number of true propositions is $T_1 +
+\ldots + T_7$ and the expected number is:
+%
+\begin{align*}
+\expect{T_1 + \ldots + T_7}
+    & = \expect{T_1} + \ldots + \expect{T_7} \\
+    & = 7/8 + \ldots + 7/8 \\
+    & = 49/8 = 6 \frac{1}{8}
+\end{align*}}
+
+\ppart{4} Use your answer to prove that there exists an assignment to the
+variables that makes \textit{all} of the propositions true.
+
+\solution{A random variable can not always be less than its
+expectation, so there must be some assignment such that:
+%
+\[
+T_1 + \ldots T_7 \geq 6 \frac{1}{8}
+\]
+%
+This implies that $T_1 + \ldots + T_7 = 7$ for at least one outcome.
+This outcome is an assignment to the variables such that all of the
+propositions are true.}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%spring 04 cp14w
+\begin{problem}{10}
+We have two coins: one is a fair coin and the other is a coin that
+produces heads with probability 3/4.  One of the two coins is picked, and
+this coin is tossed $n$ times.  Explain how to calculate the number of
+tosses to make us 95\% confident which coin was chosen.  You do not have
+to calculate the minimum value of $n$, though we'd be pleased if you
+did.
+
+\solution{To guess which coin was picked, set a threshold $t$ between
+$1/2$ and$3/4$.  If the proportion of heads is less than the threshold,
+guess it was the fair coin; otherwise, guess the biased coin.  Let the
+random variable $J$ be the number of heads in the first $n$ flips.  We
+need to flip the coin enough times so that $\pr{J/n \geq t} \leq 0.05$ if
+the fair coin was picked, and $\pr{J/n \leq t} \leq 0.05$ if the biased
+coin was picked.  A natural threshold to choose is $5/8$, exactly in the
+middle of $1/2$ and $3/4$.
+
+For the fair coin, $J$ has an $(n,1/2)$-binomial distribution, so
+we need to choose $n$ so that
+\[
+\pr{J > \paren{\frac{5}{8}}n} \leq 0.05
+\]
+which is equivalent to 
+\begin{equation}\label{cdffair}
+CDF_J\paren{\frac{5}{8}n} \geq 0.95  %changed \cdf to CDF
+\end{equation}
+
+For the biased coin, $J$ has an $(n,3/4)$-binomial distribution, so
+we need to choose $n$ so that
+\[
+\pr{J \leq \paren{\frac{5}{8}}n} \leq 0.05
+\]
+which is equivalent to 
+\begin{equation}\label{cdfunfair}
+CDF_J\paren{\frac{5}{8}n} \leq 0.95 %changed \cdf to CDF
+\end{equation}
+
+We can now search for the minimum $n$ that satisfies both~\eqref{cdffair}
+and~\eqref{cdfunfair}, using one of the several ways we know to calculate
+or approximate the binomial cumulative distribution function.
+
+}
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{22}
+
+Suppose $n$ balls are thrown randomly into $n$ boxes, so each ball lands in
+each box with uniform probability.  Also, suppose the outcome of each throw
+is independent of all the other throws.
+
+\bparts
+
+\ppart{5} Let $X_i$ be an indicator random variable whose value is $1$ if box
+$i$ is empty and $0$ otherwise.  Write a simple closed form expression for
+the probability distribution of $X_i$.   Are $X_1, X_2, \ldots, X_n$
+independent random variables?
+
+\solution{
+Box $i$ is empty iff all $n$ balls land in other boxes.  The probability
+that a ball will land in another box in $(n-1)/n = 1- (1/n)$, and since
+the balls are thrown independently, we have
+\begin{equation}\label{pxi}
+\prob{X_i=1} = \paren{1 - \frac{1}{n}}^n.
+\end{equation}
+The $X_i$'s are not independent.  For example, 
+\[
+\prob{X_1=X_2=\cdots = X_n=1}=0 < \prod_{i=1}^n \prob{X_i = 1}.
+\]
+}
+
+\ppart{2} Find a constant, $c$, such that the expected number of empty boxes
+is asymptotically equal ($\sim$) to $cn$.
+
+\solution{The number of empty boxes is the sum of the $X_i$'s.  So the
+expected number of empty boxes is the sum of the expectations of the
+$X_i$'.  By~\eqref{pxi}, we now have
+\[
+\ex{\text{number of empty boxes}} = n\ex{X_1} = n\paren{1 - \frac{1}{n}}^n \sim
+n\cdot\frac{1}{e}
+\]
+That is,
+\[
+c = \frac{1}{e}
+\]
+}
+
+\ppart{5} Show that
+\[
+\prob{\text{at least $k$ balls fall in the first box}}
+\leq {\binom{n}{k}} \left(\frac{1}{n}\right)^k.
+\]
+
+\solution{Let $S$ be a set of $k$ of the $n$ balls, and let $E_S$ be the
+event that each of these $k$ balls falls in the first box.  Since the
+probability that a ball lands in this box is $1/n$, and the throws are
+independent, we have
+\begin{equation}\label{ES}
+\prob{E_S}=\paren{\frac{1}{n}}^k.
+\end{equation}
+The event that \emph{at least} $k$ balls land in the first box is the
+union of all the events $E_S$.  There are $\binom{n}{k}$ subsets, $S$, of
+$k$ balls, so by the Union Bound,
+\[
+\prob{\text{at least $k$ balls fall in the first box}}
+\leq {\binom{n}{k}} \cdot \prob{E_S}.
+\]
+Using the value for $\prob{E_S}$ from~\eqref{ES} in the preceding
+inequality yields the required bound.
+}
+
+\ppart{5} Let $R$ be the maximum of the numbers of balls that land in each of
+the boxes.  Conclude from the previous parts that
+\[
+\pr{R \geq k} \leq \frac{n}{k!}.
+\]
+
+\solution{ Note that $R \geq k$ exactly when some box has at least $k$
+balls.  Since the bound on the probability of at least $k$ balls in the
+first box applies just as well to any box, we can apply the Union Bound to
+having at least $k$ balls in at least one of the $n$ boxes:
+\[
+\prob{R \geq k} \leq n\prob{\text{at least $k$ balls fall in the first
+box}}.
+\]
+So from the previous problem part, we have
+\begin{align*}
+\prob{R \geq k} & \leq n\binom{n}{k} \paren{\frac{1}{n}}^{k}\\
+                & = n\paren{\frac{n(n-1)\cdots(n-k+1)}{k!\, n^k}}\\
+                & = \frac{n}{k!}
+                        \paren{\frac{n}{n} \cdot \frac{n-1}{n} \cdots \frac{n-k+1}{n}}
+                    \\
+                & \leq \frac{n}{k!}
+\end{align*}
+}
+
+\ppart{5} Conclude that 
+\[
+\lim_{n \to \infty} \pr{R \geq n^{\epsilon}} = 0
+\]
+for all $\epsilon >0$.
+
+\solution{Using Stirling's formula, and the upper bound from the previous
+part, we have
+\[
+\pr{R \geq k} \leq
+\frac{n}{k!} \sim \frac{n}{\sqrt{2\pi k}(k/e)^k} \leq
+\frac{n}{(k/e)^k} = \frac{ne^k}{k^k} = 
+\frac{e^{k + \ln n}}{e^{k \ln k}}.
+\]
+Now let $k= n^{\epsilon}$.  Then the exponent of $e$ in the numerator
+above is $n^{\epsilon} + \ln n$, and the exponent of $e$ in the
+denominator is $n^{\epsilon} \ln n^{\epsilon}$.  Since
+\[
+n^{\epsilon} + \ln n = o(n^{\epsilon} \ln n^{\epsilon}),
+\]
+we conclude
+\[
+\pr{R \geq n^{\epsilon}} \leq \frac{e^{n^{\epsilon} + \ln
+n}}{e^{n^{\epsilon} \ln n^{\epsilon}}} \to 0
+\]
+as $n$ approaches $\infty$.
+}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{13}
+    The goal of this problem will be to study the expectations of quotients of positive random variables.
+    
+    Throughout, you may assume the following inequality: for all $\lambda \in (0,1)$, and all positive reals $x$ and $y$,
+    $$ \frac{1}{\lambda x + (1-\lambda) y} \leq \frac{\lambda}{x} + \frac{1-\lambda}{y}. $$
+    (This property has a name: the function $f(x) = \frac{1}{x}$ is \emph{convex}.)
+
+    \bparts
+
+    \ppart{10}
+        Let $X$ be a positive random variable with finitely many outcomes. Prove that
+        $$ E\left[\frac{1}{X}\right] \geq \frac{1}{E[X]}. $$
+        \hint{Try induction on the number of outcomes of $X$.}
+
+    \solution{
+        We proceed by induction on $n$ the number of outcomes of $X$. The base case is easily verified: if $X$ has only one outcome $x$, then
+        $$ E\left[\frac{1}{X}\right] = \frac{1}{x} = \frac{1}{E[X]}. $$
+        
+        Suppose then that the result is true for all positive random variables on at most $n$ outcomes, and let $X$ have $n+1$ outcomes $x_1, \ldots, x_{n+1}$ with probabilities $p_1, \ldots, p_{n+1}$. Let $Y$ be the random variable consisting of only the first $n$ outcomes $x_1, \ldots, x_n$, with probabilities
+        $$ \frac{p_1}{1 - p_{n+1}}, \ldots, \frac{p_n}{1 - p_{n+1}} $$
+        rescaled in order to add up to $1$. Applying the inductive hypothesis to $Y$, 
+        $$ \frac{1}{\sum_{i=1}^n \frac{p_i}{1-p_{n+1}} x_i} = \frac{1}{E[Y]} \leq E\left[\frac{1}{Y}\right] = \sum_{i=1}^n \frac{p_i}{1 - p_{n+1}} \cdot \frac{1}{x_i}. \quad(*)$$
+
+        We wish to prove that
+        $$ \frac{1}{\sum_{i=1}^{n+1} p_i x_i} \leq \sum_{i=1}^{n+1} p_i \cdot \frac{1}{x_i}. $$
+        To this end:
+        \begin{align*}
+            \frac{1}{\sum_{i=1}^{n+1} p_i x_i} &= \frac{1}{p_{n+1} x_{n+1} + \sum_{i=1}^{n} p_i x_i} \\
+                           &= \frac{1}{p_{n+1} x_{n+1} + (1 - p_{n+1}) \sum_{i=1}^{n} \frac{p_i}{1 - p_{n+1}} x_i} \\
+                           &\le \frac{p_{n+1}}{x_{n+1}} + (1 - p_{n+1})\frac{1}{\sum_{i=1}^{n} \frac{p_i}{1 - p_{n+1}} x_i} & \text{by the given inequality} \\
+                           &\le \frac{p_{n+1}}{x_{n+1}} + (1 - p_{n+1})\sum_{i=1}^n \frac{p_i}{1-p_{n+1}} \cdot \frac{1}{x_i} & \text{by }(*) \\
+                           &= \sum_{i=1}^{n+1} p_i \cdot \frac{1}{x_i},
+        \end{align*}
+        as desired.
+    }
+
+    \ppart{3}
+        Let $R$, $T$ be positive independent random variables with finitely many outcomes each. Prove that
+        $E[\frac{R}{T}] \ge \frac{E[R]}{E[T]}$.
+
+    \solution{
+        \begin{align*}
+            E\left[\frac{R}{T}\right] &= E\left[R \cdot \frac{1}{T}\right] \\
+                                      &= E[R] \cdot E\left[\frac{1}{T}\right] \\
+                                      &= E[R] \cdot \frac{1}{E[T]},
+        \end{align*}
+        applying the result of part (b).
+    }
+
+    \eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{8}
+We roll a fair die until we have rolled all 6 numbers.
+The rolls are independent. What is the expected number of rolls until this happens?
+
+\solution{
+    Let $T$ be the number of rolls to see all 6 numbers. Let $t_i$ be the
+    number of further rolls until we see the next new number after having
+    seen $i-1$ numbers already, so that
+    $$ T = t_1 + t_2 + t_3 + t_4 + t_5 + t_6.$$
+    Using the linearity of expectation, we can compute $E[T]$ from the expectations $E[t_i]$.
+
+    For $t_i$, we will roll until we see one of the $7 - i$ possible remaining
+    numbers. There are $6$ faces on the die, so the probability of getting a
+    new number on each roll is $\frac{7-i}{6}$. This lets us compute $E[t_i] = \frac{6}{7-i}$ through a geometric series.
+    Taking the sum,
+    $$ E[T] = E[t_1] + E[t_2] + E[t_3] + E[t_4] + E[t_5] + E[t_6] = 14.7. $$
+}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{10}
+We are given a random vector of $n$ distinct numbers in random order. We then
+determine the maximum of these numbers using the following procedure:
+
+Pick the first number.  Call it the \emph{current maximum}.  Go through
+the rest of the vector (in order) and each time we come across a number (call it $x$)
+that exceeds our {current maximum}, we update the {current maximum}
+with $x$.
+
+What is the expected number of times we update the current
+maximum?  
+
+\hint{Let $X_i$ be the indicator variable for the event that the $i$th
+element in the vector is larger than all the previous elements.}
+
+
+\solution{
+Let's fix the $n$ numbers we are given.  We can assume that we are
+given a random permutation of the $n$ numbers.  For $i \in [1,n]$, let
+$X_i$ be the indicator variable for the event that the $i$th element
+in the vector is larger than all the previous elements.
+
+Note that the number of times we update the current maximum is
+precisely $X_1 + \cdots + X_n$.  Since expectation is a linear
+operator, we can compute $\expect{X_1 + \cdots + X_n}$ by finding
+$\expect{X_i}$ for each $i$ and summing them up.  
+
+Since $X_i$ is an indicator, we only have to find $\prob{X_i=1}$.  In
+a random permutation, $X_i=1$ happens with probability $1/i$.  Why?  If
+you take $i$ distinct numbers and randomly permute them, the
+probability that the largest one occupies the last (or any given)
+position is $1/i$.
+
+Thus,
+\begin{align*}
+\expect{X} & =  \sum_i \pr{X_i=1}\\
+& = \sum_{i=1}^n \frac1i \\
+& =  H_n \approx \ln n,
+\end{align*}
+where $H_n$ is the $n$th Harmonic number.
+}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}{14}
+Suppose we are trying to estimate some physical parameter $p$.  When
+we run our experiments and process the results, we obtain an estimator
+of $p$, call it $p_e$.  But if our experiments are probabilistic, then
+$p_e$ itself is a random variable.
+We call the random variable $p_e$
+an \emph{unbiased} estimator if $\expect{p_e}=p$.
+
+For example, say we are trying to estimate the height, $h$, of Green
+Hall.  However, each of our measurements has some noise that is, say,
+Gaussian with zero mean.  So each measurement can be viewed as a
+sample from a random variable $X$.  The expected value of each
+measurement is thus $\expect{X} = h$, since the probabilistic noise
+has zero mean.  Then, given $n$ independent trials, $x_1, \dots, x_n$,
+an unbiased estimator for the height of Green Hall would be
+\[
+h_e = \frac{x_1+\cdots+x_n}{n},
+\]
+since
+\[
+\expect{h_e} = \expect{\frac{x_1+\cdots+x_n}{n}}
+= \frac{\expect{x_1} + \cdots + \expect{x_n}}{n} = \expect{x_1}= h.
+\]
+
+Now say we take $n$ independent observations of a random variable $Y$.
+Let the true (but unknown) variance of $Y$ be $\variance{Y}
+= \sigma^2$.  Then
+we can define the following estimator $\sigma_e^2$ for $\variance{Y}$
+using the data from our observations:
+\[
+\sigma_e^2 =  \frac{y_1^2 + y_2^2 + \cdots + y_n^2}{n} -
+                \left(\frac{y_1 + y_2 + \cdots + y_n}{n}\right)^2.
+\]
+
+
+Is this an unbiased estimator of the variance?   In
+other words, is $\expect{\sigma_e^2} = \sigma^2$?   If not, can you
+suggest how to modify this estimator to make it unbiased?
+
+\solution{
+Let $\sigma^2=\variance{X}, \mu=\expect{X}$.  Then our estimator
+$\sigma^2_e$ is given by
+\begin{eqnarray*}
+\sigma^2_e&=&\frac{\sum
+  y_i^2}{n} - \left(\frac{\sum y_i}{n}\right)^2\\
+\expect{\sigma^2_e}&=&\expect{\frac{\sum
+  y_i^2}{n} - \left(\frac{\sum y_i}{n}\right)^2}\\
+&=&\frac{\sum
+  \expect{y_i^2}}{n} - \frac{\expect{(\sum y_i)^2}}{n^2}\\
+&=&\frac{\sum(\sigma^2+\mu^2)}{n} - \frac{\variance{\sum
+    y_i}+\expectsq{\sum y_i}}{n^2}\\ 
+&=&\frac{n(\sigma^2+\mu^2)}{n} - \frac{n\sigma^2+n^2\mu^2}{n^2}\\
+&=&\sigma^2\left(1-\frac{1}{n}\right)
+\end{eqnarray*}
+So this gives a biased estimator, but we can make it
+unbiased simply by multiplying by $\frac{n}{n-1}$.
+\begin{eqnarray*}
+\expect{\frac{n\sigma^2_e}{n-1}}&=&\sigma^2
+\end{eqnarray*}
+
+}
+
+\end{problem}
+
+\end{document}

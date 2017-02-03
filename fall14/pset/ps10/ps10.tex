@@ -1,0 +1,554 @@
+\documentclass[12pt,twoside]{article}   
+\usepackage{light}
+
+\newcommand{\card}[1]{\left|#1\right|}
+\newcommand{\union}{\cup}
+\newcommand{\lgunion}{\bigcup}
+\newcommand{\intersect}{\cap}
+\newcommand{\lgintersect}{\bigcap}
+\newcommand{\cross}{\times}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\mfigure}[3]{\bigskip\centerline{\resizebox{#1}{#2}{\includegraphics{#3}}}\bigskip}
+\newcommand{\eqdef}{\mathbin{::=}}
+\newcommand{\heads}{H}
+\newcommand{\tails}{T}
+
+\hidesolutions
+%\showsolutions
+
+\newlength{\strutheight}
+\newcommand{\prob}[1]{\mathop{\textup{Pr}} \nolimits \left( #1 \right)}
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#1}}\nolimits\left(#2\right)}
+\newcommand{\prcond}[2]{%
+  \ifinner \settoheight{\strutheight}{$#1 #2$}
+  \else    \settoheight{\strutheight}{$\displaystyle#1 #2$} \fi%
+  \mathop{\textup{Pr}}\nolimits\left(
+    #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2
+  \right)}
+\newcommand{\comment}[1]{}
+\newcommand{\cE}{\mathcal{E}}
+\renewcommand{\setminus}{-}
+\renewcommand{\complement}[1]{\overline{#1}}
+
+
+\begin{document}
+\problemset{10}{November 13, 2014}{Monday, November 24, 7pm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Fall07 ps10 problem 1
+
+\begin{problem}{20}
+You are organizing a neighborhood census and instruct your census takers
+to knock on doors and note the sex of any child that answers the knock.
+Assume that there are two children in a household, that children are 
+equally likely to be girls and boys, and that girls and boys are equally 
+likely to open the door.
+
+A sample space for this experiment has outcomes that are triples whose
+first element is either \texttt{B} or \texttt{G} for the sex of the elder
+child, likewise for the second element and the sex of the younger child,
+and whose third coordinate is \texttt{E} or \texttt{Y} indicating whether
+the \emph{e}lder child or \emph{y}ounger child opened the door.  For
+example, $(\mathtt{B},\mathtt{G},\mathtt{Y})$ is the outcome that the elder
+child is a boy, the younger child is a girl, and the girl opened the door.
+
+\bparts
+
+\ppart{5} Let \emph{T} be the event that the household has two girls,
+and \emph{O} be the event that a girl opened the door.  List the outcomes
+in \emph{T} and \emph{O}.
+
+\solution{$T=\set{GGE,GGY}, O=\set{GGE,GGY,GBE,BGY}$}
+
+\ppart{5} What is the probability $\prcond{T}{O}$, that both children are
+girls, given that a girl opened the door?
+\solution{1/2}
+
+\ppart{10} Where is the mistake in the following argument for computing $\prcond{T}{O}$?
+
+\begin{quote}
+If a girl opens the door, then we know that there is at least one girl in
+the household.  The probability that there is at least one girl is
+\[
+1 - \prob{\text{both children are boys}} = 1 - (1/2 \times 1/2) = 3/4.
+\]
+So,
+\begin{eqnarray*}
+\lefteqn{\prcond{T}{\text{there is at least one girl in the household}}}\\
+& = & \frac{\prob{T \intersect \text{there is at least one girl in the household}}}
+{\pr{\text{there is at least one girl in the household}}}\\
+& = & \frac{\prob{T}}{\pr{\text{there is at least one girl in the household}}}\\
+& = & (1/4) / (3/4) = 1/3.
+\end{eqnarray*}
+Therefore, given that a girl opened the door, the probability that there
+are two girls in the household is \textup{1/3}.
+\end{quote}
+
+\solution{The argument is a correct proof that 
+\[
+\prcond{T}{\text{there is at least one girl in the household}} = 1/3.
+\]
+The problem is that the event, $H$, that the household has at least one girl,
+namely,
+\[
+H = \set{\mathtt{GGE,GGY,GBE,GBY,BGE,BGY}},
+\]
+is not equal to the event, \emph{O}, that a girl opens the door.  These
+two events differ:
+\[
+H-O = \set{\mathtt{BGE,GBY}},
+\]
+and their probabilities are different.  So the fallacy is in the final
+conclusion where the value of $\prcond{T}{H}$ is taken to be the same as
+the value $\prcond{T}{O}$.  Actually, $\prcond{T}{O} = 1/2$.  }
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}{15}
+In lecture we discussed the Birthday Paradox. Namely, we found that in a group of $m$ people with $N$ possible birthdays, if $m \ll N$, then:
+\[
+\pr{\text{all $m$ birthdays are different}} \sim e^{-\frac{m(m-1)}{2N}}
+\]
+To find the number of people, $m$, necessary for a half chance of a match, we set the probability to $1/2$ to get:
+\[
+m \sim \sqrt{(2\ln2)N} \approx 1.18\sqrt{N}
+\]
+
+For $N = 365$ days we found $m$ to be 23.
+
+We could also run a different experiment. As we put on the board the birthdays of the people surveyed, we could ask the class if anyone has the same birthday. In this case, before we reached a match amongst the surveyed people, we would already have found other people in the rest of the class who have the same birthday as someone already surveyed. Let's investigate why this is.
+
+\bparts
+\ppart{5} Consider a group of $m$ people with $N$ possible birthdays amongst a larger class of $k$ people, such that $m \leq k$. Define $\pr{A}$ to be the probability that $m$ people all have different birthdays \textit{and} none of the other $k-m$ people have the same birthday as one of the $m$.
+
+Show that, if $m \ll N$, then $\pr{A} \sim e^{\frac{m(m-2k)}{2N}}$. (Notice that the probability of no match is $e^{-\frac{m^2}{2N}}$ when $k$ is $m$, and it gets smaller as $k$ gets larger.)
+
+\hspace{0.5in} \textit{Hints:} For $m \ll N$: $\frac{N!}{(N-m)!N^m} \sim e^{-\frac{m^2}{2N}}$, and $(1-\frac{m}{N}) \sim e^{-\frac{m}{N}}$.
+
+\solution{
+We know:
+\[
+\pr{A} = \frac{N(N-1)\ldots(N-m+1)\cdot(N-m)^{k-m}}{N^k}
+\]
+
+since there are $N$ choices for the first birthday, $N-1$ choices for the second birthday, etc., for the first $m$ birthdays, and $N-m$ choices for each of the remaining $k-m$ birthdays. There are total $N^k$ possible combinations of birthdays within the class.
+
+\begin{align*}
+\pr{A} &= \frac{N(N-1)\ldots(N-m+1)\cdot(N-m)^{k-m}}{N^k} \\
+&= \frac{N!}{(N-m)!}\left(\frac{(N-m)^{k-m}}{N^k}\right) \\
+&= \frac{N!}{(N-m)!N^m}\left(\frac{N-m}{N}\right)^{k-m} \\
+&= \frac{N!}{(N-m)!N^m}\left(1-\frac{m}{N}\right)^{k-m} \\
+&\sim e^{-\frac{m^2}{2N}} \cdot e^{-\frac{m}{N}(k-m)} & \text{(by the Hint)} \\
+& = e^{\frac{m(m-2k)}{2N}}
+\end{align*}
+}
+
+\ppart{10} Find the approximate number of people in the group, $m$, necessary for a half chance of a match (your answer will be in the form of a quadratic). Then simplify your answer to show that, as $k$ gets large  (such that $\sqrt{N} \ll k$), then $m \sim \frac{N\ln2}{k}$.
+
+\hspace{0.5in} \textit{Hint:} For $x \ll 1$: $\sqrt{1-x} \sim (1-\frac{x}{2})$.
+
+\solution{
+Setting $\pr{A} = 1/2$, we get a solution for $m$:
+
+\begin{align*}
+1/2 &= e^{\frac{m(m-2k)}{2N}} \\
+-2N\ln2 &= m^2 -2km  \\
+0 &= m^2-2km + (2N\ln2) \\
+m &= \frac{2k \pm \sqrt{(2k)^2 - 4(2N\ln2)}}{2}
+\end{align*}
+
+Simplifying the solution under the assumption of large $k$, we find:
+\begin{align*}
+m &= \frac{2k - \sqrt{4k^2 - 8N\ln2}}{2} & \text{(taking the lower positive root)} \\
+&= k - k\sqrt{1 - \frac{2N\ln2}{k^2}} \\
+&\sim k  - k \left(1-\frac{2N\ln2}{2k^2}\right) & \text{(by the Hint)} \\
+&= \frac{N\ln2}{k}  
+\end{align*}
+}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%% fall 08, pset11
+
+\instatements{\vspace{0.5in}}
+\begin{problem}{10}
+We're covering probability in 6.042 lecture one day, and you volunteer for one of Professor Leighton's demonstrations. He shows you a coin and says he'll bet you \$1 that the coin will come up heads. Now, you've been to lecture before and therefore suspect the coin is biased, such that the probability of a flip coming up heads, $\pr{H}$, is $p$ for $1/2 < p \leq 1$.
+
+You call him out on this, and Professor Leighton offers you a deal. He'll allow you to come up with an algorithm using the biased coin to \textit{simulate} a fair coin, such that the probability you win and he loses, $\pr{W}$, is equal to the probability that he wins and you lose, $\pr{L}$. You come up with the following algorithm:
+
+\begin{enumerate}
+\item Flip the coin twice.
+\item Based on the results:
+	\begin{itemize}
+	\item $TH \implies$ you win [$W$], and the game terminates.
+	\item $HT \implies$ Professor Leighton wins [$L$], and the game terminates.
+	\item $(HH \lor TT) \implies$ discard the result and flip again.
+	\end{itemize}
+\item If at the end of $N$ rounds nobody has won, declare a tie.
+\end{enumerate}
+As an example, for $N=3$, an outcome of $HT$ would mean the game ends early and you lose, $HHTH$ would mean the game ends early and you win, and $HHTTTT$ would mean you play the full $N$ rounds and result in a tie.
+
+\bparts
+
+\ppart{5}
+Assume the flips are mutually independent. Show that $\pr{W} = \pr{L}$.
+
+\solution{
+The probability of you winning is equal to the probability that you win in the first round, plus the probability that nobody won in the first round times the probability that you win in the second round, plus the probability that nobody won in the first two round times the probability that you win in the third round, etc. The same goes for Professor Leighton. Hence:
+\begin{align*}
+\pr{W} &= \pr{TH} + \pr{HH \lor TT}\pr{TH} + \pr{HH \lor TT}^2\pr{TH} + \ldots \\
+& = \pr{TH} \cdot \sum_{i=0}^N \pr{HH \lor TT}^i \\
+& = \pr{HT} \cdot \sum_{i=0}^N \pr{HH \lor TT}^i\\
+& = \pr{L}
+\end{align*}
+The middle step is possible because $\pr{TH} = (1-p)p = p(1-p) = \pr{HT}$.
+}
+
+\ppart{5}
+Show that, if $p<1$, the probability of a tie goes to 0 as $N$ goes to infinity.
+
+\solution{
+The probability of a tie is just the probability that nobody won all $N$ rounds, namely:
+\[
+\pr{tie} = (\pr{HH \lor TT})^N = (\pr{HH} + \pr{TT})^N = (p^2 + (1-p)^2)^N
+\]
+So the limit as $N$ goes to infinity is 0, given that $p$ and therefore $p^2 + (1-p)^2$ are $< 1$.
+}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Spring08, Pset 11, Problem 7
+\begin{problem}{20}
+
+\bparts
+
+\ppart{5} Suppose $A$ and $B$ are \emph{disjoint} events.  Prove that $A$ and
+$B$ are \emph{not independent}, unless $\prob{A}$ or $\prob{B}$ is zero.
+
+\solution{ Since $A$ and $B$ are disjoint, 
+\[
+\prob{A \intersect B} =  \prob{\emptyset}  = 0.
+\]
+So, $\prob{A \intersect B}=\prob{A} \cdot \prob{B}$ iff $\prob{A}=0$ or $\prob{B}=0$.
+}
+
+
+\ppart{5} If $A$ and $B$ are independent, prove that $A$ and $\overline{B}$
+are also independent.
+
+\textit{Hint:  $\prob{A \intersect \overline{B}} = \prob{A} - \prob{A \intersect B}$.}
+
+\iffalse
+
+You may find it useful to use results from Problem
+\ref{Identities}.
+
+Problem \ref{Identities} (\ref{setminus})
+\fi
+
+\solution{
+\begin{align*}
+\prob{A \intersect \overline{B}}
+% &= \prob{A - B} \\
+ &= \prob{A} - \prob{A \intersect B} &&\text{(by the hint)} \\
+ &= \prob{A} - \prob{A} \cdot \prob{B} &&\text{(since $A$ and $B$ are independent)} \\
+ &= \prob{A} \cdot (1 - \prob{B}) \\
+ &= \prob{A} \cdot \prob{\overline{B}}.
+\end{align*}
+The last equality holds since the probability of any event equals $1$ minus the probability of its
+complement.
+Thus, we have shown that $\prob{A \intersect \overline{B}}=\prob{A} \cdot \prob{\overline{B}}$,
+which is equivalent to $A$ and $\overline{B}$ being independent.
+}
+
+
+\ppart{5} 
+Give an example of events $A$,$B$, $C$ such that $A$ is independent of $B$,
+$A$ is independent of $C$, but $A$ is not independent of $B\union C$.
+
+\solution{The experiment is 2 independent coin flips, letting $A$ be ``the
+1st flip is heads'', $B$ the ``the 2nd flip is heads,'' $C$ is ``odd
+number of heads.''  Then $A$ is not independent of $B \union C$ because
+\[
+\prcond{A}{B \union C}= \frac{\prob{A \intersect (B \union C)}}{\prob{B \union C}}= \frac{\prob{HH,HT}}{\prob{HH,TH,HT}} = 2/3 \neq 1/2 = \prob{A}.
+\]
+
+\iffalse
+
+Consider the usual random experiment of
+rolling a die and let $A$, $B$, $C$ be the events that the die rolls
+less than 3, rolls an even number, or rolls a prime number,
+respectively. I.e., 
+\[
+A = \{1,2\} \qquad
+B = \{2,4,6\} \qquad
+C = \{2,3,5\}.
+\]
+Then, 
+$$
+\prob{A}=\tfrac{1}{3}, 
+\qquad
+\prob{B}=\prob{C}=\tfrac{1}{2},
+$$
+and
+$$
+\prob{A\cap B}=
+\prob{A\cap C}=
+\prob{B\cap C}=
+\prob{A\cap B\cap C}=
+\prob{\{2\}}=
+\tfrac{1}{6}.
+$$
+Easily, 
+$$
+\prob{A\mid B}=
+\prob{A\mid C}=
+\tfrac{1}{6}/\tfrac{1}{2}=
+\tfrac{1}{3}=
+\prob{A},
+$$
+which proves $A$ is independent of $B$ and also independent of
+$C$. However, 
+$$
+\prob{A\mid B\cap C}=
+\prob{A\cap B\cap C}/\prob{B\cap C}=
+\tfrac{1}{6}/\tfrac{1}{6}=
+1\neq
+\prob{A},
+$$
+which implies $A$ is not independent of $B\cap C$.
+\fi
+
+}
+
+\ppart{5} Prove that if $C$ is independent of $A$, and $C$ is independent of
+$B$, and $C$ is independent of $A \intersect B$, then $C$ is independent
+of $A \union B$.
+
+\textit{Hint:} Calculate $\prcond{A \union B}{C}$.
+
+\solution{
+Conditional inclusion-exclusion followed by plain inclusion-exclusion provides
+a quick proof:
+\begin{align*}
+\prcond{A \union B}{C}
+ &= \prcond{A}{C} + \prcond{B}{C} - \prcond{A \intersect B}{C}
+    & \text{(by conditional inc-ex)}\\
+ &= \prob{A} + \prob{B} - \prob{A \intersect B}
+    &\text{(by independence)} \\
+ &= \prob{A \union B}
+    & \text{(by regular inc-ex)}
+\end{align*}
+}
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newpage
+
+\begin{problem}{20}
+Recall the strange dice from lecture:
+\begin{center}
+%\mfigure{!}{3.5in}{lec2-dice}
+\mfigure{!}{2in}{dice}
+\end{center}
+In lecture we proved that if we roll each die once, then die $A$ beats $B$ more often, die $B$ beats die $C$ more often, and die $C$ beats die $A$ more often. Thus, contrary to our intuition, the ``beats'' relation $>$ is not transitive. That is, we have $A > B > C > A$.
+
+We then looked at what happens if we roll each die twice, and add the result. In lecture, we showed that rolling die $B$ twice is more likely to win, i.e., have a larger sum, than rolling die $A$ twice, which is the opposite of what happened if we were to just roll each die once! In fact, we will show that the ``beats'' relation reverses in this game, that is, $A < B < C < A$, which is very counterintuitive!
+
+\bparts
+\ppart{5}
+Show that rolling die $C$ twice is more likely to win than rolling die $B$ twice.
+
+\solution{We draw the sample space. In the figure, it should be understood that the tree corresponding to $B$ is connected to each leaf of the tree corresponding to $C$. 
+\begin{center}
+\mfigure{!}{3in}{diceBC}
+\end{center}
+As in lecture, there are $81$ leaves and the space is uniform, i.e., each outcome occurs with probability $(1/3)^4 = 1/81$. Let's work out the chances of winning. The sum of the two rolls of the $B$ die is equally likely to be any element of the following multiset:
+$$S_B = \{2, 6, 6, 10, 10, 10, 14, 14, 18\}.$$
+The sum of the two rolls of the $C$ die is equally likely to be any element of the following multiset:
+$$S_C = \{6, 7, 7, 8, 11, 11, 12, 12, 16\}.$$
+We can treat each outcome as a pair $(x,y) \in S_B \times S_C$, where $C$ wins iff $y > x$. If $y = 6$, there is $1$ value of $x$, namely $x = 2$, for which $y > x$. Continuing the count in this way, the number of pairs for which $y > x$ is $$1 + 3 + 3 + 3 + 6 + 6 + 6 + 6 + 8 = 42,$$
+while there are $2$ ties and $37$ cases where $B$ wins. Thus, rolling die $C$ twice is more likely to win than rolling die $B$ twice.
+}
+
+\ppart{5} 
+Show that rolling die $A$ twice is more likely to win that rolling die $C$ twice.
+
+\solution{We draw the sample space. In the figure, it should be understood that the tree corresponding to $C$ is connected to each leaf of the tree corresponding to $A$. 
+\begin{center}
+\mfigure{!}{3in}{diceCA}
+\end{center}
+As in lecture, there are $81$ leaves and the space is uniform, i.e., each outcome occurs with probability $(1/3)^4 = 1/81$. Let's work out the chances of winning. The sum of the two rolls of the $C$ die is equally likely to be any element of the following multiset:
+$$S_C = \{6, 7, 7, 8, 11, 11, 12, 12, 16\}.$$
+The sum of the two rolls of the $A$ die is equally likely to be any element of the following multiset:
+$$S_A = \{4, 8, 8, 9, 9, 12, 13, 13, 14\}.$$
+We can treat each outcome as a pair $(x,y) \in S_C \times S_A$, where $A$ wins iff $y > x$. If $y = 4$, there is no $x$ for which $y > x$. If $y = 8$, there are $3$ values of $x$, namely $x = 6, 7, 7$, for which $y > x$. Continuing the count in this way, the number of pairs for which $y > x$ is $$0 + 3 + 3 + 4 + 4 + 6 + 8 + 8 + 8 = 44,$$
+while a similar count shows that there are only $33$ pairs for which $x > y$, and there are $4$ ties. Thus, rolling die $A$ twice is more likely to win than rolling die $C$ twice.
+}
+
+\ppart{5}
+Show that rolling die $B$ twice is more likely to win that rolling die $A$ twice.
+
+\solution{We draw the sample space. In the figure, it should be understood that the tree corresponding to $C$ is connected to each leaf of the tree corresponding to $A$. 
+\begin{center}
+\mfigure{!}{3in}{diceAB}
+\end{center}
+As in lecture, there are $81$ leaves and the space is uniform, i.e., each outcome occurs with probability $(1/3)^4 = 1/81$. Let's work out the chances of winning. The sum of the two rolls of the $A$ die is equally likely to be any element of the following multiset:
+$$S_A = \{4, 8, 8, 9, 9, 12, 13, 13, 14\}.$$
+The sum of the two rolls of the $A$ die is equally likely to be any element of the following multiset:
+$$S_B = \{2, 6, 6, 10, 10, 10, 14, 14, 18\}.$$
+We can treat each outcome as a pair $(x,y) \in S_A \times S_B$, where $B$ wins iff $y > x$. If $y = 2$, there is no $x$ for which $y > x$. If $y = 6$, there is $1$ value of $x$, namely $x = 4$, for which $y > x$. Continuing the count in this way, the number of pairs for which $y > x$ is $$0 + 1 + 1 + 5 + 5 + 5 + 8 + 8 + 9 = 42,$$
+while a similar count shows that there are only $37$ pairs for which $x > y$, and there are $4$ ties. Thus, rolling die $A$ twice is more likely to win than rolling die $C$ twice.
+}
+
+\eparts 
+
+\end{problem}
+%\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+
+
+\begin{problem}{15}
+
+\bparts
+
+\ppart{7} Suppose you repeatedly flip a fair coin until you see the sequence
+\texttt{HHT} or the sequence \texttt{TTH}.  What is the probability you
+will see \texttt{HHT} first? 
+
+\textit{Hint:}
+Use a bijection argument.
+
+\solution{
+In this case the answer is $1/2$.  The proof is by a bijection
+argument on the sample space.  Let $A$ denote the event that you see
+\texttt{HHT} before \texttt{TTH}, and $B$ denote the event that you see
+\texttt{TTH} before \texttt{HHT}.
+
+We will define a bijection, $g$, between $A$ and $B$ so that the
+probability of $g(w)$ is equal to the probability of $w$.  The bijection
+is quite simple.  Given a sample point $w \in A$, define $g(w) = \bar{w}$,
+where $\bar{w}$ is the outcome where every \texttt{H} is replaced by a
+\texttt{T} and vice versa.  For example $g(\mathtt{HHT}) =
+\overline{\mathtt{HHT}} = \mathtt{TTH}$.
+
+To show that $g$ is a bijection, we first observe that $g:A \rightarrow
+B$.  This follows from the fact that \texttt{HHT} precedes \texttt{TTH} in
+$w$ iff $\overline{\mathtt{HHT}} = \mathtt{TTH}$ precedes
+$\overline{\mathtt{TTH}} = \mathtt{HHT}$ in $\bar{w}$.  And $g$ is onto by
+the same reasoning.  Since $g$ is clearly an injection, we can conclude
+that it is a bijection.
+
+Then we observe that $\prob{w} = \prob{g(w)}$ for any $w$.  This is because
+$\prob{\heads} = \prob{\tails}$ and $g(w)$ has the same length as
+$w$.  Hence,
+\[
+\prob{A} = \sum_{w \in A} \prob{w} = \sum_{w\in A} \prob{g(w)}
+= \sum_{w' \in B} \prob{w'}  =  \prob{B}.
+\]
+The second equality is valid because $g$ preserves the probability, and
+the third by the bijection property with $w' = g(w)$.  Note that the fact
+that \texttt{H} and \texttt{T} are equally likely is critical in these
+calculations; this analysis would fail for a biased coin.
+
+Finally we have to show that $\prob{A \union B} = 1$.  This follows from the
+fact that the only way never to throw either pattern is to throw all
+\texttt{H}'s or all \texttt{T}'s after the first toss, and we know that
+the probability of there being an unbounded number of tosses of only H or
+only T is zero.  That is, $\prob{\overline{A \union B}} = 0$ and so $\prob{A
+\union B} = 1$.  Since $A$ and $B$ are disjoint, this means that $\prob{A} +
+\prob{B} = 1$ and hence
+\[
+\prob{A} = \frac{1}{2}.
+\]
+}
+
+\ppart{8} What is the probability you see the sequence \texttt{HTT} before
+you see the sequence \texttt{HHT}?
+
+\textit{Hint:}
+Try to find the probability that \texttt{HHT} comes before
+\texttt{HTT} conditioning on whether you first toss an \texttt{H} or a
+\texttt{T}. Somewhat surprisingly, the answer is not $1/2$.
+
+\solution{
+Let $A$ be the event that \texttt{HTT} appears before \texttt{HHT}, and let
+$p \eqdef \prob{A}$.
+
+Suppose our first toss is \texttt{T}.  Since neither of our patterns
+starts with \texttt{T}, the probability that $A$ will occur from this
+point on is still $p$.  That is, $\prcond{A}{\tails} = p$.
+
+Suppose our first toss is \texttt{H}.  To find the probability that $A$
+will now occur, that is, to find $q \eqdef \prcond{A}{\heads}$, we
+consider different cases based on the subsequent throws.
+
+Suppose the next toss is \texttt{H}, that is, the first two tosses are
+\texttt{HH}.  Then neither pattern appears if we continue flipping
+\texttt{H}, and when we eventually toss a \texttt{T}, the pattern
+\texttt{HHT} will then have appeared first.  So in this case, event $A$
+will never occur.  That is $\prcond{A}{\mathtt{HH}} = 0$.
+
+Suppose the first two tosses are \texttt{HT}.  If we toss a \texttt{T}
+again, then we have tossed \texttt{HTT}, so event $A$ has occurred.
+If we next toss an \texttt{H}, then we have tossed \texttt{HTH}.  But this
+puts us in the same situation we were in after rolling an \texttt{H} on
+the first toss.  That is, $\prcond{A}{\mathtt{HTH}} = q$.
+
+Summarizing this we have:
+\begin{align*}
+\pr{A} &=
+\prcond{A}{\tails}\pr{\tails}+\prcond{A}{\heads}\pr{\heads}
+& \text{(Law of Total Probability)}\\
+p & = p\frac{1}{2} + q\frac{1}{2} & \text{so}\\
+p & = q.%\label{peq}
+\end{align*}
+
+Continuing, we have
+\begin{align}
+\prcond{A}{\heads}
+&=
+\prcond{A}{\mathtt{HT}}\pr{\tails}+\prcond{A}{\mathtt{HH}}\pr{\heads}
+    & \text{(Law of Total Probability)}\notag\\
+q &= \prcond{A}{\mathtt{HT}}\frac{1}{2} + 0\cdot\frac{1}{2}\label{here}\\
+\prcond{A}{\mathtt{HT}} & =
+\prcond{A}{\mathtt{HTT}}\pr{\tails}+\prcond{A}{\mathtt{HTH}}\pr{\heads}
+& \text{(Law of Total Probability)}\notag\\
+\prcond{A}{\mathtt{HT}} & = 1\cdot\frac{1}{2} + q\frac{1}{2} \label{there}\\
+q & = (\frac{1}{2} + \frac{q}{2})\frac{1}{2} & \text{by~\eqref{here} \&~\eqref{there}}\notag\\
+q & = \frac{1}{3}.\notag
+\end{align}
+
+So \texttt{HTT} comes before \texttt{HHT} with probability
+\[
+p=q =\cfrac{1}{3}.
+\]
+
+These kind of events are have an amazing \emph{intransitivity}
+property: if you pick \emph{any} pattern of three tosses such as
+\texttt{HTT}, then I can pick a pattern of three tosses such as
+\texttt{HHT}.  If we then bet on which pattern will appear first in a
+series of tosses, the odds will be in my favor.  In particular, even
+if you instead picked the ``better'' pattern \texttt{HHT}, there is
+another pattern I can pick that has a more than even chance of
+appearing before \texttt{HHT}.  Watch out for this intransitivity
+phenomenon if somebody proposes that you bet real money on coin flips.
+}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
