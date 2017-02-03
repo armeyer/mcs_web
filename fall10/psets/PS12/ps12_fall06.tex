@@ -1,0 +1,617 @@
+\documentclass[11pt,twoside]{article}   
+\usepackage{../light}
+
+
+\hidesolutions
+%\showsolutions
+
+\renewcommand{\bar}[1]{\overline{#1}}
+
+\newcommand{\lgunion}{\bigcup}
+\newcommand{\lgintersect}{\bigcap}
+
+\newlength{\strutheight}
+
+%\newcommand{\paren}[1]{\left(#1\right)}
+
+\newcommand{\range}[1]{\mathop{\textup{range}}\nolimits\left(#1\right)}
+\newcommand{\card}[1]{\size{#1}}
+
+\newcommand{\prob}[1]{\mathop{\textup{Pr}} \nolimits \left( #1 \right)}
+\newcommand{\prcond}[2]{%
+  \ifinner \settoheight{\strutheight}{$#1 #2$}
+  \else    \settoheight{\strutheight}{$\displaystyle#1 #2$} \fi%
+  \mathop{\textup{Pr}}\nolimits\left(
+    #1\,\left|\protect\rule{0cm}{\strutheight}\right.\,#2  \right)}
+
+\newcommand{\intersect}{\cap}
+\newcommand{\union}{\cup}
+
+\newcommand{\Ex}{\mathop{\textup{E}}\nolimits}
+\newcommand{\expect}[1]{\Ex\left[#1\right]}
+\newcommand{\expectsq}[1]{{\Ex}^2\left[#1\right]}
+\newcommand{\expcond}[2]{\expect{#1\mid#2}}
+
+\begin{document}
+\problemset{12}{November 21, 2006}{\textit{Friday, December 1 at \textbf{5 PM}}}
+
+%\insolutions{\stamp}
+
+
+%\problemdata
+%{induction}
+%{random variable}
+%{distribution}
+%{Eric Ho, S02}
+
+
+
+\begin{problem}[15 points]
+Three gunfighters, $A$, $B$, and $C$, plan to fight a pistol duel.
+They stand in a triangle so that they all have a clear shot at each other.
+All of them know that $A$'s chance of hitting his target is $0.3$,
+$B$ never misses, and $C$'s chance of hitting is $0.5$.
+They will shoot one at a time in the sequence $ABCABC\ldots$
+(once a fighter is dead, he no longer gets a turn).
+On his turn, a gunfighter may choose to target either one of the
+other two, or may fire harmlessly into the air.
+Assume that each gunfighter uses the shooting strategy that maximizes his probability
+of being the only one left standing. 
+
+\textit{Note:}
+You may assume that the events of hitting the desired target at each turn
+are mutually independent.
+
+\bparts
+
+\ppart
+Whenever it is $B$'s turn, what is his optimal strategy?
+
+\solution{
+If either $A$ or $C$ is already dead, $B$ only needs to shoot the remaining
+fighter to win.
+So suppose that both $A$ and $C$ are still alive.
+Since $B$ never misses, the person he doesn't shoot will only have $B$ left to shoot at.
+To minimize this remaining person's chance of hitting $B$,
+the optimal stategy for $B$ is to shoot the most accurate gunfighter.
+So $B$ will shoot $C$---this gives him a $1-0.3 = 0.7$
+chance of survival---and not $A$---that would only give him a $1-0.5
+= 0.5$ chance of survival.
+
+}
+
+\ppart What is $A$'s probabililty of surviving if:
+
+\begin{enumerate}
+
+\item he misses on his first shot?
+
+\solution{If $A$ misses, then by part~(a), $B$ shoots $C$, and $A$ gets
+one more shot to kill $B$ before he himself is killed.  Therefore $A$ has a
+$0.3$ chance of survival.}
+
+
+\item he hits $B$ on his first shot?
+
+\solution{With $B$ dead, $A$ then he enters a duel
+with $C$, where $C$ gets the first shot.  In this case, let $p$ be
+the probability that $A$ wins the duel.  For this to happen, either
+$C$ must miss and $A$ must hit (probability $0.5 \cdot 0.3$) or else
+$C$ must miss, $A$ must miss, and then $A$ must win a duel of the
+same type as before (probability $0.5 \cdot 0.7 \cdot p$).  As an
+equation:
+\begin{displaymath}
+p = \frac{1}{2} \cdot \frac{3}{10} + \frac{1}{2} \cdot \frac{7}{10} p,
+\end{displaymath}
+which has the solution $p = 3 /13 < 0.24$.
+}
+
+\item he hits $C$ on his first shot?
+
+\solution{With $C$ dead, then $B$ immediately kills him, so his probability
+of survival in this case is 0.}
+
+\end{enumerate}
+
+\ppart Conclude that $A$'s best strategy is to fire in the air!  What is
+his probability of survival?
+
+\solution{
+
+If $A$ hits $B$ or $C$, his probability of survival is lower than if he
+misses.  So his best strategy is to fire into the air; this gives him the
+probability of survival that he has when he misses, namely $0.3$.
+}
+
+
+\eparts
+\end{problem}
+
+
+\begin{problem}
+Your TA has invented a random number generator using a bunch of red
+balls, a bunch of green balls, and a bin.  This is how it works.
+
+Initially, there is a red ball and a green ball in the bin.  Your TA
+randomly removes one ball from the bin, and then puts back into the bin
+two balls of the same color as the one removed.  He/she repeats this
+process until there are exactly $n$ balls in the bin.  Define the random
+variable
+\[
+R_n = \text{ number of red balls in the bin when the bin has $n$ balls.}
+\]
+
+Your TA observes that $R_n$ is a random variable taking integer values
+from 1 to $n-1$ with a \emph{uniform} distribution.  Prove this.
+\emph{Hint:} Induction.
+
+\solution{
+By induction on $n \ge 2$, with induction hypothesis
+\[
+P(n) = [R_n \text{ has a uniform distribution over $\set{1,\dots,n-1}$}].
+\]
+
+\textbf{Base case} ($n=2$): $R_2$ only takes the value 1, so is uniform on the
+integers from 1 to $2-1$, as required.
+
+\textbf{Inductive step}: Assume $P(n)$, that is, the distribution of red
+balls among $n$ balls is uniform.  We need to show that the distribution
+of red balls among $n+1$ balls is uniform, that is, that $\pr{R_{n+1} = j}
+= 1/n$ for $1 \leq j \leq n$.
+
+Since one ball is added at each step, we know that
+\begin{itemize}
+\item $R_{n+1} = R_n$ and a green ball was added as the $n+1$st ball, or
+\item $R_{n+1} = R_n+1$ and a red ball was added as the $n+1$st ball.
+\end{itemize}
+
+So we can apply the Total Probability Law to calculate $\pr{R_{n+1} = j}$:
+\begin{align}
+\pr{R_{n+1} = j} = & \prcond{R_{n+1} = j}{R_n = j} \cdot \pr{R_{n} =
+ j}\label{TP} + \\
+ & \prcond{R_{n+1} = j }{R_{n} = j-1} \cdot \pr{R_{n} = j-1}.\notag
+\end{align}
+Now if there are exactly $j$ red balls among $n$ balls in the bin, then
+the probability of picking a green ball is $(n-j)/n$.  That is,
+\begin{equation}\label{g}
+\prcond{R_{n+1} = j}{R_n = j} = \frac{n-j}{n}
+\end{equation}
+Likewise, if there were $j-1$ red balls among $n$ balls, the probability
+of picking a red ball is $(j-1)/n$, so
+\begin{equation}\label{r}
+\prcond{R_{n+1} = j}{R_n = j-1} = \frac{j-1}{n}
+\end{equation}
+Also, by induction hypothesis, we have
+\begin{equation}\label{u}
+\pr{R_{n} = j} = \pr{R_{n} = j-1} = \frac{1}{n-1}
+\end{equation}
+Plugging the values from~\eqref{g},~\eqref{r},~\eqref{u}, into~\eqref{TP},
+we conclude that
+\[
+\pr{R_{n=1} = j} =
+\frac{n-j}{n}\cdot\frac{1}{n-1} + \frac{j-1}{n} \cdot \frac{1}{n-1} 
+= \frac{1}{n}
+\]
+as required.}
+\end{problem}
+
+
+%\problemdata      
+%        {?} % latex-friendly label for the prob.
+%        {Probability-Expectation} % The topic(s) of the problem content.
+%        {?} % Source (if known)
+ %       {F01, TU11-5} % Usage (list ones you are aware of).
+ %       {Christos Kapoutsis, S02} % Last revision info (author, date).
+
+\begin{problem}
+A biased coin will be flipped $n$ times.  The probability of Heads on each
+flip is $h$, and the flips are independent.  Write simple formulas for:
+
+\bparts
+\ppart The probability of $k$ Heads.
+
+\solution{Let $H$ be the random variable equal to the number of Heads in
+$n$ trials.  Then $H$ has binomial distribution with parameters $n,h$, so
+\[
+\pr{H=k} = \binom{n}{k}h^k(1-h)^{n-k}
+\]
+for $0\leq k \leq n$.}
+
+\ppart The probability of at least one Head.
+
+\solution{\[
+\prob{H>0}  = 1-\prob{\text{No Head}} = 1-(1-h)^n.
+\]
+}
+
+\ppart The expected number of flips before the first Head.
+
+\solution{Let $T$ be a random variable representing the number of trials
+before the first Head.  Calculating $\expect{T}$ is similar to finding
+mean time to failure, except that we stop after $n$ trials.
+
+\begin{eqnarray*}
+\expect{T} &=& \sum_{i=0}^{\infty} \prob{T>i} \\
+           &=& \sum_{i=0}^{n-1} \prob{T>i} \\
+           &=& \sum_{i=0}^{n-1} (1-h)^i\\
+           &=& \frac{1-(1-h)^n}{h}.
+\end{eqnarray*}
+}
+
+\eparts
+
+\end{problem}
+
+
+%\problemdata     
+%{S01-PS9-8}           
+%{probability-k-events, mutual independence}              
+%{} 		
+%{X96, S01-PS9}
+%{S01 Karger} revised 11/04 by ARM
+
+\begin{problem}
+
+Suppose $n$ balls are thrown randomly into $n$ boxes, so each ball lands in
+each box with uniform probability.  Also, suppose the outcome of each throw
+is independent of all the other throws.
+
+\bparts
+
+\ppart Let $X_i$ be an indicator random variable whose value is $1$ if box
+$i$ is empty and $0$ otherwise.  Write a simple closed form expression for
+the probability distribution of $X_i$.   Are $X_1, X_2, \ldots, X_n$
+independent random variables?
+
+\solution{
+Box $i$ is empty iff all $n$ balls land in other boxes.  The probability
+that a ball will land in another box in $(n-1)/n = 1- (1/n)$, and since
+the balls are thrown independently, we have
+\begin{equation}\label{pxi}
+\prob{X_i=1} = \paren{1 - \frac{1}{n}}^n.
+\end{equation}
+The $X_i$'s are not independent.  For example, 
+\[
+\prob{X_1=X_2=\cdots = X_n=1}=0 < \prod_{i=1}^n \prob{X_i = 1}.
+\]
+}
+
+\ppart Find a constant, $c$, such that the expected number of empty boxes
+is asymptotically equal ($\sim$) to $cn$.
+
+\solution{The number of empty boxes is the sum of the $X_i$'s.  So the
+expected number of empty boxes is the sum of the expectations of the
+$X_i$'.  By~\eqref{pxi}, we now have
+\[
+\ex{\text{number of empty boxes}} = n\ex{X_1} = n\paren{1 - \frac{1}{n}}^n \sim
+n\cdot\frac{1}{e}
+\]
+That is,
+\[
+c = \frac{1}{e}
+\]
+}
+
+\ppart Show that
+\[
+\prob{\text{at least $k$ balls fall in the first box}}
+\leq {\binom{n}{k}} \left(\frac{1}{n}\right)^k.
+\]
+
+\solution{Let $S$ be a set of $k$ of the $n$ balls, and let $E_S$ be the
+event that each of these $k$ balls falls in the first box.  Since the
+probability that a ball lands in this box is $1/n$, and the throws are
+independent, we have
+\begin{equation}\label{ES}
+\prob{E_S}=\paren{\frac{1}{n}}^k.
+\end{equation}
+The event that \emph{at least} $k$ balls land in the first box is the
+union of all the events $E_S$.  There are $\binom{n}{k}$ subsets, $S$, of
+$k$ balls, so by the Union Bound,
+\[
+\prob{\text{at least $k$ balls fall in the first box}}
+\leq {\binom{n}{k}} \cdot \prob{E_S}.
+\]
+Using the value for $\prob{E_S}$ from~\eqref{ES} in the preceding
+inequality yields the required bound.
+}
+
+\ppart Let $R$ be the maximum of the numbers of balls that land in each of
+the boxes.  Conclude from the previous parts that
+\[
+\pr{R \geq k} \leq \frac{n}{k!}.
+\]
+
+\solution{ Note that $R \geq k$ exactly when some box has at least $k$
+balls.  Since the bound on the probability of at least $k$ balls in the
+first box applies just as well to any box, we can apply the Union Bound to
+having at least $k$ balls in at least one of the $n$ boxes:
+\[
+\prob{R \geq k} \leq n\prob{\text{at least $k$ balls fall in the first
+box}}.
+\]
+So from the previous problem part, we have
+\begin{align*}
+\prob{R \geq k} & \leq n\binom{n}{k} \paren{\frac{1}{n}}^{k}\\
+                & = n\paren{\frac{n(n-1)\cdots(n-k+1)}{k!\, n^k}}\\
+                & = \frac{n}{k!}
+                        \paren{\frac{n}{n} \cdot \frac{n-1}{n} \cdots \frac{n-k+1}{n}}
+                    \\
+                & \leq \frac{n}{k!}
+\end{align*}
+}
+
+\ppart Conclude that 
+\[
+\lim_{n \to \infty} \pr{R \geq n^{\epsilon}} = 0
+\]
+for all $\epsilon >0$.
+
+\solution{Using Stirling's formula, and the upper bound from the previous
+part, we have
+\[
+\pr{R \geq k} \leq
+\frac{n}{k!} \sim \frac{n}{\sqrt{2\pi k}(k/e)^k} \leq
+\frac{n}{(k/e)^k} = \frac{ne^k}{k^k} = 
+\frac{e^{k + \ln n}}{e^{k \ln k}}.
+\]
+Now let $k= n^{\epsilon}$.  Then the exponent of $e$ in the numerator
+above is $n^{\epsilon} + \ln n$, and the exponent of $e$ in the
+denominator is $n^{\epsilon} \ln n^{\epsilon}$.  Since
+\[
+n^{\epsilon} + \ln n = o(n^{\epsilon} \ln n^{\epsilon}),
+\]
+we conclude
+\[
+\pr{R \geq n^{\epsilon}} \leq \frac{e^{n^{\epsilon} + \ln
+n}}{e^{n^{\epsilon} \ln n^{\epsilon}}} \to 0
+\]
+as $n$ approaches $\infty$.
+}
+
+\iffalse
+
+\medskip
+
+Two special cases of the Theorem are worth singling out because they come
+up all the time.
+\begin{corollary*}
+Suppose an event has probability $1/m$.  Then the probability that the
+even will occur at least once in $m$ independent trials is approximately
+$1- 1/e \approx 63\%$.  There is a 50\% chance the event will occur in $n
+= \log 2 m \approx 0.69m$ trials.
+\end{corollary*}
+
+
+\ppart
+Prove the Corollary.
+
+\solution{
+From the Taylor's expansion of $e^x$, we have
+\begin{equation} \label{1+xesim}
+1 + x \approx e^x,
+\end{equation}
+for $0 \leq x \leq 1$.
+
+In this case, $\pr{A_i}=1/m$ for $1\leq i \leq n$ and
+\[
+\expect{\text{\# occurrences}} = n \frac{1}{m} = \frac{n}{m}.
+\]
+So by the Theorem,
+\[
+\pr{\text{no occurrence}} \leq e^{-(n/m)},
+\]
+and therefore
+\begin{equation}\label{1-enm}
+\pr{\text{at least one occurrence}} \geq 1 - e^{-(n/m)}.
+\end{equation}
+In fact, it follows from by~(\ref{1+xesim}), that the $\geq$
+in~(\ref{1-enm}) is an approximate equality.
+
+So if the number, $n$ of trials is $m$, we have
+\[
+\pr{\text{at least one occurrence}} \approx 1- e^{-(m/m)} = 1-\frac{1}{e}.
+\]
+
+If we want
+\[
+1 - e^{-(n/m)} \approx \pr{\text{at least one occurrence}} \approx
+\frac{1}{2},
+\]
+then we need
+\[
+e^{-(n/m)} \approx \frac{1}{2},
+\]
+so taking log's we conclude
+\[
+n \approx m\log 2.
+\]
+}
+
+\fi
+
+\eparts
+
+\end{problem}
+
+
+%F95 pset 11
+
+\begin{problem}
+Ike Harmon wants to get married, but he isn't sure that he's met his soulmate yet. He decides on the following strategy. He will marry the first woman he meets. Then, if he meets someone he finds more suitable, he will divorce his current wife and marry the newcomer.
+
+Suppose Ike meets a total of $n$ women throughout his life, and for any two women, Ike prefers one to the other. Moreover, due to the randomness in everyday life, Ike unfortunately meets these $n$ women in random order.
+
+Prove that the expected number of times Ike has to marry is $\sim \ln n$.
+
+\emph{Hint:} Let $M_i$ be the indicator variable for the event that Ike marries
+the $i$th woman.
+
+\solution{Note that the number of times Ike marries is
+precisely $M= M_1 + \ldots + M_n$.  Since expectation is a linear
+operator, we can compute $\expect{M}$ by finding $E(M_i)$ for all $i$ and
+summing them up.  Note also that since $M_i$ is an ``indicator'' variable,
+we only have to find $\pr{M_i=1}$.  In a random permutation, this happens
+with probability $1/i$.  Why?  Because all permutations of the first $i$
+women that Ike meets are equally likely, and the most suitable for Ike
+occurs as the last woman of the permutation in $1/i$ of the cases.  Thus
+\begin{eqnarray*}
+\expect{M} & = & \sum_i \pr{M_i=1} \\
+     & = & \sum_{i=1}^n 1/i \\
+     & = & H_n \sim \ln n,
+\end{eqnarray*}
+where $H_n$ is the $n$th Harmonic number.
+}
+\end{problem}
+
+\begin{problem}
+MIT students sometimes delay laundry for a few days.  Assume all
+random values described below are mutually independent.
+
+\bparts
+
+\ppart A \term{busy} student must complete 3 problem sets before doing
+laundry.  Each problem set requires 1 day with probability $2/3$ and 2
+days with probability $1/3$.  Let $B$ be the number of days a busy
+student delays laundry.  What is $\expect{B}$?
+
+Example: If the first problem set requires 1 day and the second and
+third problem sets each require 2 days, then the student delays for $B
+= 5$ days.
+
+\solution{ The expected time to complete a problem
+set is:
+%
+\[
+1 \cdot \frac{2}{3} + 2 \cdot \frac{1}{3} = \frac{4}{3}
+\]
+%
+Therefore, the expected time to complete all three problem sets is:
+%
+\begin{align*}
+\expect{B}
+    & = \expect{\text{pset1}} + \expect{\text{pset2}} + \expect{\text{pset3}} \\
+    & = \frac{4}{3} + \frac{4}{3} + \frac{4}{3} \\
+    & = 4
+\end{align*}
+}
+
+\ppart A \term{relaxed} student rolls a fair, 6-sided die in the
+morning.  If he rolls a 1, then he does his laundry immediately (with
+zero days of delay).  Otherwise, he delays for one day and repeats the
+experiment the following morning.  Let $R$ be the number of days a
+relaxed student delays laundry.  What is $\expect{R}$?
+
+Example: If the student rolls a 2 the first morning, a 5 the second
+morning, and a 1 the third morning, then he delays for $R = 2$ days.
+
+\solution{If we regard doing laundry as a failure, then the mean time
+to failure is $1 / (1/6) = 6$.  However, this counts the day laundry
+is done, so the number of days delay is $6 - 1 = 5$.  Alternatively,
+we could derive the answer as follows:
+%
+\begin{align*}
+\expect{R}
+    & = \sum_{k=0}^{\infty} \pr{R > k} \\
+    & = \frac{5}{6} + \paren{\frac{5}{6}}^2 + \paren{\frac{5}{6}}^3 + \ldots \\
+    & = \frac{5}{6} \cdot
+            \paren{1 + \frac{5}{6} + \paren{\frac{5}{6}}^2 + \ldots} \\
+    & = \frac{5}{6} \cdot \frac{1}{1 - 5/6} \\
+    & = 5
+\end{align*}
+}
+
+\ppart Before doing laundry, an \term{unlucky} student must recover
+from illness for a number of days equal to the product of the numbers
+rolled on two fair, 6-sided dice.  Let $U$ be the expected number of
+days an unlucky student delays laundry.  What is $\expect{U}$?
+
+Example: If the rolls are 5 and 3, then the student delays for $U =
+15$ days.
+
+\solution{Let $D_1$ and $D_2$ be the two die rolls.  Recall that a die
+roll has expectation $7/2$.  Thus:
+%
+\begin{align*}
+\expect{U}
+    & = \expect{D_1 \cdot D_2} \\
+    & = \expect{D_1} \cdot \expect{D_2} \\
+    & = \frac{7}{2} \cdot \frac{7}{2} \\
+    & = \frac{49}{4}
+\end{align*}
+}
+
+\ppart A student is \term{busy} with probability $1/2$, \term{relaxed}
+with probability $1/3$, and \term{unlucky} with probability $1/6$.
+Let $D$ be the number of days the student delays laundry.  What is
+$\expect{D}$?
+
+\solution{
+\[
+\expect{D} = \frac{1}{2} \expect{B} + \frac{1}{3} \expect{R} + \frac{1}{6} \expect{U}
+\]
+}
+
+\eparts
+
+\end{problem}
+
+%S02 cp14m
+\iffalse
+
+\begin{problem}\label{noAi}
+
+In this problem you will check a proof of:
+\begin{theorem*}
+Let $E_1, E_2, \dots, E_n$ be a sequence of mutually independent events,
+and let $K$ be the random variable equal to the number of these events
+that occur.  The probability that none of the events occur is at most
+$e^{-\expect{K}}$.
+\end{theorem*}
+To prove the Theorem, let $K_i$ be the indicator variable for the event
+$E_i$.  Justify each line in the following derivation:
+
+\begin{proof}
+\begin{align*}
+\pr{K = 0}
+  & = \pr{\bar{\bigcup_{i=1}^n E_i}}\\
+  & = \pr{\bigcap_{i=1}^n \bar{E_i}}\\
+  & = \prod_{i=1}^n (1 - \pr{E_i})\\
+  & \leq  \prod_{i=1}^n e^{-\pr{E_i}}\\
+  & =  e^{\displaystyle -\sum_{i=1}^n \pr{E_i}}\\
+  & =  e^{\displaystyle -\sum_{i=1}^n \expect{K_i}}\\
+  & =  e^{-\expect{K}}.
+\end{align*}
+\end{proof}
+
+\solution{
+Note that
+\begin{equation}\label{Tsum}
+K = \sum_i K_i.
+\end{equation}
+Also, remember that
+\begin{equation} \label{1+xeleq}
+1 + x \leq e^x.
+\end{equation}
+
+\begin{proof}
+\begin{align*}
+\pr{K = 0}
+  & = \pr{\bar{\lgunion_{i=1}^n E_i}}
+               & \text{(def. of $K$)}\\
+  & =  \pr{\lgintersect_{i=1}^n \bar{E_i}}
+          & \text{(De Morgan's law)}\\
+  & =  \prod_{i=1}^n \pr{\bar{E_i}} & \text{(mutual independence of $E_i$'s)}\\
+  & =  \prod_{i=1}^n 1 - \pr{E_i} & \text{(complement rule)}\\
+  & \leq  \prod_{i=1}^n e^{-\pr{E_i}} & \text{(by~(\ref{1+xeleq}))}\\
+  & =  e^{-\sum_{i=1}^n \pr{E_i}} & \text{(exponent algebra)}\\
+  & =  e^{-\sum_{i=1}^n \expect{K_i}} & \text{(expectation of indicator variable)}\\
+  & =  e^{-\expect{K}}. & \text{((\ref{Tsum}) \& linearity of expectation)}
+\end{align*}
+\end{proof}
+}
+\end{problem}
+\fi
+
+
+\end{document}

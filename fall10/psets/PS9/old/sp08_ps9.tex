@@ -1,0 +1,841 @@
+\documentclass[11pt,twoside]{article}   
+\usepackage{latex-macros/course}% !! Use the macros
+
+%#well.ordering
+\renewcommand{\reading}{Notes for
+\href{http://courses.csail.mit.edu/6.042/spring08/ln10.pdf}{Week 10}.}
+
+
+%\showsolutions
+
+\begin{document}
+\problemset{9}                 % !! Start the problem set with its number
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From F07, ps9, problem 1
+
+\begin{problem}
+Suppose you have seven dice--- each a different color of the rainbow;
+otherwise the dice are standard, with six faces numbered 1 to 6.  A
+\emph{roll} is a sequence specifying a value for each die in rainbow
+(ROYGBIV) order.  For example, one roll is $(3,1,6,1,4,5,2)$ indicating
+that the red die showed a 3, the orange die showed 1, the yellow 6, the
+green 1, the blue 4, the indigo 5, and the violet 2.
+
+For the problems below, describe a bijection between the specified set of
+rolls and another set that is easily counted using the Product,
+Generalized Product, and similar rules.  Then write a simple numerical
+expression for the size of the set of rolls.  You do not need to prove
+that the correspondence between sets you describe is a bijection, and you
+do not need to simplify the expression you come up with.
+
+For example, let $A$ be the set of rolls where 4 dice come up showing the
+same number, and the other 3 dice also come up the same, but with a
+different number.  Let $R$ be the set of seven rainbow colors and $S$
+be the set $\set{1,\dots,6}$ of dice values.
+
+Define $B \eqdef S_2 \cross \set{3,4} \cross R_3$, where $S_2$ is the set
+of size 2 subsets of $S$, and $R_3$ is the set of size 3 subsets of $R$.
+Then define a bijection from $A$ to $B$ by mapping a roll in $A$ to the
+sequence in $B$ whose first element is the set of two numbers that came
+up, whose second element is the number of times the smaller of the two
+numbers came up in the roll, and whose third element is the set of colors
+of the three matching dice.
+
+For example, the roll
+\[
+(4,4,2,2,4,2,4) \in A
+\]
+maps to the triple
+\[
+(\set{2,4},3,\set{\text{yellow,green,indigo}}) \in B.
+\]
+
+Now by the Bijection rule $\card{A} = \card{B}$, and by the Product rule,
+\[
+\card{B} = \binom{6}{2} \cdot 2 \cdot \binom{7}{3}.
+\]
+
+\bparts
+
+\ppart For how many rolls is the value on every die different?
+
+\solution{None, by the Pigeonhole Principle.}
+
+\ppart\label{66} For how many rolls do two dice have the value 6 and the
+remaining five dice all have different values?
+
+Example: $(6, 2, 6, 1, 3, 4, 5)$ is a roll of this type, but $(1, 1, 2, 6,
+3, 4, 5)$ and $(6, 6, 1, 2, 4, 3, 4)$ are not.
+
+\solution{As in the example, map a roll into an element of $B \eqdef R_2
+\cross P_5$ where $P_5$ is the set of permutations of $\set{1,\dots,5}$.  A roll
+maps to the pair whose first element is the set of colors of the two dice
+with value 6, and whose second element is the sequence of values of the
+remaining dice (in rainbow order).  So $(6, 2, 6, 1, 3, 4, 5)$ above maps
+to $(\set{\text{red,yellow}}, (2,1,3,4,5))$.  By the Product rule,
+\[
+\card{B} = \binom{7}{2}\cdot 5!.
+\]}
+
+\ppart For how many rolls do two dice have the same value and the
+remaining five dice all have different values?
+
+Example: $(4, 2, 4, 1, 3, 6, 5)$ is a roll of this type, but $(1, 1, 2, 6,
+1, 4, 5)$ and $(6, 6, 1, 2, 4, 3, 4)$ are not.  
+
+\solution{Map a roll into a triple whose first element is in $S$,
+indicating the value of the pair of matching dice, whose second element is the
+set of colors of the two matching dice, and whose third element is the
+sequence of the remaining five dice values (in rainbow order).
+
+So $(4, 2, 4, 1, 3, 6, 5)$ above maps to $(4, \set{\text{red,yellow}},
+(2,1,3,6,5))$.  Notice that the number of choices for the third element of
+a triple is the number of permutations of the remaining five values,
+namely $5!$.  This mapping is a bijection, so the number of such rolls
+equals the number of such triples.
+By the Generalized Product rule, the number of such triples is
+\[
+6 \cdot \binom{7}{2} \cdot 5!.
+\]
+
+Alternatively, we can define a map from rolls in this part to the
+rolls in part~\eqref{66}, by replacing the value of the duplicated values
+with 6's and replacing any 6 in the remaining values by the value of the
+duplicated pair.  So the roll $(4, 2, 4, 1, 3, 6, 5)$ would map to the
+roll $(6, 2, 6, 1, 3, 4, 5)$.  Now a type~\ref{66} roll, $r$, is mapped to
+by exactly the rolls obtainable from $r$ by exchanging occurrences of 6's
+and $i$'s, for $i = 1,\dots,6$.  So this map is 6-to-1, and by the
+Division rule, the number of rolls here is 6 times the number of rolls in
+part~\eqref{66}.
+
+%%%%%%%
+\iffalse
+An useful variation of this idea is to map a roll into a triple in the set
+$B \eqdef S cross R_2 \cross P_5$.  Again, the first element of a triple
+in $B$ is the value of the matching dice, the second element is the set of
+colors of the two matching dice, and the third element is the sequence of
+\emph{rankings}\footnote{Given a set of $n$ numbers, the \emph{rank} of a
+number in the set is its position when the numbers are listed in
+increasing order.  So the rank of the smallest number is 1, the rank of
+the second smallest is 2, \dots, and the rank of the largest is $n$.} of
+the remaining five dice values (in rainbow order).
+
+So now $(4, 2, 4, 1, 3, 6, 5)$ above maps to $(4, \set{\text{red,yellow}},
+(2,1,3,5,4))$.  By the Product rule, $\card{B} = \binom{7}{2}\cdot 5!$.
+
+The use of ranking let us define $B$ without having the possible values of
+third elements in triples depend on the first elements.  This let us give
+a simpler definition of the set, $B$, of triples corresponding to rolls.
+With the simpler definition of $B$, we could calculate its size using the
+Product rule instead of the Generalized Product rule.
+\fi
+%%%%%%%
+}
+
+\ppart For how many rolls do two dice have one value, two different dice
+have a second value, and the remaining three dice a third value?
+
+Example: $(6, 1, 2, 1, 2, 6, 6)$ is a roll of this type, but $(4, 4, 4, 4,
+1,3,5)$ and $(5, 5, 5, 6, 6,1,2)$ are not.
+
+\solution{Map a roll of this kind into a 4-tuple whose first element is
+the set of two numbers of the two pairs of matching dice, whose second
+element is the set of two colors of the pair of matching dice with the
+smaller number, whose third element is the set of two colors of the larger
+of the matching pairs, and whose fourth element is the value of the
+remaining three dice.  For example, the roll $(6, 1, 2, 1, 2, 6, 6)$ maps
+to the triple
+$(\set{1,2},\set{\text{orange,green}},\set{\text{yellow,blue}}, 6)$.
+
+There are $\binom{6}{2}$ possible first elements of a triple,
+$\binom{7}{2}$ second elements, $\binom{5}{2}$ third elements since the
+second set of two colors must be different from the first two, and 4 ways
+to choose the value of the three dice since their value must differ from
+the values of the two pairs.  So by the Generalized Product rule, there
+are
+\[
+\binom{6}{2} \cdot \binom{7}{2} \cdot \binom{5}{2} \cdot 4
+\]
+possible rolls of this kind.}
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From F07, ps9, problem 2; S06, ps7, problem 7
+
+\begin{problem}           
+
+  Answer the following questions with a number or a simple formula
+  involving factorials and binomial coefficients (that is, $n!$ and
+  $\binom{n}{k}$).  Briefly explain your answers.
+
+\bparts
+
+\ppart How many ways are there to order the 26 letters of the
+alphabet so that no two of the vowels {\tt a}, {\tt e}, {\tt i},
+{\tt o}, {\tt u} appear consecutively and the last letter in the
+ordering is not a vowel?
+
+\hint  Every vowel appears to the left of a consonant.
+
+\solution{The constraint on where vowels can appear is equivalent to the
+requirement that every vowel appears to the left of a consonant.  So given
+a sequence of the 21 consonants, there are $\binom{21}{5}$ positions where
+the 5 vowels can be placed.  After determining such a placement, we can
+reorder the consonants and vowels in any order.  Thus, the number is:
+\[
+\binom{21}{5}\cdot 21! \cdot 5!.
+\]
+}
+
+%%%%%%%
+\iffalse
+\ppart How many ways are there to order the 26 letters of the alphabet
+so that there are {\em at least two} consonants immediately following
+each vowel?
+
+\solution{The pattern of consonants and vowels in any permutation of the
+26 letters of the alphabet can be indicated by a binary string with 5
+ones indicating where the vowels occur and 21 zeros where the consonants
+occur.  Patterns where every vowel has at least two consonants to its
+right can be constructed by taking a sequence of 16 zeros and inserting
+``10'' to the left of 5 of the 16 zeros.  There are $\binom{16}{5}$ ways to
+do this.  For any such pattern, there are $5!$ ways to place the vowels
+in the positions where ones occur and $21!$ ways to place the consonants
+where the ones occur.  Thus, the final answer is:
+\[
+\binom{16}{5}\cdot 5! \cdot 21!.
+\]
+}
+\fi
+%%%%%%%
+
+\ppart In how many different ways can the letters in the name of the
+popular 1980's band \texttt{BANANARAMA} be arranged?
+
+\solution{There are 5 $A$'s, 2 $N$'s, 1 $B$, 1 $R$, and 1 $M$.
+Therefore, by the Bookkeeper Rule, the number of arrangements is:
+\[
+\frac{10!}{5!\ 2!\ 1!\ 1!\ 1!}
+\]
+}
+
+\ppart In how many different ways can $2n$ students be paired
+up?
+
+\solution{Pair up students by the following procedure.  Line up the
+students and pair the first and second, the third and fourth, the
+fifth and sixth, etc.  The students can be lined up in $(2n)!$ ways.
+However, this overcounts by a factor of $2^n$, because we would get
+the same pairing if the first and second students were swapped, the
+third and fourth were swapped, etc.  Furthermore, we are still
+overcounting by a factor of $n!$, because we would get the same
+pairing even if pairs of students were permuted, e.g. the first and
+second were swapped with the ninth and tenth.  Therefore, the number
+of pairings is:
+\[
+\frac{(2n)!}{2^n \cdot n!}
+\]
+}
+
+\ppart How many simple graphs are there with $n$ vertices numbered $1,
+\dots n$?
+
+\solution{There are $\binom{n}{2}$ potential edges, each of which may or
+may not appear in a given graph.  Therefore, the number of graphs is:
+\[
+2^{\binom{n}{2}}
+\]
+}
+
+  \ppart Consider the set of $n$-digit sequences of digits 0,1,\dots,9.
+  Two sequences are said to be of the \emph{same type} if the digits of
+  one are a permutation of the digits of the other.  How many types of
+  $n$-digit integers are there?
+  
+\solution{The type of a string is determined by the numbers of occurrences
+   of the 9 different digits in the string.  So there is a bijection
+   between types of strings and strings with $n$ 0's and nine 1's: the
+   length of the block of 0's before the $i$th 1 equals the number of
+   occurrences of the digit $i$ (and the length of the final block of 0's
+   equals the number of occurrences of the digit 9). Therefore, the number
+   of different types is $\binom{n+9}{9}$}
+
+%%%%%%%
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From S06, ps7, problem 5
+
+\begin{problem}
+  
+  A certain company wants to have security for their computer systems.
+  So they have given everyone a name and password.  The passwords are
+  exactly 10 letters long.
+\bparts
+
+  \ppart If all the passwords must satisfy the following rules, how many
+  possible passwords are there :
+  \begin{enumerate}
+  \item[1.] The passwords must be permutations of the letters (a, d,
+    f, i, l, o, p, r, s, t)
+  \item[2.] No password can contain the sequence "fail"
+  \item[3.] No password can contain the sequence "drop"
+  \end{enumerate}
+  
+  \solution{ The number of possible passwords equals the number of
+    permutations of the letters minus the ``illegal" permutations
+    (containing ``fail" or ``drop").  The total number of permutations of
+    the letters is $10!$.  According to the inclusion-exclusion principle,
+    the number of permutations containing either ``fail" or ``drop" is:
+    
+    \# permutations containing "fail" plus \# permutations containing "drop" -
+    permutations containing "fail" and "drop".
+    
+    The number of permutations that contain the sequence "fail" can be
+    seen as finding the number of permutations of the following 7 elements
+    : \{d,o, p, r, s, t, \fbox{fail}\} which is $7!$.  A similar argument
+    holds for the number of permutations with "drop", so these are also
+    $7!$.  The number of permutations with both "fail" and "drop" is the
+    same as finding the number of permutations of the following 4 elements
+    \{ \fbox{drop}, \fbox{fail}, s, t\} = $4!$.
+
+    Thus the number of possible passwords is $10! - 7! - 7! + 4!$.
+  }
+  
+  \ppart Bob is trying to break into the system.  He has obtained the
+  list of all the passwords and the list of all the names, yet he
+  doesnt know which passwords go with which names.  If the password
+  file contains 100 passwords and there are 100 names, how many
+  possible ways can those passwords be associated with the names?
+  Approximate your answer using Stirling's approximation.
+
+  \solution{ There are 100 possible names for the first password, 99 for
+    the second, \dots and 1 possible for the last.  Multiplying these
+    possiblities together gives you $100!$.  By Stirling's approximation
+    this is approximately $9.32\times 10^{157}$ ---an unimaginably large
+    number.
+    
+    Notice that the problem could also be stated as: ``find the number
+    of \emph{bijections} from the set of names to the set of
+    passwords.''}
+  
+  \ppart When trying to break into the system, Bob doesn't have to
+  submit an entire matching of the 100 user names with the 100
+  passwords at the same time. Instead, he can try individual pairs of
+  names and passwords, that is, he can try to log in as any of the 100
+  users with any of the 100 passwords and see if the login attempt is
+  successful.
+  
+  Describe a strategy that Bob can use to completely determine the pairing
+  of names with passwords using fewer than 5000 login attempts.
+  
+  \solution{ Bob uses the following strategy: First he figures out the
+    password for the first name on the list. In the \emph{worst} case,
+    he'll have to try 99 passwords (if he fails the first 99 times, he
+    knows that the last password is correct so he doesn't need to try
+    it). Then, for the second name, there are 99 possible passwords so
+    he needs to try 98 of them in the worst case, and so on. For the
+    99th password there are 2 possible choices, so he needs to try 1
+    in the worst case, and he always gets the 100th password for free.
+    
+    So, in the worst case, he needs $99 + 98 + 97 + \cdots + 1 =
+    4,950$ trials.}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From F07, ps9, problem 4
+
+\begin{problem}
+  This problem is a continuation of Class Problems 9F,
+  \href{http://courses.csail.mit.edu/6.042/spring08/cp9f.pdf#numbered.trees}{problem
+    4} on the bijection between trees with vertices labelled $1,2,\dots,n$
+  and length $n-2$ words over the alphabet $1,2,\dots,n$.
+
+\bparts
+
+\ppart How is the degree of a vertex related to the number of times it
+appears in the code.?
+
+\solution{During the course of creating the code, every vertex is
+  reduced from it's orginal degree, to degree $1$.  (The vertex may be
+  subsequently be deleted, or may be one of the two vertices that are
+  not deleted.)  Every time the degree is reduced, it is because the
+  vertex is the father of some current leaf, which is then deleted.
+  But this means the vertex appears in the code.  After it has vertex
+  of degree $1$, it can no longer appear in the code.  Thus every
+  vertex $v$ appears $\deg(v)-1$ times in the code.}
+
+\ppart The degree sequence of a graph, is a list of $\deg(v)$ for
+every vertex $v$, that has been sorted into non-increasing order.  How
+many trees on $\{1, \ldots, 9\}$ are there with degree sequence
+$4,3,2,2,1,1,1,1,1$?
+
+\solution{${9 \choose 5,2,1,1}{7 \choose 3,2,1,1}$
+
+By the product rule, the number of trees is (the number of different ways to assign which value has which degree) $\times$ (the number of different ways to attach the vertices, given their assigned degrees).
+
+To help define this value, we first note: If there are $n_1$ letters of
+type $1$, ..., $n_k$ letters of type $k$, the ``bookeeper rule'' gives us
+the number of ways of rearranging these letters into a word.  The formal
+name for this number is the {\em multinomial coefficient}: ${n_1 + n_2 +
+  \cdots + n_k \choose n_1,n_2, \ldots, n_k} := (n_1 + n_2 + \cdots +
+n_k)!/(n_1!n_2!\cdots n_k!)$.
+
+Now, the (number of different ways to assign which value has which degree)
+corresponds to the number of permutations on the sequence
+$4,3,2,2,1,1,1,1,1$, which is ${9 \choose 5,2,1,1}$.
+
+The (number of different ways to attach the vertices, given their assigned
+degrees) can be defined by the previous section as a bijection to the
+number of different code sequences, given the degree sequence. For degree
+sequence $4,3,2,2,1,1,1,1,1$, the number of times the corresponding
+vertices appear in the code is $3,2,1,1,0,0,0,0,0$, and a code will
+therefore be a permutation of the sequence $a,a,a,b,b,c,d$. The number of
+permutations is ${7 \choose 3,2,1,1}$.  }
+
+\eparts
+\end{problem} 
+
+
+\iffalse
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From S07, ps9, problem 5
+
+\begin{problem}
+How many of the numbers $2, \dots, n$ are prime?  One way to answer this
+question is to test each number up to $n$ for primality and keep a count.
+A somewhat more efficient method is to use the ``Sieve of Erastosthenes''
+procedure which you may have learned about in 6.001 (but, don't worry, you
+needn't know about this).  In this problem, we will use the
+Inclusion-Exclusion Principle to get the count; this approach turns out to
+be much more efficient when $n$ is large.
+
+Actually, we will use Inclusion-Exclusion to count the number of
+\emph{composite} (nonprime) integers from 2 to $n$.  Subtracting this
+from $n-1$ gives the number of primes.
+
+Let $C_n$ be the set of composites from $2$ to $n$, and let $A_m$ be the
+set of numbers in the range $m+1,\dots,n$ that are divisible by $m$.
+Notice that by definition, $A_m = \emptyset$ for $m \geq n$.
+So
+\[
+C_n = \lgunion_{i=2}^{n-1} A_i.
+\]
+
+\bparts
+
+\ppart Write $C_n$ in terms of a union of $A_p$'s, where $p$ is prime.
+Explain why $\sqrt{n}$ is an upper bound on the largest $p$ needed.
+
+\solution{ If $p \divides k$, then $A_p \supseteq A_k$, so there is no
+need to include $A_k$ as long as $A_p$ is included in the union.  Also,
+any composite $\leq n$ must be divisible by a prime $\leq \sqrt{n}$
+(because it is a product of at least two primes, and they can't both be
+bigger than $\sqrt{n}$).  So we have
+\[
+C_n = \lgunion_{p \leq \sqrt{n}} A_p.
+\]
+}
+
+\ppart What is the cardinality of $A_p$?
+
+\solution{$\card{A_p} = \floor{n/p} - 1$.}
+
+\ppart Let $P$ be a set of primes.  Give a simple formula for
+\[
+\card{\lgintersect_{p \in P} A_p}.
+\]
+
+\solution{
+If $\card{P} = 1$, just look at the previous part.
+
+Otherwise, if $\card{P} > 1$,
+let $m \eqdef \prod_{p \in P} p$.  Then
+\[
+\card{\lgintersect_{p \in P} A_p} = \floor{n/m}.
+\]
+}
+
+\ppart Use the Inclusion-Exclusion principle to obtain a formula for
+$\card{C_{150}}$ in terms of nonempty intersections among the sets
+$A_2,A_3,A_5,A_7, A_{11}$.
+
+\solution{
+\begin{eqnarray*}
+|C| & = & |A_2|+|A_3|+|A_5|+|A_7|+|A_{11}|\\
+& & - |A_2 \cap A_3| - |A_2 \cap A_5| - |A_2 \cap A_7| - |A_2 \cap A_{11}|\\
+& & - |A_3 \cap A_5| - |A_3 \cap A_7| - |A_3 \cap A_{11}|\\
+& & - |A_5 \cap A_7| - |A_5 \cap A_{11}|\\
+& & - |A_7 \cap A_{11}|\\
+& & + |A_2 \cap A_3 \cap A_5| + |A_2 \cap A_3 \cap A_7| + |A_2 \cap A_3 \cap A_{11}|\\
+& & + |A_2 \cap A_5 \cap A_7| + |A_2 \cap A_5 \cap A_{11}|\\
+& & +|A_3 \cap A_5 \cap A_7|
+\end{eqnarray*}
+}
+
+\ppart Use this formula to find the number of primes up to 150.
+
+\solution{We have:
+\begin{eqnarray*}
+|C_{150}| & = & 74+49+29+20+12\\
+& & - 25-15-10-6\\
+& & - 10-7-4\\
+& & - 4 -2\\
+& & - 1\\
+& & + 5+3+2\\
+& & + 2+ 1\\
+& & + 1\\
+& = & 114
+\end{eqnarray*}
+The number of primes from 2 to 150 is $(150-1) - C_{150} = 149 -114= 35$.
+}
+
+\eparts
+\end{problem}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% From F05, ps7, problem 5
+
+
+\begin{problem}
+A \textit{derangement} is a permutation $(x_1, x_2, \dots, x_n)$ of
+the set $\set{1, 2, \dots, n}$ such that $x_i \neq i$ for all $i$.
+For example, $(2, 3, 4, 5, 1)$ is a derangement, but $(2, 1, 3, 5, 4)$
+is not because 3 appears in the third position.  The objective of this
+problem is to count derangements.
+
+It turns out to be easier to start by counting the permutations that are
+\textit{not} derangements.  Let $S_i$ be the set of all permutations
+$(x_1, x_2, \dots, x_n)$ that are not derangements because $x_i = i$.
+So the set of non-derangements is
+\[
+\lgunion_{i=1}^n S_i.
+\]
+
+\bparts
+
+\ppart What is $\card{S_i}$?
+
+\solution{There is a bijection between permutations of $\set{1, 2,
+\dots, n}$ with $i$ in the $i$-th position and unrestricted
+permutations of $\set{1, 2, \dots, n} - i$.  Therefore, $\card{S_i} =
+(n-1)!$.}
+
+\ppart What is $\card{S_i \cap S_j}$ where $i \neq j$?
+
+\solution{The set $S_i \cap S_j$ consists of all permutations with $i$
+in the $i$-th position and $j$ in the $j$-th position.  Thus, there is
+a bijection with permutations of $\set{1, 2, \dots, n} - \set{i, j}$,
+and so $\card{S_i \cap S_j} = (n-2)!$.}
+
+\ppart What is $\card{S_{i_1} \cap S_{i_2} \cap \cdots \cap S_{i_k}}$
+where $i_1, i_2, \dots, i_k$ are all distinct?
+
+\solution{By the same argument, $(n - k)!$.}
+
+\ppart\label{ie} Use the inclusion-exclusion formula to express the number of
+non-derangements in terms of sizes of possible intersections of the sets
+$S_1, \dots, S_n$.
+
+\solution{
+\[
+\sum_i \card{S_i}
+- \sum_{i,j} \card{S_i \cap S_j}
++ \sum_{i,j,k} \card{S_i \cap S_j \cap S_k}
+- \cdots
+\pm \card{S_1 \cap S_2 \cap \cdots \cap S_n}
+\]
+%
+In each summation, the subscripts are distinct elements of $\set{1,
+\dots, n}$.}
+
+\ppart How many terms in the expression in part~\eqref{ie} have the form
+$\card{S_{i_1} \cap S_{i_2} \cap \cdots \cap S_{i_k}}$?
+
+\solution{There is one such term for each $k$-element subset of the
+$n$-element set $\set{1, 2, \dots, n}$.  Therefore, there are
+$\binom{n}{k}$ such terms.}
+
+\ppart Combine your answers to the preceding parts to prove the number of
+non-derangements is:
+\[
+n! \paren{\frac{1}{1!} - \frac{1}{2!} + \frac{1}{3!} - \cdots \pm \frac{1}{n!}}.
+\]
+Conclude that the number of derangements is
+\[
+n! \paren{1 - \frac{1}{1!} + \frac{1}{2!} - \frac{1}{3!} + \cdots \pm \frac{1}{n!}}.
+\]
+
+\solution{
+By Inclusion-Exclusion, the number of non-derangements is
+\begin{align}
+\lefteqn{\sum_i \card{S_i}
+- \sum_{i,j} \card{S_i \cap S_j}
++ \sum_{i,j,k} \card{S_i \cap S_j \cap S_k}
+- \cdots
+\pm \card{S_1 \cap S_2 \cap \cdots \cap S_n}} \notag \\
+    & = \binom{n}{1} \cdot (n-1)!
+      - \binom{n}{2} \cdot (n-2)!
+      + \binom{n}{3} \cdot (n-3)!
+      - \cdots
+      \pm \binom{n}{n} \cdot 0! \notag\\
+    & = n! \paren{\frac{1}{1!} - \frac{1}{2!} + \frac{1}{3!} - \cdots \pm \frac{1}{n!}}\label{nd}
+\end{align}
+
+Since there are $n!$ permutation, the number of derangements is $n!$ minus expression~\eqref{nd}.
+}
+
+\ppart As $n$ goes to infinity, the number of derangements approaches a constant
+fraction of all permutations.  What is that constant?  \hint
+%
+\[
+e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
+\]
+
+\solution{$1/e$}
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+
+\bparts
+
+\ppart How many 5-card hands have a single pair and no 3-of-a-kind or
+4-of-a-kind?
+
+\solution{
+There is a bijection with sequence of the form:
+
+\[
+(\text{value of pair}, \text{suits of pair}, \text{value of other three cards}, \text{suits of other three cards})
+\]
+
+Thus, the number of hands with a single pair is:
+
+\[
+13 \cdot \binom{4}{2} \cdot \binom{12}{3} \cdot 4^{3} = 1,098,240
+\]
+
+
+Alternatively, there is also a 3!-to-1 mapping to the tuple:
+\[
+\begin{array}{l}
+(\text{value of pair}, \text{suits of pair}, \\
+\text{value 3rd card}, \text{suit 3rd card},
+\text{value 4th card}, \text{suit 4th card},
+\text{value 5th card}, \text{suit 5th card})
+\end{array}
+\]
+
+Thus, the number of hands with a single pair is:
+
+\[
+\frac{13 \cdot \binom{4}{2} \cdot 12 \cdot 4 \cdot 11 \cdot 4 \cdot 10 \cdot 4}{3!} = 1,098,240
+\]
+}
+
+\ppart How many 5-card hands have two or more kings?
+
+\solution{This is the set of all hands minus the hands
+with either no kings or one king:
+
+\[
+\binom{52}{5} - \binom{48}{5} - 4\cdot \binom{48}{4} = 108,336
+\]
+
+Alternatively, this is also the set of all hands of two, three, or four kings:
+
+\[
+\binom{48}{3}\binom{4}{2} + \binom{48}{2}\binom{4}{3} + \binom{48}{1}\binom{4}{4} = 108,336
+\]
+}
+
+\ppart How many 5-card hands contain the ace of spades, the ace of
+clubs, or both?
+
+\solution{
+There are $\binom{51}{4}$ hands containing the ace of spades, an equal
+number containing the ace of clubs and $\binom{50}{3}$ containing
+both.  By the inclusion-exclusion formula:
+
+\[
+\binom{51}{4} + \binom{51}{4} - \binom{50}{3}
+\]
+
+hands contain one or the other or both.}
+
+\iffalse
+
+\ppart A committee has 15 Republicans and 10 Democrats.  How many
+different 5-person subcommittees with a majority of Republicans are
+possible?
+
+\solution{We can choose a committee with $k$ Republicans
+and $j$ Democrats in $\binom{15}{k} \cdot \binom{15}{j}$ different
+ways.  Therefore, the number of 5-person subcommittees with a majority
+of Republicans is:
+
+\[
+\binom{15}{5}\binom{10}{0} + 
+\binom{15}{4}\binom{10}{1} + 
+\binom{15}{3}\binom{10}{2}
+\]
+}
+\fi
+
+\ppart In how many different ways can Blockbuster arrange 64 copies of
+{\em Cat in the Hat}, 96 copies of {\em Matrix Revolutions}, and 1
+copy of {\em Amelie} on 5 shelves?
+
+\solution{This is the number of ways to arrange 64 $C$'s
+(Cat in the Hat), 96 $M$'s (Matrix), 1 $A$'s (Amelie), and 4 $X$'s
+(dividers between shelves).  This is equal to:
+
+\[
+\frac{(64 + 96 + 1 + 4)!}{64!\ 96!\ 1!\ 4!}
+\]
+}
+
+\iffalse
+\ppart I want two large pizzas.  Dominos Pizza offers 11 different
+toppings.  At first, I thought this gave me $(2^{11})^2$ options.
+What's wrong with this answer, and what is the right answer?
+
+\solution{There are $2^{11}$ pizzas.  The number of
+sequences consisting of two pizzas is indeed $(2^{11})^2$.  However,
+this double-counts certain orders; for example, the two sequences:
+
+\[
+\begin{array}{c}
+(\text{mushroom and pepperoni}, \text{pineapple}) \\
+(\text{pineapple}, \text{mushroom and pepperoni})
+\end{array}
+\]
+
+correspond to the same order.
+
+There are $\binom{2^{11}}{2}$ ways to select two {\em different} kinds
+of pizza, and $2^{11}$ ways to select two pizzas of the same kind.
+Therefore, the number of possibilities is:
+
+\[
+\binom{2^{11}}{2} + 2^{11}
+\]
+
+Alternatively, we can analyze this in the same way that we considered
+orders of donuts.  In this case, there is a bijection between pizza
+orders and the number of bit-sequences with $2^{11} - 1$ ones and 2
+zeros, which is:
+
+\[
+\binom{2^{11} + 1}{2}
+\]
+}
+
+\ppart In No Limit Texas Hold 'Em poker, each player's hand consists
+of five face-up cards and two face-down cards.  Suppose that these
+five cards are dealt face up:
+
+\[
+\fbox{$A \spadesuit$} \quad
+\fbox{$7 \diamondsuit$} \quad
+\fbox{$Q \heartsuit$} \quad
+\fbox{$7 \heartsuit$} \quad
+\fbox{$2 \clubsuit$}
+\]
+
+In how many ways can the two face-down cards be chosen so as to form a
+3-of-a-kind, but not a 4-of-a-kind?
+
+\solution{There are several cases to consider.  We can get three aces
+  in $\binom{3}{2} = 3$ ways, since the face-down cards could be any 2
+  of the 3 remaining aces.  Similary, we can get three queens in 3
+  ways and three 2's in 3 ways.  Otherwise, one of the cards must be a
+  7 and the other must not.  We can chose the 7 in 2 ways and the
+  remaining card in 45 ways.  All of these possibilities are disjoint,
+  so this gives $3 + 3 + 3 + 2 \cdot 45$ pairs.}
+
+
+\ppart Suppose that we leave two jokers--- a red one and a black one--- in
+a deck of cards and treat them as a {\em wildcards}, which can serve as
+any ordinary card.  How many different hands have a 4-of-a-kind, but no
+5-of-a-kind?
+
+\solution{There are three possibilities.
+
+\begin{itemize}
+
+\item We get a 4-of-a-kind with no wildcard.  This can happen in $13
+\cdot 48$ ways.
+
+\item We get a 3-of-a-kind and one wildcard.  This can happen in $13
+\cdot \binom{13}{3} \cdot 48 \cdot 2$ ways.
+
+\item We get a pair and both wildcards.  This can happen in $13 \cdot
+\binom{13}{2} \cdot 48$ ways.
+
+\end{itemize}
+
+Thus, the total number of hand with a 4-of-a-kind is:
+
+\[
+13 \cdot 48 +
+13 \cdot \binom{13}{3} \cdot 48 \cdot 2 +
+13 \cdot \binom{13}{2} \cdot 48
+\]
+}
+\fi
+
+\ppart How many nonnegative integers less than 1,000,000 have exactly
+one digit equal to 9 and have a sum of digits equal to 17?
+
+\solution{There is a bijection with pairs:
+
+\[
+(\text{position of the 9}, \text{values of other 5 digits})
+\]
+
+The sum of the other 5 digits is equal to 8, so the number of ways to
+choose their values is equal to the number of solutions over the
+nonnegative integers to:
+
+\begin{eqnarray*}
+x_1 + x_2 + x_3 + x_4 + x_5 & = & 8
+\end{eqnarray*}
+
+This is equal to the number of binary sequences with 8 zeros and 4
+ones, which is $\binom{12}{4}$.  Therefore, by the general product
+rule, there are:
+
+\[
+6 \cdot \binom{12}{4}
+\]
+
+such integers.
+}
+
+\eparts
+
+\end{problem}
+
+
+\end{document}
