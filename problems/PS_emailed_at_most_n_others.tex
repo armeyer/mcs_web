@@ -36,69 +36,77 @@ addition, the only predicates that you may use are
 A good way to begin tackling this problem is by trying to translate parts
 of the sentence. First of all, our formula must be of the form
 \[
-\exists x. P(x)
+\exists x. \text{atmost}_n(x)
 \]
-where $P(x)$ should be a formula that says that ``student $x$ has
+where $\text{atmost}_n(x)$ should be a formula that says that ``student $x$ has
 e-mailed at most $n$ other people in the class, besides possibly
 himself''.
 
-One way to write $P(x)$ is ``whenever we meet a student that has been e-mailed by $x$, this
-student is either $x$ or $y_0$ or $y_1 \ldots$ or $y_{n-1}$, where $y_0 \ldots y_{n-1}$
-are particular students in the class.'' 
-
-To write the part ``whenever we meet a student that has been e-mailed by $x$, this
-student is either $x$ or $y_0$ or $y_1 \ldots$ or $y_{n-1}$,'' we write 
+One way to express $\text{atmost}_n(x)$ is ``whenever we find a student
+$s$ who has been e-mailed by $x$, this student is either $x$ or one of
+a particular set of students $y_0, y_1 \dots, y_{n-1}$.''  A formula
+expressing that $s$ is either $x$ or one of students $y_0, y_1 \dots,
+y_{n-1}$ is
 \[
-\forall s\, \paren{ E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-1})}.
+s = x \QOR s = y_0 \QOR s = y_1 \QOR \dots \QOR s = y_{n-1}.
 \]
-By adding the appropriate existential quantifier, we get
-\[
-P(x) \eqdef \quad\exists y_0.\exists y_1.\ldots\exists y_{n-1}. 
-\forall s. \paren{ E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-1})}.
-\]
-At this point you may be thinking that $P(x)$ says that ``$x$ has
-e-mailed \emph{exactly} $n$ students besides possibly
-himself.''  However we did not require that $y_i$ and $y_j$
-(where $i \neq j$) refer to distinct students, or that they
-be different from $x$.
+So we can express ``whenever we find a student $s$ who has been
+e-mailed by $x$, \dots'' with the formula
+\begin{align*}
+ \forall s.\,[
+     & E(x,s) \QIMPLIES \dots].
+\end{align*}
 
-Overall the full formula is:
-\begin{equation}\label{EEEAs}
-\exists x.\, \exists y_0.\exists y_1.\ldots\exists y_{n-1}. \forall s. 
-\paren{E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-1})}.
-\end{equation}
+Adding existential quantifiers to say that there are such students
+$y_0, y_1 \dots, y_{n-1}$, we finish with
+\begin{align*}
+\text{atmost}_n(x) \eqdef\
+   & \exists y_0.\exists y_1.\dots\exists y_{n-1}.\\
+   &    \quad \forall s.\,[E(x,s) \QIMPLIES\\
+   &       \qquad  (s = x \QOR s = y_0 \QOR s = y_1 \QOR \dots \QOR s = y_{n-1})].
+\end{align*}
 
+At this point you may be thinking that this formula actually says that
+``$x$ has e-mailed \emph{exactly} $n$ students besides possibly
+himself.''  But remember, the $y_i$'s may not all be different
+students.  Of course we could have added that constraint with a long
+\QAND\ formula:
+\[\begin{array}{rllcrl}
+ y_0 \neq y_1\ \QAND & y_0 \neq y_2 & \QAND\ y_1 \neq y_3\ \QAND &\dots & \QAND\ y_0 &\neq y_{n-1}\ \QAND\\
+                    & y_1 \neq y_2 & \QAND\ y_1 \neq y_3\ \QAND &\dots & \QAND\ y_1 &\neq y_{n-1}\ \QAND\\
+                    &              &                           &\vdots\\
+                    &              &                           &      &     y_{n-2} &\neq y_{n-1}.
+\end{array}\]
+In the next part of this problem, we'll see a simple expression that
+does this job and would be much shorter to write out.
 \end{solution}
 
-
-\ppart Explain how you would use your predicate formula (or some derivative of it)
+\ppart Explain how you would use your predicate formula (or some variant of it)
 to express the following two sentences.
 \begin{enumerate}
-\item There is a student who has emailed at least $n$ other people in the class,
+\item\label{Esatn} There is a student who has emailed at least $n$ other people in the class,
 besides possibly himself.
-\item There is a student who has emailed exactly $n$ other people in the class,
+\item\label{Esexn} There is a student who has emailed exactly $n$ other people in the class,
 besides possibly himself.
 \end{enumerate}
 
 \begin{solution}
-You can think of a student who has emailed at least $n$ students as a
-student who has \emph{not} emailed at most $n-1$ students in the class. 
-\begin{equation}\label{EEEBs}
-\exists x.\, \exists y_0.\exists y_1.\ldots\exists y_{n-2}. \forall s. 
-\paren{\QNOT{\paren{E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-2})}}}.
-\end{equation}
+Student $x$ has emailed at least $n$ students just when he has
+\emph{not} emailed at most $n-1$ students.  So define
+\[
+\text{atleast}_n(x) \eqdef \QNOT(\text{atmost}_{n-1})(x),
+\]
+and a formula for item~\ref{Esatn}.\ becomes
+\[
+\exists x.\, \text{atleast}_n(x).
+\]
 
-You can think of a student who has emailed exactly $n$ students as a
-someone who has emailed at least $n$ students \emph{and} at most $n$ students
-in the class.
-\begin{equation}\label{EEECs}
-\exists x.\, \exists y_0.\exists y_1.\ldots\exists y_{n-1}. \forall s. 
-\paren{\QNOT{\paren{E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-2})}} 
-\QAND \paren{E(x,s) \QIMPLIES (s = x \QOR s = y_0 \QOR s = y_1 \QOR \ldots \QOR s = y_{n-2})}}.
-\end{equation}
-
-You could also use the original formula \eqref{EEEAs} and require that
-$x, y_0, y_1, \ldots, y_{n-1}$ all refer to distinct students.
+Now student $x$ has emailed \emph{exactly} $n$ students when he has
+emailed at most and also at least $n$ students, so for
+item~\ref{Esexn}.\ we have
+\[
+\text{exactly}_n \eqdef \exists x.\, \text{atmost}_n(x) \QAND \text{atleast}_n(x).
+\]
 
 \end{solution}
 
