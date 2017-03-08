@@ -1475,7 +1475,7 @@
 \newcommand{\sumsym}{\ensuremath{\mathbin{\mathrm{\textbf{+}}}}}
 
 \newcommand{\btg}{\text{binary-2PG}}
-\newcommand{\tg}{\text{2PG}}
+\newcommand{\tg}{\text{2PerGm}}           %2PG
 \newcommand{\ms}[1]{\operatorname{#1}}
 
 \providecommand{\sg}{\ms{sg}}

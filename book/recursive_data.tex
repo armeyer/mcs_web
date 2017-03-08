@@ -20,7 +20,7 @@ recursively defined functions on them:
 \item ``balanced'' strings of brackets,
 \item the nonnegative integers, and
 \item arithmetic expressions.
-%\item two-player zero-sum games with perfect information.
+\item two-player games with perfect information.
 \end{itemize}
 
 %\hyperdef{paren}{string}
@@ -1141,48 +1141,41 @@ Draft, partly subsumed by CP\_VG   ARM 3/4/16
 
 \section{Games as a Recursive Data Type}
 
-Chess, Checkers, Go, and Tic-Tac-Toe are examples of \emph{two-person
-  terminating games of perfect information}---$\tg$'s for short.  These are
-games where the move a player can make depends only on the visible board
-position, or \emph{state} of the game.  ``Perfect information'' means that the
-players know the complete state of the game at each move.  (Most card games are
-\emph{not} games of perfect information because neither player can see the
-other's hand.)  ``Terminating'' means that play cannot go on forever---it must
-end after a finite number of moves.\footnote{Since board positions can repeat in
-  chess and checkers, termination is enforced by rules that prevent any position
-  from being repeated more than a fixed number of times.  So the ``state'' of
-  these games is the board position \emph{plus} a record of how many times
-  positions have been reached.}
+Chess, Checkers, Go, and Nim are examples of \emph{two-person
+  terminating games of perfect information}---$\tg$'s for short.
+These are games where the move a player can make depends only on the
+visible board position, or \emph{state} of the game.  ``Perfect
+information'' means that the players know the complete state of the
+game at each move.  On the other hand, most card games are \emph{not}
+games of perfect information because neither player can see the
+other's hand.  ``Terminating'' means that play cannot go on
+forever---it must end after a finite number of moves.\footnote{Since
+  board positions can repeat in chess and checkers, termination is
+  enforced by rules that prevent any position from being repeated more
+  than a fixed number of times.  So the ``state'' of these games is
+  the board position \emph{plus} a record of how many times each
+  position has been reached.}
 
-We will define $\tg$'s \iffalse in a straightforward way tagged\fi as a 
-recursive data type.  To see how this will work, let's use the game of
-Tic-Tac-Toe as an example.
+We will define $\tg$'s \iffalse in a straightforward way tagged\fi as
+a recursive data type and then give a recursive definition of optinal
+strategies for game play.  To see how this will work, let's begin with
+the game of Nim.
+
+A Nim game starts with several piles of stones.  A move in the game
+consists of removing some positive number of stones from a single
+pile.  Two players alternate making moves, and whoever takes the last
+stone wins.  For example, if there is only one pile, then the first
+player to move wins by taking the whole pile.  On the hand, if there
+are two piles withthe same number of stones, then the second player
+can guarantee a win simply by mimicking the first player.  For
+example, if the first player removes three stones from one pile, then
+the second player removes three stones from the other pile.  Take a
+moment to \textbf{think through why the mimicking strategy guarantees
+  a win}.
+
+
 
 \iffalse
-
-\subsection{Tic-Tac-Toe}
-Tic-Tac-Toe is a game for young children.  There are two players who
-alternately write the letters ``X'' and ``O'' in the empty boxes of a
-$3 \times 3$ grid.  A grid pattern with three of the same letter
-filling a row, column, or diagonal is called a \emph{tic-tac-toe}, and
-the first player who gets a tic-tac-toe of their letter wins the game.
-Children generally don't take long to figure out an optimal strategy
-for playing the game.
-
-We can diagram the ways to play Tic-Tac-Toe using a Tic-Tac-Toe game
-tree.  The game tree starts with a \emph{root node} labelled with the
-empty $3 \times 3$ grid.  This node then connects directly to
-``child'' nodes labelled with each of the different grid patterns
-possible after the first move.  According to Tic-Tac-Toe rules, the
-X-player gets to move first, so the root of the tree connects directly
-to nine different child nodes, each labelled with a different one of
-the nine grid patterns containing one X and eight empty boxes.  Each
-of these one-X child nodes connects in turn to eight child nodes of
-its own labelled with the eight different one-X/one-O grid
-patterns possible after the second player puts an O in a box.  These
-move possibilities are given by the Tic-Tac-Toe \emph{game tree}
-illustrated in Figure~\ref{fig:Tic-Tac-Toe}.
-
 \begin{figure}
 %\graphic{topgame}
 \includegraphics[width=6.5in]{topgame}
@@ -1247,14 +1240,14 @@ R & = \begin{array}{c|c|c}
         \end{array}
 \end{align*}
 a game tree with root labelled $P_0$ is pictured in Figure~\ref{fig:endgame}.
+\fi
 
 \begin{figure}[htbp]
-%\graphic{endgame}
-\includegraphics[width=6in]{endgame}
-\caption{Game Tree for the Tic-Tac-Toe game starting at $P_0$.}
+\graphic{endgame}
+\includegraphics[width=6in]{nimtree}
+\caption{\TBA{Game Tree for Nim starting with three piles of sizes $\ang{5,5,7}$}.}
 \label{fig:endgame}
 \end{figure}
-\fi
 
 Game trees are usually pictured in this way, with the root at the top
 and lines connecting down to children.  So the leaves appear at the
@@ -1830,3 +1823,29 @@ $01$s.  To avoid having to state these facts several times, you can
 move them earlier in the proof.
 
 \end{editingnotes}
+
+\iffalse
+
+\subsection{Tic-Tac-Toe}
+Tic-Tac-Toe is a game for young children.  There are two players who
+alternately write the letters ``X'' and ``O'' in the empty boxes of a
+$3 \times 3$ grid.  A grid pattern with three of the same letter
+filling a row, column, or diagonal is called a \emph{tic-tac-toe}, and
+the first player who gets a tic-tac-toe of their letter wins the game.
+Children generally don't take long to figure out an optimal strategy
+for playing the game.
+
+We can diagram the ways to play Tic-Tac-Toe using a Tic-Tac-Toe game
+tree.  The game tree starts with a \emph{root node} labelled with the
+empty $3 \times 3$ grid.  This node then connects directly to
+``child'' nodes labelled with each of the different grid patterns
+possible after the first move.  According to Tic-Tac-Toe rules, the
+X-player gets to move first, so the root of the tree connects directly
+to nine different child nodes, each labelled with a different one of
+the nine grid patterns containing one X and eight empty boxes.  Each
+of these one-X child nodes connects in turn to eight child nodes of
+its own labelled with the eight different one-X/one-O grid
+patterns possible after the second player puts an O in a box.  These
+move possibilities are given by the Tic-Tac-Toe \emph{game tree}
+illustrated in Figure~\ref{fig:Tic-Tac-Toe}.
+\fi
