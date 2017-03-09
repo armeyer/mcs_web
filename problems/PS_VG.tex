@@ -2,8 +2,9 @@
 
 \begin{pcomments}
   \pcomment{PS_VG}
-  \pcomment{revision of PS_50_point_games, PS_value_games by ARM 3/4/16}
-  \pcomment{S16.ps4}
+  \pcomment{formerly CP_VG}
+  \pcomment{revision of PS_50_point_games, PS_value_games by ARM 3/4/16, revised 3/8/17}
+  \pcomment{S16.ps4, S17.cp5f}
 \end{pcomments}
 
 \pkeywords{
@@ -24,256 +25,95 @@
 \begin{problem}
 We're going to characterize a large category of games as a recursive
 data type and then prove, by structural induction, a fundamental
-theorem about game strategies.  The games we'll consider are known as
-\index{deterministic games|textbf}{\emph{deterministic}} \term{games of
-  perfect information}.
-\iffalse
-, because at each move, the complete game
-situation is known to the players, and this information completely
-determines how the rest of the game can be played.\fi
-Checkers, chess, and GO, for example, all fit this
-description.
-\iffalse In contrast, most card games do not fit, since
-card players usually do not know exactly what cards belong to the
-other players.  Neither do games involving random features like dice
-rolls, since a player's move does not uniquely determine what happens
-next.
-
-Chess counts as a deterministic game of perfect information because
-at any point of play, both players know whose turn it is to move and
-the location of every chess piece on the board.\footnote{In order to
-  prevent the possibility of an unending game, chess rules specify a
-  limit on the number of moves, or a limit on the number of times a
-  given board postion may repeat.  So the number of moves or the
-  number of position repeats would count as part of the game situation
-  known to both players.}  At the start of the game, there are 20
-possible first moves: the player with the White pieces can move one of
-his eight pawns forward 1 or 2 squares or one of his two knights
-forward and left or forward and right.  For the second move, the Black
-player can make one of the 20 corresponding moves of his own pieces.
-The White player would then make the third move, but now the number of
-possible third moves depends on what the first two moves happened to
-be.
-\fi
-It's useful to regard each game situation as a game in its own right.
-For example, after five moves in a chess game, we think of the players
-as being at the start of a new ``chess'' game determined by the
-current board position.\iffalse and the fact that it is Black's turn
-to make the next move.\fi
-
-It's also useful to define the ``payoff'' of a chess game to be 1 if
-White wins, $-1$ if Black wins, and 0 if the game ends in stalement (a
-draw).  Now we can describe White's objective as maximizing the
-payoff, and Black's objective is minimizing it.  \iffalse We might
-also choose to score the game in a more elaborate way, taking into
-account additional information such as what pieces they had won.\fi
-This leads to an elegant abstraction of this kind of game.
-
-We suppose there are two players, called the \emph{max-player} and the
-\emph{min-player}, whose aim is, respectively, to maximize and
-minimize the final score.  A game will specify its set of possible
-first moves, each of which will simply be another game.  A game with
-no possible moves is called a \emph{finish} that determines the
-payoff.  An unfinished game will have a label \STR{max} or \STR{min}
-indicating which player is supposed to move next.
+theorem about game strategies.  We are interested two person games of
+perfect information that end with a numerical score.  Chess and
+Checkers would count as value games using the values $1,-1, 0$ for a
+win, loss or draw for the first player.  The game of Go really does
+end with a \emph{score} based on the number of white and black stones
+that remain at the end.
 
 Here's the formal definition:
-
-\begin{definition*}%\label{def:vg}
+\begin{definition*}
 Let $V$ be a nonempty set of real numbers.  The class \VG\ of
-\emph{$V$-valued} \emph{deterministic max-min games} \emph{of}
-\emph{perfect information} is defined recursively as follows:
+\emph{$V$-valued two-person deterministic games of perfect
+  information} is defined recursively as follows:
 
 \inductioncase{Base case}:
-A value $v \in V$ is a \VG\ known as a \emph{finish}.
+A value $v \in V$ is a \VG\ known as a \emph{payoff}.
 
-\inductioncase{Constructor case}: If $\mathcal{M}$ is a
-  nonempty set of \VG's, and $a$ is a label equal to \STR{max} or
-  \STR{min}, then
-\[
-G \eqdef (a, \mathcal{M})
-\]
-is a $\VG$.  Each game $M \in \mathcal{M}$ is called a possible
+\inductioncase{Constructor case}: If $G$ is a nonempty set of \VG's,
+then $G$ is a $\VG$.  Each game $M \in G$ is called a possible
 \emph{first move} of $G$.
 \end{definition*}
 
-In Chess, the White player moves first and has 20 possible first
-moves, so the game of Chess would be represented by a \VG\ of the form
-\[
-(\STR{max}, \set{(\STR{min}, B_1), (\STR{min}, B_2), \dots, ,(\STR{min}, B_{20})}),
-\]
-where $(\STR{min}, B_i)$ is White's $i$th possible opening move.
-
-$B_i$ in turn is the set of moves that Black can make if White opens
-with its $i$th move.  Since Black has 20 possible second moves after
-White's first, each $B_i$ is of the form
-\[
-(\STR{min}, \set{(\STR{max}, W_1), (\STR{max}, W_2), \dots, ,(\STR{max}, W_{20})}),
-\]
-where $W_j$ is the set of second moves White can make after Black
-makes its $j$th possible first move.  Now the size of the $W_j$'s is
-no longer the same but depends on the previous two moves.
-
-\iffalse
+\begin{staffnotes}
 In all the games like this that we're familiar with, there are only a
-finite number of possible first moves.  It's worth noting that the
-definition of \VG\ does not require this.  Since finiteness is not
-needed to prove any of the results below, it would arguably be
+finite number of possible first moves and a bound on the possible
+length of play.  It's worth noting that the definition of \VG\ does
+not require this.  An infinite \VG\ might have plays of every finite
+length, but it can't have an infinite play.  Since finiteness is not
+needed to prove any of the results below, it would potentially even be
 misleading to assume it.  Later, we'll suggest how games with an
 infinite number of possible first moves might come up.
-\fi
-
-A \emph{play} of a game is sequence of legal moves that either comes
-to a finish, or goes on forever without finishing.  More formally:
-
-\begin{definition*}%\label{def:play}
-A \emph{play} of a \VG $G$ is defined recursively on the definition
-of $\VG$:
-
-\inductioncase{Base case}: ($G = v \in V$ is a finish.)  Then the
-sequence $(v)$ of length one is a \emph{play} of $G$.  Its
-\emph{payoff} is defined to be $v$.
-
-\inductioncase{Constructor case}: ($G = (a, \mathcal{M})$) Then a
-\emph{play} of $G$ is a sequence that starts with a possible first
-move $M \in \mathcal{M}$ of $G$ and continues with the elements of a
-play of $M$.  Its \emph{payoff} is the payoff of the play in $M$.
-\end{definition*}
-
-The basic rules of some games do allow plays that go on forever.  In
-Chess for example, a player might just keep moving the same piece back and
-forth, and if his opponent did the same, the play could go on
-forever.\footnote{Real chess tournaments rule this out by setting an
-  advance limit on the number of moves, or by forbidding repetitions
-  of the same position more than twice.}  But the recursive definition
-of \VG's actually rules out the possibility of infinite play.
-
-\bparts \ppart\label{payoff} Prove that every play of a \VG\ is finite
-and has a payoff.
-
-\hint By structural induction assume that each possible first move has
-a payoff.
-\begin{solution}
-
-\begin{proof}
-We prove by structural induction on $G \in \VG$ that every play of $G$
-has a payoff.
-
-\inductioncase{Base case}: [$G= v \in V$.]  Then there is only one
-play of $G$, namely the length one play $(v)$, with payoff $v$.
-
-\inductioncase{Constructor case}: [$G = (a, \mathcal{M})$.]  A play of
-$G$ by definition consists of a sequence that starts with some first
-move $M \in \mathcal{M}$ and continues with a play of $M$.  By
-structural induction, this play of $M$ is a sequence some length $n$
-with a payoff.  So this play of $G$ is a length $n+1$ sequence that
-finishes with the same payoff.
-\end{proof}
-
-\end{solution}
-
-\begin{staffnotes}
-Notice that part~\eqref{payoff} does \emph{not} assume that the number
-of next moves is finite.  Even infinite \VG's can only have finite
-plays with payoffs.  We don't have much use for infinite games, but it
-would be misleading to insert an irrelevant finiteness assumption into
-part~\eqref{payoff}.
-
-An infinite \VG\ might have plays of every finite length, but it can't
-have an infinite play.
 
 Infinite games do have their uses in the study of set theory and logic.
 \end{staffnotes}
 
-\eparts
-
 A \emph{strategy} for a player is a rule that tells the player which
-move to make when it's their turn.  Matching up any \STR{max}-player
-strategy with a \STR{min}-player strategy will determine a unique play
-of a \VG.
+move to make whenever it is their turn.  That is, a strategy is a
+function $s$ from games to games with the property that $s(G) \in G$
+for all games $G$.
+
+The \emph{max-player} wants a strategy that leads to as high a payoff
+as possible, and the \emph{min-player} wants a strategy that leads to
+as low a payoff as possible.  A pair of strategies for the two players
+determines exactly which moves the players choose and so determines a
+unique play of the game, depending on who moves first.
 
 \begin{staffnotes}
-More precisely, let $a$ be one of the
-labels \STR{max} or \STR{min}.  An $a$-\emph{strategy} is a function
-$s:\VG \to \VG$ such that
-\[
-s((a,\mathcal{M}) \in \mathcal{M}.
-\]
-When it is a player's turn to move in a game $G$, he chooses the move
-$s(G)$ specified by his strategy.
-\end{staffnotes}
-
-\begin{editingnotes}
-A strategy for the max-player is said to \emph{ensure} payoff $v$
-when, paired with \emph{any} strategy for the min-player, the
-resulting payoff is \emph{at least} $v$.  Likewise, a strategy for the
-min-player \emph{caps} payoff at $v$ when, paired with any strategy
-for the max-player, the resulting payoff is \emph{at most} $v$.
+Pedantic.  Maybe useful as exercise alone.
 
 \begin{definition}
-If $s_a$ and $s_b$ are strategies for labels $a \neq b$, and $G \in
-\VG$, then the play $p$ of $G$ they determine is defined recursively on the
-definition of $\VG$:
+Suppose $s_\text{min}$ and $s_\text{max}$ are strategies for the
+players in a game $G \in \VG$.
 
-\inductioncase{Base case}: If $G= v$, then $(v)$ is
-the unique play of $G$.
+The play $P_{\mathbf{m}}(G, s_\mathbf{m}, s_{\mathbf{\bar{m}}})$ they
+determine when player $\mathbf{m}$ moves first is defined recursively
+on the definition of $\VG$:
 
-\inductioncase{Constructor case}: If $G$ is not an ended game, and the
-label of $G$ is $c$, then $p$ is the play that starts with $s_c(G)$
-followed by the play of $s_c(G)$ determined by the two strategies.
+\inductioncase{Base case}: If $G = v$, then
+$P_\mathbf{m}(G, s_\mathbf{m}, s_{\bar{\mathbf{m}}})$ is the play
+$\ang{v}$ of $G$.
+
+\inductioncase{Constructor case}:  The play
+$P_\mathbf{m}(G, s_\mathbf{m}, s_{\mathbf{\bar{m}}})$ is defined to be $G$
+followed by the play determined by the two strategies in the game
+$s_{\mathbf{m}}(G)$, except that now player $\bar{\mathbf{m}}$ moves
+first.  More precisely,
+\[
+P_{\mathbf{m}}(G,s_{\mathbf{m}}, s_{\mathbf{\bar{m}}})
+\eqdef
+G \cdot P_{\bar{\mathbf{m}}}(s_{\mathbf{m}}(G), s_{\mathbf{\bar{m}}}, s_\mathbf{m}).
+\]
 \end{definition}
-
-Assuming for simplicity that the set $V$ of possible values of a game
-is finite,\iffalse the WOP (Section~\bref{well_ordering_sec})
-implies\fi there must be a largest value that the max-player can
-ensure.  \iffalse this is called the \emph{max-ensured-value} of the
-game.\fi Likewise, there must also be smallest possible cap the
-min-player can guarantee.
-\end{editingnotes}
-
-\iffalse
-
-which is called the \emph{min-capped-value} of the game.
-
-The max-ensured-value of course cannot be larger than the
-min-capped-value.  A unique value can be assigned to a game when these
-two values agree:
-\begin{definition*}
-If the max-ensured-value and min-capped-value of a game are equal, their
-common value is called the \emph{value of the game}.
-\end{definition*}
-
-So if both players play optimally in a game with that has a value $v$ then
-there is actually no point in playing.  Since the payoff is ensured to be at
-least $v$ and is also capped to be at most $v$, it must be exactly $v$.  So
-the min-player may as well skip playing and simply pay $v$ to the max-player
-(a negative payment means the max-player is paying the min-player).
-
-The punch line of our story is that the max-ensured-value and the
-min-capped-value are \emph{always} equal.
-\fi
+\end{staffnotes}
 
 The Fundamental Theorem for deterministic games of perfect information
 says that in any game, each player has an optimal strategy, and these
-strategies lead to the same payoff.  For example in Checkers or Chess,
-the Fundamental Theorem implies that
-\begin{itemize}
-\item there is winning strategy for one of the players, or
-\item both players have strategies that guarantee them at worst a draw.
-\end{itemize}
+strategies lead to the same payoff.
 
 \begin{theorem*}[Fundamental Theorem for \VG's]
 Let $V$ be a finite set of real numbers and $G$ be a $V$-valued \VG.
-Then there is a value $v \in V$ is called \emph{the value of $G$} such
+Then there is a value $v \in V$ called \emph{the value of $G$} such
 that
 \begin{itemize}
 \item the max-player has a strategy that, matched with \emph{any}
   min-player strategy, will define a play of $G$ that finishes with a
-  value of at least $v$,
+  payoff of at least $v$,
 
 \item the min-player has a strategy that, matched with \emph{any}
   max-player strategy, will define a play of $G$ that finishes with a
-  value of at most $v$.
+  payoff of at most $v$.
 \end{itemize}
 \end{theorem*}
 
@@ -281,64 +121,42 @@ that
 
 \ppart Prove the Fundamental Theorem for \VG's.
 
-\hint Assume by induction that each first move $M$ in a game $G$ has a
-value $v_M$.
+\hint Assume by induction that each first move $M \in G$ has a value
+$v_M$.
 
 \begin{solution}
 The proof is by structural induction on the definition of a $G \in
-\VG$.  The induction hypothesis is that there $G$ has a value.
+\VG$.  The induction hypothesis is that $G$ has a value.
 
-\inductioncase{Base case}: [$G = v \in V$.]  Then all strategies finish with
-the value $v$, so $v$ is the value of $G$.
+\inductioncase{Base case}: ($G = v \in V$).  Then all strategies
+finish with the value $v$, so $v$ is the value of $G$.
 
-\inductioncase{Constructor case}: [$G = (a, \mathcal{M})$].  By structural
-induction we may assume that each $M \in \mathcal{M}$ has a value $v_M$.
+\inductioncase{Constructor case}: ($G =\mathcal{M}$).  By structural
+induction we may assume that each $M \in \mathcal{M}$ has a value
+$v_M$.
 
-\inductioncase{Case} ($a = \STR{max}$.)  Let 
+\inductioncase{Induction step} 
+Suppose the $\mathbf{m}$-player moves first, where $\mathbf{m}$ is
+\text{max} or \text{min}.  Let $\bar{\mathbf{m}}$ be whichever
+of \text{max} or \text{max} differs from $\mathbf{m}$.
+
+Define
 \[
-v \eqdef \max\set{v_M \suchthat M \in \mathcal{M}}.
+v \eqdef \mathbf{m}\set{v_M \suchthat M \in \mathcal{M}}.
 \]
-This max will exist because $V$ is finite.
+This \textbf{max} or \textbf{min} will exist because $V$ is finite.
 
-Now a strategy for the max-player that finishes with a value $\ge v$ is:
+Now a strategy for the $\mathbf{m}$-player when they move first that
+finishes with a payoff of at most $v$ if $\mathbf{m} = \textbf{min}$
+and at least $v$ if $\mathbf{m} = \textbf{max}$ is:
+
 \begin{quote}
-Choose a first move, $M$ such that $v = v_M$.  Now by structural induction
-hypothesis, there is a max-strategy for $M$ that guarantees a finish with a
-value of at least $v$.  Follow that strategy.
+Choose a first move, $M$ such that $v = v_M$.  Now by structural
+induction hypothesis, there is an $\mathbf{m}$-strategy for $M$ that
+guarantees a finish with a value at most $v$ if $\mathbf{m} =
+\textbf{min}$ and at least $v$ if $\mathbf{m} = \textbf{max}$.  Follow
+that strategy.
 \end{quote}
-
-Similarly, a strategy for the min-player that finishes with a value $\leq v$ is:
-\begin{quote}
-Let $M$ be whatever first move is chosen by the max-player.  Now by
-structural induction hypothesis, there is a min-strategy for $M$ that
-guarantees a finish with a value of at most $v$.  Follow that strategy.
-\end{quote}
-
-\inductioncase{Case} ($a = \STR{min}$):
-Let 
-\[
-v \eqdef \min\set{v_M \suchthat M \in \mathcal{M}}.
-\]
-This min will exist because $V$ is finite.
-
-Now a strategy for the min-player that always finishes with a value $\leq v$
-is:
-\begin{quote}
-Choose a first move, $M$ such that $v=v_M$. Now by structural induction
-hypothesis, there is a min-strategy for $M$ that guarantees a finish with a
-value $\leq v$.  Follow that strategy.
-\end{quote}
-
-Similarly, a strategy for the max-player that finishes with a value $\ge v$
-is:
-\begin{quote}
-Let $M$ be whatever first move is chosen by the min-player.  Now by
-structural induction hypothesis, there is a max-strategy for $M$ that
-guarantees a finish with a value $\geq v$.  Follow that strategy.
-\end{quote}
-
-So in any case, $G$ has a value, which completes the constructor case of the
-structural induction.
 \end{solution}
 \eparts
 
@@ -363,62 +181,6 @@ strategy that limits payoff to at most $v + \epsilon$.
 \end{solution}
 
 \eparts
-
-\iffalse
-
-\ppart Conclude immediately that in chess, there is a winning strategy
-for White, or a winning strategy for Black, or both players have
-strategies that guarantee at least a stalemate.  (The only difficulty
-is that no one knows which case holds.)
-
-\begin{solution}
-By the fundamental theorem, the value of chess must be 1, $-1$, or 0.
-\end{solution}
-\eparts
-
-So where do we come upon games with an infinite number of first
-moves?  Well, suppose we play a tournament of $n$ chess games for some
-positive integer $n$.  This tournament will be a \VG\ if we agree on a
-rule for combining the payoffs of the $n$ individual chess games into
-a final payoff for the whole tournament.
-
-There still are only a finite number of possible moves at any stage of
-the $n$-game chess tournament, but we can define a
-\emph{meta-chess-tournament}, whose first move is a choice of any
-positive integer $n$, after which we play an $n$-game tournament.  Now
-the meta-chess-tournament has an infinite number of first moves.
-
-Of course only the first move in the meta-chess-tournament is
-infinite, but then we could set up a tournament consisting of $n$
-meta-chess-tournaments.  This would be a game with $n$ possible
-infinite moves.  And then we could have a
-\emph{meta-meta}-chess-tournament whose first move was to choose how
-many meta-chess-tournaments to play.  This meta-meta-chess-tournament
-will have an infinite number of infinite moves.  Then we could move on
-to meta-meta-meta-chess-tournaments \dots.
-
-As silly or weird as these meta games may seem, their weirdness
-doesn't disqualify the Fundamental Theorem: each of these games will
-still have a value.
-
-\bparts
-
-\ppart State some reasonable generalization of the Fundamental Theorem
-to games with an infinite set $V$ of possible payoffs.
-\emph{Optional}: Prove your generalization.
-
-\begin{solution}
-The obvious generalization would redefine the max-value as the lub of
-the ensured values, and the min-value as the glb of the limits to
-payoffs.  The result is that some games may now have a value $v$ that
-is positive or negative infinity, and that $v$ can't exactly be
-ensured or limted to, but rather that for any $\epsilon >0$ there will
-be a strategy that ensures a value of at least $v - \epsilon$ and a
-strategy that limits payoff to at most $v + \epsilon$.
-\end{solution}
-
-\eparts
-\fi
 
 \end{problem}
 

@@ -1475,8 +1475,12 @@
 \newcommand{\sumsym}{\ensuremath{\mathbin{\mathrm{\textbf{+}}}}}
 
 \newcommand{\btg}{\text{binary-2PG}}
+\newcommand{\wnls}{\text{WL-2PerGm}}
 \newcommand{\tg}{\text{2PerGm}}           %2PG
+\newcommand{\winend}{\ensuremath{\mathbf{win}}}
+\newcommand{\loseend}{\ensuremath{\mathbf{lose}}}
 \newcommand{\ms}[1]{\operatorname{#1}}
+
 
 \providecommand{\sg}{\ms{sg}}
 \providecommand{\ide}{\ms{id}}
