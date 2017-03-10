@@ -4,7 +4,7 @@
   \pcomment{FP_sat_count_induction}
   \pcomment{same as FP_sat_count_genfunc but demands induction}
   \pcomment{final.S05}
-  \pcomment{edited ARM 5/23/12}
+  \pcomment{edited ARM 5/23/12, revised to justify given recurrence 3/9/17}
 \end{pcomments}
 
 \pkeywords{
@@ -19,25 +19,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{problem}
-Consider the following sequence of predicates:
-%
+We examine a series of propositional formulas
+$F_1,F_2,\dots,F_n,\dots$ containing propositional variables
+$P_1,P_2,\dots,P_n,\dots$ constructed as follows
 \[\begin{array}{ll}
-Q_1(x_1)& \eqdef\quad   x_1 \\
-Q_2(x_1, x_2)& \eqdef\quad   x_1 \QIMP x_2 \\
-Q_3(x_1, x_2, x_3)& \eqdef\quad   (x_1 \QIMP x_2) \QIMP x_3 \\
-Q_4(x_1, x_2, x_3, x_4)& \eqdef\quad   ((x_1 \QIMP x_2) \QIMP x_3) \QIMP x_4 \\
-Q_5(x_1, x_2, x_3, x_4, x_5)& \eqdef\quad   (((x_1 \QIMP x_2) \QIMP x_3) \QIMP x_4) \QIMP x_5 \\
+F_1(P_1)& \eqdef\quad   P_1 \\
+F_2(P_1, P_2)& \eqdef\quad   P_1 \QIMP P_2 \\
+F_3(P_1, P_2, P_3)& \eqdef\quad   (P_1 \QIMP P_2) \QIMP P_3 \\
+F_4(P_1, P_2, P_3, P_4)& \eqdef\quad   ((P_1 \QIMP P_2) \QIMP P_3) \QIMP P_4 \\
+F_5(P_1, P_2, P_3, P_4, P_5)& \eqdef\quad   (((P_1 \QIMP P_2) \QIMP P_3) \QIMP P_4) \QIMP P_5 \\
  & \vdots
 \end{array}\]
-%
 Let $T_n$ be the number of different true/false settings of the
-variables $x_1, x_2, \dots, x_n$ for which $Q_n(x_1, x_2, \dots,
-x_n)$ is true.  For example, $T_2 = 3$ since $Q_2(x_1, x_2)$ is true
-for 3 different settings of the variables $x_1$ and $x_2$:
+variables $P_1, P_2, \dots, P_n$ for which $F_n(P_1, P_2, \dots,
+P_n)$ is true.  For example, $T_2 = 3$ since $F_2(P_1, P_2)$ is true
+for 3 different settings of the variables $P_1$ and $P_2$:
 %
 \[
 \begin{array}{cc|c}
-x_1 & x_2 & Q_2(x_1, x_2) \\ \hline
+P_1 & P_2 & F_2(P_1, P_2) \\ \hline
 T & T & T \\
 T & F & F \\
 F & T & T \\
@@ -47,44 +47,52 @@ F & F & T
 
 \bparts
 
-\ppart Express $T_{n+1}$ in terms of $T_n$, assuming $n \geq 1$.
+\ppart Explain why
+
+\begin{equation}\label{Tn+12n2n}
+T_{n+1} = 2^{n+1} - T_n.
+\end{equation}
+
+\examspace[1.5in]
 
 \begin{solution}
 We have:
 %
 \[
-Q_{n+1}(x_1, x_2, \dots, x_{n+1})
-    = Q_n(x_1, x_2, \dots, x_n) \QIMP x_{n+1}
+F_{n+1}(P_1, P_2, \dots, P_{n+1})
+    = F_n(P_1, P_2, \dots, P_n) \QIMP P_{n+1}
 \]
 %
-If $x_{n+1}$ is true, then $Q_{n+1}$ is true for all $2^n$ settings of
-the variables $x_1, x_2, \dots, x_n$.  If $x_{n+1}$ is false, then
-$Q_{n+1}$ is true for all $2^n$ settings of $x_1, x_2, \dots, x_n$
-\textit{except} for the $T_n$ settings that make $Q_n$ true.  Thus,
+If $P_{n+1}$ is true, then $F_{n+1}$ is true for all $2^n$ settings of
+the variables $P_1, P_2, \dots, P_n$.  If $P_{n+1}$ is false, then
+$F_{n+1}$ is true for all $2^n$ settings of $P_1, P_2, \dots, P_n$
+\textit{except} for the $T_n$ settings that make $F_n$ true.  Thus,
 altogether we have:
-\begin{equation}\label{Tn+12n2n}
-T_{n+1} = 2^n + (2^n - T_n) = 2^{n+1} - T_n
-\end{equation}
+\[
+T_{n+1} = 2^n + (2^n - T_n) = 2^{n+1} - T_n.
+\]
 
 \end{solution}
 
-\ppart Use induction to prove that $T_n = \frac{1}{3}(2^{n+1} +
-(-1)^n)$ for $n \geq 1$.  You may assume your answer to the previous
-part without proof.
+\ppart Use induction to prove that 
+\begin{equation}\tag{*}
+T_n = \frac{2^{n+1} +(-1)^n}{3}
+\end{equation}
+for $n \geq 1$.
 
 \begin{solution}
 \begin{proof}
-The proof is by induction.  Let $P(n)$ be the proposition
-that
-\[
-T_n = \frac{2^{n+1} + (-1)^n}{3}.
-\]
+The proof is by induction with $P(n)$ given by equation~(*) as the
+induction hypothesis.
 
 \inductioncase{Base case:} $(n=1)$.  There is a single setting of
-$x_1$ that makes $Q_1(x_1) = x_1$ true, and $T_1 = (2^{1+1} + (-1)^1)
-/ 3 = 1$.  Therefore, $P(1)$ is true.
+$P_1$ that makes $F_1(P_1) = P_1$ true, so
+\[
+T_1 = 1 = \frac{2^{1+1} + (-1)^1}{3},
+\]
+which proves $P(1)$.
 
-\inductioncase{Inductive step:} For $n \geq 1$, we assume $P(n)$ and
+\inductioncase{Inductive step:} For $n \geq 1$, we assume~(*) and
 reason as follows:
 \begin{align*}
 T_{n+1}
@@ -92,12 +100,12 @@ T_{n+1}
          & \text{(by~\eqref{Tn+12n2n})}\\
     & = 2^{n+1} - \frac{2^{n+1} + (-1)^n}{3}
          & \text{(by ind. hyp.)}\\
-    & = \frac{3\cdot 2^{n+1} - 2^{n+1} + (-1)(-1)^{n}}{3}\\
-    & = \frac{2^{n+2} + (-1)^{n+1}}{3}.
+    & = \frac{3\cdot 2^{n+1} - 2^{n+1} - (-1)^{n}}{3}\\
+    & = \frac{2^{n+2} + (-1)^{n+1}}{3},
 \end{align*}
-That is, $P(n-1)$ holds.
-
+so~$P(n+1)$ holds.
 \end{proof}
+
 \end{solution}
 
 \eparts

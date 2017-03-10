@@ -2784,7 +2784,7 @@
 \newcommand{\coursecopyrightyear}{%
   \message{^^JCopyright year is *INCORRECT*.^^J^^J}}
 
-\renewcommand{\coursecopyrightyear}{2015}
+\renewcommand{\coursecopyrightyear}{2017}
 
 \newcommand{\coursecopyrightnames}{%
   \message{^^JCopyright names are *INCORRECT*.^^J^^J}}
