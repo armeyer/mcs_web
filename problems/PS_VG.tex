@@ -25,8 +25,8 @@
 \begin{problem}
 We're going to characterize a large category of games as a recursive
 data type and then prove, by structural induction, a fundamental
-theorem about game strategies.  We are interested two person games of
-perfect information that end with a numerical score.  Chess and
+theorem about game strategies.  We are interested in two person games
+of perfect information that end with a numerical score.  Chess and
 Checkers would count as value games using the values $1,-1, 0$ for a
 win, loss or draw for the first player.  The game of Go really does
 end with a \emph{score} based on the number of white and black stones
@@ -62,122 +62,146 @@ Infinite games do have their uses in the study of set theory and logic.
 A \emph{strategy} for a player is a rule that tells the player which
 move to make whenever it is their turn.  That is, a strategy is a
 function $s$ from games to games with the property that $s(G) \in G$
-for all games $G$.
+for all games $G$.  Given which player has the first move, a pair of
+strategies for the two players determines exactly which moves the
+players will choose.  So the strategies determine a unique play of the
+game and a unique payoff.\footnote{We take for granted the fact that
+  no \VG\ has an infinite play.  The proof of this by structural
+  induction is essentially the same as that for win-lose games given
+  \inbook{in Lemma~\bref{goutcom}.} \inhandout{in the text.}}
 
-The \emph{max-player} wants a strategy that leads to as high a payoff
-as possible, and the \emph{min-player} wants a strategy that leads to
-as low a payoff as possible.  A pair of strategies for the two players
-determines exactly which moves the players choose and so determines a
-unique play of the game, depending on who moves first.
-
-\begin{staffnotes}
-Pedantic.  Maybe useful as exercise alone.
-
-\begin{definition}
-Suppose $s_\text{min}$ and $s_\text{max}$ are strategies for the
-players in a game $G \in \VG$.
-
-The play $P_{\mathbf{m}}(G, s_\mathbf{m}, s_{\mathbf{\bar{m}}})$ they
-determine when player $\mathbf{m}$ moves first is defined recursively
-on the definition of $\VG$:
-
-\inductioncase{Base case}: If $G = v$, then
-$P_\mathbf{m}(G, s_\mathbf{m}, s_{\bar{\mathbf{m}}})$ is the play
-$\ang{v}$ of $G$.
-
-\inductioncase{Constructor case}:  The play
-$P_\mathbf{m}(G, s_\mathbf{m}, s_{\mathbf{\bar{m}}})$ is defined to be $G$
-followed by the play determined by the two strategies in the game
-$s_{\mathbf{m}}(G)$, except that now player $\bar{\mathbf{m}}$ moves
-first.  More precisely,
-\[
-P_{\mathbf{m}}(G,s_{\mathbf{m}}, s_{\mathbf{\bar{m}}})
-\eqdef
-G \cdot P_{\bar{\mathbf{m}}}(s_{\mathbf{m}}(G), s_{\mathbf{\bar{m}}}, s_\mathbf{m}).
-\]
-\end{definition}
-\end{staffnotes}
+The \emph{max-player} wants a strategy that guarantees as high a
+payoff as possible, and the \emph{min-player} wants a strategy that
+guarantees as low a payoff as possible.
 
 The Fundamental Theorem for deterministic games of perfect information
 says that in any game, each player has an optimal strategy, and these
-strategies lead to the same payoff.
+strategies lead to the same payoff.  More precisely,
 
 \begin{theorem*}[Fundamental Theorem for \VG's]
 Let $V$ be a finite set of real numbers and $G$ be a $V$-valued \VG.
-Then there is a value $v \in V$ called \emph{the value of $G$} such
-that
+Then there is a value $v \in V$, called a \term{max-value}
+$\text{max}_G$ for $G$, such that if the \emph{max-player moves
+  first},
 \begin{itemize}
-\item the max-player has a strategy that, matched with \emph{any}
-  min-player strategy, will define a play of $G$ that finishes with a
-  payoff of at least $v$,
 
-\item the min-player has a strategy that, matched with \emph{any}
-  max-player strategy, will define a play of $G$ that finishes with a
-  payoff of at most $v$.
+\item the max-player has a strategy that will finish with a payoff of
+  \emph{at least} $\text{max}_G$, no matter what strategy the min-player
+  uses, and
+
+\item the min-player has a strategy that will finish with a payoff of
+  \emph{at most} $\text{max}_G$, no matter what strategy the max-player
+  uses.
 \end{itemize}
 \end{theorem*}
+
+It's worth a moment for the reader to observe that the definition of
+$\text{max}_G$ implies that if there is one for $G$, it is unique.  So
+if the max-player has the first move, the Fundamental Theorem means
+that there's no point in playing the game: the min-player may just as
+well pay the max-value to the max-player.
 
 \bparts
 
 \ppart Prove the Fundamental Theorem for \VG's.
 
-\hint Assume by induction that each first move $M \in G$ has a value
-$v_M$.
+\hint \VG's are a recursively defined data type, so the basic method
+for proving that all \VG's have some property is structural induction
+on the definition of \VG.  Since the min-player moves first in
+whichever game the max-player picks for their first move, the
+induction hypothesis will need to cover that case as well.
 
 \begin{solution}
-The proof is by structural induction on the definition of a $G \in
-\VG$.  The induction hypothesis is that $G$ has a value.
-
-\inductioncase{Base case}: ($G = v \in V$).  Then all strategies
-finish with the value $v$, so $v$ is the value of $G$.
-
-\inductioncase{Constructor case}: ($G =\mathcal{M}$).  By structural
-induction we may assume that each $M \in \mathcal{M}$ has a value
-$v_M$.
-
-\inductioncase{Induction step} 
-Suppose the $\mathbf{m}$-player moves first, where $\mathbf{m}$ is
-\text{max} or \text{min}.  Let $\bar{\mathbf{m}}$ be whichever
-of \text{max} or \text{min} differs from $\mathbf{m}$.
-
-Define
+The proof is by structural induction on the definition of a game $G
+\in \VG$.  The induction hypothesis $P(G)$ will be that
 \[
-v \eqdef \mathbf{m}\set{v_M \suchthat M \in \mathcal{M}}.
+P(G) \eqdef G\ \text{has both a max-value $\text{max}_G$ and a min-value $\text{min}_G$},
 \]
-This \textbf{max} or \textbf{min} will exist because $V$ is finite.
+where a min-value for $G$ is defined in the same way as a max-value
+except that max and min are switched.  To be precise, a
+\emph{min-value} for $G$ is a value $\text{min}_G \in V$ such that if the
+\emph{min-player moves first},
+\begin{itemize}
+\item the min-player has a strategy that will finish with a payoff of
+  \emph{at most} $\text{min}_G$, no matter what strategy the max-player
+  uses, and
 
-Now a strategy for the $\mathbf{m}$-player when they move first that
-finishes with a payoff of at most $v$ if $\mathbf{m} = \textbf{min}$
-and at least $v$ if $\mathbf{m} = \textbf{max}$ is:
+\item the max-player has a strategy that will finish with a payoff of
+  \emph{at least} $\text{min}_G$, no matter what strategy the min-player
+  uses.
+\end{itemize}
 
-\begin{quote}
-Choose a first move, $M$ such that $v = v_M$.  Now by structural
-induction hypothesis, there is an $\mathbf{m}$-strategy for $M$ that
-guarantees a finish with a value at most $v$ if $\mathbf{m} =
-\textbf{min}$ and at least $v$ if $\mathbf{m} = \textbf{max}$.  Follow
-that strategy.
-\end{quote}
+In general, the max-value and the min-value for $G$ are different,
+since playing $G$ with the max-player moving first is quite different
+from playing $G$ with the min-player moving first.
+
+\begin{staffnotes}
+Add problem: Prove that the max-value of $G$ is always $\geq$ the
+min-value.
+\end{staffnotes}
+\begin{proof}
+
+\inductioncase{Base case}: ($G = v \in V$).  The max-value and
+min-value will be $v$.  The strategy for the players---regardless of
+who moves first---is ``Suck it up, the game is over and you have to
+take $v$ as your payoff.''  This proves $P(G)$.
+
+\inductioncase{Constructor case}: ($G$ is a nonempty set of \VG's).
+By structural induction we may assume that each $M \in G$ has a a
+min-value $\text{min}_M$. Define
+\[
+v_\text{max} \eqdef \max\set{\text{min}_M \suchthat M \in G}.
+\]
+This $\text{max}$ will exist because $V$ is finite.
+
+We claim that $\text{max}_G = v_\text{max}$.  To prove this, we begin
+by describing a strategy with the max-player moving first that
+guarantees a payoff of at least $v_\text{max}$.  Namely, the
+max-player's first move should be to some $M \in G$ such that
+$\text{min}_M = v_\text{max}$.  After this first move, the max-player
+has a strategy that, by definition of $\text{min}_M$, guarantees a
+payoff off of at least $\text{min}_M = v_\text{max}$ in the game $M$
+where the min-player moves first.  The max-player should then use this
+strategy in the game $M$.
+
+Moreover, with the max-player moving first, the min-player has a
+strategy for $G$ that guarantees a payoff of at most $v_\text{max}$.
+Namely, if the first player's first move is to $M \in G$, the
+min-player has a strategy that, by definition of $\text{min}_M$,
+guarantees a payoff of at most $\text{min}_M$ in the game $M$ where
+the min-player moves first.  The min-player should then use this
+strategy in the game $M$.  Since by definition $v_\text{max} \geq
+\text{min}_M$, this strategy guarantees the min-player a payoff in $G$
+of at most $v_\text{max}$.
+
+This proves that $v_\text{max}$ has the properties required of
+$\text{max}_G$, and since $\text{max}_G$ is by definition unique, it
+follows that $\text{max}_G = v_\text{max}$.
+
+Reasoning as above with max and min switched similarly proves that $G$
+has a min-value.  This proves $P(G)$, and we conclude by structural
+induction that $P(G)$ is true for every $\VG$ $G$ with a finite number
+of payoff values.  In particular every $G$ has a max-value, as
+claimed.
+\end{proof}
 \end{solution}
-\eparts
 
-\begin{center}
-\textbf{Supplemental Part (optional)}
-\end{center}
 
-\bparts
-
-\ppart State some reasonable generalization of the Fundamental Theorem
-to games with an infinite set $V$ of possible payoffs.  Prove your
-generalization.
+\ppart \textbf{(OPTIONAL)}.  State some reasonable generalization of
+the Fundamental Theorem to games with an infinite set $V$ of possible
+payoffs.
 
 \begin{solution}
-The obvious generalization would redefine the max-value as the lub of
-the ensured values, and the min-value as the glb of the limits to
-payoffs.  The result is that some games may now have a value $v$ that
-is positive or negative infinity, and that $v$ can't exactly be
-ensured or limted to, but rather that for any $\epsilon >0$ there will
-be a strategy that ensures a value of at least $v - \epsilon$ and a
-strategy that limits payoff to at most $v + \epsilon$.
+A straighforward generalization is to redefine the max-value to be the
+least upper bound of the values for which the max-player has a
+guaranteed strategy.  With an infinite number of possible payoffs,
+some games may now have an infinite max-player value, and even in the
+case that the max-value is finite, it might not be guaranteed exactly
+by player strategies.  Rather, for any $v < \text{max}_G$, when the
+max-player moves first, there will be a strategy for the max-player
+that guarantees a payoff of at least $v$, and there will be a strategy
+for the min-player that guarantees a payoff of at most $v +
+(\text{max}_G - v)/2$.
 \end{solution}
 
 \eparts
