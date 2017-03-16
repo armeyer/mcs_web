@@ -23,120 +23,170 @@
 \begin{problem}
 There is a famous paradox about describing numbers which goes as
 follows:
-
+\begin{quote}
 There are only so many possible definitions of nonnegative integers
 that can be written out in English using no more than 161 characters
 from the Roman alphabet, punctuation symbols, and spaces.  So there
 have to be an infinite number of nonnegative integers that don't have
 such short definitions.  By the Well Ordering Principle, there must be
-a \emph{least} nonnegative integer $n$ that has no such short
+a \emph{least} nonnegative integer $n_0$ that has no such short
 definition.  But wait a minute,
-\begin{quote}
-``The \emph{least} nonnegative integer that cannot be defined in
-  English using at most 161 characters from the Roman alphabet,
-  punctuation symbols, and spaces.''
+    \begin{quote}
+    ``The \emph{least} nonnegative integer that cannot be defined in
+    English using at most 161 characters from the Roman alphabet,
+    punctuation symbols, and spaces.''
+    \end{quote}
+is a definition of $n_0$ that uses 161 characters (count 'em).  So
+$n_0$ can't exist, and the Well Ordering Principle is unsound!
 \end{quote}
-is a definition of $n$ that uses 161 characters (count 'em).  So $n$
-can't exist, and the Well Ordering Principle is unsound!
 
 Now this ``paradox'' doesn't stand up to reason because it rests on
 the decidedly murky concept of a ``definition in English.''  As usual,
 when you don't know what you're talking about, reaching contradictory
-conclusions is to be expected.
+conclusions is not surprising.
 
 But we can extract from this paradox a well-defined and interesting
 theorem about definability in predicate logic.  The method we use is
-essentialy the same as the one used to prove Cantor's
-Theorem~\bref{powbig}, \iffalse that the power set is ``bigger'' than
-the set\fi and it leads to many other important results about the
-logical limits of mathematics and computer science.  In particular,
-we'll present a simple and precise description of a set of binary
-strings that can't be described by ordinary logical formulas.  In
-other words, we will give a precise description of an undescribable
-set of strings, which sounds paradoxical, but won't be when we look at
-it more closely.
+essentially the same kind of ``diagonal'' argument used to prove
+Cantor's Theorem~\bref{powbig} and undecidability of the Halting
+Problem\inbook{ Theorem~bref{{nohalt_thm}h}.
 
-Let's start by illustrating how a logical formula can describe the set
-of binary strings that do not contain a \mtt{1}:
-\begin{equation}%\tag{\all0s} %\label{no1}
-  \QNOT[\exists y.\, \exists z.\, s = y\mtt{1}z]\,.
-  \tag{$\text{no-1s}$}
+We'll be examining expressions and formulas as mathematical objects,
+so we need to be clear about what they are.  At the most primitive
+level, a formula is just a finite sequence of symbols that meet some
+grammatical rules.  For example, left \mtt{)} and right \mtt{(}
+parenthesis symbols ought to match up.
+
+Adopting the vocabulary of formal language theory here is helpful.  We
+start with some set of \emph{symbols}
+$\mtt{a},\mtt{b},\mtt{0},\mtt{1},\dots$.  A symbol is supposed to be
+some atomic object that has no properties besides the fact that you
+can tell when something is symbol and tell when a pair of symbols are
+the same or different.  A set of symbols is called an \emph{alphabet}.
+Usually alphabets are chosen to be finite, such as the twenty-six
+letters of the Roman alphabet or the 256 symbols of the
+\asciibet\ alphabet.
+
+A finite sequence of symbols from some alphabet $A$ is called a
+\emph{word} over $A$, and a set of words is called a \emph{language}.
+The notation $\strings{A}$ is used for the language consisting of all
+words over $A$.  For example, an \ascciibet\ word is a word over
+standard 256 character \asciibet\ alphabet.  Each word in \asciistr|
+is finite, but \asciistr\ itself is infinite.
+
+Languages can be described by logical formulas whose variables range
+over words.  For example, here is a logical formula $\text{No-1}(s)$
+that means ``the word $s$ does not contain a \mtt{1}'':
+\begin{equation} \tag{no-1s} %\tag{\all0s} %\label{no1}
+\text{No-1}(s) \eqdef\quad \QNOT[\exists y.\, \exists z.\, s = y\mtt{1}z]\,.
 \end{equation}
-So the strings $s$ described by formula~(no-1s) are exactly the
-strings consisting solely of \mtt{0}'s.
+If we pick as our alphabet the binary symbols \mtt{0} and \mtt{1}, so
+$s$ ranges over the binary words $\bins$, then $\text{No-1}(s)$ is
+true iff $s$ is a word consisting entirely of \mtt{0}'s.
 
-Formula~(no-1s) is an example of a ``string formula'' of the kind we
-will use to describe properties of binary strings.  More precisely, an
-\emph{atomic} string formula is a formula, like ``$s = y\mtt{1}z$''
-above, that is of the general form
+Formula~(No-1) is an example of a ``word-logic formula.''  More
+precisely, an \emph{atomic} word-logic formula is a formula, like ``$s
+= y\mtt{1}z$'' above, that is of the general form
  \[
   ``xy\dots z = uv\dots w''
  \]
-where $x,y,\dots,z,u,v,\dots,w$ may be the constants \mtt{0},\mtt{1},
-or may be variables ranging over the set, \bins, of finite binary
-strings.  A string formula in general is one like~(no-1s),
-built up from atomic formulas using quantifiers and propositional
-connectives.
+where $x,y,\dots,z,u,v,\dots,w$ may be symbols or variables.  A
+word-logic formula in general is one like~(No-1), built up from atomic
+formulas using quantifiers and propositional connectives.
 
-When $G(s)$ is a string formula, we'll use the notation $\desc(G)$ for
-the set of binary strings $s$ that satisfy $G$.  That is,
-  \[
-  \desc(G) \eqdef \set{s \in \bins \suchthat G(s)}.
-  \]
-A set of binary strings is \emph{describable} if it equals $\desc(G)$
-for some string formula $G$.  For example, the set $\strings{0}$ of
-finite strings of 0's is describable because
- \[
- \desc(\text{(no-1s)}) = \strings{0}.
- \]
+\bparts \ppart Write a word-logic formula $\text{\mtt{01}s}(t)$ about binary
+words which is true iff $t$ is a word that consists of a sequence of
+\mtt{01}'s.  That is, $\text{\mtt{01}s}(t)$ means that $t =
+\mtt{010101}\dots\mtt{01}$.
 
-The next important idea comes from the observation that a string
-formula itself is a syntactic object, consisting of a string of
-characters over some standard character alphabet.  Now coding
-characters of an alphabet into binary strings is a familiar idea.  For
-example, the characters of the ASCII alphabet have a standard coding
-into the length eight binary strings.  Once its individual characters
-are coded into binary, a complete string formula can be coded into a
-binary string by concatenating the binary codes of its consecutive
-characters---a very familiar idea to a computer scientist.
+\hint Start by defining formulas
+\begin{itemize}
+\item  $\text{ends-right}(t)$ meaning $t$ ends with \mtt{01}.  
+\item  $\text{length-2}(t)$ meaning $t$ consist of two consective binary symbols.
+\item $\text{moves-right}(t)$ meaning the only length-2 subwords of
+  $t$ are \mtt{01} and \mtt{10}.
+\end{itemize}
 
-Now suppose $x$ is a binary string that codes some formula $G_x$.  The
-details of how we extract $G_x$ from its code $x$ don't matter
-much---we only require that there is some procedure to actually
-display the string formula $G_{x}$ given its code $x$.
+\begin{solution}
+Let
+\begin{align*}
+\text{starts-right}(t)& \eqdef \exist x.\, t = \mtt{01}x,\\
+\text{ends-right}(t)  & \eqdef \exist x.\, t = x\mtt{01},\\
+\text{length-2}(t)    & \eqdef t = \mtt{00}\ \QOR t = \mtt{01} \QOR t = \mtt{10} \QOR t = \mtt{11},\\
+\text{moves-right}(t) & \eqdef \exist x,y,z.\,
+            [t = xyz \QAND \text{length-2}(z)]
+               \QIMP\ (z = \mtt{01} \QOR x = \mtt{10}).
+\end{align*}
+Then we can define
+\[
+\text{\mtt{01}s}(t) \eqdef
+  \text{starts-right}(t) \QAND \text{ends-right}(t) \QAND \text{moves-right}(t).
+\]
+\end{solution}
 
-It's technically convenient to treat every string as the code of a
-string formula, so if $x$ is not a binary string we would get from a
-string formula, we'll arbitrarily define $G_x$ to be the
-formula~\text{(no-1s)}.
+\eparts
 
-\iffalse
-Standard binary representations of formulas are often based on
-character-by-character translation into binary, which means that only
-a sparse set of binary strings actually represent string formulas.  It
-will be technically convenient to have \emph{every} binary string
-represent some string formula.  This is easy to do: tweak the display
-procedure so it displays some default formula, say $\text{no-1s}$,
-when it gets a binary string that isn't a standard representation of a
-string formula.  With this tweak, \emph{every} binary string $x$
-will now represent a string formula $G_{x}$.
-\fi
+\bigskip
+
+A language is \emph{word-logic describable}---\emph{describable} for
+short---if it equals $\desc(G)$ for some word-logic formula $G$.  For example,
+\[
+\desc{No-1} = \strings{\mtt{0}},
+\]
+and 
+\[
+\desc{\mtt{01}s} = \strings{\mtt{01}}.
+\]
+
+It may not be apparent, but essentially every mathematical property of
+finite data structures is definable by a word-logic formula.  This is
+a transcendant insight that we could spend many classes spelling out,
+but we won't.  For our purposes here, we just want to emphasize that
+every language you will ever need to describe in ordinary mathematic
+or Computer Science will be word-logic describable---unless you're
+taking a class about word-logic.
+
+The next important observation is that a word-logic formula itself is
+just a word over some alphabet.  We could try using an elaborate
+alphabet including special symbols like \mtt{$\exists$},
+\mtt{$\forall$}, \mtt{=}, but we can do fine with just the standard
+\asciibet\ alphabet.  After all, \asciibet\ includes all the keyboard
+symbols we would use to type formulas into a theorem-proving program
+or formula processor like Mathematica.
+
+Now suppose $x$ is a word-logic formula asserting some property of a
+variable $s$ ranging over \asciibet\ words.  Let's write $x(y)$ for
+the formula where the variable $s$ is replaced by the \acsii\ word
+$y$.  So,
+\[
+\desc{x} = \set{y \in \ascciistr \suchthat x(y) \text{ is true}}.
+\]
 
 Now we have just the kind of situation where a Cantor-style diagonal
-argument can be applied, namely, we'll ask whether a string describes a
-property of \emph{itself}!  That may sound like a mind-bender, but all
-we're asking is whether
+argument can be applied, namely, we'll ask whether a word describes a
+property of \emph{itself}!  That is, we are asking whether
 \[
-G_x(x)
+x \in \desc(x)
 \]
-is true, or equivalently whether
-\[
-x \in \desc(G_{x}).
-\]
+when $x \in \assciistr$ is a word-logic formula.
 
-For example, using character-by-character translations of formulas
-into binary, neither the string $0000$ nor the string $10$ would be
-the binary representation of a formula, so our convention implies that
+It simplifies things if we make every \ascciibet\ word $x$ describe
+something, so when $x$ is not a word-logic formula, we'll arbitrarily
+define $\desc(x)$ to be the same as $\desc(No-1)$, namely,
+$\strings{\mtt{0}}$.
+
+\bpart
+\ppart  s is in  
+
+Neither $\mtt{0000}$ nor $\mtt{albert}$ is a word-logic formula.  Which of
+Explain why
+\begin{equation}\tag{*}
+0000 \in \desc(G_{0000}) \quad\text{and}\quad 10 \notin \desc(G_{10}).
+\end{equation}
+
+\begin{solution}
+Since neither $0000$ nor $10$ is the code of a word-logic formula,
+so our convention implies that
 \[
 G_{0000} = G_{10} \eqdef \text{formula~(no-1s)}.
 \]
@@ -144,95 +194,69 @@ So
 \[
 \desc(G_{0000})= \desc(G_{10}) = \strings{0}.
 \]
-This means that
-\[
-0000 \in \desc(G_{0000}) \quad\text{and}\quad 10 \notin \desc(G_{10}).
-\]
+But $0000 \in \strings{0}$ and $01 \notin \strings{0}$, which proves~(*).
+\end{solution}
+\eparts
+\bigskip
 
 Now we are in a position to give a precise mathematical description of
-an ``undescribable'' set of binary strings, namely:
-\begin{theorem*}
-Define
-\begin{equation}\label{Udefxngx}
+an ``undescribable'' language, namely define
+\begin{equation}\tag{U}
 U \eqdef \set{x \in \bins \suchthat\ x \notin \emph{\desc}(G_{x})}.
 \end{equation}
-The set $U$ is not describable.
+
+\begin{theorem*}
+The language $U$ is not describable.
 \end{theorem*}
 
-Use reasoning similar to Cantor's Theorem~\bref{powbig} to prove this
-Theorem.
+Prove this Theorem using a diagonal argument similar to the one used
+to prove Cantor's Theorem\inbook{~\bref{powbig}}.
 
-\hint Suppose $U =\desc(G_{x_U})$.
+\hint Suppose $x_U \in \bins$ is the code of a formula describing $U$,
+that is, $U =\desc(G_{x_U})$.
 
 \begin{solution}
-Suppose to the contrary that $U$ was describable.  This means there is
-some string formula describing $U$, and that string formula would have
-a binary code $x_U \in \bins$.  In other words
+For all words $x$, the language $U$ by definition differs at the word
+$x$ from the language with description $x$.  So $U$ can't have a
+description.
+
+Spelling this out more fully, suppose to the contrary that $U$ was
+describable.  This means there is some word-logic formula describing $U$,
+and that word-logic formula would have a code word $x_U$.  In
+other words
 \[
 U = \desc(G_{x_U}).
 \]
-Another way to phrase this is to say that, by definition of $x_U$,
-\begin{equation}\label{xuxdgxu}
-x \in U \qiff x \in \desc(G_{x_U})
+So the equation
+\begin{equation}\tag{**} %\label{xuxdgxu}
+x \in U \QIFF x \in \desc(G_{x_U})
 \end{equation}
-for all $x \bins$.
+is trivially true for all words $x$.
 
 Also, by definition of $U$, we have
-\begin{equation}\label{xUiffxGx}
+\begin{equation}\tag{\#}  %\label{xUiffxGx}
 x \in U \qiff x \notin \desc(G_{x}) 
 \end{equation}
-for $x\in \bins$.
+for all words $x$.
 
-Combining~\eqref{xuxdgxu} and~\eqref{xUiffxGx}, we conclude that
-\begin{equation}\label{xdGiff}
-x \notin \desc(G_{x}) \qiff x \in \desc(G_{x_U}),
-\end{equation}
-for all $x\in \bins$.
-
-Now plugging in $x_U$ for $x$ in~\eqref{xdGiff} gives an immediate
-contradiction:
+Combining~(**) and~(\#), we conclude that
 \[
-x_U \notin \desc(G_{x_u}) \qiff x_U \in \desc(G_{x_U}).
+x \notin \desc(G_{x}) \QIFF x \in \desc(G_{x_U}),
 \]
+for all words $x$.  Now plugging in $x_U$ for $x$ in this equivalence
+yields the contradiction:
+\[
+x_U \notin \desc(G_{x_u}) \QIFF x_U \in \desc(G_{x_U}).
+\]
+
+Since assuming that $U$ was describable led to a contradiction, we
+have confirmed that $U$ is not word-logic describable.
 \end{solution}
 
+MORE REMARKS ABOUT HOW WE DID DESCRIBE $U$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem ends here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
-
-\inhandout{
-\textbox{
-\begin{center}
-\large Cantor's Theorem
-\textbf{There is no bijection between any set $A$ and its powerset
-$\power(A)$.}
-\end{center}
-\begin{proof}
-  We show that if $g$ is a total function from $A$ to $\power(A)$,
-  then $g$ does not have the $[\ge 1\ \text{in}]$, surjection
-  property, and so is certainly not a bijection.
-  Define
-  \[
-  A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
-  \]
-  Since $g$ is total, $A_g$ is a well-defined subset of $A$, which
-  means it is a member of $\power(A)$.  We claim $A_g$ is not in the
-  range of $g$, and so $g$ is not a surjection.
-  To prove that $A_g \notin \range{g}$, assume to the contrary that it
-  was in $\range{g}$.  That is,
-\[
-A_g = g(a_0)
-\]
-for some $a_0 \in A$.  Then by definition of $A_g$,
-\[
-a \in g(a_0) \qiff a \in A_g \qiff a \notin g(a)
-\]
-for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
-\[
-a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
-\]
-\end{proof}
-}}

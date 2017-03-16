@@ -1380,7 +1380,7 @@
 %% Math -- Languages
 
 \newcommand{\emptystring}{\lambda}
-\newcommand{\bins}{\ensuremath{\set{0,1}^*}}
+\newcommand{\bins}{\ensuremath{\strings{\mtt{0},\mtt{1}}}}
 
 %% Math -- Famous sets
 
