@@ -723,31 +723,51 @@ programs to ensure that certain kinds of
 run-time errors won't happen, and ``optimizing'' the generated
 programs so they run faster or use less memory.
 
-The fundamental thing that just can't be done by
-computation is a \emph{perfect} job of type-checking, optimizing, or
-any kind of analysis of the overall run time behavior of programs.  In
-this section, we'll illustrate this with a basic example known as the
-\term{Halting Problem}.  The general Halting Problem for some
-programming language is, given an arbitrary program, to determine whether
-the program will run forever if it is not interrupted.  If the program
-does not run forever, it is said to halt.  Real programs may
-halt in many ways, for example, by returning some final value,
-aborting with some kind of error, or by awaiting user input.  But it's
-easy to detect when any given program will halt: just run it on a
-virtual machine and wait till it stops.  The problem comes when the
-given program does \emph{not} halt---you may wind up waiting
-indefinitely without realizing that the wait is fruitless.  So how
-could you detect that the program does \emph{not} halt?  We will use a
-diagonal argument to prove that if an analysis program tries to
-recognize the non-halting programs, it is bound to give wrong answers,
-or no answers, for an infinite number of the programs it is supposed to be
-able to analyze!
+The fundamental thing that just can't be done by computation is a
+\emph{perfect} job of type-checking, optimizing, or any kind of
+analysis of the overall run time behavior of programs.  In this
+section, we'll illustrate this with a basic example known as the
+\term{Halting Problem}.  Pick your favorite programming
+language---Python, Java, C++,\dots---and assume that ``program''
+refers to a program written in your language. 
 
-To be precise about this, let's call a programming procedure---written
-in your favorite programming language---C++, or Java, or Python---a
-\emph{string procedure} when it is applicable to strings in the set
-\asciistr\ of strings over the 256 character \asciibet\ alphabet.
+Once a program is started, if its initial computation stops for some
+reason---such as producing a final value, waiting for an input,
+suffering an error interrupt, or simply freezing---the program is said
+to \term{halt}.  So a program that does \emph{not} halt would run
+forever using up cycles and energy (unless it was interrupted by an
+external operating system command).  The Halting Problem is the
+general problem of determining, given an arbitrary program, whether or
+not the program halts.
 
+There is a simple way to determine when an arbitrary program does
+halt, at least in theory: just run it until it stops.  Well not quite.
+Just running the program in the usual way would not detect when it
+freezes without warning.  What really needs to be done is to simulate
+the program using an interpreter or a virtual machine that will
+recognize any kind of halting, including a freeze.  But interpreters
+and virtual machines capable of simulating any program are familiar
+technology.  So there is a general way to detect when a program halts.
+
+The hard part is determining when a program does \emph{not} halt.  At
+any point in simulating it, you generally won't know whether to
+continue the simulation because the program will halt later, or to
+abort the simulation because it wouldn't stop otherwise.
+
+So is there some way besides simulation to detect when a program does
+\emph{not} halt?  Could there be some program analysis tool that could
+inspect any program and correctly report when the program does not
+halt?  The answer is ``No.''  Using a standard diagonal argument, we
+will prove that it is impossible to have such a non-halting analysis
+tool.  Any method for detecting non-halting is bound to go wrong.  It
+will falsely report that some halting program does not halt, or it
+will fail to report anything about some program.  That is, there will
+be a program on which the analyzer runs forever without halting.
+
+To set up the diagonal argument, we will focus on \emph{string
+  procedures}.  A string procedure is a procedure that takes a single
+argument that is supposed to be a string over the 256 character
+\asciibet\ alphabet.
 As a simple example, you might think about how to write a string
 procedure that halts precisely when it is applied to a \emph{double
   letter} string in \asciistr, namely, a string in which every
@@ -755,11 +775,11 @@ character occurs twice in a row.  For example, \texttt{aaCC33}, and
 \texttt{zz++ccBB} are double letter strings, but \texttt{aa;bb},
 \texttt{b33}, and \texttt{AAAAA} are not.
 
-If the computation that happens when a procedure applied to a string
-eventually comes to a halt, the procedure is said to \emph{recognize}
-the string.  In this context, a set of strings a commonly called a
-(formal) \emph{language}.  We let $\rcg{P}$ to be the language
-recognized by procedure $P$:
+When the computation of a procedure applied to a string halts, the
+procedure will be said to \emph{recognize} the string.  In this
+context, a set of strings a commonly called a (formal)
+\emph{language}.  We let $\rcg{P}$ to be the language recognized by
+procedure $P$:
 \[
 \rcg{P} \eqdef \set{s \in \asciistr \suchthat P \text{ applied to $s$
   halts}}.
@@ -769,44 +789,40 @@ some string procedure $P$.  For example, we've just agreed that the
 set of double letter strings is recognizable.
 
 There is no harm in assuming that every program can be written as a
-string in \asciistr; they usually are.  When a string $s \in
-\asciistr$ is actually the \asciibet\ description of some string
-procedure, we'll refer to that string procedure as $P_s$.  You can
-think of $P_s$ as the result of compiling $s$ into something
-executable.\footnote{The string $s \in \asciistr$ and the procedure
-  $P_s$ have to be distinguished to avoid a type error: you can't
-  apply a string to string.  For example, let $s$ be the string that
-  you wrote as your program to recognize the double letter strings.
-  Applying $s$ to a string argument, say \texttt{aabbccdd}, should
-  throw a type exception; what you need to do is compile $s$ to the
-  procedure $P_s$ and then apply $P_s$ to \texttt{aabbccdd}.} It's
-technically helpful to treat \emph{every} string in \asciistr\ as a
-program for a string procedure.  So when a string $s \in \asciistr$
-doesn't parse as a proper string procedure, we'll define $P_s$ to be
-some default string procedure---say one that never halts on anything
-it is applied to.
+string in \asciistr---that's typically how we would enter them into a
+computer in the first place.  When a string $s \in \asciistr$ is
+actually the \asciibet\ description of some string procedure, we'll
+refer to that string procedure as $P_s$.  You can think of $P_s$ as
+the result of compiling $s$ into something executable.\footnote{The
+  string $s \in \asciistr$ and the procedure $P_s$ have to be
+  distinguished to avoid a type error: you can't apply a string to
+  string.  For example, let $s$ be the string that you wrote as your
+  program to recognize the double letter strings.  Applying $s$ to a
+  string argument, say \texttt{aabbccdd}, should throw a type
+  exception; what you need to do is compile $s$ to the procedure $P_s$
+  and then apply $P_s$ to \texttt{aabbccdd}.} It's technically helpful
+to treat \emph{every} string in \asciistr\ as a program for a string
+procedure.  So when a string $s \in \asciistr$ doesn't parse as a
+proper string procedure, we'll define $P_s$ to be some default string
+procedure---say one that never halts on anything it is applied to.
 
 Focusing just on string procedures, the general Halting Problem is to
 decide, given strings $s$ and $t$, whether or not the procedure $P_s$
-recognizes $t$.  We'll show that the general problem can't be solved
-by showing that a special case can't be solved, namely, whether or not
-$P_s$ recognizes $s$.
-
+recognizes $t$.  Following the usual diagonal approach, we define the language \nohalt:
 \begin{definition}\label{nohalt_def}
 \begin{equation}\label{nohalt_eqdef}
 \nohalt \eqdef \set{s \suchthat P_s\ \text{applied to $s$ does not halt}} = \set{s \notin \rcg{P_s}}.
 \end{equation}
 \end{definition}
-We're going to prove
+So if $P_s$ is the recognizer for some language, then \nohalt\ differs
+from that language on the string $s$.  This shows that \nohalt\ cannot
+have a recognizer:
 \begin{theorem}\label{nohalt_thm}
 \nohalt\ is not recognizable.
 \end{theorem}
 
-We'll use an argument just like Cantor's in the proof of
-Theorem~\ref{powbig}.
-
-\begin{proof}
-By definition, 
+Let's spell out the reasoning behind this theorem more fully.  By
+definition, we have
 \begin{equation}\label{snohaltsnfs}
 s \in \nohalt \QIFF\ s \notin \rcg{P_s},
 \end{equation}
@@ -817,7 +833,7 @@ means there is some procedure $P_{s_0}$ that recognizes \nohalt, that is,
 \[
 \nohalt = \rcg{P_{s_0}}.
 \]
-Combined with~\eqref{snohaltsnfs}, we get
+Combined with~\eqref{snohaltsnfs}, we have
 \begin{equation}\label{sfs0iff}
 s \in \rcg{P_{s_0}} \qiff s \notin \rcg{P_s}
 \end{equation}
@@ -826,43 +842,60 @@ yields the immediate contradiction
 \[
 s_0 \in \rcg{P_{s_0}} \qiff s_0 \notin \rcg{P_{s_0}}.
 \]
-This contradiction implies that \nohalt\ cannot be recognized by any
-string procedure.
-\end{proof}
 
-So that does it: it's logically impossible for programs in any
-particular language to solve just this special case of the general
-Halting Problem for programs in that language.  And having proved that
-it's impossible to have a procedure that figures out whether an
-arbitrary program halts, it's easy to show that it's impossible to
-have a procedure that is a perfect recognizer for \emph{any} overall
-run time property.\footnote{The weasel word ``overall'' creeps in here
-  to rule out some run time properties that are easy to recognize
-  because they depend only on part of the run time behavior.  For
-  example, the set of programs that halt after executing at most 100
-  instructions is recognizable.}
+So that does it: the reasoning above applied to whatever favorite
+programming language you picked.  It is \emph{logically impossible}
+for a Java program to be a recognizer for non-halting Java programs,
+or for a Python program to be a recognizer for non-halting Python
+programs, and so forth for other favorite programming languages.
+
+Now you might wonder if there was a loophole around this logical
+limitation by having a recognizer the non-halting programs in one
+language that was written in another language.  In other words, could
+there be a C++ procedure that recognizes all the non-halting Java
+programs?  After all, C++ does allow more intimate manipulation of
+computer memory than Java does.  But there is no loophole here.  If
+you've learned about programming language implementation, you will
+realize that it's possible to write a simulator in Java for C++
+programs.  This means that if there were a C++ procedure that
+recognized non-halting Java programs, then a Java procedure could also
+do it by simulating the C++ program, and that's impossible.  This
+reasoning finally leads to a transcendent insight.  No procedure can
+be written in \emph{any} programming language that recognizes
+\nohalt\ for your favorite language.  Recognizing \nohalt\ is simply
+beyond the capacity of computation.
+
+But it's not just \nohalt.  If there was a perfect recognizer for
+\emph{any} property that depends on the complete run time behavior
+programs,\footnote{ The weasel words ``complete run time behavior''
+  creep in here to rule out some run time properties that are easy to
+  recognize because they depend only on part of the run time behavior.
+  For example, the set of programs that halt after executing at most
+  100 instructions is recognizable.} it could be altered slightly to
+become a recognizer for \nohalt.  We'll take this claim for granted
+now, giving its full justification in an assigned problem.
 
 For example, most compilers do ``static'' type-checking at compile
-time to ensure that programs won't make run-time type errors.  A program
-that type-checks is guaranteed not to cause a run-time type-error.  But
-since it's impossible to recognize perfectly when programs won't cause
-type-errors, it follows that the type-checker must be rejecting programs
-that really wouldn't cause a type-error.  The conclusion is that no
+time to ensure that programs won't make run-time type errors.  A
+program that type-checks is guaranteed not to cause a run-time
+type-error.  But given that it's impossible to recognize when the
+complete run time behavior of a program does not lead to a type-error,
+it follows that the type-checker must be rejecting programs that
+really wouldn't cause a type-error.  The conclusion is that no
 type-checker is perfect---you can always do better!
 
 It's a different story if we think about the \emph{practical}
-possibility of writing programming analyzers.  The fact that it's
-logically impossible to analyze perfectly arbitrary programs does not
+possibility of writing program analyzers.  The fact that it's
+logically impossible to analyze utterly arbitrary programs does not
 mean that you can't do a very good job analyzing interesting programs
 that come up in practice.  In fact, these ``interesting'' programs are
 commonly \emph{intended} to be analyzable in order to confirm that
 they do what they're supposed to do.
 
-In the end, it's not clear how much of a hurdle this theoretical limitation
-implies in practice.  But the theory does provide some perspective
-on claims about general analysis methods for programs.  The theory
-tells us that people who make such claims either
-
+In the end, it's not clear how much of a hurdle this theoretical
+limitation implies in practice.  But the theory does provide some
+perspective on claims about general analysis methods for programs.
+The theory tells us that people who make such claims either
 \begin{itemize}
 \item are exaggerating the power (if any) of their methods, perhaps to make a
   sale or get a grant, or
@@ -874,23 +907,9 @@ tells us that people who make such claims either
     successes of their methods that they haven't bothered to think about
     the limitations which must be there.
 \end{itemize}
-
 So from now on, if you hear people making claims about having general
-program analysis/verification/optimization methods, you'll know they can't
-be telling the whole story.
-
-One more important point: there's no hope of getting around this by
-switching programming languages.  Our proof covered programs written
-in some given programming language like Java, for example, and
-concluded that no Java program can perfectly analyze all Java
-programs.  Could there be a C++ analysis procedure that successfully
-takes on all Java programs?  After all, C++ does allow more intimate
-manipulation of computer memory than Java does.  But there is no
-loophole here: it's possible to write a virtual machine for C++ in
-Java, so if there were a C++ procedure that analyzed Java programs,
-the Java virtual machine would be able to do it too, and that's
-impossible.  These logical limitations on the power of computation
-apply no matter what kinds of programs or computers you use.
+program analysis/verification/optimization methods, you'll know they
+can't be telling the whole story.
 
 \begin{editingnotes}
 Highlight CS insight that lots of problems from other fields turn out
