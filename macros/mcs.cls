@@ -1353,6 +1353,7 @@
 
 \newcommand{\range}[1]{\operatorname{range}(#1)}
 \newcommand{\domain}[1]{\operatorname{domain}(#1)}
+\newcommand{\support}[1]{\operatorname{support}(#1)}
 \newcommand{\codomain}[1]{\operatorname{codomain}(#1)}
 \newcommand{\graph}[1]{\operatorname{graph}(#1)}
 \newcommand{\neighbors}[1]{\operatorname{N}(#1)}
