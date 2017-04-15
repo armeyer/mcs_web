@@ -2024,7 +2024,7 @@ edge, so removing it would leave a connected, spanning subgraph that
 was smaller than $T$, contradicting the minimality to $T$.
 \end{proof}
 
-\subsection{Minimum Weight Spanning Trees}\label{MST_subsec}
+\subsection{Minimum-Weight Spanning Trees}\label{MST_subsec}
 
 Spanning trees are particularly interesting and important for
 \emph{weighted graphs}---graphs whose edges are assigned numerical
@@ -2041,12 +2041,12 @@ tree shown in Figure~\ref{fig:5KA}(a) is~19.
 \end{figure}
 
 The general goal is to find a spanning tree with minimum weight,
-called a \emph{minimum weight spanning tree}
+called a \emph{minimum-weight spanning tree}
 \textup(\term{MST}\textup).
 
 \iffalse
 \begin{definition}
-A \term{minimum weight spanning tree} (\textup\term{MST}\textup) of
+A \term{minimum-weight spanning tree} (\textup\term{MST}\textup) of
 an edge-weighted graph~$G$ is a spanning tree of~$G$ with the
 smallest possible sum of edge weights.
 \end{definition}
@@ -2071,33 +2071,30 @@ hopeless for large graphs.
 All new material replacing FTL's draft---ARM
 \end{editingnotes}
 
-We'll now explain a simple, general way to find MST's.  As a first
-step, we'll define a special property that determines when an edge
-\emph{must} be an edge of an MST.
+For the rest of this section, suppose $G$ is a \emph{connected}
+weighted graph.  We'll now explain a simple, general way to find an
+MST of $G$.
 
 \begin{definition}
-Let $S$ be a spanning subgraph of some simple graph $G$.  A
-\term{solid coloring}\index{coloring!solid} of $S$ is a partition of
-the vertices into two blocks---the ``black'' vertices and the
-``white'' vertices---so that all the vertices in the same connected
-component of $S$ have the same color.  A \term{gray edge} of the solid
-coloring is an edge of $G$ with different colored endpoints.
+A \term{black-white coloring}\index{coloring!black-white} of a simple
+graph $G$ is a partition of the vertices $\vertices{G}$ into two
+blocks---the ``black'' vertices and the ``white'' vertices.  A
+\term{gray edge} of the coloring is an edge of $G$ with different
+colored endpoints.
 \end{definition}
 
 \begin{lemma}\label{lem:enough-gray}
-Let $S$ be a spanning subgraph of a \emph{connected} graph $G$.  Every
-solid coloring of $S$ contains a gray edge.
+If $G$ is a connected graph, then every black-white coloring of $G$
+contains a gray edge.
 \end{lemma}
 
 \begin{proof}
-In any solid coloring of $S$ there will be least one black connected
-component and one white connected component---this follows because the
-blocks of a partition are nonempty by definition.  (So in order to
-have a solid coloring, $S$ must not be connected.)
+Any coloring of $G$ must have at least one vertex of each color---this
+follows because the blocks of a partition are by definition nonempty.
 
 Since $G$ is connected, there will be a path that begins at a black
 vertex and ends at a white vertex.  Therefore at some point on the
-path there has to be an edge that starts with a black vertex and end
+path there has to be an edge that starts with a black vertex and ends
 with a white one.  This is the gray edge.
 \end{proof}
 
@@ -2118,43 +2115,47 @@ rank vertices as having larger weight.
 The following lemma now makes it easy to find MST's.
 
 \begin{lemma}[Gray Edge Lemma]\label{lem:necessary-gray}
-For any solid coloring of a spanning subgraph of a graph $G$, the
-minimum weight edge among the gray edges of the coloring
-must be an edge of \emph{every} MST of $G$.
+For any black-white coloring of a connected graph $G$, the
+minimum-weight edge among the gray edges of the coloring must be an
+edge of \emph{every} MST of $G$.
 \end{lemma}
 
-The Lemma provides a simple way to build up an MST of $G$ by adding
-successive minimum weight gray edges:
+So to find an MST for $G$, we just need to find enough minimum-weight
+gray edges to form a spnning tree.  We do this using:
 
 \begin{center}
-{\large \emph{Minimum Weight Gray Edge Procedure}}
+{\large \emph{Minimum-Weight Gray Edge Procedure}}
 \end{center}
 
 \begin{quote}
 Start off with the \emph{disconnected} spanning forest consisting of
 the vertices of $G$ with all edges removed.  Next, suppose $S$ is a
 spanning forest built up at some point by the procedure.  If $S$ is
-not yet connected, then solid color $S$, and add to $S$ the minimum
-weight gray edge for the coloring.  Continue until $S$ becomes
+not yet connected, then pick a black-white coloring of $G$ such that
+such that all the vertices in the same connected component of $S$ have
+the same color.  Update $S$ by adding the minimum weight gray edge of
+this coloring to the edges of $S$.  Continue until $S$ becomes
 connected.
 \end{quote}
 
 \begin{theorem}
-The Minimum Weight Gray Edge Procedure will terminate with an MST.
+The Minimum-Weight Gray Edge Procedure will terminate with an MST.
 \end{theorem}
 
 \begin{proof}
 To see why this procedure works, suppose $G$ has $n$ vertices and let
-$S$ be the current spanning forest at any point in the procedure.  In
-any solid coloring of $S$, the vertices in each connected component of
-$S$ are all white or all black, by definition of solid coloring.  So
-the endpoints of any edge of $S$ will be the same color, which means
-no gray edge will be an edge of $S$.  By Lemma~\ref{lem:enough-gray},
-if $S$ is not connected, there will be a gray edge that can be added
-to $S$.  Adding a gray edge decreases the number of connected
-components of $S$ by one, so after adding $n-1$ gray edges, the
-procedure will terminate with a connected spanning forest, that is, a
-spanning \emph{tree} $T$.
+$S$ be the current spanning forest at any point in the procedure.  If
+$S$ is not connected, a black-white coloring is chosen so that the
+endpoints of any edge of $S$ are the same color.  This ensures that no
+gray edge is an edge of $S$.
+
+By Lemma~\ref{lem:enough-gray}, there must be at least one gray edge
+in the coloring, so there will be a minimum-weight gray
+edge.\footnote{\dots by the Well Ordering Principle for finite sets
+  Lemma\ref{finite-WOP}.}  Updating $S$ by adding this gray edge
+decreases the number of connected components of $S$ by one, so after
+adding $n-1$ gray edges, the procedure will terminate with a connected
+spanning forest, that is, a spanning \emph{tree} $T$.
 
 By the Gray Edge Lemma~\ref{lem:necessary-gray}, every edge of $T$ has
 to be in every MST of $G$.  This is only possible if all MST's have
@@ -2250,9 +2251,9 @@ Lemma~\ref{lem:necessary-gray} that min-weight gray edges must be in
 every spanning tree.   Let's start with another lemma:
 
 \begin{lemma}\label{lem;gray-swap}[Gray Edge Swap]
-Let $G$ be a connected weighted graph, and let $e$ be the minimum
-weight gray edge of some solid coloring of some spanning subgraph of
-$G$.  Suppose $C$ is a connected spanning subgraph of $G$, and $e$ is
+Let $G$ be a connected weighted graph, and let $e$ be the
+minimum-weight gray edge of some black-white coloring of of $G$.
+Suppose $C$ is a connected spanning subgraph of $G$, and $e$ is
 \emph{not} an edge of $C$.  Then there is an edge $g$ of $C$ such that
 \begin{itemize}
 \item $\text{weight}(e) <  \text{weight}(g)$,
@@ -2265,11 +2266,11 @@ $G$.  Suppose $C$ is a connected spanning subgraph of $G$, and $e$ is
 Notice that the Gray Edge Lemma~\ref{lem:necessary-gray} now follows
 immediately from the Swap Lemma~\ref{lem;gray-swap}: if $C$ is a
 spanning tree of $G$, then $C - g + e$ will also be a spanning tree,
-and it has smaller weight.  So $C$ cannot be minimum weight unless $e$
+and it has smaller weight.  So $C$ cannot be minimum-weight unless $e$
 is one of its edges.
 
 \begin{proof}(Swap Lemma~\ref{lem;gray-swap})
-Pick a solid coloring for which $e$ is a min-weight gray edge.
+Pick a black-white coloring for which $e$ is a min-weight gray edge.
 Since $C$ is a connected spanning graph, there is a path $\walkv{p}$
 in $C$ between the different colored endpoints of $e$.  Now
 $\walkv{p}$ has both a black endpoint and a white one, so it must
