@@ -1,0 +1,169 @@
+\documentclass[handout]{mcs}
+
+\begin{document}
+
+\renewcommand{\reading}{
+\begin{itemize}
+\item
+  Chapter~\bref{sec:coloring}--\bref{trees-sec}.\ \emph{Simple
+    Graphs: Coloring, Connectedness}
+
+\item Chapter~\bref{chap:asymptotics}
+  through~\bref{sec:closed_products}.\ \emph{Sums \& Series}
+  (omit~\bref{doublesum_sec})
+\end{itemize}}
+
+\problemset{7}
+
+\begin{staffnotes}
+\begin{verbatim}
+TODO add covered lectures
+\end{verbatim}
+\end{staffnotes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems start here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{verbatim}
+most of the ones in the list are pretty good, but we can change the 2^(n/2) one to 4^n and 2^n, and the sin to a cos
+\end{verbatim}
+\pinput{PS_asymptotics_table}
+
+
+\pinput{PS_5_card_poker}
+
+%%fa14 pset 10 problem 3
+\instatements{\vspace{0.5in}}
+\begin{problem}{10}
+We're covering probability in 6.042 lecture one day, and you volunteer for one of Professor Leighton's demonstrations. He shows you a coin and says he'll bet you \$1 that the coin will come up heads. Now, you've been to lecture before and therefore suspect the coin is biased, such that the probability of a flip coming up heads, $\pr{H}$, is $p$ for $1/2 < p \leq 1$.
+
+You call him out on this, and Professor Leighton offers you a deal. He'll allow you to come up with an algorithm using the biased coin to \textit{simulate} a fair coin, such that the probability you win and he loses, $\pr{W}$, is equal to the probability that he wins and you lose, $\pr{L}$. You come up with the following algorithm:
+
+\begin{enumerate}
+\item Flip the coin twice.
+\item Based on the results:
+        \begin{itemize}
+        \item $TH \implies$ you win [$W$], and the game terminates.
+        \item $HT \implies$ Professor Leighton wins [$L$], and the game terminates.
+        \item $(HH \lor TT) \implies$ discard the result and flip again.
+        \end{itemize}
+\item If at the end of $N$ rounds nobody has won, declare a tie.
+\end{enumerate}
+As an example, for $N=3$, an outcome of $HT$ would mean the game ends early and you lose, $HHTH$ would mean the game ends early and you win, and $HHTTTT$ would mean you play the full $N$ rounds and result in a tie.
+
+\bparts
+
+\ppart{5}
+Assume the flips are mutually independent. Show that $\pr{W} = \pr{L}$.
+
+\solution{
+The probability of you winning is equal to the probability that you win in the first round, plus the probability that nobody won in the first round times the probability that you win in the second round, plus the probability that nobody won in the first two round times the probability that you win in the third round, etc. The same goes for Professor Leighton. Hence:
+\begin{align*}
+\pr{W} &= \pr{TH} + \pr{HH \lor TT}\pr{TH} + \pr{HH \lor TT}^2\pr{TH} + \ldots \\
+& = \pr{TH} \cdot \sum_{i=0}^N \pr{HH \lor TT}^i \\
+& = \pr{HT} \cdot \sum_{i=0}^N \pr{HH \lor TT}^i\\
+& = \pr{L}
+\end{align*}
+The middle step is possible because $\pr{TH} = (1-p)p = p(1-p) = \pr{HT}$.
+}
+
+\ppart{5}
+Show that, if $p<1$, the probability of a tie goes to 0 as $N$ goes to infinity.
+
+\solution{
+The probability of a tie is just the probability that nobody won all $N$ rounds, namely:
+\[
+\pr{tie} = (\pr{HH \lor TT})^N = (\pr{HH} + \pr{TT})^N = (p^2 + (1-p)^2)^N
+\]
+So the limit as $N$ goes to infinity is 0, given that $p$ and therefore $p^2 + (1-p)^2$ are $< 1$.
+}
+
+\eparts
+
+\end{problem}
+
+
+
+\pinput{PS_monochromatic_rectangle}
+
+
+%%fa14 pset 10 problem 2, we could change 
+
+\begin{verbatim}
+we could change to 401 integers less than 500, quotient is a power of 5
+\end{verbatim}
+
+\begin{problem}{15}
+In lecture we discussed the Birthday Paradox. Namely, we found that in a group of $m$ people with $N$ possible birthdays, if $m \ll N$, then:
+\[
+\pr{\text{all $m$ birthdays are different}} \sim e^{-\frac{m(m-1)}{2N}}
+\]
+To find the number of people, $m$, necessary for a half chance of a match, we set the probability to $1/2$ to get:
+\[
+m \sim \sqrt{(2\ln2)N} \approx 1.18\sqrt{N}
+\]
+
+For $N = 365$ days we found $m$ to be 23.
+
+We could also run a different experiment. As we put on the board the birthdays of the people surveyed, we could ask the class if anyone has the same birthday. In this case, before we reached a match amongst the surveyed people, we would already have found other people in the rest of the class who have the same birthday as someone already surveyed. Let's investigate why this is.
+
+\bparts
+\ppart{5} Consider a group of $m$ people with $N$ possible birthdays amongst a larger class of $k$ people, such that $m \leq k$. Define $\pr{A}$ to be the probability that $m$ people all have different birthdays \textit{and} none of the other $k-m$ people have the same birthday as one of the $m$.
+
+Show that, if $m \ll N$, then $\pr{A} \sim e^{\frac{m(m-2k)}{2N}}$. (Notice that the probability of no match is $e^{-\frac{m^2}{2N}}$ when $k$ is $m$, and it gets smaller as $k$ gets larger.)
+
+\hspace{0.5in} \textit{Hints:} For $m \ll N$: $\frac{N!}{(N-m)!N^m} \sim e^{-\frac{m^2}{2N}}$, and $(1-\frac{m}{N}) \sim e^{-\frac{m}{N}}$.
+
+\solution{
+We know:
+\[
+\pr{A} = \frac{N(N-1)\ldots(N-m+1)\cdot(N-m)^{k-m}}{N^k}
+\]
+
+since there are $N$ choices for the first birthday, $N-1$ choices for the second birthday, etc., for the first $m$ birthdays, and $N-m$ choices for each of the remaining $k-m$ birthdays. There are total $N^k$ possible combinations of birthdays within the class.
+
+\begin{align*}
+\pr{A} &= \frac{N(N-1)\ldots(N-m+1)\cdot(N-m)^{k-m}}{N^k} \\
+&= \frac{N!}{(N-m)!}\left(\frac{(N-m)^{k-m}}{N^k}\right) \\
+&= \frac{N!}{(N-m)!N^m}\left(\frac{N-m}{N}\right)^{k-m} \\
+&= \frac{N!}{(N-m)!N^m}\left(1-\frac{m}{N}\right)^{k-m} \\
+&\sim e^{-\frac{m^2}{2N}} \cdot e^{-\frac{m}{N}(k-m)} & \text{(by the Hint)} \\
+& = e^{\frac{m(m-2k)}{2N}}
+\end{align*}
+}
+
+\ppart{10} Find the approximate number of people in the group, $m$, necessary for a half chance of a match (your answer will be in the form of a quadratic). Then simplify your answer to show that, as $k$ gets large  (such that $\sqrt{N} \ll k$), then $m \sim \frac{N\ln2}{k}$.
+
+\hspace{0.5in} \textit{Hint:} For $x \ll 1$: $\sqrt{1-x} \sim (1-\frac{x}{2})$.
+
+\solution{
+Setting $\pr{A} = 1/2$, we get a solution for $m$:
+
+\begin{align*}
+1/2 &= e^{\frac{m(m-2k)}{2N}} \\
+-2N\ln2 &= m^2 -2km  \\
+0 &= m^2-2km + (2N\ln2) \\
+m &= \frac{2k \pm \sqrt{(2k)^2 - 4(2N\ln2)}}{2}
+\end{align*}
+
+Simplifying the solution under the assumption of large $k$, we find:
+\begin{align*}
+m &= \frac{2k - \sqrt{4k^2 - 8N\ln2}}{2} & \text{(taking the lower positive root)} \\
+&= k - k\sqrt{1 - \frac{2N\ln2}{k^2}} \\
+&\sim k  - k \left(1-\frac{2N\ln2}{2k^2}\right) & \text{(by the Hint)} \\
+&= \frac{N\ln2}{k}
+\end{align*}
+}
+
+\eparts
+
+\end{problem}
+
+
+\pinput{PS_path_counting}
+
+
+\pinput{PS_four_door_random_or_not} %extends the monty hall problem to 4 door
+
+
+\end{document}
