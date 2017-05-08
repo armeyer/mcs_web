@@ -7,11 +7,11 @@
 \end{pcomments}
 
 \pkeywords{
-  probability
   conditional_probability
-  coin
+  total_probability
   transitive
   intransitive
+  infinite_tree
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,76 +80,110 @@ you see the sequence \STR{HHT}?
 \STR{T}. Somewhat surprisingly, the answer is not $1/2$.
 
 \begin{solution}
-\iffalse
+\begin{solution}
+We apply the standard tree diagram approach where the $n$th level of
+the tree corresponds to the results of the $n$th coin flip.  This tree
+is infinite, but we need not be intimidated: the tree has a repeating
+structure which allows a simple recursive description.  Then the Law
+of Total Probability applied to the recursive tree structure will lead
+to some simple equations for the desired probability.
 
-First, we intuitively see that HHT is more likely than HTT,
-because the sequence HHTT has HHT right one toss before HTT
-so the appearance of HTT depends in a way in the appearance
-of HHT before it. The inverse does not hold, since throwing
-HHT is independent of HTT coming before it.
-\fi
+To see how this works, suppose our first toss is \STR{T}.  Since
+neither of our patterns starts with \STR{T}, the situation relevant to
+our patterns is the same as at the start.  So if we let $A$ be the
+tree diagram describing our coin flipping experiment, then the branch
+corresponding to flipping \STR{T} goes to a copy of $A$.  This is
+illustrated in Figure~\ref{HTTHHT}.
 
-Let $A$ be the event that \STR{HTT} appears before \STR{HHT}, and let
-$p \eqdef \prob{A}$.
+\begin{figure}[h]
+  \includegraphics[width=4.5in]{HTT_HHT_race}
+  \caption{\STR{HTT} versus \STR{HHT}.}
+  \label{HTTHHT}
+\end{figure}
 
-Suppose our first toss is \STR{T}.  Since neither of our patterns
-starts with \STR{T}, the probability that $A$ will occur from this
-point on is still $p$.  That is, $\prcond{A}{\tails} = p$.
+If our first flip is \STR{H}, we need to consider different cases
+based on the subsequent throws.  So let $B$ be the subtree
+corresponding the first flipping \STR{H}, and let $C$ be the subtree
+corresponding to the second flip also being \STR{H}.  Now if the third
+flip is \STR{T}, then we arrive at the leaf where \STR{HHT} has
+occurred first.  On the other hand, if the third flip is \STR{H}, then
+the first flip is no longer relevant to the length three patterns we
+are considering, and we are at the same point in progressing toward
+our patterns as we were after flipping only two \STR{H}'s.  That is,
+the \STR{H} branch of subtree $C$ is another copy of $C$.  This is
+also illustrated in Figure~\ref{HTTHHT}.  We finish up by observing
+that if the first three flips are \STR{HTT}, then we arrive at the
+leaf where \STR{HTT} has occurred first, and if the first
+three flips are \STR{HTH}, then the situation is the same as if we
+first flipped \STR{H}.  So the subtree at after \STR{HTH} is the same
+as $B$.
 
-Suppose our first toss is \STR{H}.  To find the probability that $A$
-will now occur, that is, to find $q \eqdef \prcond{A}{\heads}$, we
-consider different cases based on the subsequent throws.
+This completes the reasoning which led to the tree diagram illustrated
+in Figure~\ref{HTTHHT}.
 
-Suppose the next toss is \STR{H}, that is, the first two tosses are
-\STR{HH}.  Then neither pattern appears if we continue flipping
-\STR{H}, and when we eventually toss a \STR{T}, the pattern
-\STR{HHT} will then have appeared first.  So in this case, event $A$
-will never occur.  That is $\prcond{A}{\mathtt{HH}} = 0$.
-
-Suppose the first two tosses are \STR{HT}.  If we toss a \STR{T}
-again, then we have tossed \STR{HTT}, so event $A$ has occurred.
-If we next toss an \STR{H}, then we have tossed \STR{HTH}.  But this
-puts us in the same situation we were in after rolling an \STR{H} on
-the first toss.  That is, $\prcond{A}{\mathtt{HTH}} = q$.
-
-Summarizing this we have:
-\begin{align*}
-\pr{A} &=
-\prcond{A}{\tails}\pr{\tails}+\prcond{A}{\heads}\pr{\heads}
-& \text{(Law of Total Probability)}\\
-p & = p\frac{1}{2} + q\frac{1}{2} & \text{so}\\
-p & = q.%\label{peq}
-\end{align*}
-
-Continuing, we have
-\begin{align}
-\prcond{A}{\heads}
-&=
-\prcond{A}{\mathtt{HT}}\pr{\tails}+\prcond{A}{\mathtt{HH}}\pr{\heads}
-    & \text{(Law of Total Probability)}\notag\\
-q &= \prcond{A}{\mathtt{HT}}\frac{1}{2} + 0\cdot\frac{1}{2}\label{here}\\
-\prcond{A}{\mathtt{HT}} & =
-\prcond{A}{\mathtt{HTT}}\pr{\tails}+\prcond{A}{\mathtt{HTH}}\pr{\heads}
-& \text{(Law of Total Probability)}\notag\\
-\prcond{A}{\mathtt{HT}} & = 1\cdot\frac{1}{2} + q\frac{1}{2} \label{there}\\
-q & = (\frac{1}{2} + \frac{q}{2})\frac{1}{2} & \text{by~\eqref{here} \&~\eqref{there}}\notag\\
-q & = \frac{1}{3}.\notag
-\end{align}
-
-So \STR{HTT} comes before \STR{HHT} with probability
+Now let $E$ be the event that \STR{HTT} appears before \STR{HHT}.  Our
+task is to calculate $\pr{E}$.  Since the tree $A$ describes the start
+of the coin flipping, we have
 \[
-p=q =\cfrac{1}{3}.
+\pr{E} = \prcond{E}{A}.
 \]
 
-These kind of events are have an amazing \emph{intransitivity}
-property: if you pick \emph{any} pattern of three tosses such as
-\STR{HTT}, then I can pick a pattern of three tosses such as
-\STR{HHT}.  If we then bet on which pattern will appear first in a
-series of tosses, the odds will be in my favor.  In particular, even
-if you instead picked the ``better'' pattern \STR{HHT}, there is
-another pattern I can pick that has a more than even chance of
-appearing before \STR{HHT}.  Watch out for this intransitivity
-phenomenon if somebody proposes that you bet real money on coin flips.
+Next, by the Law of Total Probability,
+\begin{equation}\label{EAEAT}
+\prcond{E}{A} = \prcond{E}{A} \cdot \pr{\STR{T}} + \prcond{E}{B} \cdot \pr{\STR{H}},
+\end{equation}
+which implies
+\begin{equation}\label{EA=EB}
+\prcond{E}{A} = \prcond{E}{B}.
+\end{equation}
+
+Again by the Law of Total Probability,
+\begin{align}
+\prcond{E}{B}
+    & = \prcond{E}{B\STR{TT}} \cdot \pr{\STR{TT}}
+       + \prcond{E}{B\STR{TH}} \cdot \pr{\STR{TH}}
+       + \prcond{E}{B\STR{H}} \cdot \pr{\STR{H}}\notag\\
+    & = 1 \cdot \frac14 + \prcond{E}{B}\cdot \frac14
+            + \prcond{E}{C} \cdot  \frac12,\label{114EB}\\
+\prcond{E}{C}
+   & = \prcond{E}{C\STR{T}} \cdot \pr{\STR{T}}
+       + \prcond{E}{C\STR{H}} \cdot \pr{\STR{H}}\notag\\
+   & = 0 \cdot \frac12 +  \prcond{E}{C} \cdot \frac12. \label{012EC}
+\end{align}
+Now from~\eqref{012EC} we immediately get
+\[
+\prcond{E}{C} = 0.
+\]
+Then from~\eqref{114EB},
+\begin{align*}
+\prcond{E}{B} & = \frac14 + \prcond{E}{B} \cdot \frac14,\\
+\prcond{E}{B} & = \frac13,
+\end{align*}
+and so by~\eqref{EA=EB}
+\[
+\prcond{E}{A} = \frac13.
+\]
+That is, \STR{HTT} appears before \STR{HHT} with probability 1/3.
+
+These kind of events have an amazing \idx{intransitivity} property: if
+you pick \emph{any} pattern of three flips such as \STR{HTT}, then I
+can pick a pattern of three flips such as \STR{HHT} whose odds of
+coming up first are better then even.  In particular, even if you
+instead picked the ``better'' pattern \STR{HHT}, there is another
+pattern I can pick that has a more than even chance of appearing
+before \STR{HHT}.
+
+\iffalse
+So there are cases where a pattern 1 appears before a pattern 2 with
+probability better than one half, and pattern 2 appears before a
+pattern 3 with probability better than one half, and pattern 3 also
+appears before pattern 1 with probability better than one half.
+\fi
+
+So we leave you with an ethical dilemma: is it OK to allow a naive
+opponent to first choose whichever pattern of three flips he likes
+best, then you choose your own preferred pattern, after which you bet
+real money on the coin flip game?
 \end{solution}
 
 \eparts
