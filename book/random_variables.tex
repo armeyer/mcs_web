@@ -79,7 +79,9 @@ In the same way, an event~$E$ partitions the sample space into those
 outcomes in $E$ and those not in $E$.  So $E$ is naturally associated
 with an indicator random variable, \index{$I_E$, indicator for event
   $E$} $I_E$, where $I_E(\omega) = 1$ for outcomes $\omega \in E$ and
-$I_E(\omega) = 0$ for outcomes $\omega \notin E$.  Thus, $M=I_E$ where
+$I_E(\omega) = 0$ for outcomes $\omega \notin E$.  This means that
+event $E$ is the same as the event $[I_E = 1]$.  For example the
+variable $M$ above is really just the indicator variable $I_E$, where
 $E$ is the event that all three coins match.
 
 \subsection{Random Variables and Events}
@@ -421,10 +423,11 @@ often the case that
     \pdf_R = \pdf_S.
 \end{equation*}
 In fact, some pdf's are so common that they are given special names.
-For example, the three most important distributions in computer
-science are the \term{Bernoulli distribution}, the \term{uniform
-  distribution}, and the \term{binomial distribution}.  We look more
-closely at these common distributions in the next several sections.
+For example, the most important distributions in computer science
+arguably are the \term{Bernoulli distribution}, the \term{Uniform
+  distribution}, the \term{Binomial distribution}, and the
+\term{Geometric distribution}.  We look more closely at these common
+distributions in the next several sections.
 
 \subsection{Bernoulli Distributions}\label{sec:bernoulli_dist}
 
@@ -1122,25 +1125,30 @@ level of~95\% from polling 665~people.
 \section{Great Expectations}\label{expectation_sec}
 
 The \term{expectation} or \term{expected value} of a random variable
-is a single number that reveals a lot about the behavior of the
-variable.  The expectation of a random variable is also known as its
-\term{mean} or \term{average}.  For example, the first thing you
-typically want to know when you see your grade on an exam is the
-average score of the class.  This average score turns out to be
-precisely the expectation of the random variable equal to the score of
-a random student.
+is, in simple cases, just its average value.  For example, the first
+thing you typically want to know when you see your grade on an exam is
+the average score of the class.  This average score is the same as the
+expected score of a random student.
 
-More precisely, the expectation of a random variable is its ``average''
-value when each value is weighted according to its probability.
-Formally, the expected value of a random variable is defined as follows:
+In general, the expected value of a random variable is the sum of all
+it possible values when each value is weighted according to its
+probability.  To make this work, we need to be able to add values and
+multiply them by probabilities.  This will certainly be possible if
+the values are real numbers; for technical reasons, we focus on
+\emph{nonnegative} real values.  Now we can define expected value
+formally as follows:
 %\begin{definition}\label{expdef}
 \begin{definition}\label{def:expectation}
-If $R$~is a random variable defined on a sample space~$\sspace$, then
-the expectation of~$R$ is
+If $R$~is a nonnegative real-valued random variable defined on a
+sample space~$\sspace$, then the expectation of~$R$ is
 \begin{equation}\label{eqn:expectation}
     \expect{R} \eqdef \sum_{\omega \in \sspace} R(\omega) \prob{\omega}.
 \end{equation}
 \end{definition}
+The expectation of a random variable is also known as its \term{mean}.
+
+From now on, we will assume our \emph{random variables are nonnegative
+  real-valued} unless we explcitly say otherwise.
 
 Let's work through some examples.
 
@@ -1212,7 +1220,7 @@ Notice that
 \[
 \Expect{1/R} \neq 1/\expect{R}.
 \]
- Assuming that these two quantities are equal is a common mistake.
+Assuming that these two quantities are equal is a common mistake.
 
 \subsection{The Expected Value of an Indicator Random Variable}
 
@@ -1236,17 +1244,15 @@ If $I_A$ is the indicator random variable for event $A$, then
 For example, if $A$~is the event that a coin with bias~$p$ comes up
 heads, then $\expect{I_A} = \prob{I_A=1} = p$.
 
-
 \subsection{Alternate Definition of Expectation}
-
-There is another standard way to define expectation.
-
+There is another standard way to define expectation:
 \begin{theorem}\label{thm:altexpdef}
-For any random variable~$R$,
+For any  random variable~$R$,
 \begin{equation}\label{eqn:altexpdef}
     \expect{R} = \sum_{x \in \range{R}} x \cdot \prob{R = x}.
 \end{equation}
 \end{theorem}
+
 The proof of Theorem~\ref{thm:altexpdef}, like many of the elementary proofs
 about expectation in this chapter, follows by regrouping of terms
 in equation~\eqref{eqn:expectation}:
@@ -1279,17 +1285,40 @@ defining equation~\eqref{eqn:expectation} for calculating expected
 values.  It also has the advantage that it does not depend on the
 sample space, but only on the density function of the random variable.
 On the other hand, summing over all outcomes as in
-equation~\eqref{eqn:expectation} sometimes yields easier proofs about
-general properties of expectation.
+equation~\eqref{eqn:expectation} allows easier proofs of some basic
+properties of expectation.
+
+Notice that the order in which terms appear in the
+sums~\eqref{eqn:altexpdef} and~\eqref{eqn:expectation} is not
+specified, and the proof of Theorem~\ref{thm:altexpdef}---and lots of
+proofs below---involve regrouping the terms in sums.  This is OK
+because of a well-known property of countable sums of nonnegative real
+numbers:
+\begin{theorem}
+A countable sum of nonnegative real numbers converges to the same
+value, or else always diverges, regardless of the order in which the
+numbers are summed.
+\end{theorem}
+\begin{editingnotes}
+\TBA{ref calculus text}
+\end{editingnotes}
+In fact as long as reordering terms in the infinite
+sum~\eqref{eqn:expectation} for expectation preserves convergence, we
+can allow random variables $R$ taking negative as well as positive
+values.  In this case, $\expect{R}$ will be well-defined and will have
+all the basic properties we establish below for nonnegative variables.
+But reordering does not preserve convergence for arbitrary sums of
+positive and negative values (see
+Problems~\bref{CP_absolute_convergence}
+and~\bref{PS_alt_harmonic_converges}), and there is no useful
+definition of the expectation for \emph{arbitrary} real-valued random
+variables.
 
 \begin{editingnotes}
-\textcolor{red}{Median not used elsewhere.  Maybe add an exercise
-  using the def below.}
-
 \subsubsection{Medians}
 The mean of a random variable is not the same as the \term{median}.
 The median is the \emph{midpoint} of a distribution.
-
+ 
 \begin{definition}%\label{def:17A2}
 The \term{median} of a random variable~$R$ is the value~$x \in
 \range{R}$ such that
@@ -1388,8 +1417,7 @@ that $A_1$, $A_2$, \dots, is a partition of~$\sspace$.  Then
   \end{align*}
 \end{proof}
 
-
-\subsection{Mean Time to Failure}\label{mean_time_to_failure_subsec}
+\subsection{Geometric Distributions}\label{mean_time_to_failure_subsec}
 
 A computer program crashes at the end of each hour of use with
 probability $p$, if it has not crashed already.  What is the expected
@@ -1562,9 +1590,8 @@ failure formula~\eqref{exp_time_to_fail}.  Suppose the system is
 restarted after each failure.  This makes the mean time to failure the
 same as the mean time between successive repeated failures.  Now if
 the probability of failure at a given step is $p$, then after $n$
-steps we expect to have $pn$ failures.  Now, by definition, the
-average number of steps between failures is equal to $np/p$, namely,
-$1/p$.
+steps we expect to have $pn$ failures.  Now the average number of
+steps between failures is, by definition, equal to $n/pn = 1/p$.
 
 For the record, we'll state a formal version of this result.  A random
 variable like $C$ that counts steps to first failure is said to have a
@@ -1807,6 +1834,7 @@ after all.
 \pinput{CP_carnival_dice_fair}
 \pinput{CP_consecutive_coin_flips}
 \pinput{CP_sqrt_infinite_expectation}
+%\pinput{CP_absolute_convergence}
 
 \examproblems
 \pinput{MQ_tournament_probabilistic_proof}
@@ -1815,7 +1843,7 @@ after all.
 
 \homeworkproblems
 \pinput{PS_max_algorithm_expectation}
-\pinput{PS_absolute_binomial_deviation}  %SOLN NEEDS MORE EXPLANATION
+%\pinput{PS_absolute_binomial_deviation}  %SOLN NEEDS MORE EXPLANATION
 \end{problems}
 
 
@@ -2314,7 +2342,7 @@ $B_1+B_2+\cdots+B_k$, and your expectation would be zero for the fair
 wheel and negative against an unfair wheel.  In other words, in order
 to follow the bet doubling strategy, you need to have an infinite
 bankroll.  So it's absurd to assume you could actually follow a bet
-doubling strategy, and it's entirely reasonable that an absurd
+doubling strategy, and we needn't be concerned when an absurd
 assumption leads to an absurd conclusion.
 
 \subsection{Expectations of Products}
