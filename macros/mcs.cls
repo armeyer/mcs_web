@@ -2801,7 +2801,7 @@
 \newcommand{\bookcopyrightyear}{%
   \message{^^JBookright year is *INCORRECT*.^^J^^J}}
 
-\renewcommand{\bookcopyrightyear}{2016}
+\renewcommand{\bookcopyrightyear}{2017}
 
 
 
