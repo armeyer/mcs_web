@@ -1,0 +1,185 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_suit_variance}
+  \pcomment{S01.practice-last-pset: was commented out}
+  \pcomment{add edited ARM 5/20/17}
+\end{pcomments}
+
+\pkeywords{
+  expectation
+  variance
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\examspace
+\begin{problem}
+Suppose you are playing the card game ``Hearts'' with three of your
+friends.  Hearts uses a standard deck of 52 cards with thirteen cards
+of each suit: spadees, hearts, diamonds, clubs.  At the start,
+thirteen of the cards are randomly dealt to each player.  Let $H$ be
+the number of hearts in your hand.
+
+\bparts
+
+\ppart\label{numHinexp}
+Express $\expect{H}$ as a fraction.
+
+\begin{center}
+\exambox{0.6in}{0.6in}{-0.1in}
+\end{center}
+
+\examspace[0.7in]
+
+\begin{solution}
+Let $X_i$ be the indicator variable that is 1 if your $i$th card is a
+heart and is 0 otherwise.  So $H = \sum_{i=1}^{13} X_i$.  Because
+$X_i$ is an indicator variable, its expectation is the probability
+that the $i$th card is a heart, namely, 1/4.  So
+\[
+\expect{H} = \sum_1^{13} 1/4 = 13/4.
+\]
+\end{solution}
+
+\ppart\label{numHinvar} Write a numerical formula for $\variance{H}$.
+Your formula may contain binomial coefficients; you do not need to
+evaluate it.
+
+\begin{center}
+\exambox{3.0in}{0.6in}{-0.1in}
+\end{center}
+
+\examspace[1.5in]
+
+\begin{solution}
+To compute variance, we use the fact that
+\[
+\Variance{H} = \Expect{H^2} - \Expectsq{H}.
+\]
+Now we need only find $\Expect{H^2}$:
+\begin{align}
+\Expect{H^2}
+    & \eqdef \Expect{\paren{\sum_{i=1}^{13} X_i}^2} \notag\\
+    & = \Expect{\sum_{i=1}^{13} X_i^2 + \sum_{i\neq j} X_iX_j} \notag\\
+    & = \sum_{i=1}^{13} \Expect{X_i^2} + \sum_{i\neq j} \Expect{X_iX_j}.\tag{E2Eij}
+\end{align}
+Now we note that $\expect{X_i^2} = \expect{X_i}$ since $X_i$ is an
+indicator variable, so $\expect{X_i^2} = 1/4$.
+
+When $i \neq j$, the product $X_iX_j = 1$ iff the $i$th and $j$th
+cards are both hearts.  The probability that both cards are hearts is
+$(1/4)(12/51)$, and thus
+\[
+\expect{X_iX_j} = (1/4)(12/51) = 3/51.
+\]
+In the summation~(E2Eij), there are 13 $\expect{X_i^2}$ terms,
+and $2\binom{13}{2} = 156$ terms of the form $\expect{X_iX_j}$.  Thus,
+\[
+\Expect{H^2} = 13\cdot\frac{1}{4} + 156\cdot \frac{3}{51},
+\]
+and so
+\[
+\Variance{H}
+  = \paren{13 \cdot \frac{1}{4} + 156 \cdot \frac{3}{51}} - \paren{\frac{13}{4}}^2
+%  \approx 1.863970588.
+\]
+
+\end{solution}
+
+\eparts
+
+\bigskip
+
+Let $N$ be the number of suits that appear in your hand.
+
+%---so the range of $N$ is the integer interval $\Zintv{0}{4}$
+
+\bparts
+
+\ppart Write a simple formula for $\expect{N}$ in terms of $\expect{H}$.
+
+\begin{center}
+\exambox{1.2in}{0.5in}{-0.1in}
+\end{center}
+
+\examspace[0.4in]
+
+\begin{solution}
+Let $X_h$ be the indicator variable which is 1 if there is a heart in
+the hand and 0 otherwise. Define $X_s, X_d, X_c$ similarly for the
+three remaining suits.  Then
+\[
+N = X_h + X_s + X_d + X_c.
+\]
+Note that $X_h$ is the same as $H$, so
+\[
+\expect{N} \eqdef \expect{X_s + X_h + X_d + X_c} = 4 \expect{H} %\approx 3.94884.
+\]
+\end{solution}
+
+\examspace[0.4in]
+
+\ppart Write a numerical formula for
+\inhandout{$\prob{N=2}$}\inbook{$\variance{N}$}.  Your formula may
+contain binomial coefficients; you do not need to evaluate it.
+
+\begin{center}
+\exambox{4.0in}{0.6in}{-0.1in}
+\end{center}
+
+\examspace[3.0in]
+
+\begin{solution}
+\[
+\variance{N} \eqdef \sum_{i=1}^4 \prob{N=i}(i - \expect{N})^2.
+\]
+We need only calculate each of the probabilities.  First, there are
+four possible hands of all one suit, so
+\[
+\Pr(N=1) = \frac{4}{\binom{52}{13}}   %= 6.299 \times 10^{-12},
+\]
+
+Next, there are $\binom{4}{2}$ ways to choose two suits and there are
+$\binom{26}{13}$ ways to choose 13 cards from the 26 possible cards of
+those two suits.  Since two of those $\binom{26}{13}$ hands actually
+contain only one suit, we have $\binom{26}{13}-2$ that contain exactly
+those two suits.  Therefore,
+\[
+\Pr(N=2) = \frac{\binom{4}{2}\paren{\binom{26}{13} - 2}}{\binom{52}{13}}
+%             = 9.827 \times 10^{-5}.
+\] 
+
+Similarly, there are $\binom{4}{3}$ ways to choose the three suits.
+There are $\binom{39}{13}$ ways to choose 13 cards from the 39 cards
+of those three suits.  But that also includes hands with two suits and
+one suit.  There are $\binom{3}{2}$ ways to choose two suits from the
+three suits and $\binom{26}{13}$ to choose 13 cards from the 26
+cards of those two suits.  So the number of hands with at most two
+suits is $\binom{3}{2}\binom{26}{13}$.  Finally, there are three hands
+containing exactly one of the three suits.  Now by inclusion-exclusion, there are
+\[
+\binom{4}{3}\paren{\binom{39}{13} - \binom{3}{2}\binom{26}{13} + 3}
+\]
+hands containing exactly three suits.  Therefore,
+\[
+\Pr(N=3) = \frac{\binom{4}{3}\paren{\binom{39}{13} -
+\binom{3}{2}\binom{26}{13} + 3}}{\binom{52}{13}} %= 0.05097.
+\]
+
+Finally, 
+\[
+\Pr(N=4) = 1 - (\Pr(N=1) +\Pr(N=2) + \Pr(N=3)) %\approx 0.9489.
+\]
+
+This now allows us to calculate the numerical value of the variance,
+which turns out to be approximately 0.04874.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput
