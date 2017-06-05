@@ -2638,11 +2638,15 @@
 %%   and at distance D from the bottom of the current line (only in 
 %%   handouts without solutions). 
 
+\newcommand{\exambox}[3]{}
+
 \newcommand{\@exambox}[3]{\inhandout{\instatements{%
 \begin{center}\fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}\end{center}}}}
 
-%% \newcommand{\@exambox}[3]{\inhandout{\instatements{
-%%   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
+\newcommand{\examboxplain}[3]{}
+
+ \newcommand{\@examboxplain}[3]{\inhandout{\instatements{
+   \fbox{\rule{#1}{0in}\rule[#3]{0in}{#2}}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Mini pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
