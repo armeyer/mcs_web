@@ -1,8 +1,8 @@
 \documentclass[problem]{mcs}
 
 \begin{pcomments}
-    \pcomment{CP_CNF_from_DNF}
-    \pcomment{by ARM 2/5/11, minor edits 9/11/17}
+  \pcomment{CP_CNF_from_DNF}
+  \pcomment{by ARM 2/5/11, minor edits 9/11/17, solution restructured by zabel on 9/12/17 to separate the example from the proof}
 \end{pcomments}
 
 \pkeywords{
@@ -15,53 +15,48 @@
   disjunct}
 
 \begin{problem}
-Explain a simple way to obtain a \idx{conjunctive form} for a
-propositional formula directly from a \idx{disjunctive form} for its
-complement.
+  Explain a simple way to obtain a \idx{conjunctive form} for a
+  propositional formula directly from a \idx{disjunctive form} for its
+  complement.
 
-\hint DeMorgan's Law does most of the job.
+  \hint DeMorgan's Law does most of the job. Try working an illustrative example of your choice before describing the general case.
 
-\begin{solution}
-We want to find a conjunctive form for a formula $F$, given a
-disjunctive form---a sum of products for $\bar{F}$.  We do so by
-negating the disjunctive form for $\bar{F}$.  This negated formula is
-equivalent to $F$.
+  \begin{solution}
+    We'll follow the suggestion by starting with an example. As we know, ``proof by example'' is not a valid form of proof, and this worked example is not required for a formal write-up. We include it here for clarity.
+    
+    The idea is to negate the given disjunctive form and simplify as much as possible with DeMorgan's Law. For the example
+    \[
+      \bar{F} = (A \QAND B) \QOR (B \QAND \bar{C}),
+    \]
+    negating this formula and applying DeMorgan's Law yields
+    \begin{align*}
+      F &\iff \QNOT((A \QAND B) \QOR (B \QAND \bar{C})) \\
+        &\iff \QNOT(A \QAND B) \QAND \QNOT(B \QAND \bar{C}).
+    \end{align*}
+    Now we can turn each of the negated products into a sum by
+    applying DeMorgan's Law again:
+    \begin{equation*}
+      F \iff (\bar{A} \QOR \bar{B}) \QAND (\bar{B} \QOR \bar{\bar{C}}).
+    \end{equation*}
+    Then removing double-negations yields the desired conjunctive form:
+    \[
+      F \iff (\bar{A} \QOR \bar{B}) \QAND (\bar{B} \QOR C).
+    \]
 
-Now according to DeMorgan's law for distributing \QNOT\ over
-\QOR\ or \QAND, we have
-\begin{align}
-\QNOT(A \QOR B \QOR \cdots \QOR Z) & \qiff \bar{A} \QAND \bar{B} \QAND \cdots \QAND \bar{Z}
-\label{moreDeMnotor} \\
-\QNOT(A \QAND B \QAND \cdots \QAND Z) & \qiff \bar{A} \QOR \bar{B} \QOR \cdots \QOR \bar{Z}
-\label{moreDeMnotand}
-\end{align}
+    Now for a fully general argument. Suppose $\bar{F}$ is given in disjunctive form as $$\bar{F} = C_1 \QOR C_2 \QOR \cdots \QOR C_n.$$ Formula $F$ is equivalent to $\bar{\bar{F}}$, which may be rewritten using DeMorgan's law for distributing \QNOT\ over \QOR:
+    \begin{equation}\label{againDeMnotor}
+      F \iff \bar{C_1} \QAND \bar{C_2} \QAND \cdots \QAND \bar{C_n}.
+    \end{equation}
+    Each clause $C$ from $\bar{F}$ (i.e., one of $C_1,\ldots,C_n$) has the form $C = (L_1 \QAND L_2 \QAND \cdots \QAND L_m)$, where each $L_j$ is either a variable or a negated variable. By DeMorgan's law again, $\bar{C}$ may be simplified into
+    \begin{equation*}
+      \bar{C} = (\bar{L_1} \QOR \bar{L_2} \QOR \cdots \QOR \bar{L_m}).
+    \end{equation*}
+    If any of these literals $L_j$ was already a negated variable, say $L_j = \bar{X}$, then $\bar{L_j}$ may be equivalently replaced with the original variable $X$, since $\bar{\bar{X}} \iff X$.
 
-So we can apply~\eqref{moreDeMnotor} to $\bar{F}$ to obtain the
-$\QAND$ of the negations of each of the product terms in $\bar{F}$.
-For example, if the disjunctive form of $\bar{F}$ was
-\[
-(A \QAND B) \QOR (B \QAND \bar{C}),
-\]
-then negating this formula and applying~\eqref{moreDeMnotor} yields
-\begin{equation}\label{prodnotprods}
-\QNOT(A \QAND B) \QAND \QNOT((B \QAND \bar{C})
-\end{equation}
-
-Now we can turn each of the negated products into a sum by
-applying~\eqref{moreDeMnotand}.  For example,~\eqref{prodnotprods}
-would turn into
-\begin{equation}\label{almostCF}
-(\bar{A} \QOR \bar{B}) \QAND (\bar{B} \QOR \bar{\bar{C}})
-\end{equation}
-
-Then removing double-negations yields the desired conjunctive form.
-For example, removing double-negations from~\eqref{almostCF} yields
-\[
-(\bar{A} \QOR \bar{B}) \QAND (\bar{B} \QOR C),
-\]
-as a conjunctive formula for $F$.
-\end{solution}
+    Applying the transformation from the previous paragraph to each clause in~\eqref{againDeMnotor} results in the desired disjunctive form for $F$.
+  \end{solution}
 
 \end{problem}
 
 \endinput
+
