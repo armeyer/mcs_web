@@ -40,9 +40,23 @@ could be defined as
 \]
 This makes it OK to use ``Greater'' in subsequent formulas.
 
-Write logic formulas using only the allowed predicates that define the following predicates:
+Write predicate logic formulas using only the allowed predicates $A,M$ that
+define the following predicates:
 
 \begin{problemparts}
+
+\ppart $\text{Equal}(m,n)$ meaning that $m=n$.
+\begin{solution}
+You could say that neither $m$ nor $n$ is greater than the other:
+\[
+\text{Equal}(m,n) \eqdef \QNOT(\text{Greater}(m,n) \QOR \text{Greater}(n,m)).
+\]
+It's even simpler to say that $m = n+0$:
+\[
+\text{Equal}(m,n) \eqdef \exists z. \text{Zero}(z) \QAND A(m,n,z).
+\]
+\end{solution}
+
 \ppart\label{defone} $\text{One}(n)$ meaning that $n=1$.
 
 \begin{solution}
@@ -51,9 +65,10 @@ Write logic formulas using only the allowed predicates that define the following
 \]
 clearly works.  So does
 \[
-\text{One}(n) \eqdef \forall m. M(m,m,n).
+\text{One}(n) \eqdef \forall m.\, M(m,m,n).
 \]
-Another approach uses Greater:
+Another approach uses Greater, namely, one is the number that is only
+greater than zero:
 \[
 \text{One}(n) \eqdef \forall m.\,  \text{Greater}(n,m) \QIMP \text{Zero}(m).
 \]
@@ -64,30 +79,63 @@ Another approach uses Greater:
 \begin{solution}
 The idea is to introduce variables for the values of the arithmetic subformulas:
 \[
-\exists a \exists b \exists c.\,  M(a,m,j) \QAND M(b,k,k) \QAND A(c,a,b) \QAND A(n,i,c).
+\exists a, b, c.\,  M(a,m,j) \QAND M(b,k,k) \QAND A(c,a,b) \QAND M(n,i,c).
 \]
 
 \end{solution}
-
 
 \problempart $\text{Prime}(p)$ meaning $p$ is a prime number.
 
 \begin{solution}
+One way to define a prime number is:
+\begin{quote}
+``A prime is an integer greater than one that cannot be expressed as the
+  product of two numbers that are also greater than one.''
+\end{quote}
+This definition then translates directly into the predicate formula:
 \begin{align*}
-\text{Prime}(p) & \eqdef  \exists w. \text{One}(w) \QAND \text{Greater}(p,w)\ \QAND\\
-      & \qquad \QNOT(\exists m.\, \exists n.\, 
-          \text{Greater}(m,w) \QAND \text{Greater}(n,w) \QAND M(p,m,n))
+\text{Prime}(p)
+  \eqdef & \exists w. \text{One}(w) \QAND \text{Greater}(p,w)\ \QAND\\
+         & \qquad \QNOT(\exists m.\, \exists n.\, 
+          \text{Greater}(m,w) \QAND \text{Greater}(n,w) \QAND M(p,m,n)).
 \end{align*}
+
+Another, equivalent, definition is:
+\begin{quote}
+``A prime is an integer other than one whose only factors are itself and one.''
+\end{quote}
+This would translate into
+\begin{align*}
+\text{Prime}(p) & \eqdef  \QNOT(\text{Zero}(p))\ \QAND\\
+      & \qquad \forall m, n.\, 
+ M(p,m,n) \QIMPLIES [\text{Equal}(m,p) \QOR \text{One}(m)].
+\end{align*}
+
+A clever third characterization of primes leads to a more concise formula:
+\begin{quote}
+``A prime is an integer that can only be factored into two
+  numbers when exactly one of those numbers equals one.''
+\end{quote}
+\[
+\text{Prime}(p)
+    \eqdef \forall m, n.\,  M(p,m,n)
+       \QIMPLIES (\text{One}(m) \QXOR \text{One}(n)).
+\]
 \end{solution}
 
 \ppart\label{deftwo} $\text{Two}(n)$ meaning that $n=2$.
+
 \begin{solution}
-\[
-\text{Two}(n) \eqdef \forall m.\, \text{Greater}(n,m) \QIMP (\text{Zero}(m) \QOR \text{One}(m)).
-\]
-Another approach is
+The usual definition would be that two is one plus one:
 \[
 \text{Two}(n) \eqdef \exists w. \text{One}(w) \QAND A(n, w, w).
+\]
+
+Another definition is that two is an integer that is only greater than
+either zero or one:
+
+\[
+\text{Two}(n) \eqdef \forall m.\, \text{Greater}(n,m) \QIMP (\text{Zero}(m) \QOR \text{One}(m)).
 \]
 \end{solution}
 
@@ -104,7 +152,7 @@ allowed from now on.
 
 \begin{solution}
 \[
-\QNOT(\exists p.\, (\text{Prime}(p) \QAND (\forall q.\, (\text{Prime}(q) \QIMPLIES p \geq q))))
+\QNOT(\exists p.\, (\text{Prime}(p) \QAND (\forall q.\, (\text{Prime}(q) \QIMPLIES p \geq q)))).
 \]
 \end{solution}
 \fi
@@ -112,16 +160,15 @@ allowed from now on.
 \ppart $\text{Even}(n)$ meaning $n$ is even.
 
 \begin{solution}
-A standard definition would be:
+A standard definition would be that an even number is a multiple of two:
 \[
-\text{Even}(n)\eqdef \exists t.\, (\text{Two}(t) \QAND  \exists k.\, M(n,t,k))
+\text{Even}(n)\eqdef \exists t.\, (\text{Two}(t) \QAND  \exists k.\, M(n,t,k)).
 \]
-A simpler alternative is:
+A simpler alternative is that an even number is the sum of some number with itself:
 \[
-\text{Even}(n)\eqdef \exists k.\, A(n,k,k)
+\text{Even}(n)\eqdef \exists k.\, A(n,k,k).
 \]
 \end{solution}
-
 
 \problempart (\idx{Goldbach Conjecture}) Every even
 integer $n \geq 4$ can be expressed as the sum of two primes.
@@ -130,7 +177,7 @@ integer $n \geq 4$ can be expressed as the sum of two primes.
 \begin{align*}
 \exists r. & \text{Three}(r)\ \QAND\\
            & \forall n.\, (\text{Greater}(n,r) \QAND \text{Even}(n)) \QIMPLIES\\
-           & \qquad \exists p \exists q.\,
+           & \qquad \exists p, q.\,
                  \text{Prime}(p) \QAND \text{Prime}(q) \QAND A(n, p, q).
 \end{align*}
 \end{solution}
@@ -146,7 +193,9 @@ at least one prime $p$ such that $n < p < 2n$.
 )
 \]
 \end{solution}
+\fi
 
+\inbook{
 \problempart (\idx{Fermat's Last Theorem}) Now suppose we also have
 \[
 X(k,m,n) \quad \text{means}\ k = m^n.
@@ -159,32 +208,27 @@ the equation:
 when $n > 2$.
 
 \begin{solution}
+We express $x^n + y^n = z^n$ with
 \[
-\forall x, y, z, n.\,
-    (
-    (\QNOT(\text{Zero}(x)) > 0 \QAND \QNOT(\text{Zero}(y)) \QAND \QNOT(\text{Zero}(z)) \QAND \QNOT(\text{Zero}(n)) \QAND \QNOT(\text{One}(x)))
-    \QIMPLIES
-    \QNOT(x^n + y^n = z^n)
-    )
+F(x,y,z,n) \eqdef \exists a,b,c.\, X(a,x,n) \QAND X(b,y,n) \QAND A(c,a,b) \QAND X(c,z,n).
 \]
-where the expression $x^n + y^n = z^n$ is expressed in terms of $M$ and $X$ and
-additional variables as in part~\eqref{avoidterms}.
-
-\begin{staffnotes}
-Nicer if the expression $x^n + y^n = z^n$ was actually replaced.
-\end{staffnotes}
-
+Then a formula for Fermat's Last Theorem is:
+\begin{align*}
+\forall x, y, z, n.\, & F(x,y,x,n) \QIMPLIES
+    &  [\text{Zero}(x) \QOR \text{Zero}(y) \QOR \text{Zero}(z) \QOR
+   \text{Zero}(n) \QOR \text{One}(n) \QOR \text{Two}(n)].
+\end{align*}
 \end{solution}
-\fi
+}
 
 \ppart (Twin Prime Conjecture) There are infinitely many primes that differ by two.
 
 \begin{solution}
-\[
-\exists t.\, \text{Two}(t)\ \QAND
-    \forall n \exists p \exists q.\,
-         \text{Prime}(p) \QAND \text{Prime}(q)  \QAND \text{Greater}(p,n) \QAND A(q,p,t).
-\]
+\begin{align*}
+\forall n \exists p \exists q.
+       & \text{Prime}(p) \QAND \text{Prime}(q) \QAND\\
+       & \text{Greater}(p,n) \QAND \exists t.\, (\text{Two}(t) \QAND A(q,p,t)).
+\end{align*}
 \end{solution}
 
 \eparts
