@@ -1,0 +1,312 @@
+\newcommand{\bintree}{\text{BT}}
+\newcommand{\rectree}{\text{RT}}
+\newcommand{\ubt}{\text{UT}}
+\newcommand{\leafset}{\text{Leaves}}
+\newcommand{\leafp}[1]{\text{leaf?}(#1)}
+\newcommand{\rightsub}[1]{\text{rt}(#1)}
+\newcommand{\leftsub}[1]{\text{lf}(#1)}
+\newcommand{\subtrees}[1]{\text{subtr}(#1)}
+
+\section{Search Trees}
+
+Searching through data may be the most common of all computations, and
+\term{search trees} are a widely used data structure that supports
+efficient search.
+
+The basic idea behind search trees is simple.  Assuming the data to be
+searched have some kind of order relation on them---like numerical order
+for numbers or alphabetical order for words---the data is laid out in
+a kind of branching ``tree'' structure illustrated in
+Figure~\ref{searchtree1}.  In this example, there are two branches at
+each branch point, with all the values in the left branch less than
+the value at the branch point, and all the values in the right branch
+greater than the value at the branch point.  This makes it easy to
+search for a given value in the tree: starting at the topmost
+branchpoint, compare the given value to the value at the branchpoint.
+If the given value---call it $g$---is less than the value at the
+branchpoint---call it $b$---then continue searching in the left
+branch; if $g$ is greater than $b$ continue searching in the right
+branch; if $g = b$ then the given value has been found, and the search
+ends successfully.  Finally, if there are no more branches to search,
+then $g$ is not there, so the search ends unsuccessfully.
+
+\begin{figure}
+
+%\graphic{}
+
+\begin{verbatim}
+                6.8
+          pi            8  
+      3       4.9     7   9 
+    1  3.1  3.7  5
+          3.2  4 
+\end{verbatim}
+
+\caption{A binary search tree.}
+
+\label{searchtree1}
+
+\end{figure}
+
+For example, to search for 3.7 in the tree in Figure~\ref{searchtree1},
+we compare 3.7 to the value 6.8 at the topmost branch.  Since $3.7 <
+6.8$, we go left and compare $3.7$ to the new top value $\pi$.  Since
+$3.7 > \pi$, go right comparing 3.7 to 4.9, go left again, and arrive
+at 3.7. So the search ends successfully.
+
+Organizing the data in this way means you can search for a value
+without having to scan through all the values in the data set.  In
+fact, if the all the top-to-bottom paths through the tree don't differ
+too much in length, then the path length will be \emph{exponentially}
+smaller than the total data set.  Since each search simply follows
+some path, this means that searching for a value will take
+exponentially less time than it would to search through all the data.
+
+\begin{figure}
+
+%\graphic{}
+
+\begin{verbatim}
+                0
+            .5     1
+               1.5    2
+                  2.5    3
+                     3.5   .
+                        .    .
+                          .    .
+\end{verbatim}   
+
+\caption{An unbalanced search tree.}
+
+\label{unbalanced}
+
+\end{figure}
+
+
+Of course it is possible that the tree has paths that are not short.
+An extreme example is illustrated in Figure~\ref{unbalanced} where
+there is a path containing half the values.  For this tree, the
+average search for a value requires searching through half the length
+of the path, or about a quarter of all the values in the data set.  In
+this case, the exponential savings evaporates.
+
+The key problem we examine in this section is how to grow a search
+tree whose top-to-bottom paths are close to the same length, and how
+to maintain this property as the data evolves through adding and
+removing values.  By treating search trees as a recursive data type,
+we will be able to describe simple recursive procedures for tree
+management, and we also will have a powerful inductive proof method
+for proving properties of these trees and procedures.
+
+\subsection{Abstract Binary Trees}
+
+The data structure that underlies search trees are branching tree
+structures, where to begin with we don't worry about values appearing
+in the tree.  For simplicity, we'll stick to trees with exactly two
+branches at each branchpoint, as in the examples above.  These are
+called \term{binary trees}.
+
+A binary tree is either a single ``leaf node'' with no branching, or a
+branchpoint node connected to a left subtree and a right subtree.
+There are lots of ways to represent binary trees as a computer data
+structure or a mathematical set, but we will take an abstract approach
+that will enable us, largely, to understand trees without worrying
+about how they are represented.
+
+Let's begin by assuming we have some domain \bintree\ of things whose
+elements are called binary trees.  Now any representation of binary
+trees has to allow a way to determine if a given tree is a leaf or
+not.  We can abstract this property by assuming there is a ``leaf
+predicate'' $\leafp{}$ on \bintree\ that determines whether an element
+is a leaf.  We \emph{define} the leaves to be elements that this
+predicate picks out:
+\[
+\leafset \eqdef \set{T \in \bintree \suchthat \leafp{T}}.
+\]
+So the official definition of ``leaf'' is ``element of \leafset.''
+
+The remaining binary trees are the ones that branch into left and
+right subtrees.  Any representation of binary trees has to allow a way
+to select the left subtree of a branching tree and a way to select the
+right subtree.  We abstract this property by having \term{selector
+  functions} that produce the left and right subtrees of a non-leaf
+tree.  That is, we simply stipulate that there are total functions
+\[
+\leftsub{}: (\bintree - \leafset) \to \bintree\quad \text{and}
+\rightsub{}: (\bintree - \leafset) \to \bintree.
+\]
+
+Now this abstract setup allows for some weird stuff.  For example, it
+allows binary trees to be infinite.  For example, suppose we use
+nonnegative integers to represent binary trees, and define 0 to be the
+only leaf.  If we define $\leftsub{n} \eqdef 2n$ and $\rightsub{n}
+\eqdef 2n+1$ we get the infinite tree indicated in
+Figure~\ref{inftree123}
+
+\begin{figure}
+
+%\graphic{}
+
+\begin{verbatim}
+                  1
+           2            3
+        4     5      6      7
+       8 9  10 11  12 13  14 15
+       .          .             . 
+      .           .              .
+     .            .               . 
+
+\end{verbatim}
+
+\caption{An infinite tree with no leaves.}
+
+\label{inftree123}
+
+\end{figure}
+Notice that this infinite tree has no leaves.  
+
+The \term{subtrees} of a binary tree are all the trees you can reach
+going down from the top.  Abstractly, something is a subtree of $T$ if
+it is the result of applying some finite sequence of zero or more
+selector functions to $T$.  It is a \term{proper subtree} if it is the
+result of applying at least one selector functions.
+
+This abstract setup also allows somw weird ``circular'' trees which
+are proper subtrees of themselves.  Fortunately, all we need are the
+recursively defined binary trees \rectree\ where all this weirdness
+gets ruled out.
+
+\begin{definition}
+\rectree is a set of binary trees defined recursively as follows:
+
+\inductioncase{Base case}:  Any leaf is in \rectree.
+
+\inductioncase{Constructor case}: If $T \in \bintree$ is not a leaf,
+and $\leftsub{T}$ and $rightsub{T}$ are in \rectree, then $T$ is in
+\rectree.
+\end{definition}
+
+Now the subtrees function confined to \rectree\ has a simple recursive
+definition.
+
+\begin{definition}
+The function $\subtrees{}: \rectree to \power{\rectree}$ is defined recursively as follows:
+
+\inductioncase{Base case}: If $T$ is a leaf, then $\subtrees{T} \eqdef
+\set{T}$.
+
+\inductioncase{Constructor case}: If $T \in \bintree$ is not a leaf,
+then
+\[
+\subtrees{T} \eqdef \set{T} \union \subtrees{leftsub{T}} \union
+\subtrees{leftsub{T}}.
+\]
+\end{definition}
+Notice that a subtree of a subtree of $T$ is also a subtree $T$.
+
+The \term{proper subtrees} of $T$ can now be defined to be
+\[
+\subtrees{leftsub{T}} \union \subtrees{leftsub{T}}.
+\]
+Notice that a proper subtree of a subtree of $T$ is a proper subtree
+of $T$.\footnote{We take these two facts about subtrees for granted.
+  They have simple proofs by structural induction on the definition of
+  subtree that are not worth writing out.}
+
+\begin{lemma}\label{}
+No tree in \rectree\ is a proper subtree of itself.
+\end{lemma}
+
+\begin{proof}
+The proof is by structural induction on the definition of \rectree.
+
+\inductioncase{Base case}: If $T$ is a leaf, then $T$ has no proper
+subtrees.
+
+\inductioncase{Constructor case}: $T \in \rectree$ is not a leaf, then
+let $L \eqdef \leftsub{T}$.  By induction hypothesis, $L$ is not a
+proper subtree of itself.  Now $T$ cannot be a subtree of $L$, because
+if it was, $L$ would be a proper subtree of a subtree of itself, which
+would mean that $L$ was a proper subtree of itself.  Likewise, $T$
+cannot be a subtree of $\rightsub{T}$, proving that $T$ is not a
+proper subtree of itself.
+\end{proof}
+
+\begin{lemma}\label{lem:finsubtrees}
+Every tree in \rectree\ has only a finite number of subtrees.
+\end{lemma}
+
+\begin{proof}
+The proof is by structural induction on the definition of \rectree.
+
+\inductioncase{Base case}: If $T$ is a leaf, then $T$ has only one
+subtree, namely, itself.
+
+\inductioncase{Constructor case}: If $T \in \rectree$ is not a leaf,
+then $\card{\subtrees{\leftsub{T}}}$ and $\card{\subtrees{\rightsub{T}}}$ are
+finite by induction hypothesis.  Therefore
+\[
+\card{\subtrees{T}} \leq 1 + \card{\subtrees{leftsub{T}}} +
+\card{\subtrees{leftsub{T}}}.
+\]
+\end{proof}
+
+How come we have ``$\leq$'' instead of ``$=$'' in the proof of
+Lemma~\ref{lem:finsubtrees}?  The answer is that the definition of
+\rectree\ allows lots of sharing of subtrees.  For example, it is
+possible to have a $\rectree$ with whose left and right subtrees are
+the same.  Sharing can be a very useful property when it comes to
+finding a compact representation of a tree, but it seriously
+complicates adding or removing values from search trees.  So we will
+finally restrict ourselves to the set \ubt\ of \term{unsharing}
+recursive binary trees with the following recursive definition.
+
+\begin{definition}
+\ubt\ is a set of binary trees defined recursively as follows:
+
+\inductioncase{Base case}:  Any leaf is in \ubt.
+
+\inductioncase{Constructor case}: If $T \in \ubt$ is not a leaf,
+$\leftsub{T}$ and $rightsub{T}$ are in \ubt, and $\leftsub{T}$ and
+$rightsub{T}$ have no element in common, that is
+\[
+\leftsub{T} \intersect rightsub{T} = \emptyset
+\]
+then $T$ is in \ubt.
+\end{definition}
+
+Now we can replace the `$\leq$'' in the proof of
+Lemma~\ref{lem:finsubtrees}, namely,
+\[
+\card{\subtrees{T}} = 1 + \card{\subtrees{leftsub{T}}} + \card{\subtrees{leftsub{T}}}.
+\]
+for all $T \in \ubt$.
+
+\subsection{The Structure of Binary Trees}
+
+The leaves of a \rectree\ are its subtrees that are leaves.  That is
+\[
+\text{leaves}(T) \eqdef \subtrees{T} \intersect \leafset.
+\]
+The nonleaf subtrees are called ``internal.''  That is,
+\[
+\text{internal}(T) \eqdef \subtrees{T} - \text{leaves}(T).
+\]
+
+WHen there is no sharing, There is always one more leaf than there are
+internal subtrees:
+
+\begin{lemma}\label{}
+If $T \in \ubt$, then
+\[
+\card{\text{leaves}(T)} = 1 + \card{\text{internal}(T)}.
+\]
+\end{lemma}
+\begin{proof}
+The proof is by structural induction on the definition of \ubt.
+
+\TBA{rest of proof}
+\end{proof} 
+
+
+\endinput
