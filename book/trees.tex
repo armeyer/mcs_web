@@ -1,11 +1,12 @@
 \newcommand{\bintree}{\text{BT}}
 \newcommand{\rectree}{\text{RT}}
 \newcommand{\ubt}{\text{UT}}
+\newcommand{\Searcht}{\text{ST}}
 \newcommand{\leafset}{\text{Leaves}}
 \newcommand{\leafp}[1]{\text{leaf?}(#1)}
-\newcommand{\rightsub}[1]{\text{rt}(#1)}
-\newcommand{\leftsub}[1]{\text{lf}(#1)}
-\newcommand{\subtrees}[1]{\text{subtr}(#1)}
+\newcommand{\rightsub}[1]{\text{right}(#1)}
+\newcommand{\leftsub}[1]{\text{left}(#1)}
+\newcommand{\subtrees}[1]{\text{sbtrs}(#1)}
 
 \section{Search Trees}
 
@@ -132,16 +133,16 @@ right subtree.  We abstract this property by having \term{selector
   functions} that produce the left and right subtrees of a non-leaf
 tree.  That is, we simply stipulate that there are total functions
 \[
-\leftsub{}: (\bintree - \leafset) \to \bintree\quad \text{and}
+\leftsub{}: (\bintree - \leafset) \to \bintree\quad \text{and} \quad
 \rightsub{}: (\bintree - \leafset) \to \bintree.
 \]
 
-Now this abstract setup allows for some weird stuff.  For example, it
-allows binary trees to be infinite.  For example, suppose we use
-nonnegative integers to represent binary trees, and define 0 to be the
-only leaf.  If we define $\leftsub{n} \eqdef 2n$ and $\rightsub{n}
-\eqdef 2n+1$ we get the infinite tree indicated in
-Figure~\ref{inftree123}
+Now this abstract setup allows for some weird stuff like allowing
+trees to be infinite.  For example, suppose we use nonnegative
+integers to represent binary trees, and define 0 to be the only leaf.
+If we define $\leftsub{n} \eqdef 2n$ and $\rightsub{n} \eqdef 2n+1$ we
+get the infinite tree indicated in Figure~\ref{inftree123}.  Notice
+that this infinite tree has no leaves.
 
 \begin{figure}
 
@@ -163,15 +164,15 @@ Figure~\ref{inftree123}
 \label{inftree123}
 
 \end{figure}
-Notice that this infinite tree has no leaves.  
+
 
 The \term{subtrees} of a binary tree are all the trees you can reach
 going down from the top.  Abstractly, something is a subtree of $T$ if
 it is the result of applying some finite sequence of zero or more
 selector functions to $T$.  It is a \term{proper subtree} if it is the
-result of applying at least one selector functions.
+result of applying at least one selector function.
 
-This abstract setup also allows somw weird ``circular'' trees which
+This abstract setup also allows some weird ``circular'' trees which
 are proper subtrees of themselves.  Fortunately, all we need are the
 recursively defined binary trees \rectree\ where all this weirdness
 gets ruled out.
@@ -182,34 +183,35 @@ gets ruled out.
 \inductioncase{Base case}:  Any leaf is in \rectree.
 
 \inductioncase{Constructor case}: If $T \in \bintree$ is not a leaf,
-and $\leftsub{T}$ and $rightsub{T}$ are in \rectree, then $T$ is in
+and $\leftsub{T}$ and $\rightsub{T}$ are in \rectree, then $T$ is in
 \rectree.
 \end{definition}
 
-Now the subtrees function confined to \rectree\ has a simple recursive
+Now the subtrees function on \rectree\ has a simple recursive
 definition.
 
 \begin{definition}
-The function $\subtrees{}: \rectree to \power{\rectree}$ is defined recursively as follows:
+The function $\subtrees{}: \rectree \to \power(\rectree)$ is defined recursively as follows:
 
 \inductioncase{Base case}: If $T$ is a leaf, then $\subtrees{T} \eqdef
 \set{T}$.
 
-\inductioncase{Constructor case}: If $T \in \bintree$ is not a leaf,
+\inductioncase{Constructor case}: If $T \in \rectree$ is not a leaf,
 then
 \[
-\subtrees{T} \eqdef \set{T} \union \subtrees{leftsub{T}} \union
-\subtrees{leftsub{T}}.
+\subtrees{T} \eqdef \set{T} \union \subtrees{\leftsub{T}} \union
+\subtrees{\rightsub{T}}.
 \]
-\end{definition}
-Notice that a subtree of a subtree of $T$ is also a subtree $T$.
 
-The \term{proper subtrees} of $T$ can now be defined to be
+The \term{proper subtrees} of $T$ are defined to be
 \[
 \subtrees{leftsub{T}} \union \subtrees{leftsub{T}}.
 \]
-Notice that a proper subtree of a subtree of $T$ is a proper subtree
-of $T$.\footnote{We take these two facts about subtrees for granted.
+\end{definition}
+
+Notice that a subtree of a subtree of $T$ is also a subtree $T$.
+Likewise a proper subtree of a subtree of $T$ is a proper subtree of
+$T$.\footnote{We take these two facts about subtrees for granted.
   They have simple proofs by structural induction on the definition of
   subtree that are not worth writing out.}
 
@@ -226,12 +228,13 @@ subtrees.
 \inductioncase{Constructor case}: $T \in \rectree$ is not a leaf, then
 let $L \eqdef \leftsub{T}$.  By induction hypothesis, $L$ is not a
 proper subtree of itself.  Now $T$ cannot be a subtree of $L$, because
-if it was, $L$ would be a proper subtree of a subtree of itself, which
-would mean that $L$ was a proper subtree of itself.  Likewise, $T$
-cannot be a subtree of $\rightsub{T}$, proving that $T$ is not a
-proper subtree of itself.
+if it was, $L$ would be a proper subtree of a subtree of itself, and
+therefore $L$ would be a proper subtree of itself.  Likewise, $T$
+cannot be a subtree of $\rightsub{T}$.  Hence $T$ is not a proper
+subtree of itself.
 \end{proof}
 
+\iffalse
 \begin{lemma}\label{lem:finsubtrees}
 Every tree in \rectree\ has only a finite number of subtrees.
 \end{lemma}
@@ -246,20 +249,39 @@ subtree, namely, itself.
 then $\card{\subtrees{\leftsub{T}}}$ and $\card{\subtrees{\rightsub{T}}}$ are
 finite by induction hypothesis.  Therefore
 \[
-\card{\subtrees{T}} \leq 1 + \card{\subtrees{leftsub{T}}} +
-\card{\subtrees{leftsub{T}}}.
+\card{\subtrees{T}} \leq 1 + \card{\subtrees{\leftsub{T}}} +
+\card{\subtrees{\rightsub{T}}}.
 \]
 \end{proof}
+\fi
 
+\begin{definition}
+$\text{depth}(T)$ for $T \rectree$.
+\end{definition}
+
+\begin{lemma}\label{}
+\[
+\card{\subtrees{T}} \leq 2^{\text{depth}(T)}
+\]
+for all $T \in \rectree$
+\end{lemma}
+
+\iffalse
 How come we have ``$\leq$'' instead of ``$=$'' in the proof of
 Lemma~\ref{lem:finsubtrees}?  The answer is that the definition of
-\rectree\ allows lots of sharing of subtrees.  For example, it is
+\rectree\ allows lots of sharing of subtrees.
+\fi
+
+Though there is no infinite weirdness left in \rectree, there may be
+some unexpected \emph{sharing} of subtrees.  It is actually is
 possible to have a $\rectree$ with whose left and right subtrees are
-the same.  Sharing can be a very useful property when it comes to
-finding a compact representation of a tree, but it seriously
-complicates adding or removing values from search trees.  So we will
-finally restrict ourselves to the set \ubt\ of \term{unsharing}
-recursive binary trees with the following recursive definition.
+the same.  It is also possible for all the different top to bottom
+paths end at the \emph{same} leaf.
+
+Sharing of subtrees can be a very useful in getting a compact
+representation of a tree, but it seriously complicates adding or
+removing values from search trees.  So we will finally restrict
+ourselves to the set \ubt\ of \term{unsharing} recursive binary trees.
 
 \begin{definition}
 \ubt\ is a set of binary trees defined recursively as follows:
@@ -267,20 +289,22 @@ recursive binary trees with the following recursive definition.
 \inductioncase{Base case}:  Any leaf is in \ubt.
 
 \inductioncase{Constructor case}: If $T \in \ubt$ is not a leaf,
-$\leftsub{T}$ and $rightsub{T}$ are in \ubt, and $\leftsub{T}$ and
-$rightsub{T}$ have no element in common, that is
+$\leftsub{T}, \rightsub{T} \in \ubt$, and these two trees
+have no subtree in common, that is,
 \[
-\leftsub{T} \intersect rightsub{T} = \emptyset
+\leftsub{T} \intersect \rightsub{T} = \emptyset,
 \]
 then $T$ is in \ubt.
 \end{definition}
 
+\iffalse
 Now we can replace the `$\leq$'' in the proof of
 Lemma~\ref{lem:finsubtrees}, namely,
 \[
 \card{\subtrees{T}} = 1 + \card{\subtrees{leftsub{T}}} + \card{\subtrees{leftsub{T}}}.
 \]
 for all $T \in \ubt$.
+\fi
 
 \subsection{The Structure of Binary Trees}
 
@@ -293,7 +317,7 @@ The nonleaf subtrees are called ``internal.''  That is,
 \text{internal}(T) \eqdef \subtrees{T} - \text{leaves}(T).
 \]
 
-WHen there is no sharing, There is always one more leaf than there are
+When there is no sharing, there is always one more leaf than there are
 internal subtrees:
 
 \begin{lemma}\label{}
@@ -308,5 +332,42 @@ The proof is by structural induction on the definition of \ubt.
 \TBA{rest of proof}
 \end{proof} 
 
+Define \term{balanced tree} as length of any two paths differs by at
+most one.
 
-\endinput
+\begin{lemma}\label{}
+If $B$ balanced, then
+\[
+\card{\subtrees{B}} \geq 2^{\text{depth}(B)}
+\]
+\end{lemma}
+
+Define \term{AVL tree} depth of $\leftsub{T}$ and $\rightsub{T}$
+differ by at most one.
+
+\begin{lemma}\label{}
+If $A$ is AVL, then
+\[
+\card{\subtrees{A}} \geq 2^{\text{depth}(A)/3}???
+\]
+\end{lemma}
+
+\begin{definition}
+\term{Labelled tree} is \bintree\ with a total function
+\text{label}:\bintree \to \text{Labels}.
+
+The \term{search trees}, \Searcht, are the labelled trees $T$ such that
+\[
+\text{label}(\leftsub{S}) < \text{label}(S) < \text{label}(\rigthsub{S})
+\]
+for all $S \in \text{internal}{T}$.
+\end{definition}
+
+These also have recursive def where $S$ above is simply replaced by
+$T$.
+
+Define $\text{search}: \Searcht \to \set{L,R}^*$
+
+%% look up notation for star
+
+  \endinput
