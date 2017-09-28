@@ -58,10 +58,11 @@ at 3.7. So the search ends successfully.
 Organizing the data in this way means you can search for a value
 without having to scan through all the values in the data set.  In
 fact, if the all the top-to-bottom paths through the tree don't differ
-too much in length, then the path length will be \emph{exponentially}
-smaller than the total data set.  Since each search simply follows
-some path, this means that searching for a value will take
-exponentially less time than it would to search through all the data.
+too much in length, then with maximum path length $n$, the search tree
+will hold up to $2^n$ items.  Since each search simply follows some
+path, this means that searching for a value will take
+\emph{exponentially less time} than it would to search through all the
+data.  That's why search trees are a big win.
 
 \begin{figure}
 
@@ -83,21 +84,19 @@ exponentially less time than it would to search through all the data.
 
 \end{figure}
 
-
 Of course it is possible that the tree has paths that are not short.
 An extreme example is illustrated in Figure~\ref{unbalanced} where
 there is a path containing half the values.  For this tree, the
-average search for a value requires searching through half the length
-of the path, or about a quarter of all the values in the data set.  In
-this case, the exponential savings evaporates.
+average search for a value requires searching through half the values
+in the data set.  In this case, the exponential savings evaporates.
 
-The key problem we examine in this section is how to grow a search
-tree whose top-to-bottom paths are close to the same length, and how
-to maintain this property as the data evolves through adding and
-removing values.  By treating search trees as a recursive data type,
-we will be able to describe simple recursive procedures for tree
-management, and we also will have a powerful inductive proof method
-for proving properties of these trees and procedures.
+By treating search trees as a recursive data type, we will be able to
+describe simple recursive procedures for tree management, and we also
+will have a powerful inductive proof method for proving properties of
+these trees and procedures.  This will allow simple explanations of
+how to grow search trees whose top-to-bottom paths are close to the
+same length, and how to maintain this property as the data evolves
+through adding and removing values.
 
 \subsection{Abstract Binary Trees}
 
@@ -137,6 +136,12 @@ tree.  That is, we simply stipulate that there are total functions
 \rightsub{}: (\bintree - \leafset) \to \bintree.
 \]
 
+The \term{subtrees} of a binary tree are all the trees you can reach
+going down from the top.  Abstractly, something is a subtree of $T$ if
+it is the result of applying some finite sequence of zero or more
+selector functions to $T$.  It is a \term{proper subtree} if it is the
+result of applying at least one selector function.
+
 Now this abstract setup allows for some weird stuff like allowing
 trees to be infinite.  For example, suppose we use nonnegative
 integers to represent binary trees, and define 0 to be the only leaf.
@@ -165,17 +170,12 @@ that this infinite tree has no leaves.
 
 \end{figure}
 
-
-The \term{subtrees} of a binary tree are all the trees you can reach
-going down from the top.  Abstractly, something is a subtree of $T$ if
-it is the result of applying some finite sequence of zero or more
-selector functions to $T$.  It is a \term{proper subtree} if it is the
-result of applying at least one selector function.
-
+\iffalse
 This abstract setup also allows some weird ``circular'' trees which
 are proper subtrees of themselves.  Fortunately, all we need are the
 recursively defined binary trees \rectree\ where all this weirdness
 gets ruled out.
+\fi
 
 \begin{definition}
 \rectree is a set of binary trees defined recursively as follows:
@@ -270,7 +270,6 @@ for all $T \in \rectree$
 How come we have ``$\leq$'' instead of ``$=$'' in the proof of
 Lemma~\ref{lem:finsubtrees}?  The answer is that the definition of
 \rectree\ allows lots of sharing of subtrees.
-\fi
 
 Though there is no infinite weirdness left in \rectree, there may be
 some unexpected \emph{sharing} of subtrees.  It is actually is
@@ -281,7 +280,9 @@ paths end at the \emph{same} leaf.
 Sharing of subtrees can be a very useful in getting a compact
 representation of a tree, but it seriously complicates adding or
 removing values from search trees.  So we will finally restrict
-ourselves to the set \ubt\ of \term{unsharing} recursive binary trees.
+ourselves to the set \ubt\ of \term{unsharing} recursive binary trees
+\fi
+
 
 \begin{definition}
 \ubt\ is a set of binary trees defined recursively as follows:
@@ -354,11 +355,11 @@ If $A$ is AVL, then
 
 \begin{definition}
 \term{Labelled tree} is \bintree\ with a total function
-\text{label}:\bintree \to \text{Labels}.
+$\text{label}:\bintree \to \text{Labels}$.
 
 The \term{search trees}, \Searcht, are the labelled trees $T$ such that
 \[
-\text{label}(\leftsub{S}) < \text{label}(S) < \text{label}(\rigthsub{S})
+\text{label}(\leftsub{S}) < \text{label}(S) < \text{label}(\rightsub{S})
 \]
 for all $S \in \text{internal}{T}$.
 \end{definition}
