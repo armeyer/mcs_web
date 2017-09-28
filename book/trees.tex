@@ -1,4 +1,4 @@
-\newcommand{\bintree}{\text{BT}}
+\newcommand{\sharetree}{\text{ST}}
 \newcommand{\rectree}{\text{RT}}
 \newcommand{\ubt}{\text{UT}}
 \newcommand{\Searcht}{\text{ST}}
@@ -6,7 +6,10 @@
 \newcommand{\leafp}[1]{\text{leaf?}(#1)}
 \newcommand{\rightsub}[1]{\text{right}(#1)}
 \newcommand{\leftsub}[1]{\text{left}(#1)}
-\newcommand{\subtrees}[1]{\text{sbtrs}(#1)}
+\newcommand{\subtr}[1]{\text{sbtrs}(#1)}
+\newcommand{\psubtr}[1]{\text{propsbtrs}(#1)}
+%\newcommand{\vec}[1]{\vec{#1}}
+
 
 \section{Search Trees}
 
@@ -87,8 +90,8 @@ data.  That's why search trees are a big win.
 Of course it is possible that the tree has paths that are not short.
 An extreme example is illustrated in Figure~\ref{unbalanced} where
 there is a path containing half the values.  For this tree, the
-average search for a value requires searching through half the values
-in the data set.  In this case, the exponential savings evaporates.
+average search for a value requires searching halfway down the path,
+and the exponential savings evaporates.
 
 By treating search trees as a recursive data type, we will be able to
 describe simple recursive procedures for tree management, and we also
@@ -101,8 +104,7 @@ through adding and removing values.
 \subsection{Abstract Binary Trees}
 
 The data structure that underlies search trees are branching tree
-structures, where to begin with we don't worry about values appearing
-in the tree.  For simplicity, we'll stick to trees with exactly two
+structures.  For simplicity, we'll stick to trees with exactly two
 branches at each branchpoint, as in the examples above.  These are
 called \term{binary trees}.
 
@@ -113,15 +115,16 @@ structure or a mathematical set, but we will take an abstract approach
 that will enable us, largely, to understand trees without worrying
 about how they are represented.
 
-Let's begin by assuming we have some domain \bintree\ of things whose
-elements are called binary trees.  Now any representation of binary
-trees has to allow a way to determine if a given tree is a leaf or
-not.  We can abstract this property by assuming there is a ``leaf
-predicate'' $\leafp{}$ on \bintree\ that determines whether an element
-is a leaf.  We \emph{define} the leaves to be elements that this
-predicate picks out:
+Let's begin by assuming we have some domain \sharetree\ of things
+whose elements are called \emph{``shared'' binary trees}.  Don't worry
+about what's shared for now; we'll explain shortly.  Now any
+representation of binary trees has to allow a way to determine if a
+given tree is a leaf or not.  We can abstract this property by
+assuming there is a ``leaf predicate'' $\leafp{}$ on \sharetree\ that
+determines whether an element is a leaf.  We \emph{define} the leaves
+to be elements that this predicate picks out:
 \[
-\leafset \eqdef \set{T \in \bintree \suchthat \leafp{T}}.
+\leafset \eqdef \set{T \in \sharetree \suchthat \leafp{T}}.
 \]
 So the official definition of ``leaf'' is ``element of \leafset.''
 
@@ -132,18 +135,65 @@ right subtree.  We abstract this property by having \term{selector
   functions} that produce the left and right subtrees of a non-leaf
 tree.  That is, we simply stipulate that there are total functions
 \[
-\leftsub{}: (\bintree - \leafset) \to \bintree\quad \text{and} \quad
-\rightsub{}: (\bintree - \leafset) \to \bintree.
+\leftsub{}: (\sharetree - \leafset) \to \sharetree\quad \text{and} \quad
+\rightsub{}: (\sharetree - \leafset) \to \sharetree.
 \]
 
-The \term{subtrees} of a binary tree are all the trees you can reach
-going down from the top.  Abstractly, something is a subtree of $T$ if
-it is the result of applying some finite sequence of zero or more
-selector functions to $T$.  It is a \term{proper subtree} if it is the
-result of applying at least one selector function.
+The subtrees of a binary tree are all the trees you can reach by
+starting at the top and following some path down.  A path can be
+described by the sequence of left and right branches you select, like
+$(\leftsub{},\leftsub{},\rightsub{})$.  We can formalize this as
+follows:
+
+\begin{definition}
+If $T\in\sharetree$, a \term{selector path} $\vec{P}$ from $T$ is a
+finite sequence of selector functions defined recursively along with
+its \term{result}:
+
+\inductioncase{Base case}: \emptystring is selector path for $T$ and
+its result is $T$.
+
+\inductioncase{Constructor case}: If $\vec{P}$ is a selector path
+for $T$ with result $S \in \sharetree$ and $S$ is not a leaf, then
+\begin{itemize}
+\item $\leftsub{} \vec{P}$ is a selector path
+for $T$ with result $\leftsub{S}$.
+
+\item $\rightsub{} \vec{P}$ is a selector path
+for $T$ with result $\rightsub{S}$.
+\end{itemize}
+
+The \term{subtrees} $\subtr{T}$ of $T$ and \term{proper subtrees}
+$\psubtr{T}$ of $T$ are defined by:
+\begin{align*}
+\psubtr{T} & \eqdef \set{R \suchthat R\ \text{is the result of some
+    \textbf{positive length} selector path of}\ T},\\
+\subtr{T} & \eqdef \set{R \suchthat R\ \text{is the result of some possibly empty
+    selector path of}\ T}\\
+          & = \psubtr{T} \union \set{T}.
+\end{align*}
+\end{definition}
+
+Now if you go down from the top of $T$ to some subtree $S$, and then
+continue down from $S$ to some subtree $R$, then $R$ is a subtree of
+\emph{both} $T$ and $S$.  As an exercise in being completely formal,
+we state:
+
+\begin{lemma}\label{}
+If $\vec{P}$ is a selector path for $T$ with result $S$, and
+$\vec{Q}$ is a selector path for $S$ with result $R$, then
+$\vec{Q}\vec{P}$ is a selector path of $T$ with result $R$.
+
+Therefore, if $S$ is a subtree of $T$, and $R$ is a subtree of $S$,
+then $R$ is a subtree of $T$; if either $S$ is a proper subtree of
+$T$, or $R$ is a proper subtree of $S$, then $R$ is a proper subtree
+of $T$.
+\end{lemma}
 
 Now this abstract setup allows for some weird stuff like allowing
-trees to be infinite.  For example, suppose we use nonnegative
+trees to be infinite.
+
+  For example, suppose we use nonnegative
 integers to represent binary trees, and define 0 to be the only leaf.
 If we define $\leftsub{n} \eqdef 2n$ and $\rightsub{n} \eqdef 2n+1$ we
 get the infinite tree indicated in Figure~\ref{inftree123}.  Notice
@@ -182,7 +232,7 @@ gets ruled out.
 
 \inductioncase{Base case}:  Any leaf is in \rectree.
 
-\inductioncase{Constructor case}: If $T \in \bintree$ is not a leaf,
+\inductioncase{Constructor case}: If $T \in \sharetree$ is not a leaf,
 and $\leftsub{T}$ and $\rightsub{T}$ are in \rectree, then $T$ is in
 \rectree.
 \end{definition}
@@ -191,29 +241,23 @@ Now the subtrees function on \rectree\ has a simple recursive
 definition.
 
 \begin{definition}
-The function $\subtrees{}: \rectree \to \power(\rectree)$ is defined recursively as follows:
+The function $\subtr{}: \rectree \to \power(\rectree)$ is defined recursively as follows:
 
-\inductioncase{Base case}: If $T$ is a leaf, then $\subtrees{T} \eqdef
+\inductioncase{Base case}: If $T$ is a leaf, then $\subtr{T} \eqdef
 \set{T}$.
 
 \inductioncase{Constructor case}: If $T \in \rectree$ is not a leaf,
 then
 \[
-\subtrees{T} \eqdef \set{T} \union \subtrees{\leftsub{T}} \union
-\subtrees{\rightsub{T}}.
+\subtr{T} \eqdef \set{T} \union \subtr{\leftsub{T}} \union
+\subtr{\rightsub{T}}.
 \]
 
 The \term{proper subtrees} of $T$ are defined to be
 \[
-\subtrees{leftsub{T}} \union \subtrees{leftsub{T}}.
+\subtr{\leftsub{T}} \union \subtr{\leftsub{T}}.
 \]
 \end{definition}
-
-Notice that a subtree of a subtree of $T$ is also a subtree $T$.
-Likewise a proper subtree of a subtree of $T$ is a proper subtree of
-$T$.\footnote{We take these two facts about subtrees for granted.
-  They have simple proofs by structural induction on the definition of
-  subtree that are not worth writing out.}
 
 \begin{lemma}\label{}
 No tree in \rectree\ is a proper subtree of itself.
@@ -246,11 +290,11 @@ The proof is by structural induction on the definition of \rectree.
 subtree, namely, itself.
 
 \inductioncase{Constructor case}: If $T \in \rectree$ is not a leaf,
-then $\card{\subtrees{\leftsub{T}}}$ and $\card{\subtrees{\rightsub{T}}}$ are
+then $\card{\subtr{\leftsub{T}}}$ and $\card{\subtr{\rightsub{T}}}$ are
 finite by induction hypothesis.  Therefore
 \[
-\card{\subtrees{T}} \leq 1 + \card{\subtrees{\leftsub{T}}} +
-\card{\subtrees{\rightsub{T}}}.
+\card{\subtr{T}} \leq 1 + \card{\subtr{\leftsub{T}}} +
+\card{\subtr{\rightsub{T}}}.
 \]
 \end{proof}
 \fi
@@ -261,7 +305,7 @@ $\text{depth}(T)$ for $T \rectree$.
 
 \begin{lemma}\label{}
 \[
-\card{\subtrees{T}} \leq 2^{\text{depth}(T)}
+\card{\subtr{T}} \leq 2^{\text{depth}(T)}
 \]
 for all $T \in \rectree$
 \end{lemma}
@@ -302,7 +346,7 @@ then $T$ is in \ubt.
 Now we can replace the `$\leq$'' in the proof of
 Lemma~\ref{lem:finsubtrees}, namely,
 \[
-\card{\subtrees{T}} = 1 + \card{\subtrees{leftsub{T}}} + \card{\subtrees{leftsub{T}}}.
+\card{\subtr{T}} = 1 + \card{\subtr{leftsub{T}}} + \card{\subtr{leftsub{T}}}.
 \]
 for all $T \in \ubt$.
 \fi
@@ -311,15 +355,14 @@ for all $T \in \ubt$.
 
 The leaves of a \rectree\ are its subtrees that are leaves.  That is
 \[
-\text{leaves}(T) \eqdef \subtrees{T} \intersect \leafset.
+\text{leaves}(T) \eqdef \subtr{T} \intersect \leafset.
 \]
 The nonleaf subtrees are called ``internal.''  That is,
 \[
-\text{internal}(T) \eqdef \subtrees{T} - \text{leaves}(T).
+\text{internal}(T) \eqdef \subtr{T} - \text{leaves}(T).
 \]
 
-When there is no sharing, there is always one more leaf than there are
-internal subtrees:
+There is always one more leaf than there are internal subtrees:
 
 \begin{lemma}\label{}
 If $T \in \ubt$, then
@@ -339,7 +382,7 @@ most one.
 \begin{lemma}\label{}
 If $B$ balanced, then
 \[
-\card{\subtrees{B}} \geq 2^{\text{depth}(B)}
+\card{\subtr{B}} > 2^{\text{depth}(B)}.
 \]
 \end{lemma}
 
@@ -349,13 +392,13 @@ differ by at most one.
 \begin{lemma}\label{}
 If $A$ is AVL, then
 \[
-\card{\subtrees{A}} \geq 2^{\text{depth}(A)/3}???
+\card{\subtr{A}} \geq 2^{\text{depth}(A)/3}???
 \]
 \end{lemma}
 
 \begin{definition}
-\term{Labelled tree} is \bintree\ with a total function
-$\text{label}:\bintree \to \text{Labels}$.
+\term{Labelled tree} is \sharetree\ with a total function
+$\text{label}:\sharetree \to \text{Labels}$.
 
 The \term{search trees}, \Searcht, are the labelled trees $T$ such that
 \[
