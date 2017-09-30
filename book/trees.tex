@@ -1,10 +1,12 @@
-\newcommand{\brnch}{\text{Brnch}}
-\newcommand{\leafp}[1]{\text{leaf?}(#1)}
+\newcommand{\brnch}{\text{BBTr}}
+\newcommand{\leafp}[1]{\text{leaf?}#1}
+\newcommand{\brnchng}{\text{Branching}}
 \newcommand{\leafset}{\text{Leaves}}
-\newcommand{\rightsub}[1]{\text{right}(#1)}
-\newcommand{\leftsub}[1]{\text{left}(#1)}
-\newcommand{\subbrn}[1]{\text{brchs}(#1)}
-\newcommand{\propbrn}[1]{\text{prbrchs}(#1)}
+\newcommand{\rightsub}[1]{\text{right}#1}
+\newcommand{\leftsub}[1]{\text{left}#1}
+\newcommand{\rslt}[2]{\text{result}_{#1}#2}
+\newcommand{\subbrn}[1]{\text{Subtrs}(#1)}
+\newcommand{\propbrn}[1]{\text{PropSubtrs}(#1)}
 
 \newcommand{\fintr}{\text{FinTr}}
 
@@ -17,7 +19,7 @@
 
 %\newcommand{\subtr}[1]{\text{subtrs}(#1)}
 %\newcommand{\psubtr}[1]{\text{psubtrs}(#1)}
-\newcommand{\srchtr}{\text{Srch}}
+\newcommand{\srchtr}[1]{\text{srch}#1}
 
 %\newcommand{\selpath}[1]{\vec{#1}}
 
@@ -57,10 +59,10 @@ at 3.7. So the search ends successfully.
 \begin{center}
 \begin{verbatim}
                 6.8
-          pi            8  
-     3        4.9     7   9 
-   1  3.1   3.7  5
-          3.2  4 
+          pi             8  
+     3          4.9    7   9 
+  0.5  3.1    3.7  5
+.4  .6       3.2 4 
 \end{verbatim}
 \end{center}
 
@@ -78,7 +80,6 @@ will hold up to $2^n$ items.  Since each search simply follows some
 path, this means that searching for a value will take
 \emph{exponentially less time} than it would to search through all the
 data.  That's why search trees are a big win.
-
 
 Of course it is possible that the tree has paths that are not short.
 An extreme example is illustrated in Figure~\ref{unbalanced} where
@@ -115,81 +116,148 @@ how to grow search trees whose top-to-bottom paths are close to the
 same length, and how to maintain this property as the data evolves
 through adding and removing values.
 
-\subsection{Binary Branching Structures}
+\subsection{Binary Branching}
 
-The \emph{binary} branching structures \brnch\ illustrated in the
-examples above have either a single ``leaf'' with no branching, or a
-branching structure connected to a left branch and a right branch.
+The trees in the examples above have either a single ``leaf'' with no
+branching, or a binary (two-way) branch to the left and right.
 Allowing more than two branches is important in some applications, but
-two-way branching is most common and is enough to illustrate all the
+binary branching is most common and is enough to illustrate all the
 important ideas.
 
-There are lots of ways to represent \brnch\ as a computer data
+There are lots of ways to represent trees as a computer data
 structure---or a mathematical set---but we will take an abstract
-approach that will enable us, largely, to understand \brnch\ without
-worrying about how its elements are represented.
+approach that will enable us, largely, to understand binary trees
+without worrying about how they are represented.
 
-We can begin by assuming only that \brnch\ is some arbitrary domain
-whose elements are called a \term{binary branching structures}.  Since
-there must be a way to test whether or not an element is a leaf, we
-assume there is a \term{leaf predicate} $\leafp{}$ that does the job.
-We define the \term{leaves} to be elements that $\leafp{}$ picks out:
+We can begin by assuming only that we have some set \brnch\ of things
+that represent \emph{binary branching trees}.  A crucial property of a
+binary branching tree is whether or not it is a leaf.  In any
+representation, there has to be way to test this.  So there has to be
+a \term{leaf predicate} $\leafp{}$ that does the job.  That is, a
+binary branching tree $T \in \brnch$ is a leaf when $\leafp{T}$ is
+true.
+
+\iffalse
+ We define the
+\term{leaves} to be elements that $\leafp{}$ picks out:
 \[
-\leafset \eqdef \set{T \in \brnch \suchthat \leafp{T}}.
+\leafset \eqdef \set{T \in \brnch \suchthat \leafp{(T)}}.
 \]
+
 So the official definition of ``leaf'' is ``element of the set \leafset.''
+\fi
 
-The remaining things in \brnch\ are the structures that actually
-branch into left and right substructures.  Any representation of
-\brnch\ has to allow a way to select these branches, and we capture
-this abstractly by assuming there are \term{selector functions} that
-produce the left and right branches of non-leaf elements of \brnch.
-That is, we assume there are total functions
-\begin{align*}
-\leftsub{}: & (\brnch - \leafset) \to \brnch,\\
-\rightsub{}:& (\brnch - \leafset) \to \brnch.
-\end{align*}
-
-In the example search trees we started with, if you start at the top and
-follow some path down, you arrive at a subtree that is also a search
-tree.  Any such path can be described by the sequence of left and
-right branches you select, like
+Let \brnchng\ be the trees in \brnch\ that actually branch to the left
+and right.  In any representation there has to be a way to select
+these branches.  So there have to be \term{selector functions}
+$\leftsub{}$ and $\rightsub{}$ that produce the left and right
+branches of non-leaf elements of \brnch.  That is, let
 \[
-(\leftsub{},\leftsub{},\rightsub{}).
+\brnchng \eqdef \set{T in \brnch \suchthat \QNOT(leafp{T})}.
 \]
-We can formulate this abstractly as follows::
+Then there have to be total functions
+\begin{align*}
+\leftsub{}: & \brnchng \to \brnch,\\
+\rightsub{}:& \brnchng \to \brnch,
+\end{align*}
+where $\leftsub{(T)}$ is the tree on the left branch of $T$ and
+$\rightsub{(T)}$ is the one on the right.
+
+\subsubsection{Subtrees}
+
+In the example search trees we started with, if you start at the top
+and follow some path down, you arrive at a subtree that is also a
+search tree.  Any such path can be described by the sequence of left
+and right branches you select.  For example in the tree given in
+Figure~\ref{searchtree1}, the sequence
+\begin{equation}\label{lslsrs}
+(\leftsub{},\leftsub{},\rightsub{}).
+\end{equation}
+describes the path that starts at the top (6.8).  The selectors are
+applied in right-to-left order, so we first go to $\rightsub{(6.8)} =
+\pi$.  Then we take the left branch to \leftsub{(\pi)} = 3, and take a
+final left branch to end with the subtree $\leftsub{(3)} = 0.5$.  That
+is, the subtree at the end of the path given by the sequence~\eqref{lslsrs} is
+\[
+\leftsub{(\leftsub{(\rightsub{(6.8)})})} = 0.5.
+\]
+
+Let $\vec{P}$ be a finite sequence of selector functions.  For $T \in
+\brnch$, let $\rslt{T}{(\vec{P})}$ be the subtree at the end of the
+path described by $\vec{P}$.  Notice that if the path tries to
+continue past a leaf of $T$, there won't be any subtree at the end.
+That is, $\rslt{T}{(\vec{P})}$ may not exist.
+
+To formalize this idea of following a path $\vec{P}$ down a tree, we
+can give an inductive definition of $\rslt{T}{(\vec{P})}$.  To do
+this, we'll use the notation
+\[
+f \cdot \vec{P}
+\]
+for the sequence that starts with $f$ followed by the successive
+elements of $\vec{P}$.  For example, if $\vec{P}$ is the length three
+sequence in~\eqref{lslsrs}, then
+\[
+\rightsub{} \cdot \vec{P}
+\]
+is the length four sequence
+\[
+(\rightsub{}, \leftsub{},\leftsub{},\rightsub{}).
+\]
 
 \begin{definition}
-For $T \in \brnch$, a \term{selector path} $\vec{P}$ \emph{from $T$}
-and its \term{result} is defined recursively:
+Supppose $T \in \brnch$ and $\vec{P}$ is a finite sequence of selector
+functions.  The subtree $\rslt{T}{(\vec{P} )}$ of $T$ at the \term{end
+  of the path} given by $\vec{P}$ will be defined by induction on
+the length of the sequence as follows:
 
-\inductioncase{Base case}: The empty sequence\emptystring\ is a
-selector path for $T$, and its result is $T$.
+\inductioncase{Base case}: ($\vec{P} = \emptystring$).
+Then
+\[
+\rslt{(\vec{P})} \eqdef T.
+\]
 
-\inductioncase{Constructor case}: If $\vec{P}$ is a selector path
-for $T$ with result $S \in \brnch$, and $S$ is not a leaf, then
-\begin{itemize}
-\item $\leftsub{} \cdot \vec{P}$ is a selector path
-for $T$ with result $\leftsub{S}$.
-
-\item $\rightsub{} \cdot \vec{P}$ is a selector path
-for $T$ with result $\rightsub{S}$.
-\end{itemize}
-
-The \term{subbranches} $\subbrn{T}$ of $T$ and \term{proper subbranches}
-$\propbrn{T}$ of $T$ are defined by:
-\begin{align*}
-\propbrn{T} & \eqdef \set{R \suchthat R\ \text{is the result of some
-    \textbf{positive length} selector path of}\ T},\\
-\subbrn{T} & \eqdef \set{R \suchthat R\ \text{is the result of some possibly empty
-    selector path of}\ T}\\
-          & = \propbrn{T} \union \set{T}.
-\end{align*}
+\inductioncase{Constructor case}: ($\vec{P} = f \cdot \vec{Q}$).  If
+$\rslt{T}{(\vec{Q})}$ is defined and equals a tree in \brnchng, then
+\[
+\rslt{T}{(\vec{P})} \eqdef f(\rslt{T}{(\vec{Q})}).
+\]
+Otherwise $\rslt{T}{(\vec{P})}$ is undefined.
 \end{definition}
 
-Now if you go down from the top of $T$ to some subbranch $S$, and then
-continue down from $S$ to some subbranch $R$, then $R$ is a subbranch
-of \emph{both} $T$ and $S$.  This is illustrated in Figure~\ref{PQdown}.
+The \term{subtrees} $\subbrn{T}$ of $T$ are all the trees you can get
+to by following paths starting at $T$.  More precisely,
+\[
+\subbrn{T} \eqdef \set{S \in \brnch \suchthat S =
+  \rslt{T}{\vec{P}}\ \text{for some selector sequence}\ \vec{P}}.
+\]
+The \term{proper subtrees} $\propbrn{T}$ are the subtrees that you get
+to by a nonempty path, that is, the trees that are actually ``below''
+$T$.
+\[
+\propbrn{T} \eqdef \set{S \in \brnch \suchthat S =
+  \rslt{T}{\vec{P}}\ \text{for some \emph{nonempty} selector
+    sequence}\ \vec{P}}.
+\]
+By definition, we have
+\[
+\subbrn{T} = \propbrn{T} \union \set{T}.
+\]
+
+Notice that if $f \cdot \vec{Q}$ is a path that gets to a subtree of
+$T$, then $\vec{Q}$ is a path in $f(T)$ that gets to the same subtree.
+This implies the following:
+\begin{corollary}\label{unionLR}
+For $T \in \brnch$,
+\begin{align*}
+\propbrn{T} = \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}}.
+\end{align*}
+\end{corollary}
+
+Now suppose you follow a path $\vec{P}$ in $T$ to get to subtree $S$
+of $T$, and then follow a path $\vec{Q}$ in $S$ to get to the subtree
+$R$ of $S$, as in Figure~\ref{PQdown}.  Then $R$ is also a subtree of
+$T$ becuase the path $\vec{Q}\vec{P}$ in $T$ will get to $R$.
 
 \begin{figure}
 
@@ -215,53 +283,37 @@ of \emph{both} $T$ and $S$.  This is illustrated in Figure~\ref{PQdown}.
 
 \end{figure}
 
-
-We can rephrase this trivial observation formally as:
-\begin{lemma}\label{PSQRQPR}
-If $T \in \brnch$ and $\vec{P}$ is a selector path for $T$ with result
-$S$, and $\vec{Q}$ is a selector path for $S$ with result $R$, then
-$\vec{Q}\vec{P}$ is a selector path of $T$ with result $R$.
-\end{lemma}
-
-Lemma~\ref{PSQRQPR} has two easy but important corollaries:
+This observation implies:
 \begin{corollary}\label{propsubbranch}
-If $S$ is a subbranch of $T$, and $R$ is a subbranch of $S$, then $R$
-is a subbranch of $T$.  In addition, if $S$ is a proper subbranch of
-$T$, then $R$ is a proper subbranch of $T$.
-
-That is,
-\begin{align*}
- S \in \subbrn{T} & \QIMP\ \subbrn{S} \subseteq \subbrn{T}\\
- S \in \propbrn{T} & \QIMP\ \subbrn{S} \subseteq \propbrn{T}.
- \end{align*}
+\[
+ S \in \propbrn{T}\ \QIMP\ \subbrn{S} \subseteq \propbrn{T}.
+\]
 \end{corollary}
 
-\begin{corollary}\label{unionLR}
-For $T \in \brnch$,
-\begin{align*}
-\propbrn{T} = \subbrn{\leftsub{T}} \union \subbrn{\rightsub{T}}
-\end{align*}
-\end{corollary}
 
 \subsection{Binary Trees}
+Although we've called the elements of \brnch\ binary branching
+``trees,'' the abstract way we defined \brnch\ allows some weird stuff
+to happen.  One weirdness is that nothing forbids ``circular'' trees
+that are proper subtrees of themselves.
 
-So far we have resisted saying that things in \brnch\ are ``trees,''
-because the abstract setup we have allows some weird stuff to happen.
-One weirdness is that nothing forbids ``circular'' branching
-structures, that is, branching structures that are proper subbranches
-of themselves.  For example, it is entirely possible that there is a
-structure $T \in \brnch$ such that \textcolor{red}{
+\iffalse
+For example, it is entirely
+possible that there is a structure $T \in \brnch$ such that
+\textcolor{red}{
 \[
-\leftsub{T} = T = \rightsub{T}.
+\leftsub{(T)} = T = \rightsub{(T)}.
 \]}
-This weird binary branching structure doesn't even have any leaves.
 
-Even if we forbid structures that are proper subbranches of
-themselves, it is still possible to have infinite structures.  For
+This weird binary branching structure doesn't even have any leaves.
+\fi
+
+Even if we forbid circular trees, there are still infinite trees.  For
 example, suppose we choose \brnch\ to be the nonnegative integers and
-define $\leftsub{n} \eqdef 2n+1$ and $\rightsub{n} \eqdef 2n+2$.  Now we
-get the infinite binary branching structure indicated in
-Figure~\ref{inftree123}, which is another example with no leaves.
+define $\leftsub{n} \eqdef 2n+1$ and $\rightsub{n} \eqdef 2n+2$.  Now
+we get the infinite binary tree indicated in Figure~\ref{inftree123}.
+
+%, which is another example with no leaves.
 
 \begin{figure}
 
@@ -284,41 +336,74 @@ Figure~\ref{inftree123}, which is another example with no leaves.
 
 \end{figure}
 
-A structure with an infinite path won't be a good search tree because
-you might keep searching down the path forever.  We can stamp out all
-the weirdness by forbidding infinite paths.
+The problem with both circular structures and infinite ones is that
+they will have infinite paths that you might keep searching down
+without ever finishing.  By forbidding infinite paths we ensure that
+searches will end, and we also stop all the circular and infinite
+weirdness.
+
+Paths that result in subtrees are by definition finite, so we should
+be clear about the definition of an infinite path.
 
 \begin{definition}
-A infinite path in $T \in \brnch$ is infinite sequence
+A infinite path in $T \in \brnch$ is an infinite sequence
 \[
 \dots,f_n,\dots,f_1,f_0
 \]
-of selector functions such that every finite suffix
+of selector functions such that $\rslt{T}{(\vec{P})}$ is in $\brnchng$
+for every finite suffix
 \[
-\vec{P} = (f_n,\dots, f_1,f_0)
+\vec{P} = (f_n,\dots, f_1,f_0).
 \]
-is a selector path for $T$.
-
-The \term{finite path trees} \fintr\ are the $T \in \brnch$ that do
-not have an infinite path.
 \end{definition}
 
-It's useful, and very cool, to realize that the finite path trees have
-a simple recursive definition.
+But there's still a problem with binary branching trees even if they
+have no infinite paths, there still may be some unexpected
+\emph{sharing} of subtrees.  For example, it is is possible to have a
+tree in $\brnch$ whose left and right subtrees are the same, or
+another whose top to bottom paths all end at the \emph{same} leaf.
+Sharing of subtrees can be very useful in getting a compact
+representation of a tree, but it seriously complicates adding or
+removing values from search trees, so we will forbid sharing as well.
+To be precise
+\begin{definition}
+A tree $T \in brnch$ \emph{shares subtrees} if there are two different
+finite sequences $\vec{P} \neq \vec{Q}$ of selector functions such that
+$\rslt{T}{(\vec{P})}$ and $\rslt{T}{(\vec{Q})}$ are both defined, and
+\[
+\rslt{T}{(\vec{P})}=\rslt{T}{(\vec{Q})}.
+\]
+\end{definition}
+
+So we finall arrive at \fintr, the familiar trees that underlie search trees.
+\begin{definition}
+\[
+\fintr \eqdef T \in \brnch \suchthat T\ \text{has no infinite path and
+  does not share subtrees}.
+\]
+\end{definition}
+
+Now both very useful and very cool to realize that $\fintr$ has a
+simple recursive definition.
 
 \begin{definition}
 The set \rectr\ of \term{recursive trees} is defined recursively.  For $T \in brnch$,
 
 \inductioncase{Base case}: ($T$ is a leaf).  $T \in \rectr$.
 
-\inductioncase{Constructor case}: ($T$ is not a leaf).
+\inductioncase{Constructor case}: ($T \in \brnchng$).
+If $\leftsub{(T)}, \rightsub{(T)} \in \rectr$, and these two trees
+have no subtree in common, that is,
 \[
-\leftsub{T}, \rightsub{T} \in \rectr\ \QIMP T \in \rectr.
+\subbrn{\leftsub{(T)}} \intersect \subbrn{\rightsub{(T)}} = \emptyset,
 \]
+then $T$ is in \rectr.
 \end{definition}
 
-\begin{theorem}
-The finite path trees are the same as the recursive trees:
+We claim that the trees with no infinite paths and no shared subtrees
+are the same as the recursively defined trees.
+
+\begin{theorem}\label{fundthmrec}(Fundamental Theorem for Recursive Trees)
 \[
 \fintr = \rectr.
 \]
@@ -328,21 +413,22 @@ We first prove
 \begin{equation}\label{rectrsubfintr}
 \rectr \subseteq \fintr,
 \end{equation}
-that is, no recursive tree $T$ has an infinite path.
+that is, no recursive tree $T$ has an infinite path or a shared subtree.
 
 \begin{proof}
-The proof follows immediately by structural induction on the
+The proof follows by structural induction on the
 definition of \rectr:
 
 \inductioncase{Base case}: ($T$ is a leaf).  $T$ has no infinite path
-because it has no selector path of positive length at all.
+or shared subtree because it has no proper subtrees at all.
 
-\inductioncase{Constructor case}: ($T$ is not a leaf).  In this case,
-$\leftsub{T}$ and $\rightsub{T}$ are defined and in \rectr.  By
-induction hypothesis, neither $\leftsub{T}$ nor $\rightsub{T}$ has an
-infinite path.
+\inductioncase{Constructor case}: ($T \in \brnchng$).  In this case,
+$\leftsub{(T)}$ and $\rightsub{(T)}$ are defined and in \rectr.  By
+induction hypothesis, neither $\leftsub{(T)}$ nor $\rightsub{(T)}$ has an
+infinite path nor sharing of subtrees.
 
-Now suppose to the contrary that $T$ had an infinite path
+We first prove by contradiction that $T$ has no infinite path.
+Namely, suppose that $T$ had an infinite path
 \[
 \dots,f_n,\dots f_2,f_1,f_0.
 \]
@@ -350,10 +436,19 @@ Now if $f_0 = \leftsub$, then
 \begin{equation}\label{dfnf2f1}
 \dots,f_n,\dots,f_2,f_1
 \end{equation}
-would be an infinite path in $\leftsub{T}$, a contradiction.  Likewise
+would be an infinite path in $\leftsub{(T)}$, a contradiction.  Likewise
 if $f_0 = \rightsub$, then~\eqref{dfnf2f1} would be an infinite path
-in $\rightsub{T}$, a contradiction.  So we get a contradiction in any
+in $\rightsub{(T)}$, a contradiction.  So we get a contradiction in any
 case, which implies that $T$ cannot have an infinite path.
+
+Since $T$ has no infinite path, $T$ cannot be a subtree of
+$\leftsub{(T)}$ or $\rightsub{(T)}$, and so will not itself be a
+shared subtree.  Since there are no shared subtrees within
+$\leftsub{(T)}$ or $\rightsub{(T)}$, the only remaining possibility
+would be a subtree that was in $\leftsub{(T)}$ and $\rigtsub{(T)}$,
+which is not possible since $\subbrn{\leftsub{(T)}}$ and
+$\subbrn{\rigtsub{(T)}}$ have no tree in common by definition of
+\rectr.
 \end{proof}
 
 Second, we prove
@@ -361,16 +456,26 @@ Second, we prove
 \fintr \subseteq \rectr,
 \end{equation}
 that is, if $T \in \brnch$ is not a recursive tree, then it has an
-infinite path.
+infinite path or it has a shared subtree.
 
 \begin{proof}
-If $T \notin \rectr$, then $T$ cannot be a leaf, and $\leftsub{T}$ and
-$\rightsub{T}$ cannot both be in \rectr.  So let $f_0$ be a selector
-such that $f_0(T) \notin \rectr$.  By the same reasoning, 
-$\leftsub{f_0(T)}$ and $\rightsub{f_0(T)}$ cannot both be in
-\rectr.  So let $f_1$ be a selector such that $f_1(f_0(T)) \notin
-\rectr$.  Similarly, let $f_2$ be a selector such that $f_2(f_1(f_0(T))) \notin
-\rectr$.  Continuing in this way, we get an infinite path
+If $T \notin \rectr$, then $T$ cannot be a leaf.  If $\leftsub{(T)}$
+and $\rightsub{(T)}$ have a subtree in common, then this subtree is
+shared in $T$, proving the claim.  So we may assume that
+$\leftsub{(T)}$ and $\rightsub{(T)}$ have no subtree in common.  Now
+if both $\leftsub{(T)}$ and $\rightsub{(T)}$ were in \rectr, then $T$
+would by definition be in \rectr.  Therefore $\leftsub{(T)}$ and $\rightsub{(T)}$
+cannot both be in \rectr.
+
+Let $f_0$ be a selector such that $f_0(T) \notin \rectr$.  Now if
+$\leftsub{f_0(T)}$ and $\rightsub{f_0(T)}$ have a shared subtree, this
+will also be a shared subtree of $T$, proving the claim.  So by the
+same reasoning as for $T$, $\leftsub{f_0(T)}$ and $\rightsub{f_0(T)}$
+cannot both be in \rectr.  So let $f_1$ be a selector such that
+$f_1(f_0(T)) \notin \rectr$.  Similarly, if there is no sharing in
+$f_1(f_0(T))$, there is a selector $f_2$ such that $f_2(f_1(f_0(T)))
+\notin \rectr$.  Continuing in this way, we either find a shared subtree of $T$ of we
+find an infinite path
 \[
 \dots,f_n,\dots f_2,f_1,f_0
 \]
@@ -390,7 +495,7 @@ The \term{depth} of $T \in \rectr$ is defined by:
 
 \inductioncase{Constructor case}: ($T$ is not a leaf).
 \[
-\trdpth{T} \eqdef \max\set{\trdpth{\leftsub{T}}, \trdpth{\rightsub{T}}} + 1.
+\trdpth{T} \eqdef \max\set{\trdpth{\leftsub{(T)}}, \trdpth{\rightsub{(T)}}} + 1.
 \]
 \end{definition}
 
@@ -412,20 +517,56 @@ The \emph{size} of $T \in \rectr$ is defined by:
 
 \inductioncase{Constructor case}: ($T$ is not a leaf).
 \[
-\sizetr{T} \eqdef 1 + \sizetr{\leftsub{T}} + \sizetr{\rightsub{T}}.
+\sizetr{T} \eqdef 1 + \sizetr{\leftsub{(T)}} + \sizetr{\rightsub{(T)}}.
 \]
 \end{definition}
 
+\begin{problem} Prove that for $T \in \rectr$, 
+\begin{equation}\label{size=subbr}
+\sizetr{T} = \card{\subbrn{T}}.
+\end{equation}
+
+%TP finger exercise
+
+\begin{solution}
+By Corollary~\ref{unionLR},
+\[
+\subbrn{T} = \set{T} \union \subbrn{leftsub{(T)}} \union \subbrn{rightsub{(T)}}.
+\]
+for $T \in \brnch$.  Now if $T \in \fintr$, these three sets are disjoint, so
+\[
+\card{\subbrn{T}} = 1 + \card{\subbrn{leftsub{(T)}}} + \card{\subbrn{rightsub{(T)}}}.
+\]
+Now~\eqref{size=subbr} follows immediately from the definition of $\sizetr$.
+\end{solution}
+\end{problem}
+
+
 We can now prove a basic relation between size and depth of recursive
 trees:
-\begin{theorem}
+                    \begin{theorem}\label{szT2d1}
 For all $T \in \rectr$,
 \[
 \sizetr{T} \leq 2^{\trdpth{T}+1} - 1.
 \]
 \end{theorem}
 
-\begin{proof}
+There is an easy way to understand this inequality: if there were
+paths of different lengths starting with the tree and ending at
+leaves, then there is a bigger tree with the same depth---just attach
+two new leaves to the shorter path.  So the biggest tree with depth
+$d$ will be the \term{complete tree} $T$ in which all paths have depth
+$d$.  So there must be two paths of length one in $T$ that branch into
+four paths of length two, continuing into $2^d$ paths of length $d$.
+So
+\[
+\sizetr{T} = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
+\]
+
+On the other hand, there is a less ingenious but routine proof by
+structural induction:
+\begin{proof} (of Theorem~\ref{szT2d1})
+
 The proof is by structural induction on the definition of \rectr:
 
 \inductioncase{Base case}: ($T$ is a leaf).
@@ -436,108 +577,36 @@ The proof is by structural induction on the definition of \rectr:
 \inductioncase{Constructor case}: ($T$ is not a leaf).
 \begin{align*}
 \sizetr{T}
-& = 1 + \sizetr{\leftsub{T}} + \sizetr{\rightsub{T}}
+& = 1 + \sizetr{\leftsub{(T)}} + \sizetr{\rightsub{(T)}}
               & \text{(def. $\sizetr{T}$)}\\
-& \leq 1 + (2^{\trdpth{\leftsub{T}}+1} -1)  + (2^{\trdpth{\rightsub{T}}+1} -1)
+& \leq 1 + (2^{\trdpth{\leftsub{(T)}}+1} -1)  + (2^{\trdpth{\rightsub{(T)}}+1} -1)
               & \text{(ind. hypothesis)}\\
-& \leq  2\cdot 2^{\max\set{\trdpth{\leftsub{T}}+1,\trdpth{\rightsub{T}}}+1} - 1\\
-& = 2\cdot 2^{1+\max\set{\trdpth{\leftsub{T}},\trdpth{\rightsub{T}}}} - 1\\
+& \leq  2\cdot 2^{\max\set{\trdpth{\leftsub{(T)}}+1,\trdpth{\rightsub{(T)}}}+1} - 1\\
+& = 2\cdot 2^{1+\max\set{\trdpth{\leftsub{(T)}},\trdpth{\rightsub{(T)}}}} - 1\\
 & = 2\cdot 2^{\trdpth{T}} - 1
               & \text{(def of $\trdpth{T}$)}\\
 & =  2^{\trdpth{T}+1} - 1.
 \end{align*}
 \end{proof}
 
-The number of subtrees of a recursive tree is bounded by the size of the
-tree.  That is, for $T \in \rectr$, 
-\[
-\card{\subbrn{T}} \leq \sizetr{T}.
-\]
-You might expect that equality should hold, but it may not.  We kept
-the circular and infinite weirdness out of \rectr, but there still may
-be some unexpected \emph{sharing} of subtrees.  For example, it is is
-possible to have a \rectr\ whose left and right subtrees are the same,
-or one whose top to bottom paths all end at the \emph{same} leaf.
+Let
+\begin{align*}
+\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat \leafp{S}}\\
+\text{internal}(T) & \eqdef \subbrn{T} \intersect \brnchng.
+\end{align*}
 
-Sharing of subtrees can be very useful in getting a compact
-representation of a tree, but it seriously complicates adding or
-removing values from search trees.  So we will finally restrict
-ourselves to the free binary trees \freetr, in which sharing is
-forbidden.
-
-\begin{definition}
-\freetr\ is the set of binary branching structures defined recursively
-as follows:
-
-\inductioncase{Base case}:  Any leaf is in \freetr.
-
-\inductioncase{Constructor case}: If $T \in \brnch$ is not a leaf,
-$\leftsub{T}, \rightsub{T} \in \freetr$, and these two free trees
-have no subtree in common, that is,
-\[
-\leftsub{T} \intersect \rightsub{T} = \emptyset,
-\]
-then $T$ is in \freetr.
-\end{definition}
-
-Now it is easy to prove that in a free tree, the number of subtrees 
-will be equal to the size of the tree.  That is, for $T \in \freetr$,
-\begin{equation}\label{subbr=size}
-\card{\subbrn{T}} = \sizetr{T}.
-\end{equation}
-
-\begin{problem}
-%TP finger exercise
-
-Prove~\eqref{subbr=size}
-\begin{solution}
-By Corollary~\ref{unionLR},
-\[
-\subbrn{T} = \set{T} \union \subbrn{leftsub{T}} \union \subbrn{rightsub{T}}.
-\]
-for $T \in \brnch$.  Now if $T \in \freetr$, these three sets are disjoint, so
-\[
-\card{\subbrn{T}} = 1 + \card{\subbrn{leftsub{T}}} + \card{\subbrn{rightsub{T}}}.
-\]
-Now~\eqref{subbr=size} follows immediately from the definition of $\sizetr$.
-\end{solution}
-\end{problem}
-
-\begin{problem}
-Prove that \freetr\ is the set of $T \in \brnch$ such that any two
-different selector sequences for $T$ have different results.
-
-\begin{solution}
-\begin{proof}
-\TBA{TBA}
-
-\end{proof}
-\end{solution}
-\end{problem}
-
-\subsection{The Structure of Binary Trees}
-
-The leaves of a \brnch\ are its subbranches that are leaves.  That is
-\[
-\text{leaves}(T) \eqdef \subbrn{T} \intersect \leafset.
-\]
-The nonleaf subtrees are called ``internal.''  That is,
-\[
-\text{internal}(T) \eqdef \subbrn{T} - \text{leaves}(T).
-\]
-
-In free trees, there is always one more leaf than there are internal
-subtrees:
+In recursive tree there is always one more leaf than there are
+internal subtrees:
 
 \begin{lemma}\label{}
-If $T \in \freetr$, then
+If $T \in \rectr$, then
 \[
 \card{\text{leaves}(T)} = 1 + \card{\text{internal}(T)}.
 \]
 \end{lemma}
 
 \begin{proof}
-The proof is by structural induction on the definition of \freetr.
+The proof is by structural induction on the definition of \rectr.
 
 \TBA{rest of proof}
 \end{proof} 
@@ -545,14 +614,31 @@ The proof is by structural induction on the definition of \freetr.
 A $T \in \rectr$ is \term{balanced} when all selector paths whose
 results are leaves have length at least $\trdpth{T} -1$.
 
-\begin{lemma}\label{}
-If $B \in \freetr$ is balanced, then
+\begin{lemma}\label{b>2d}
+If $B \in \rectr$ is balanced, then
 \[
 \card{\subbrn{B}} > 2^{\text{depth}(B)}.
 \]
 \end{lemma}
 
-A free tree $T$ is an \term{AVL tree} when
+\begin{problem}
+Prove Lemma~\ref{b>2d} by structural induction on the definition of \rectr.
+
+\begin{solution}
+\TBA{TBA}
+\end{solution}
+\end{problem}
+
+\begin{problem}
+Prove Lemma~\ref{b>2d} by reasoning about the complete tree as in the
+argument following Theorem~\ref\label{szT2d1}.
+
+\begin{solution}
+\TBA{TBA}
+\end{solution}
+\end{problem}
+
+An \term{AVL tree} is a tree $T\in \rectr$ such that
 \[
 \abs{\trdpth{\leftsub{S}} - \trdpth{\rightsub{S}}} \leq 1
 \]
@@ -566,24 +652,30 @@ If $T$ is AVL, then
 \end{lemma}
 
 The search tree examples above have a label on each subbranch.
-Abstractly, we model structures with labels by assuming there is a
-total function
+Abstractly, we model binary branching trees with labels by assuming
+there is a total function
 \[
 \text{label}:\brnch \to \text{Labels}.
 \]
 
 \begin{definition}
-The \term{search trees}, \srchtr, are the labelled trees $S$ with real
-number as labels such that
+The \term{Search trees} are the labelled trees $T$ with no infinite
+paths and with real number labels such that
 \[
 \text{label}(\leftsub{S}) < \text{label}(S) < \text{label}(\rightsub{S})
 \]
 for all $S \in \text{internal}{T}$.
 \end{definition}
 
-\begin{lemma}\label{}
-Every \srchtr\ is a labelled \freetr.
-\end{lemma}
+\begin{problem}
+Prove that every Search tree is a labelled recursive tree.
+
+\begin{solution}
+By Theorem~\ref{fundthmrec}, it is enough to prove that Search trees
+have no shared subtrees.  This follows immediately from the way Search
+trees are labelled.
+\end{solution}
+\end{problem}
 
 Now we can define a recursive procedure that searches for a label that
 matches any given number.  If it finds the number, it returns the
@@ -591,49 +683,56 @@ selector sequence that leads to it.
 \begin{definition}
 The function
 \[
-\text{search}: \srchtr \times \reals \to \set{\leftsub{},\rightsub{}}^* \union \set{\textbf{fail}}
+\srchtr{}: \text{(Search trees)} \times \reals \to \set{\leftsub{},\rightsub{}}^* \union \set{\textbf{fail}}
 \]
-is defined recursively on the definition of \freetr.
+is defined as follows:
 
-%% look up notation for star
+If $r = \text{label}(T)$}, then
+\[
+\srchtr{(T,r)} \eqdef \emptystring.
+\]
+
+If $r \neq \text{label}(T)$}, then $\srchtr{(T,r)}$ is defined recursively
 
 \inductioncase{Base case}: ($T$ is a leaf).
 \[
-\srchtr(T,r) = \begin{cases} 
-\emptystring & \text{if}\ r = \text{label}(T),\\
-\textbf{fail} & \text{otherwise}.
+\srchtr{(T,r)} = \textbf{fail}.
 \end{cases}
 \]
 
 \inductioncase{Constructor case}:
 \[
-\srchtr(T,r) = \begin{cases} 
-\emptystring & \text{if $r = \text{label}(T)$},\\
-\textbf{fail} & \text{if $r \neq \text{label}(T)$ and $\leafp{T}$},\\
-\leftsub{}\cdot \srchtr(\leftsub{T},r) & \text{if $r < \text{label}(T)$},\\
-\rightsub{}\cdot \srchtr(\rightsub{T},r) & \text{if $r > \text{label}(T)$}.
+\srchtr{(T,r)} = \begin{cases} 
+\leftsub{}\cdot \srchtr{(\leftsub{(T)},r)} & \text{if $r < \text{label}(T)$},\\
+\rightsub{}\cdot \srchtr{(\rightsub{(T)},r)} & \text{if $r > \text{label}(T)$}.
 \end{cases}
 \]
 \end{definition}
 
 \begin{theorem}
-If $r \notin \set{\text{label}(S) \suchthat S \in \subbrn{T}}$, then
-$\srchtr(T,r) = \textbf{fail}$.  
-
-If $r \in \set{\text{label}(S) \suchthat S \in \subbrn{T}}$, then
-$\srchtr(T,r)$ is a selector sequence for $T$ and
+Let
 \[
-\text{label}(\text{result}(\srchtr(T,r)) = r.
+\text{labels}(T) \eqdef \set{\text{label}(S) \suchthat S \in \subbrn{T}}.
+\]
+
+If $r \notin \text{labels}(T)$, then $\srchtr{(T,r)} = \textbf{fail}$.  
+
+If $r \in \text{labels}(T)$, then $\srchtr{(T,r)}$ is a sequence of
+selectors and
+\[
+\text{label}(\rslt{T}{(\srchtr{(T,r)})}) = r.
 \]
 \end{theorem}
 
 \begin{proof}
 
-\TBA{By induction on the definition of \srchtr.}
+\TBA{By induction on the definition of \srchtr{}.}
 
 \end{proof}
 
 \subsection{Insertions \& Deletions}
+
+Rotations of AVL trees.
 
 
   \endinput
