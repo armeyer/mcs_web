@@ -1331,7 +1331,7 @@
 \newcommand{\Card}[1]{\left| #1 \right|}
 
 \newcommand{\lnth}[1]{|#1|}
-\newcommand{\Lnth}[1]{right| #1 \right|}
+\newcommand{\Lnth}[1]{\left| #1 \right|}
 \newcommand{\ident}[1]{\text{Id}_{#1}}
 
 \newcommand{\union}{\cup}
