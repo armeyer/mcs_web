@@ -25,7 +25,6 @@
 
 %\newcommand{\selpath}[1]{\vec{#1}}
 
-
 \section{Search Trees}
 
 Searching through data may be the most common of all computations, and
@@ -207,11 +206,28 @@ is the length four sequence
 (\rightsub{}, \leftsub{},\leftsub{},\rightsub{}).
 \]
 
-\begin{definition}
+Likewise for $\vec{P} \cdot f$, so for example
+\[
+ \vec{P} \cdot \rightsub{}
+\]
+would be the length four sequence
+\[
+(\leftsub{},\leftsub{},\rightsub{},\rightsub{}).
+\]
+
 Supppose $T \in \brnch$ and $\vec{P}$ is a finite sequence of selector
-functions.  The subtree $\rslt{T}{(\vec{P} )}$ of $T$ at the \term{end
-  of the path} given by $\vec{P}$ will be defined by induction on
-the length of the sequence as follows:
+functions.  Let $\rslt{T}{(\vec{P})}$ be the subtree of $T$ at the end
+of the path given by $\vec{P}$.  So in the example in Figure~\ref{searchtree1},
+\[
+\rslt{(6.8)}{((\leftsub{},\leftsub{},\rightsub{}))} = 0.5.
+\]
+
+The formal definition of the subtree at the end of the path is by
+induction on path length:
+
+\begin{definition}
+The tree $\rslt{T}{(\vec{P})} \in \brnch$ will be defined by induction
+on the length of the sequence~$\vec{P}$:
 
 \inductioncase{Base case}: ($\vec{P} = \emptystring$).
 Then
@@ -224,32 +240,44 @@ $\rslt{T}{(\vec{Q})}$ is defined and equals a tree in \brnchng, then
 \[
 \rslt{T}{(\vec{P})} \eqdef f(\rslt{T}{(\vec{Q})}).
 \]
-Otherwise $\rslt{T}{(\vec{P})}$ is undefined.
-\end{definition}
+Otherwise $\rslt{T}{(\vec{P})}$ is undefined.\footnote{An alternative
+  Constructor case could have been
 
+\inductioncase{Constructor case}: ($\vec{P} = \vec{Q} \cdot f$).  If
+$T \in \brnchng$, then
+\[
+\rslt{T}{(\vec{P})} \eqdef \rslt{f(T)}{(\vec{Q})}.
+\]}
+
+\end{definition}
 \medskip
-The \term{subtrees} $\subbrn{T}$ of $T$ are all the trees you can get
-to by following paths starting at $T$.  More precisely,
+
+Let $\subbrn{T}$ be all the trees you can get to by following paths
+starting at $T$.  More precisely,
+\begin{definition}\label{def:subtree}
 \[
 \subbrn{T} \eqdef \set{S \in \brnch \suchthat S =
   \rslt{T}{(\vec{P})}\ \text{for some selector sequence}\ \vec{P}}.
 \]
-The \term{proper subtrees} $\propbrn{T}$ are the subtrees that you get
-to by a nonempty path, that is, the trees that are actually ``below''
-$T$.
+\end{definition}
+
+The \term{proper subtrees} $\propbrn{T}$ are the subtrees that are
+actually ``below'' $T$.
 \[
 \propbrn{T} \eqdef \set{S \in \brnch \suchthat S =
   \rslt{T}{(\vec{P})}\ \text{for some \emph{nonempty} selector
     sequence}\ \vec{P}}.
 \]
-By definition, we have
-\[
+So we have by definition that
+\begin{equation}\label{subtree-proptree}
 \subbrn{T} = \propbrn{T} \union \set{T}.
-\]
+\end{equation}
 
-Notice that if $f \cdot \vec{Q}$ is a path that gets to a subtree of
-$T$, then $\vec{Q}$ is a path in $f(T)$ that gets to the same subtree.
-This implies the following:
+There are a couple of obvious facts about paths and subtrees that we
+might have just taken for granted but are worth saying explicitly.
+The first is that a proper subtree of $T$ must be a subtree of its
+left subtree or its right subtree:
+
 \begin{corollary}\label{unionLR}
 For $T \in \brnch$,
 \[
@@ -262,10 +290,24 @@ For $T \in \brnch$,
 \]
 \end{corollary}
 
-Now suppose you follow a path $\vec{P}$ in $T$ to get to subtree $S$
-of $T$, and then follow a path $\vec{Q}$ in $S$ to get to the subtree
-$R$ of $S$, as in Figure~\ref{PQdown}.  Then $R$ is also a subtree of
-$T$ because the path $\vec{Q}\vec{P}$ in $T$ will get to $R$.
+Corollary~\ref{unionLR} follows from the fact when the first step in a
+path goes to a subtree, the rest of the path is in that subtree.
+
+The second obvious fact is that a subtree of a subtree is a subtree:
+
+\begin{corollary}\label{propsubbranch}
+If  $S \in \propbrn{T}$ and $R \in \subbrn{S}$, then $R \in \propbrn{T}$.
+\end{corollary}
+
+Corollary~\ref{propsubbranch} follows from the fact that if $\vec{P}$
+is a path in $T$ to a subtree $S$ of $T$, and $\vec{Q}$ is a path in
+$S$ to a subtree $R$ of $S$, as in Figure~\ref{PQdown}, then the
+\idx{concatenation} $\vec{Q} \cdot \vec{P}$ is a path from $T$ to
+$R$.\footnote{Path sequences are applied right-to-left, so $\vec{Q}
+  \cdot \vec{P}$ is the path that starts with~$\vec{P}$ and then
+  follows~$\vec{Q}$.}
+
+%\footnote{(Definition~\ref{concat_def}).}
 
 \begin{figure}
 
@@ -290,14 +332,6 @@ $T$ because the path $\vec{Q}\vec{P}$ in $T$ will get to $R$.
 \label{PQdown}
 
 \end{figure}
-
-This observation implies:
-\begin{corollary}\label{propsubbranch}
-\[
- S \in \propbrn{T}\ \QIMP\ \subbrn{S} \subseteq \propbrn{T}.
-\]
-\end{corollary}
-
 
 \subsection{Binary Trees}
 Although we've called the elements of \brnch\ binary branching
@@ -395,8 +429,8 @@ trees.
 \]
 \end{definition}
 
-Now it is both very useful, and very cool, to realize that $\fintr$
-has a simple recursive definition.
+Now it is both very useful, very cool, and initially surprising to
+realize that $\fintr$ has a simple recursive definition.
 
 \begin{definition}
 The set \rectr\ of \term{recursive trees} is defined recursively.  For
@@ -409,6 +443,10 @@ If $\leftsub{(T)}, \rightsub{(T)} \in \rectr$, and these two trees
 have no subtree in common, that is,
 \[
 \subbrn{\leftsub{(T)}} \intersect \subbrn{\rightsub{(T)}} = \emptyset,
+\]
+and $T$ is not a subtree of itself, that is,
+\[
+T \notin \subbrn{T},
 \]
 then $T$ is in \rectr.
 \end{definition}
@@ -443,7 +481,7 @@ infinite path nor sharing of subtrees.
 We begin with a proof by contradiction that $T$ has no infinite path.
 Namely, suppose that $T$ had an infinite path
 \[
-\dots,f_n,\dots f_2,f_1,f_0.
+\dots,f_n,\dots, f_2,f_1,f_0.
 \]
 Now if $f_0 = \leftsub$, then
 \begin{equation}\label{dfnf2f1}
@@ -495,16 +533,16 @@ a selector $f_2$ such that $f_2(f_1(f_0(T))) \notin \rectr$.
 Continuing in this way, we either find a shared subtree of $T$ or we
 find an infinite path
 \[
-\dots,f_n,\dots f_2,f_1,f_0
+\dots,f_n,\dots, f_2,f_1,f_0
 \]
 in $T$.
 \end{proof}
 
 \subsection{Properties of Recursive Trees}
 
-With the recursive definition of trees, we can define recursively
-some important, basic functions on trees.  For example, the
-\term{size} of a tree is the number of subtrees it has:
+With the recursive definition of trees, we can define some important,
+basic functions on trees recursively.  For example, the \term{size} of
+a tree is the number of subtrees it has:
 \begin{equation}\label{treesizedef}
 \text{size}(T) \eqdef \card{\subbrn{T}}.
 \end{equation}
@@ -538,16 +576,15 @@ The proof is by structural induction on the definition of \rectr.
 \inductioncase{Base case}: ($T$ is a leaf).
 By Corollary~\ref{unionLR}, $\propbrn{T} = \set{T}$, so
 \[
-\trsize{(T)} \eqdef 1 = \text{size}(\set{T}).
+\trsize{(T)} \eqdef 1 = \card{\set{T}}.
 \]
 
 \inductioncase{Constructor case}: ($T \in\brnchng$).
 
 We have by induction hypothesis that
 \begin{equation}\label{sizefsub}
-\text{size}(f(T)) = \trsize{(f(T))}, \qquad  \text{for}\ f \in \set{\leftsub{}, \rightsub{}},
+\text{size}(f(T)) = \trsize{(f(T))}, \qquad  \text{for}\ f \in \set{\leftsub{}, \rightsub{}}.
 \end{equation}
-
 By Corollary~\ref{unionLR},
 \[
 \subbrn{T} = \set{T} \union \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}},
@@ -558,7 +595,7 @@ for $T \in \brnch$.  Now if $T \in \rectr$, then these three sets are disjoint, 
 \end{equation}
 Now we have
 \begin{align*}
-\lefteqn{\text{size}(T)}\\
+\text{size}(T)
  & = 1 + \trsize{(\leftsub{(T)})} + \trsize{(\rightsub{(T)})}
    & \text{(by~\eqref{sizefsub} and~\eqref{sT1sl})}\\
  & = \trsize{(T)} 
@@ -578,14 +615,20 @@ Here is the recursive definition:
 \begin{definition}
 \inductioncase{Base case}: ($T$ is a leaf).
 \[
-\trdpth{T} \eqdef 0.
+\trdpth{(T)} \eqdef 0.
 \]
 
 \inductioncase{Constructor case}: ($T \in\brnchng$).
 \[
-\trdpth{T} \eqdef 1+\max\set{\trdpth{\leftsub{(T)}}, \trdpth{\rightsub{(T)}}}.
+\trdpth{(T)} \eqdef 1+\max\set{\trdpth{(\leftsub{(T)})}, \trdpth{(\rightsub{(T)})}}.
 \]
 \end{definition}
+
+It follows immediately by structural induction (Problem~\ref{TBA})
+that
+\begin{equation}\label{recdepth=depth}
+\trdpth{(T)} = \text{depth}(T).
+\end{equation}
 
 \begin{problem}
 Prove that
@@ -593,6 +636,7 @@ Prove that
 \trdpth{(T)} = \text{depth}(T)
 \]
 for all $T \in \rectr$.
+
 \begin{solution}
  \TBA{TBA}
 \end{solution}
@@ -611,47 +655,48 @@ There is an easy way to understand this inequality: if there were
 paths of different lengths that ended at leaves, then there would be a
 bigger tree with the same depth---just attach two new leaves to the
 shorter path.  So the biggest tree with depth $d$ will be the
-\term{complete tree} $T$ in which all paths have depth $d$.  So there
-must be two paths of length one in $T$ that branch into four paths of
-length two, continuing into $2^d$ paths of length $d$.  So
+\term{complete tree} $T$ in which all paths have depth $d$.  In this
+tree there are two paths of length one that branch into four
+paths of length two, continuing into $2^d$ paths of length $d$.  So
 \[
-\trsize{T} = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
+\text{size}(T) = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
 \]
 
-On the other hand, there is a less ingenious but routine proof by
-structural induction:
+On the other hand, there is a a cumbersome but routine proof by
+structural induction that requires no ingenuity:
+
 \begin{proof} 
-It is enough to prove Theorem~\ref{szT2d1} for \trsize\ and \trpdth.
+It is enough to prove Theorem~\ref{szT2d1} for \trsize\ and \trdpth.
 The proof is by structural induction on the definition of \rectr:
 
 \inductioncase{Base case}: ($T$ is a leaf).
 \[
-\trsize{T} \eqdef 1 = 2^1 - 1 = 2^{\trdpth{T}+1} - 1.
+\trsize{(T)} \eqdef 1 = 2^1 - 1 = 2^{\trdpth{(T)}+1} - 1.
 \]
 
-\inductioncase{Constructor case}: ($T$ is not a leaf).
+\inductioncase{Constructor case}: ($T \in \brnchng$).
 \begin{align*}
 \trsize{T}
-& = 1 + \trsize{\leftsub{(T)}} + \trsize{\rightsub{(T)}}
-              & \text{(def. $\trsize{T}$)}\\
-& \leq 1 + (2^{\trdpth{\leftsub{(T)}}+1} -1)  + (2^{\trdpth{\rightsub{(T)}}+1} -1)
+& = 1 + \trsize{(\leftsub{(T)})} + \trsize{(\rightsub{(T)})}
+              & \text{(def. \trsize{})}\\
+& \leq 1 + (2^{\trdpth{(\leftsub{(T)})}+1} -1)  + (2^{\trdpth{(\rightsub{(T)})}+1} -1)
               & \text{(ind. hypothesis)}\\
-& \leq  2\cdot 2^{\max\set{\trdpth{\leftsub{(T)}}+1,\trdpth{\rightsub{(T)}}+1}} - 1\\
-& = 2\cdot 2^{1+\max\set{\trdpth{\leftsub{(T)}},\trdpth{\rightsub{(T)}}}} - 1\\
-& = 2\cdot 2^{\trdpth{T}} - 1
-              & \text{(def of $\trdpth{T}$)}\\
-& =  2^{\trdpth{T}+1} - 1.
+& \leq  2\cdot 2^{\max\set{\trdpth{(\leftsub{(T)})}+1,\trdpth{(\rightsub{(T)})}+1}} - 1\\
+& = 2\cdot 2^{1+\max\set{\trdpth{(\leftsub{(T)})},\trdpth{(\rightsub{(T)})}}} - 1\\
+& = 2\cdot 2^{\trdpth{(T)}} - 1
+              & \text{(def of $\trdpth{(T)}$)}\\
+& =  2^{\trdpth{(T)}+1} - 1.
 \end{align*}
 \end{proof}
 
 \begin{problem}
-For $T \ib \brnch$, define
+For $T \in \brnch$, define
 \begin{align*}
-\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat \leafp{(S)}}\\
-\text{internal}(T) & \eqdef \set{S \in \subbrn{T} \suchthat \QNOT(\leafp{(S)})}\\
+\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat S\ \text{is a leaf}}\\
+\text{internal}(T) & \eqdef \set{S \in \subbrn{T} \suchthat S \in \brnchng}
 \end{align*}
 
-Prove that In a recursive tree, there is always one more leaf than
+Prove that in a recursive tree, there is always one more leaf than
 there are internal subtrees:
 
 \begin{lemma*}
@@ -670,8 +715,8 @@ The proof is by structural induction on the definition of \rectr.
 \end{solution}
 \end{problem}
 
-A $T \in \rectr$ is \term{balanced} when the paths that end at leaves
-have length at least $\text{depth}(T) - 1$.
+A $T \in \rectr$ is \term{balanced} when all the paths that end at
+leaves have length at least $\text{depth}(T) - 1$.
 
 \begin{lemma}\label{b>2d}
 If $B \in \rectr$ is balanced, then
@@ -708,7 +753,13 @@ If $T$ is AVL, then
 \[
 \text{size}(T) \geq 2^{\text{depth}(T/3)}???
 \]
+
+\begin{proof}
+\TBA{TBA}
+\end{proof}
 \end{lemma}
+
+\subsection{Search Trees}
 
 The search tree examples above have a numerical label on each subtree.
 Abstractly, this means there is a total function
@@ -716,20 +767,26 @@ Abstractly, this means there is a total function
 \nlbl{}:\brnch \to \reals.
 \]
 
+Let $\text{min}(T)$ be the minimum label in $T$ and likewise for
+$\text{max}(T)$.  More formally,
+\begin{definition}
+\begin{align}
+\text{nums}(T) & \eqdef \set{\nlbl{(S)} \suchthat S \in \subbrn{T}},\\
+\text{min}(T) &\eqdef \min \text{nums}(T), \label{defminT}\\
+\text{max}(T) &\eqdef \max \text{nums}(T).\label{defmaxT}
+\end{align}
+\end{definition}
+
+\begin{definition}\label{defsearchtree}
+A recursive tree $T \in \rectr$ is a \term{Search tree} when
+\begin{equation}\label{}
+\text{max}(\leftsub{(S)}) < \nlbl{(S)} < \text{min}(\rightsub{(S)}).
+\end{equation}
+for every nonleaf $S \in \subbrn{T}$.
+\end{definition}
 
 \begin{problem}
-Suppose we have numerical labels on trees.  That is, we have a total
-function
-\[
-\nlbl{}:\brnch \to \reals.
-\]
-For any tree $T$, let $\text{min}(T)$ be the minimum label in $T$.  More formally,
-
-\[
-\text{min}(T) \eqdef \min \set{\nlbl{S} \suchthat S \in \subbrn{(T)}}.
-\]
-
-The function
+Suppose every tree $T$ has a numerical label $\nlbl{(T)}$. The function
 \[
 \rmin{}: \rectr \to \reals
 \]
@@ -744,13 +801,12 @@ is recursively defined as follows:
 \[
 \rmin{(T)} \eqdef \min\set{\nlbl{(T)}, \rmin{(\leftsub{(T)})}, \rmin{(\rightsub{(T)})}}
 \]
-\end{definition}
 
 Prove that
 \[
 \rmin{(T)} = \text{min}(T)
 \]
-for all $T \in rectr$.
+for all $T \in \rectr$.
 \begin{solution}
 
 \begin{proof}
@@ -762,25 +818,36 @@ The proof is by structural induction on the definition of \rmin{}.
 
 \end{problem}
 
-
-\subsection{Search Trees}
-
-Suppose trees have numerical labels.  That is, there is a total function
-\[
-\nlbl{}:\brnch \to \reals.
-
+We can also give a simple recursive definition of Search tree:
 \begin{definition}
-The \term{Search trees} are the trees $T \in \rectr$ such that
+The Search trees $T \in \brnch$ are defined recursively as follows:
+
+\inductioncase{Base case}: ($T$ is a leaf).  $T$ is a Search tree.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).
+If $\leftsub{(T)}$ and $\rightsub{(T)}$ are both Search trees, and
 \[
-\nlbl{(\leftsub{S})} < \nlbl{(S)} < \nlbl{(\rightsub{S})}
+\text{max}(\leftsub{(T)}) < \nlbl{(T)} < \text{min}(\rightsub{(T)}),
 \]
-for all $S \in \text{internal}(T)$.
+then $T$ is a Search tree.
 \end{definition}
 
-There is a simple procedure to search a Search Tree for any given
-numerical value.  We will formalize this by defining a recursive
-function $\trsrch{(T,r)}$ that returns a path in $T$ leading to the
-subtree with label $r$, if any.
+\begin{problem}
+Verify that every Search tree is a recursive tree.
+
+\hint Show that Search trees can't have shared subtrees.
+
+\begin{solution}
+\TBA{}
+\end{solution}
+\end{problem}
+
+There is a simple procedure to search through a Search tree for any
+given number.  The procedure can be described by defining a function
+\trsrch{} recursively on the recursive definition of Search tree.  The
+value of $\trsrch{(T,r)}$ will be the path in a Search tree $T$ that
+leads to the number $r$, assuming $r$ appears in $T$.  Otherwise the
+value will be a path that ends in\textbf{fail}.
 
 \begin{definition}
 The function
@@ -790,39 +857,38 @@ The function
 \]
 is defined as follows:
 
-If $r = \text{label}(T)$, then
+If $r = \nlbl{(T)}$, then
 \[
 \trsrch{(T,r)} \eqdef \emptystring.
 \]
 
-If $r \neq \text{label}(T)$, then $\trsrch{(T,r)}$ is defined recursively
+If $r \neq \nlbl{(T)}$, then $\trsrch{(T,r)}$ is defined recursively
+on the definition~\ref{defsearchtree} of Search tree:
 
 \inductioncase{Base case}: ($T$ is a leaf).
 \[
 \trsrch{(T,r)} \eqdef \textbf{fail}.
 \]
 
-\inductioncase{Constructor case}: ($T \in \brnchng$)
+\inductioncase{Constructor case}: ($T \in \brnchng$).
 \[
-\trsrch{(T,r)} = \begin{cases} 
-\trsrch{(\leftsub{(T)},r)} \cdot \leftsub{} & \text{if $r < \text{label}(T)$},\\
-\trsrch{(\rightsub{(T)},r)}\cdot \rightsub{}& \text{if $r > \text{label}(T)$}.
+\trsrch{(T,r)} \eqdef
+ \begin{cases} 
+\trsrch{(\leftsub{(T)},r)} \cdot \leftsub{} & \text{if $r < \nlbl{(T)$}},\\
+\trsrch{(\rightsub{(T)},r)}\cdot \rightsub{}& \text{if $r > \nlbl{(T)}$}.
 \end{cases}
 \]
 \end{definition}
 
 \begin{theorem}
-Let
-\[
-\text{nums}(T) \eqdef \set{\nlbl{(S)} \suchthat S \in \subbrn{T}}.
-\]
-If $r \notin \text{labels}(T)$, then $\trsrch{(T,r)} = \textbf{fail}$.  
-
-If $r \in \text{labels}(T)$, then $\trsrch{(T,r)}$ is a sequence of
+If $r \in \text{nums}(T)$, then $\trsrch{(T,r)}$ is a sequence of
 selectors and
 \[
-\text{label}(\rslt{T}{(\trsrch{(T,r)})}) = r.
+\nlbl{(\rslt{T}{(\trsrch{(T,r)})})} = r.
 \]
+
+Otherwise, $\trsrch{(T,r)}$ will be a sequence of the form
+$\textbf{fail}\cdot \vec{P}$ for some sequence $\vec{P}$.
 \end{theorem}
 
 \begin{proof}
