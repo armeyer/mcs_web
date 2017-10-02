@@ -1381,6 +1381,7 @@
 %% Math -- Languages
 
 \newcommand{\emptystring}{\ensuremath{\lambda}}
+
 \newcommand{\bins}{\ensuremath{\strings{\mtt{0},\mtt{1}}}}
 
 %% Math -- Famous sets
