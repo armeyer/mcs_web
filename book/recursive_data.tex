@@ -1152,6 +1152,8 @@ structural induction.
 
 \end{problems}
 
+\newcommand{\nimg}[1]{\text{Nim}_{\ang{#1}}}
+
 \section{Games as a Recursive Data Type}\label{recursive_games}
 Chess, Checkers, Go, and Nim are examples of \emph{two-person games of
   perfect information}.  These are games where two players, Player-1
@@ -1184,31 +1186,65 @@ removes three stones from the other pile.  At this point, it's worth
 thinking for a moment about \textbf{why the mimicking strategy
   guarantees a win} for the second player.
 
-We can think of the first move in a Nim game as simply picking
-another Nim game with different piles of stone to play next.  For the
-Nim game $\text{Nim}_{\ang{3,4,5}}$ that starts with piles of 3, 4
-and 5 stones, the first player can remove between one and three stones
-from the first pile leading to three possible piles of stones
-\[
-\ang{2,4,5},\ang{1,4,5},\ang{4,5}.
-\]
-Similarly, the first player has five possible ways to remove stones
+A Nim game is defined by the sizes of the piles of stones at the
+start.  For example, let $\text{Nim}_{\ang{3,4,5}}$ be the game that
+starts with piles of 3, 4 and 5 stones.  The first in this game simply
+results in another Nim game.  Namely, the first player can remove
+from one and three stones from the first pile leading to three
+possible piles of stones
+\begin{equation}\label{nimplay3}
+\nimg{2,4,5},\ \nimg{1,4,5}\ \text{or}\ \nimg{4,5}.
+\end{equation}
+Alternatively, the first player can remove from one to four stones
+from the second pile, leading to four possible piles of stones
+\begin{equation}\label{nimplay4}
+\nimg{3,3,5},\nimg{3,2,5},\nimg{3,1,5},\nimg{3,5}.
+\end{equation}
+Finally, the first player  can remove from one to five stones
 from the last pile, leading to five possible piles of stones
+\begin{equation}\label{nimplay5}
+\nimg{3,4,4}, \nimg{3,4,3}, \nimg{3,4,2}, \nimg{3,4,1}, \nimg{3,4}.
+\end{equation}
+Let's call this set of twelve Nim games the set $O_{\ang{3,4,5}}$ of
+\emph{first move} Nim games.
+
+So the first move in $\nimg{3,4,5}$ amounts to picking one of the
+first move Nim games to play next, with \emph{the other playing moving
+  first}.  In fact, instead of representing $\nimg{3,4,5}$ with the
+list $\ang{3,4,5}$ of pile sizes, we could represent it just as
+accurately as the set $O_{\ang{3,4,5}}$ of twelve possible first move
+games.  But let's not stop there.  Suppose the first player picks
+$\nimg{3,4} \in O_{\ang{3,4,5}}$ as their first move.  Now the second
+player can remove from one to three stones from the first pile of the
+$\nimg{3,4}$ game, or one to four from the second pile, leaving one of
+  the seven \emph{second move} Nim games
 \[
-\ang{3,4,4}, \ang{3,4,3}, \ang{3,4,2}, \ang{3,4,1}, \ang{3,4}.
+O_{\ang{3,4}} \eqdef \set{\nimg{2,4}, \nimg{1,4}, \nimg{4}, \nimg{3,3},
+  \nimg{3,2}, \nimg{3,1}, \nimg{3}}.
 \]
-So all the properties of $\text{Nim}_{\ang{3,4,5}}$ are captured by the set
-\iffalse
-\begin{align*}
-&\text{Nim}_{\ang{2,4,5}}, \text{Nim}_{\ang{1,4,5}}, \text{Nim}_{\ang{4,5}},\\
-&\text{Nim}_{\ang{3,3,5}}, \text{Nim}_{\ang{3,2,5}}, \text{Nim}_{\ang{3,1,5}}, \text{Nim}_{\ang{3,5}},\\
-&\text{Nim}_{\ang{3,4,4}}, \text{Nim}_{\ang{3,4,3}}, \text{Nim}_{\ang{3,4,2}},
-       \text{Nim}_{\ang{3,4,1}}, \text{Nim}_{\ang{3,4}},
-\end{align*}
-\fi
-of $3 + 4 + 5 = 12$ Nim games that can result from the first move.
+To keep going, suppose the second player's move is to choose $\nimg{3}
+\in O_{\ang{3,4}}$.  Now the first player can choose one of the third move games
+\[
+O_{\ang{3}} \eqdef \set{\nimg{2}, \nimg{1}, \text{Nim}_{\emptystring}},
+\]
+in which the second player moves first.  Of course, the only sensible
+move at this point for the first player is to choose to remove all
+three stones.  In other words, the first
+player chooses $\nimg{\emptystring} \in O_{\ang{3}}$ leaving the
+second player to choose a Nim game in
+\[
+O_{\emptystring} \eqdef \emptyset.
+\]
+Since there is no Nim game in $O_{\emptystring}$, the second player
+loses.
+
+\begin{editingnotes}
+Include $\nimg{3,4,5}$ represented as pure set.  Mention connection to
+set theory.
+\end{editingnotes}
 
 With this idea in mind, we now give the formal definition.
+
 \begin{definition}
 The class \wnls\ of two-person win-lose games of perfect information
 is defined recursively as follows:
