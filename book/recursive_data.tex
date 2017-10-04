@@ -534,11 +534,12 @@ Define the set, $\AM \subseteq \brkts$ recursively as follows:
 \end{itemize}
 \end{definition}
 
-It's pretty easy to see that the definition of $\AM$ is just another way
-to define $\RM$, that is $\AM = \RM$ (see Problem~\ref{PS_RM_equal_AM}).
-The definition of $\AM$ is arguably easier to understand, but we didn't
-use it because it's ambiguous, while the trickier definition of $\RM$ is
-unambiguous.  Here's why this matters.  Let's define the number of
+It's pretty easy to see that the definition of $\AM$ is just another
+way to define $\RM$, that is $\AM = \RM$ (see
+Problem~\ref{PS_RM_equal_AM}).  The definition of $\AM$ is arguably
+easier to understand, but we didn't use it because it's ambiguous,
+while the trickier definition of $\RM$ is unambiguous.  Here's an
+example that illustrates why this matters.  Let's define the number of
 operations $f(s)$ to construct a matched string $s$ recursively on the
 definition of $s \in \AM$:
 \begin{align*}
@@ -1442,9 +1443,9 @@ Notice that although Theorem~\ref{fundgames} guarantees a winning
 strategy, its proof gives no clue which player has it.  For the Subset
 Takeaway Game of Problem~\ref{CP_subset_take_away} and most familiar
 $\tg$'s like Chess, Go, \dots, no one knows which player has a winning
-strategy.\footnote{Checkers used to be in this list, but there has
-  been a recent announcement that each player has a strategy that
-  forces a tie.  (reference TBA)}
+strategy.\footnote{Checkers used to be in this list, but it's now been
+  shown that each player has a strategy that forces a tie (reference
+  TBA).}
 
 %% Games as a Recursive Data Type Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
@@ -1470,6 +1471,8 @@ strategy.\footnote{Checkers used to be in this list, but there has
 
 \newcommand{\rectr}{\text{RecTr}}
 
+\newcommand{\shbrn}{\text{SharTr}}
+
 \newcommand{\trdpth}[1]{\text{recdepth}#1}
 \newcommand{\trsize}[1]{\text{recsize}#1}
 
@@ -1477,6 +1480,7 @@ strategy.\footnote{Checkers used to be in this list, but there has
 \newcommand{\rmin}[1]{\text{recmin}#1}
 
 \newcommand{\trsrch}[1]{\text{srch}#1}
+\newcommand{\avlnsrt}[1]{\text{insert}#1}
 
 \section{Search Trees}\label{search_tree}
 
@@ -1876,10 +1880,9 @@ trees.
 \]
 \end{definition}
 
-Now it is initially surprising, very useful and very cool that
-$\fintr$ has a simple recursive definition.
+There is also a simple way to define trees recursively.
 
-\begin{definition}
+\begin{definition}\label{def:rectree}
 The set \rectr\ of \term{recursive trees} is defined recursively.  For
 $T \in \brnch$,
 
@@ -1891,15 +1894,50 @@ have no subtree in common, that is,
 \[
 \subbrn{\leftsub{(T)}} \intersect \subbrn{\rightsub{(T)}} = \emptyset,
 \]
-and $T$ is not a proper subtree of itself, that is,
-\[
-T \notin \propbrn{T},
-\]
 then $T$ is in \rectr.
 \end{definition}
 
-The trees with no infinite paths and no shared subtrees are actually
-the same as the recursively defined trees.
+Let's verify first of all that recursive trees are finite.
+\begin{definition}
+The \term{size} \index{tree size} of a tree $T \in \brnch$ is the
+number of subtrees it has:
+\begin{equation}\label{treesizedef}
+\text{size}(T) \eqdef \card{\subbrn{T}}.
+\end{equation}
+\end{definition}
+
+\begin{corollary}\label{cor:finitetree}
+Every recursive tree has finite size.
+
+\begin{proof}
+The proof is by structural induction on the definition of $T \in
+\rectr$.
+
+\inductioncase{Base case}: ($T$ is a leaf).  The only subtree of $T$
+is itself, so
+\[
+\text{size}(T) = 1 < \infty.
+\]
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  In this case,
+$L \eqdef \leftsub{(T)}$ and $R \eqdef \rightsub{(T)}$ are defined.
+By Corollary~\ref{unionLR},
+\begin{equation}\label{unionTLR}
+\subbrn{T} = \set{T} \union \subbrn{L} \union \subbrn{R}.
+\end{equation}
+By induction hypothesis, we may assume that the sizes of $L$ and $R$
+are finite, so
+\[
+\text{size}(T) \leq 1 + \trsize(L) + \trsize(R)
+\]
+is also finite.
+\end{proof}
+\end{corollary}
+
+Now it is initially surprising, very useful that the trees with no
+infinite paths and no shared subtrees are actually the same as the
+recursively defined trees.  This is very cool and takes a bit of
+ingenuity to prove.
 
 \begin{theorem}\label{fundthmrec}(Fundamental Theorem for Recursive Trees)
 \[
@@ -1955,25 +1993,20 @@ tree, we want to prove the claim that it has an infinite path or it
 has a shared subtree.
 
 \begin{proof}
-If $T \notin \rectr$, then $T$ cannot be a leaf.  If $T$ is a proper
-subtree of itself, then it has an infinite path, proving the claim.
-So we may assume $T \notin \propbrn{T}$.  Now if $\leftsub{(T)}$ and
-$\rightsub{(T)}$ have a subtree in common, then this subtree is shared
-in $T$, proving the claim.  So we may assume that $\leftsub{(T)}$ and
-$\rightsub{(T)}$ have no subtree in common.  In this case, if both
-$\leftsub{(T)}$ and $\rightsub{(T)}$ were in \rectr, then $T$ would be
-in \rectr\ by definition, contradicting the hypothesis that $T \notin
-\rectr$.  Therefore $\leftsub{(T)}$ and $\rightsub{(T)}$ cannot both
-be in \rectr.
+If $T \notin \rectr$, then $T$ cannot be a leaf.  Now if
+$\leftsub{(T)}$ and $\rightsub{(T)}$ have a subtree in common, then
+this subtree is shared in $T$, proving the claim.  So we may assume
+that $\leftsub{(T)}$ and $\rightsub{(T)}$ have no subtree in common.
+In this case, if both $\leftsub{(T)}$ and $\rightsub{(T)}$ were in
+\rectr, then $T$ would be in \rectr\ by definition, contradicting the
+hypothesis that $T \notin \rectr$.  Therefore $\leftsub{(T)}$ and
+$\rightsub{(T)}$ cannot both be in \rectr.
 
 Let $f_0$ be a selector such that $f_0(T) \notin \rectr$.  Now if
 $\leftsub{(f_0(T))}$ and $\rightsub{(f_0(T))}$ have a shared subtree,
 then by Corollary~\ref{propsubbranch}, this will also be a shared
-subtree of $T$, proving the claim.  Also, if either of
-$\leftsub{(f_0(T))}$ and $\rightsub{(f_0(T))}$ is a proper subtree of
-itself, then it has an infinite path which would also be an infinite
-path in $T$.  Therefore, $\leftsub{(f_0(T))}$ and
-$\rightsub{(f_0(T))}$ cannot both be in \rectr.  Let $f_1$ be a
+subtree of $T$, proving the claim.  Therefore, $\leftsub{(f_0(T))}$
+and $\rightsub{(f_0(T))}$ cannot both be in \rectr.  Let $f_1$ be a
 selector such that $f_1(f_0(T)) \notin \rectr$.  Similarly, if there
 is no sharing or infinite path in $f_1(f_0(T))$, then there must be a
 selector $f_2$ such that $f_2(f_1(f_0(T))) \notin \rectr$.  Continuing
@@ -1986,17 +2019,12 @@ in $T$.
 \end{proof}
 
 \subsection{Properties of Recursive Trees}
-
 With the recursive definition of trees, we can define some important,
-basic functions on trees recursively.  For example, the \term{size}
-\index{tree size} of a tree is the number of subtrees it has:
-\begin{equation}\label{treesizedef}
-\text{size}(T) \eqdef \card{\subbrn{T}}.
-\end{equation}
-
-Now we give a recursive definition of size:
+basic functions on trees recursively.  We start with a recursive
+definition of size:
 \begin{definition}
-We define a function $\trsize{}: \rectr \to \nngint$ as follows:
+We define a function $\trsize{}: \rectr \to \nngint$ by induction on
+the definition of \rectr:
 
 \inductioncase{Base case}: ($T$ is a leaf).
 \[
@@ -2021,7 +2049,7 @@ for all $T \in \rectr$.
 The proof is by structural induction on the definition of \rectr.
 
 \inductioncase{Base case}: ($T$ is a leaf).
-By Corollary~\ref{unionLR}, $\propbrn{T} = \set{T}$, so
+By Corollary~\ref{unionLR}, $\subbrn{T} = \set{T}$, so
 \[
 \trsize{(T)} \eqdef 1 = \card{\set{T}}.
 \]
@@ -2030,7 +2058,8 @@ By Corollary~\ref{unionLR}, $\propbrn{T} = \set{T}$, so
 
 We have by induction hypothesis that
 \begin{equation}\label{sizefsub}
-\text{size}(f(T)) = \trsize{(f(T))}, \qquad  \text{for}\ f \in \set{\leftsub{}, \rightsub{}}.
+\text{size}(f(T)) = \trsize{(f(T))}, \qquad \text{for}\ f \in
+\set{\leftsub{}, \rightsub{}}.
 \end{equation}
 By Corollary~\ref{unionLR},
 \[
@@ -2071,46 +2100,52 @@ Here is the recursive definition:
 \]
 \end{definition}
 
-Again, it follows immediately by structural induction
-(Problem~\ref{TBA}) that
+Again, it follows directly by structural induction
+(Problem~\ref{MQ_recursive_tree_depth}) that
 \begin{equation}\label{recdepth=depth}
 \trdpth{(T)} = \dpth{T}.
 \end{equation}
 
-\begin{problem}
-Prove that
-\[
-\trdpth{(T)} = \dpth{T}
-\]
-for all $T \in \rectr$.
+\subsubsection{Depth versus Size}
 
-\begin{solution}
- \TBA{TBA}
-\end{solution}
-\end{problem}
+Arranging values in a search tree gives an efficient way to do
+repeated searches.  In this case, the longest search will be the
+length of the longest path to a leaf, that is, the depth of the tree.
+So a first question to address is how short can we guarantee searches
+will be compared to the size of the set to be searched?  The simple
+answer is that if the set to be searched has $n$ values in it, then
+some searches will unavoidably take $\log_2 n$; moreover, there is a
+way to arrange the values so that no search takes any longer than this
+minimum amount.  The following two Theorems confirm this.
 
-We can now prove a basic relation between size and depth of recursive
+We fist prove a basic relation between size and depth of recursive
 trees:
 \begin{theorem}\label{szT2d1}
 For all $T \in \rectr$,
-\[
+\begin{equation}\label{sT2d+1}
 \text{size}(T) \leq 2^{\dpth{T}+1} - 1.
-\]
+\end{equation}
 \end{theorem}
 
-There is an easy way to understand this inequality: if there were
-paths of different lengths that ended at leaves, then there would be a
-bigger tree with the same depth---just attach two new leaves to the
-shorter path.  So the biggest tree with depth $d$ will be the
-\term{complete tree} $T$ in which all paths have depth $d$.  In this
-tree there are two paths of length one that branch into four
-paths of length two, continuing into $2^d$ paths of length $d$.  So
+There is an easy way to understand and prove this inequality: if
+there were paths of different lengths that ended at leaves, then there
+would be a bigger tree with the same depth---just attach two new
+leaves to the leaf at the end of the shorter path.  So the biggest
+tree with depth $d$ will be the \term{complete tree} $T$ in which all
+paths have depth $d$.  In this tree there are two paths of length one
+that branch into four paths of length two, continuing into $2^d$ paths
+of length $d$.  So
 \[
 \text{size}(T) = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
 \]
 
-On the other hand, there is a a cumbersome but routine proof by
-structural induction that requires no ingenuity:
+There is also a proof by structural induction.  The structural
+induction is less attractive in two ways: it involves some tedious
+manipulation of exponents, and it provides little insight into what's
+going on.  On the other hand, the structural induction goes through
+routinely with no need for ingenuity, and it can be checked by a proof
+checker---a person or a computer program---with no additional
+information about trees.
 
 \begin{proof} 
 It is enough to prove Theorem~\ref{szT2d1} for \trsize\ and \trdpth.
@@ -2142,85 +2177,137 @@ Then by induction hypothesis, the right hand side of~\eqref{trsT1lsTrsT} is
 \end{align*}
 \end{proof}
 
-\begin{problem}
-For $T \in \brnch$, define
-\begin{align*}
-\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat S\ \text{is a leaf}}\\
-\text{internal}(T) & \eqdef \set{S \in \subbrn{T} \suchthat S \in \brnchng}
-\end{align*}
+Taking base two logarithms of both sides of the
+inequality~\eqref{sT2d+1} confirms that the length of searches has to
+be at least one less than the base two logarithm of the size of the
+data set to be searched:
 
-Prove that in a recursive tree, there is always one more leaf than
-there are internal subtrees:
+\begin{corollary}
+For any recursive tree $T \rectr$,
+\begin{equation}\label{}
+\dpth{T} \geq \log_2(\text{size}(T)) - 1.
+\end{equation}
+\end{corollary}
 
-\begin{lemma*}
-If $T \in \rectr$, then
+On the other hand, searches need not be any longer than log base two
+of size of the set of values.  Namely, define a tree to be \term{fully
+  balanced} when all the lengths of paths that end at leaves differ by
+at most one.
+
+\begin{theorem}\label{b>2d}
+If $B \in \rectr$ is fully balanced with depth at least one, then
 \[
-\card{\text{leaves}(T)} = 1 + \card{\text{internal}(T)}.
+\text{size}(B) \geq 2^{\dpth{B}} + 1.
 \]
-\end{lemma*}
-\begin{solution}
 
 \begin{proof}
-The proof is by structural induction on the definition of \rectr.
+The smallest fully balanced tree with depth $d \geq 1$ will be a complete
+tree of depth $d-1$ along with two leaves of depth $d$, so its size
+will be $(2^d-1) + 2 = 2^d+1$.
+\end{proof}
+\end{theorem}
 
-\TBA{rest of proof}
-\end{proof} 
-\end{solution}
-\end{problem}
+\begin{corollary}
+For any odd positive integer $n$, there is a recursive binary
+tree---namely a fully balanced tree of size $n$---that has depth at
+most $\log_2 n$.
+\end{corollary}
 
-A $T \in \rectr$ is a \term{balanced tree} when all the paths that end at
-leaves have length at least $\dpth{T} - 1$.
+\subsubsection
+When a set of values may evolve by the insertion or deletion of
+values, maintaining a fully balanced tree may require changing the
+branches of up to half the subtrees, an effort that would swamp the
+time saved by having short searches.  A ``have your cake and eat it
+too'' approach is to loosen the fully balanced requirement while still
+maintaining logarithmic search length.  
 
-\begin{lemma}\label{b>2d}
-If $B \in \rectr$ is balanced, then
-\[
-\text{size}(B) > 2^{\dpth{B}}.
-\]
-\end{lemma}
+In a fully balanced tree, most subtrees will have to be complete
+trees.  This means the depth of the left and right branches of any
+subtree will be the same.  In \term{AVL trees} this condition is
+relaxed so that all left and right branch depths are allowed to differ
+by one.
 
-\begin{problem}
-Prove Lemma~\ref{b>2d} by structural induction on the definition of \rectr.
-
-\begin{solution}
-\TBA{TBA}
-\end{solution}
-\end{problem}
-
-\begin{problem}
-Prove Lemma~\ref{b>2d} by reasoning about the complete tree as in the
-argument following Theorem~\ref{szT2d1}.
-
-\begin{solution}
-\TBA{TBA}
-\end{solution}
-\end{problem}
-
-An \term{AVL tree} is a tree $T\in \rectr$ such that
+\begin{definition}
+A tree $T\in \rectr$ is an \term{AVL tree} when
 \[
 \abs{\dpth{\leftsub{(S)}} - \dpth{\rightsub{(S)}}} \leq 1
 \]
 for all subtrees $S \in \subbrn{T}$.
+\end{definition}
 
-\begin{lemma}\label{}
+
+\begin{lemma}\label{avl_size}
 If $T$ is AVL, then
-\[
-\text{size}(T) \geq 2^{\dpth{T}/2}.
-\]
-
-\begin{editingnotes}
-AVL tree of height h contains at least $F_{h+2} – 1$ nodes where $F_h$
-is the Fibonacci sequence with the seed values $F_1 = 1, F_2 = 1$.
-\end{editingnotes}
+\begin{equation}\label{sizeTphidT}
+\text{size}(T) \geq \phi^{\dpth{T}}, 
+\end{equation}
+where $\phi$ is the ``golden ration'' $(1+\sqrt{5})/2 \geq 1.6$.
 
 \begin{proof}
-\TBA{TBA}
+Let's prove by strong induction on depth $d$ the induction hypothesis
+\[
+P(d) \eqdef [T \in \rectr \QAND \trdpth{T} = d] \QIMP \text{size}(T)
+\geq a^d,
+\]
+for some $a \in \reals$ which we will derive in the course of the
+proof.
+
+\inductioncase{Base case}: ($d=0$).
+In this case $T$ is a leaf, so
+\[
+\trsize{(T)} \eqdef 1 = a^0,
+\]
+proving $P(0)$.
+
+\inductioncase{Inductive step}: Suppose $T$ is an AVL tree of depth
+$d+1$, and let $L$ and $R$ be the left and right subtrees of $T$.
+Then the depth of at least one of $L$ and $R$ must be $d$ and the
+depth of the other must be at least of depth $d-1$, by definition of
+AVL tree.  By strong induction hypothesis, the size of one of $L$ and
+$R$ must be least $a^d$ and the size of the other at least $a^{d-1}$.
+So
+\[
+\trsize{(T)}
+  = 1 + \trsize{L} + \trsize{R}
+  > a^d + a^{d-1}.
+\]            
+So $P(d+1)$ will follow providing
+\[
+ a^d + a^{d-1} \geq a^{d+1},
+\]
+which means
+\begin{equation}\label{golden}
+1+a \geq a^2.
+\end{equation}
+Using the quadratic formula to solve~\eqref{golden} for equality, we find
+\[
+a = \frac{-(-1) + \sqrt{(-1)^2-4\cdot 1\cdot (-1)}}{2} = \frac{1 + \sqrt{5}}{2} = \phi
+\]
+satisfies~\eqref{golden}, completing the proof.
 \end{proof}
 \end{lemma}
 
-\subsection{Search Trees}
+Taking the base two logarithm of both sides of~\eqref{sizeTphidT}, we conclude
+\begin{corollary}
+If $T$ is an AVL tree, then
+\[
+\dpth{T} \leq \frac{\log_2(\text{size}(T))}{(\log_2 \phi)} \leq 1.44
+\log_2(\text{size}(T)).
+\]
+\end{corollary}
+In other words, searches in AVL trees at worst will take 1.44 times
+the optimal search time, and they will still be exponentially smaller
+than the size of the data set.
 
-The search tree examples above had a numerical label on each subtree.
-Abstractly, this means there is a total function
+\subsection{Search Trees}
+We described the basic idea of search trees at the beginning of this
+section and used it to explain why the connection between tree size
+and depth is important.  Now we'll define Search trees formally as a
+recursive data type.  This will allow us to define search functions
+recursively and verify their properties by structural induction.
+
+Search trees have a numerical label on each subtree.  Abstractly, this
+means there is a total function
 \[
 \nlbl{}:\brnch \to \reals.
 \]
@@ -2234,52 +2321,9 @@ $\text{max}(T)$.  More formally,
 \text{max}(T) &\eqdef \max \text{nums}(T).\label{defmaxT}
 \end{align}
 \end{definition}
-We know the size of any recursive trees is finite, so the min and max
-will exist for $T \in \rectr$.
+The min and max will exist for any finite tree $T \in \rectr$.
 
 \begin{definition}\label{defsearchtree}
-A recursive tree $T \in \rectr$ is a \term{Search tree} when
-\begin{equation}\label{}
-\text{max}(\leftsub{(S)}) < \nlbl{(S)} < \text{min}(\rightsub{(S)}).
-\end{equation}
-for every nonleaf $S \in \subbrn{T}$.
-\end{definition}
-
-\begin{problem}
-Suppose every tree $T$ has a numerical label $\nlbl{(T)}$. The function
-\[
-\rmin{}: \rectr \to \reals
-\]
-is recursively defined as follows:
-
-\inductioncase{Base case}: ($T$ is a leaf).
-\[
-\rmin{(T)} \eqdef \nlbl{(T)}.
-\]
-
-\inductioncase{Constructor case}: ($T \in \brnchng$)
-\[
-\rmin{(T)} \eqdef \min\set{\nlbl{(T)}, \rmin{(\leftsub{(T)})}, \rmin{(\rightsub{(T)})}}
-\]
-
-Prove that
-\[
-\rmin{(T)} = \text{min}(T)
-\]
-for all $T \in \rectr$.
-\begin{solution}
-
-\begin{proof}
-The proof is by structural induction on the definition of \rmin{}.
-\TBA{TBA}
-\end{proof}
-
-\end{solution}
-
-\end{problem}
-
-We can also give a simple recursive definition of Search tree:
-\begin{definition}
 The Search trees $T \in \brnch$ are defined recursively as follows:
 
 \inductioncase{Base case}: ($T$ is a leaf).  $T$ is a Search tree.
@@ -2292,18 +2336,22 @@ If $\leftsub{(T)}$ and $\rightsub{(T)}$ are both Search trees, and
 then $T$ is a Search tree.
 \end{definition}
 
-\begin{problem}
-Verify that every Search tree is a recursive tree.
+Since Search trees by definition can't have subtrees with the same
+label, they have no shared subtrees.  So every Search tree is a
+recursive tree in $\rectr$.
 
-\hint Show that Search trees can't have shared subtrees.
-
-\begin{solution}
-\TBA{}
-\end{solution}
-\end{problem}
+\iffalse
+\begin{definition}\label{defsearchtree}
+A recursive tree $T \in \rectr$ is a \term{Search tree} when
+\begin{equation}\label{}
+\text{max}(\leftsub{(S)}) < \nlbl{(S)} < \text{min}(\rightsub{(S)}).
+\end{equation}
+for every nonleaf $S \in \subbrn{T}$.
+\end{definition}
+\fi
 
 The simple procedure for finding a number in a Search tree explained
-at the beginning of this section can be described as a recursive
+at the beginning of this section can now be described as a recursive
 function \trsrch{}.  For any Search tree $T$ and number $r$, the value
 of $\trsrch{(T,r)}$ will be the path in $T$ that leads to $r$,
 assuming $r$ appears in $T$.  Otherwise the value will be a path that
@@ -2357,11 +2405,151 @@ $\textbf{fail}\cdot \vec{P}$ for some sequence $\vec{P}$.
 
 \end{proof}
 
-\subsection{Insertions \& Deletions}
+\subsection{Insertions into AVL trees}
+The procedure for inserting a value $r$ into an AVL tree $T$ can be
+defined recursively on the definition of AVL tree.  One small
+technicality comes up because sets of values can be any size, but the
+size of a recursive tree is always odd.  We handle this by allowing
+\emph{leaves} to be labelled with one or two values.
 
-\TBA{Rotations of AVL trees.}
+\iffalse The other technicality comes about because we will be taking
+a tree and defining a new tree sharing some of its subtrees.  To avoid
+sharing in the new tree, the recursive definition we will need trees
+that are combinations of subtrees trees using subtrees of \fi
+
+The procedure to insert a value $r$ parallels the procedure to search
+for $r$.  If $r$ is already a value in $T$, the search will discover
+this and the insert procedure doesn't have to do anything.  If $r$ is
+not a value in $T$, then it has to be inserted recursively into one of
+the branches of $T$ depending on how it compares $\nlbl{(T)}$.  This
+creates a tree $N$ with the same label as $T$, with one branch $S$
+equal to the subtree with $r$ inserted and the other branch the same
+as in $T$.  Now $N$ will be a Search tree, both of whose branches will
+(by induction) be AVL trees.  The only problem is that $N$ may not be
+an AVL tree because the depth of $S$ may now be two greater than the
+depth of the other branch.  The fix is to apply a ``rotation
+operation'' that rearranges the top few subtrees to balance the
+depths.
+
+To explain rotation, suppose the the left branch of a tree $N$ has
+depth $d$ and the right branch is $S$ with depth $d+2$.  Then $N$ must have
+subtrees as indicated in Figure~\ref{rotate1}
+
+\begin{figure}
+
+%\graphic{}
+
+\begin{verbatim}
+           T2=N
+           /\
+          /  \
+        T1   T6=S
+             /\
+            /  \
+          T4   T7
+          / \
+         /   \
+       T3     T5
+\end{verbatim}
+
+\caption{Tree before rotation.  1,3,5 depth $d$, 7 depth $d$ or $d+1$}
+
+\label{rotate1}
+
+\end{figure}
+
+\begin{figure}
+
+%\graphic{}
+
+\begin{verbatim}
+           T4
+           /\
+          /  \
+         /    \
+       T2      T6
+       /\      /\
+      /  \    /  \
+     T1  T3  T5  T7
+\end{verbatim}
+
+\caption{Tree after rotation is AVL.}
+
+\label{rotate2}
+
+\end{figure}
+
+\begin{definition}
+
+The function
+\[
+\avlnsrt{}: \text{(AVL trees)} \times \reals \to \text{(AVL trees)}
+\]
+is defined as follows:
+
+If $r = \nlbl{(T)}$, or if $T$ is a leaf with two labels and $r \in
+\nlbl{(T)}$, then
+\[
+\trsrch{(T,r)} \eqdef T,
+\]
+
+Otherwise $\avlnsrt{(T,r)}$ is defined recursively on
+Definition~\ref{defsearchtree} of Search tree:
+
+\inductioncase{Base case}: ($T$ is a leaf).
+
+\inductioncase{subcase}: ($T$ is a leaf with one label).  Then
+$\avlnsrt{(T,r)}$ is defined to be a leaf $T'$ labelled with the set
+of two values $\set{r,\nlbl{(T)}}$.
+
+\inductioncase{subcase}: ($T$ is a leaf with two labels)
+Then $\avlnsrt{(T,r)}$ is defined to be a depth one Search tree $T'$
+whose labels are the three values $\set{r} \union \nlbl{(T)}$.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  
+
+\iffalse Let $L \eqdef \leftsub{(T)}, R \eqdef \rightsub{(T)}, d_L
+\eqdef \dpth{L}, d_R \eqdef \dpth{R}.$ \fi
+
+\inductioncase{subcase}: ($r < \nlbl{(T)})$.  Let $S \eqdef
+\avlnsrt{(\leftsub{T}, r)}$.
+
+\inductioncase{subsubcase}: ($\dpth{S} \leq \dpth{\rightsub{T}}+1$.)
+Then $\avlnsrt{(T,r)} \eqdef T'$ where
+\begin{itemize}
+
+\item $T'$ is a ``new'' tree, that is, $T' \notin \subbrn{S} \union
+  \subbrn \rightsub{T}$,
+
+\item $\leftsub{T'} = S$,
+
+\item $\rightsub{T'} = \rightsub{T}$.
+
+\end{itemize}
+
+\inductioncase{subsubcase}: ($\dpth{S} = \dpth{\rightsub{T}}+2$.)
+
+Then we may assume $T$ has subtrees $T_1,T_2,\dots,T_7$ where
+$\nlbl{(T_2)} = \nlbl{(T)}$
+
+\TBA{To be continued\dots}
+
+\end{definition}
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_recursive_min}
+\pinput{TP_recursive_search_tree}
+
+\homeworkproblems
+\pinput{PS_shared_leaves}
+
+\examproblems
+\pinput{MQ_recursive_tree_depth}
+\end{problems}
 
 \begin{editingnotes}
+
 \section{Rules for Quantifiers}
 
 \subsection{Prenex Form}
