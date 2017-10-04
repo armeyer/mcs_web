@@ -1452,6 +1452,31 @@
 \newcommand{\cnt}[2]{\#_{#1}(#2)}
 \newcommand{\rev}[1]{\operatorname{rev}(#1)}
 
+\newcommand{\brnch}{\text{BBTr}}
+\newcommand{\leafp}[1]{\text{leaf?}#1}
+\newcommand{\brnchng}{\text{Branching}}
+\newcommand{\leafset}{\text{Leaves}}
+\newcommand{\rightsub}[1]{\text{right}#1}
+\newcommand{\leftsub}[1]{\text{left}#1}
+\newcommand{\rslt}[2]{\text{subtree}_{#1}#2}
+\newcommand{\subbrn}[1]{\text{Subtrs}(#1)}
+\newcommand{\propbrn}[1]{\text{PropSubtrs}(#1)}
+
+\newcommand{\fintr}{\text{FinTr}}
+
+\newcommand{\rectr}{\text{RecTr}}
+
+\newcommand{\shbrn}{\text{SharTr}}
+
+\newcommand{\trdpth}[1]{\text{recdepth}#1}
+\newcommand{\trsize}[1]{\text{recsize}#1}
+
+\newcommand{\nlbl}[1]{\text{num}#1}
+\newcommand{\rmin}[1]{\text{recmin}#1}
+
+\newcommand{\trsrch}[1]{\text{srch}#1}
+\newcommand{\avlnsrt}[1]{\text{insert}#1}
+
 \if@usecolor@
     \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
     \newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}
