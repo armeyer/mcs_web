@@ -1374,6 +1374,7 @@
 \newcommand{\minplus}{\text{min+}}
 
 \newcommand{\dpth}[1]{\operatorname{depth}\left(#1\right)}
+\newcommand{\sz}[1]{\operatorname{size}\left(#1\right)}
 
 \newcommand{\weight}[1]{\operatorname{wgt}\left(#1\right)}
 

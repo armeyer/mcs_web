@@ -1189,9 +1189,9 @@ thinking for a moment about \textbf{why the mimicking strategy
 
 A Nim game is defined by the sizes of the piles of stones at the
 start.  For example, let $\text{Nim}_{\ang{3,4,5}}$ be the game that
-starts with piles of 3, 4 and 5 stones.  The first in this game simply
-results in another Nim game.  Namely, the first player can remove
-from one and three stones from the first pile leading to three
+starts with piles of 3, 4 and 5 stones.  The first move in this game
+simply results in another Nim game.  Namely, the first player can
+remove from one and three stones from the first pile leading to three
 possible piles of stones
 \begin{equation}\label{nimplay3}
 \nimg{2,4,5},\ \nimg{1,4,5}\ \text{or}\ \nimg{4,5}.
@@ -1320,6 +1320,28 @@ jigo) rather than a win or loss.  However, by treating a tie in these
 games as a loss for the first player, the results about win-lose games
 will apply to games with ties.
 
+In all the games like this that we're familiar with, there are only a
+finite number of possible first moves and a bound on the possible
+length of play.  It's worth noting that the definition of \wnls\ does
+not require this.  In fact, Since finiteness is not needed to prove
+any of the results below, it would arguably be misleading to assume
+it.
+
+This observation that games might be infinite illustrates the
+surprising power of structural induction.  The proof shows that that
+even infinite games must have outcomes, but for infinite games, this
+is \emph{not} the same as saying that the length of play has a
+\emph{fixed bound}.  For example, there is a game whose first move allows,
+for every nonempty integer $n$, selection of a game that can played
+for exactly $n$ steps.  Even though every play in such a game has an
+outcome, there are plays of every finite length.
+
+Infinite games are a little far-fetched for Computer Science
+applications, but they actually play an important role in the study of
+set theory and logic.  A lovely feature of structural induction is
+that it implicitly applied to infinite structures even if you didn't
+notice them.
+
 \subsection{Game Strategies}
 
 A \emph{strategy} for a player is a rule that tells the player which
@@ -1414,30 +1436,25 @@ follow the follow the winning strategy for the first player in $M$.
 \end{proof}
 
 \subsubsection{Infinite Games}
-So where do we come upon games with an infinite number of first
-moves?  Well, suppose we play a tournament of $n$ chess games for some
+
+Suppose we play a tournament of $n$ chess games for some
 positive integer $n$.  This tournament will be a \wnls\ if we agree on a
 rule for combining the payoffs of the $n$ individual chess games into
 a final payoff for the whole tournament.
 
-There still are only a finite number of possible moves at any stage of
-the $n$-game chess tournament, but we can define a
-\emph{meta-chess-tournament}, whose first move is a choice of any
-positive integer $n$, after which we play an $n$-game tournament.  Now
-the meta-chess-tournament has an infinite number of first moves.
+An $n$ game tournament still has a bound on the length of play,
+namely, $n$ times the maximum length of one game.  But now suppose we
+define a \emph{meta-chess-tournament}, whose first move is a choice of
+any positive integer $n$, after which we play an $n$-game tournament.
+Now the meta-chess-tournament is an infinite game---it has an infinite
+number of first moves.
 
-Of course only the first move in the meta-chess-tournament is
-infinite, but then we could set up a tournament consisting of $n$
-meta-chess-tournaments.  This would be a game with $n$ possible
-infinite moves.  And then we could have a
-\emph{meta-meta}-chess-tournament whose first move was to choose how
-many meta-chess-tournaments to play.  This meta-meta-chess-tournament
-will have an infinite number of infinite moves.  Then we could move on
-to meta-meta-meta-chess-tournaments \dots.
-
-As silly or weird as these meta games may seem, their weirdness
-doesn't disqualify the Fundamental Theorem: in each of these games,
-one of the players will have winning strategy.
+Only the first move in the meta-chess-tournament is infinite.  If we
+set up a tournament consisting of $n$ meta-chess-tournaments, this
+would be a game with $n$ infinite sets of possible second moves.  Then
+we oould go to meta-meta tournaments,\dots.  Weird as these meta games
+may seem, the Fundamental Theorem still applies: in each of these
+games, one of the players will have winning strategy.
 
 Notice that although Theorem~\ref{fundgames} guarantees a winning
 strategy, its proof gives no clue which player has it.  For the Subset
@@ -1699,7 +1716,7 @@ So we have by definition that
 \end{equation}
 
 There are a couple of obvious facts about paths and subtrees that we
-might have just taken for granted but are worth saying explicitly.
+might just take for granted but are worth saying explicitly.
 The first is that a proper subtree of $T$ must be a subtree of its
 left subtree or its right subtree:
 
@@ -1877,7 +1894,7 @@ Let's verify first of all that recursive trees are finite.
 The \term{size} \index{tree size} of a tree $T \in \brnch$ is the
 number of subtrees it has:
 \begin{equation}\label{treesizedef}
-\text{size}(T) \eqdef \card{\subbrn{T}}.
+\sz{T} \eqdef \card{\subbrn{T}}.
 \end{equation}
 \end{definition}
 
@@ -1891,7 +1908,7 @@ The proof is by structural induction on the definition of $T \in
 \inductioncase{Base case}: ($T$ is a leaf).  The only subtree of $T$
 is itself, so
 \[
-\text{size}(T) = 1 < \infty.
+\sz{T} = 1 < \infty.
 \]
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).  In this case,
@@ -1903,13 +1920,13 @@ By Corollary~\ref{unionLR},
 By induction hypothesis, we may assume that the sizes of $L$ and $R$
 are finite, so
 \[
-\text{size}(T) \leq 1 + \text{size}(L) + \text{size}(R)
+\sz{T} \leq 1 + \sz{L} + \sz{R}
 \]
 is also finite.
 \end{proof}
 \end{corollary}
 
-Now it is initially surprising, very useful, and cool fact that the
+Now it is an initially surprising, very useful, and cool fact that the
 trees with no infinite paths and no shared subtrees are actually the
 \emph{same} as the recursively defined trees.  It takes a bit of
 ingenuity to prove this.
@@ -1979,9 +1996,10 @@ $\rightsub{(T)}$ cannot both be in \rectr.
 
 Let $f_0$ be a selector such that $f_0(T) \notin \rectr$.  Now if
 $\leftsub{(f_0(T))}$ and $\rightsub{(f_0(T))}$ have a shared subtree,
-then by Corollary~\ref{propsubbranch}, this will also be a shared
-subtree of $T$, proving the claim.  Therefore, $\leftsub{(f_0(T))}$
-and $\rightsub{(f_0(T))}$ cannot both be in \rectr.  Let $f_1$ be a
+then, since a subtree of a subtree is a subtree
+(Corollary~\ref{propsubbranch}), this will also be a shared subtree of
+$T$, proving the claim.  Therefore, $\leftsub{(f_0(T))}$ and
+$\rightsub{(f_0(T))}$ cannot both be in \rectr.  Let $f_1$ be a
 selector such that $f_1(f_0(T)) \notin \rectr$.  Similarly, if there
 is no sharing or infinite path in $f_1(f_0(T))$, then there must be a
 selector $f_2$ such that $f_2(f_1(f_0(T))) \notin \rectr$.  Continuing
@@ -1998,7 +2016,7 @@ With the recursive definition of trees, we can define some important,
 basic functions on trees recursively.  We start with a recursive
 definition of size:
 \begin{definition}
-We define a function $\trsize{}: \rectr \to \nngint$ by induction on
+We define a function $\trsize{}: \rectr \to \integers^+$ by induction on
 the definition of \rectr:
 
 \inductioncase{Base case}: ($T$ is a leaf).
@@ -2016,7 +2034,7 @@ A simple proof by structural induction confirms that the definition of
 \trsize{}\ is correct, namely:
 \begin{lemma}\label{}
 \[
-\trsize{(T)} = \text{size}(T)
+\trsize{(T)} = \sz{T}
 \]
 for all $T \in \rectr$.
 
@@ -2033,7 +2051,7 @@ By Corollary~\ref{unionLR}, $\subbrn{T} = \set{T}$, so
 
 We have by induction hypothesis that
 \begin{equation}\label{sizefsub}
-\text{size}(f(T)) = \trsize{(f(T))}, \qquad \text{for}\ f \in
+\text{sz{T)} = \trsize{(f(T))}, \qquad \text{for}\ f \in
 \set{\leftsub{}, \rightsub{}}.
 \end{equation}
 By Corollary~\ref{unionLR},
@@ -2042,11 +2060,11 @@ By Corollary~\ref{unionLR},
 \]
 for $T \in \brnch$.  Now if $T \in \rectr$, then these three sets are disjoint, so
 \begin{equation}\label{sT1sl}
-\text{size}(T) = 1 + \text{size}(\leftsub{(T)}) + \text{size}(\rightsub{(T)}).
+\sz{T} = 1 + \text{sz{T)}} + \text{sz{T)}}.
 \end{equation}
 Now we have
 \begin{align*}
-\text{size}(T)
+\sz{T}
  & = 1 + \trsize{(\leftsub{(T)})} + \trsize{(\rightsub{(T)})}
    & \text{(by~\eqref{sizefsub} and~\eqref{sT1sl})}\\
  & = \trsize{(T)} 
@@ -2098,7 +2116,7 @@ trees:
 \begin{theorem}\label{szT2d1}
 For all $T \in \rectr$,
 \begin{equation}\label{sT2d+1}
-\text{size}(T) \leq 2^{\dpth{T}+1} - 1.
+\sz{T} \leq 2^{\dpth{T}+1} - 1.
 \end{equation}
 \end{theorem}
 
@@ -2111,7 +2129,7 @@ paths have depth $d$.  In this tree there are two paths of length one
 that branch into four paths of length two, continuing into $2^d$ paths
 of length $d$.  So
 \[
-\text{size}(T) = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
+\sz{T} = 2^0 + 2^1 + 2^2 + \cdots + 2^d = 2^{d+1}-1.
 \]
 
 There is also a proof by structural induction.  The structural
@@ -2144,8 +2162,8 @@ d_r & \eqdef \trdpth{(\rightsub{(T)})}.
 Then by induction hypothesis, the right hand side of~\eqref{trsT1lsTrsT} is
 \begin{align*}
 & \leq 1 + (2^{d_l+1} -1)  + (2^{d_r+1} -1)\\
-& \leq  2\cdot 2^{\max\set{d_l+1,d_r+1}} - 1\\
-& = 2\cdot 2^{1+\max\set{d_l,d_r}} - 1\\
+& \leq 1 + (2^{\max\set{d_l,d_r}+1} -1)  + (2^{\max\set{d_l,d_r}+1} -1)\\
+& = 2\cdot 2^{\max\set{d_l,d_r}+1} - 1\\
 & = 2\cdot 2^{\trdpth{(T)}} - 1
               & \text{(def of $\trdpth{(T)}$)}\\
 & =  2^{\trdpth{(T)}+1} - 1.
@@ -2160,7 +2178,7 @@ data set to be searched:
 \begin{corollary}
 For any recursive tree $T \rectr$,
 \begin{equation}\label{}
-\dpth{T} \geq \log_2(\text{size}(T)) - 1.
+\dpth{T} \geq \log_2(\sz{T}) - 1.
 \end{equation}
 \end{corollary}
 
@@ -2172,7 +2190,7 @@ at most one.
 \begin{theorem}\label{b>2d}
 If $B \in \rectr$ is fully balanced with depth at least one, then
 \[
-\text{size}(B) \geq 2^{\dpth{B}} + 1.
+\sz{B} \geq 2^{\dpth{B}} + 1.
 \]
 
 \begin{proof}
@@ -2215,7 +2233,7 @@ for all subtrees $S \in \subbrn{T}$.
 \begin{lemma}\label{avl_size}
 If $T$ is AVL, then
 \begin{equation}\label{sizeTphidT}
-\text{size}(T) \geq \phi^{\dpth{T}}, 
+\sz{T} \geq \phi^{\dpth{T}}, 
 \end{equation}
 where $\phi$ is the ``golden ratio''
 \[
@@ -2225,7 +2243,7 @@ where $\phi$ is the ``golden ratio''
 \begin{proof}
 Let's prove by strong induction on depth $d$ the induction hypothesis
 \[
-P(d) \eqdef [T \in \rectr \QAND \trdpth{(T)} = d] \QIMP \text{size}(T)
+P(d) \eqdef [T \in \rectr \QAND \trdpth{(T)} = d] \QIMP \sz{T}
 \geq a^d,
 \]
 for some $a \in \reals$ which we will derive in the course of the
@@ -2241,16 +2259,15 @@ proving $P(0)$.
 \inductioncase{Inductive step}: Suppose $T$ is an AVL tree of depth
 $d+1$, and let $L$ and $R$ be the left and right subtrees of $T$.
 Then the depth of at least one of $L$ and $R$ must be $d$ and the
-depth of the other must be at least of depth $d-1$, by definition of
-AVL tree.  By strong induction hypothesis, the size of one of $L$ and
-$R$ must be least $a^d$ and the size of the other at least $a^{d-1}$.
-So
+depth of the other must be at least $d-1$, by definition of AVL tree.
+By strong induction hypothesis, the size of one of $L$ and $R$ must be
+least $a^d$ and the size of the other at least $a^{d-1}$.  So
 \[
 \trsize{(T)}
-  = 1 + \trsize{L} + \trsize{R}
+  = 1 + \trsize{(L)} + \trsize{(R)}
   > a^d + a^{d-1}.
 \]            
-So $P(d+1)$ will follow providing
+Now $P(d+1)$ will follow providing
 \[
  a^d + a^{d-1} \geq a^{d+1},
 \]
@@ -2270,8 +2287,8 @@ Taking the base two logarithm of both sides of~\eqref{sizeTphidT}, we conclude
 \begin{corollary}
 If $T$ is an AVL tree, then
 \[
-\dpth{T} \leq \frac{\log_2(\text{size}(T))}{(\log_2 \phi)} \leq 1.44
-\log_2(\text{size}(T)).
+\dpth{T} \leq \frac{\log_2(\sz{T})}{(\log_2 \phi)} \leq 1.44
+\log_2(\sz{T}).
 \]
 \end{corollary}
 In other words, searches in AVL trees at worst will take 1.44 times
@@ -2300,7 +2317,7 @@ $\text{max}(T)$.  More formally,
 \text{max}(T) &\eqdef \max \text{nums}(T).\label{defmaxT}
 \end{align}
 \end{definition}
-The min and max will exist for any finite tree $T \in \rectr$.
+The min and max will exist for any finite tree $T$.
 
 \begin{definition}\label{defsearchtree}
 The Search trees $T \in \brnch$ are defined recursively as follows:
@@ -2339,8 +2356,8 @@ ends in \textbf{fail}.
 \begin{definition}
 The function
 \[
-\trsrch{}: \text{(Search trees)} \times \reals \to
-\strings{\set{\leftsub{},\rightsub{}}} \union \set{\textbf{fail}}
+\trsrch{}: \paren{\text{(Search trees)} \times \reals} \to
+\paren{\strings{\set{\leftsub{},\rightsub{}}} \union \set{\textbf{fail}}}
 \]
 is defined as follows:
 
@@ -2411,8 +2428,10 @@ operation'' that rearranges the top few subtrees to balance the
 depths.
 
 To explain rotation, suppose the the left branch of a tree $N$ has
-depth $d$ and the right branch is $S$ with depth $d+2$.  Then $N$ must have
-subtrees as indicated in Figure~\ref{rotate1}
+depth $d$ and the right branch is $S$ with depth $d+2$.  Then $N$ must
+have subtrees as indicated in Figure~\ref{rotate1}.  The rotation
+operation re-arranges them into the more balaced tree in
+Figure~\ref{rotate2}.
 
 \begin{figure}
 
@@ -2431,22 +2450,30 @@ subtrees as indicated in Figure~\ref{rotate1}
        T3     T5
 \end{verbatim}
 
-\caption{Tree before rotation.  $T_1,T_3,T_5$ depth $d$, $T_7$ depth $d$ or $d+1$}
+\caption{Tree before rotation.}
 
 \label{rotate1}
 
 \end{figure}
+
+In Figure~\ref{rotate1},
+\begin{itemize}
+\item $\dpth{T_1} = d$,
+\item $\dpth{T_6} = d+2$,
+\item $\max\setr{\dpht{T_3},\dpth{T_5}} = d$, $\min\setr{\dpht{T_3},\dpth{T_5}} = d-1$,
+\item $d \leq \dpth{T_7} \leq d+1$.
+\end{itemize}
 
 \begin{figure}
 
 %\graphic{}
 
 \begin{verbatim}
-           T4
+           N4
            /\
           /  \
          /    \
-       T2      T6
+       N2      N6
        /\      /\
       /  \    /  \
      T1  T3  T5  T7
@@ -2457,6 +2484,14 @@ subtrees as indicated in Figure~\ref{rotate1}
 \label{rotate2}
 
 \end{figure}
+
+In Figure~\ref{rotate1},
+\begin{itemize}
+\item $\dpth{T_1} = d$,
+\item $\dpth{T_6} = d+2$,
+\item $\max\setr{\dpht{T_3},\dpth{T_5}} = d$, $\min\setr{\dpht{T_3},\dpth{T_5}} = d-1$,
+\item $d \leq \dpth{T_7} \leq d+1$.
+\end{itemize}
 
 \begin{definition}
 
