@@ -1473,6 +1473,8 @@
 \newcommand{\trsize}[1]{\text{recsize}#1}
 
 \newcommand{\nlbl}[1]{\text{num}#1}
+\newcommand{\nlbls}[1]{\text{nums}#1}
+
 \newcommand{\rmin}[1]{\text{recmin}#1}
 
 \newcommand{\trsrch}[1]{\text{srch}#1}
