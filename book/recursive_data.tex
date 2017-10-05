@@ -1585,33 +1585,23 @@ binary branching tree is whether or not it is a leaf.  In any
 representation, there has to be way to test this.  So there has to be
 a \emph{leaf predicate} $\leafp{}$ that does the job.  That is, a
 binary branching tree $T \in \brnch$ is a leaf when $\leafp{(T)}$ is
-true.
-
-\iffalse
- We define the
-\term{leaves} to be elements that $\leafp{}$ picks out:
+true.  Let \leafset\ be the set of leaves:
 \[
 \leafset \eqdef \set{T \in \brnch \suchthat \leafp{(T)}}.
 \]
-
-So the official definition of ``leaf'' is ``element of the set \leafset.''
-\fi
-
-Let \brnchng\ be the trees in \brnch\ that actually branch to the left
-and right.  In any representation there has to be a way to select
-these branches.  So there have to be \term{selector functions}
-$\leftsub{}$ and $\rightsub{}$ that produce the left and right
-branches of non-leaf elements of \brnch.  That is, let
-\[
-\brnchng \eqdef \set{T \in \brnch \suchthat \QNOT(\leafp{(T)})}.
-\]
-Then there have to be total functions
+The non-leaf trees are supposed to be the trees that actually have
+left and right branches.  In any representation of trees there has to
+be a way to select these branches, that is there have to be
+\term{selector functions} $\leftsub{}$ and $\rightsub{}$ that produce
+the left and right branches of non-leaf elements of \brnch.  We
+formalize this by defining $\brnchng \eqdef \brnch - \leafset$ and
+stipulating that that there are total functions
 \begin{align*}
 \leftsub{}: & \brnchng \to \brnch,\\
-\rightsub{}:& \brnchng \to \brnch,
+\rightsub{}:& \brnchng \to \brnch.
 \end{align*}
-where $\leftsub{(T)}$ is the tree on the left branch of $T$ and
-$\rightsub{(T)}$ is the one on the right.
+So by definition, the left branch of $T$ is the tree $\leftsub{(T)}$
+and the right branch is $\rightsub{(T)}$.
 
 \subsubsection{Subtrees}
 
@@ -1725,11 +1715,15 @@ For $T \in \brnch$,
 \[
 \propbrn{T} =
 \begin{cases}
-  \emptyset, & \text{if $T$ is a leaf},\\
+  \emptyset, & \text{if $T \in leafset$},\\
   \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}},
             & \text{if}\ T \in \brnchng.
 \end{cases}
 \]
+Therefore,
+\begin{equation}\label{unionTLR}
+\subbrn{T} = \set{T} \union \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}}.
+\end{equation}
 \end{corollary}
 
 Corollary~\ref{unionLR} follows from the fact when the first step in a
@@ -1878,7 +1872,7 @@ There is also a simple way to define trees recursively.
 The set \rectr\ of \term{recursive trees} is defined recursively.  For
 $T \in \brnch$,
 
-\inductioncase{Base case}: ($T$ is a leaf).  $T \in \rectr$.
+\inductioncase{Base case}: ($T \in \leafset$).  $T \in \rectr$.
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).
 If $\leftsub{(T)}, \rightsub{(T)} \in \rectr$, and these two trees
@@ -1905,7 +1899,7 @@ Every recursive tree has finite size.
 The proof is by structural induction on the definition of $T \in
 \rectr$.
 
-\inductioncase{Base case}: ($T$ is a leaf).  The only subtree of $T$
+\inductioncase{Base case}: ($T \in \leafset$).  The only subtree of $T$
 is itself, so
 \[
 \sz{T} = 1 < \infty.
@@ -1913,18 +1907,17 @@ is itself, so
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).  In this case,
 $L \eqdef \leftsub{(T)}$ and $R \eqdef \rightsub{(T)}$ are defined.
-By Corollary~\ref{unionLR},
-\begin{equation}\label{unionTLR}
-\subbrn{T} = \set{T} \union \subbrn{L} \union \subbrn{R}.
-\end{equation}
+
 By induction hypothesis, we may assume that the sizes of $L$ and $R$
-are finite, so
-\[
+are finite, so by~\eqref{unionTLR},
+\begin{equation}\label{Tleq1LR}
 \sz{T} \leq 1 + \sz{L} + \sz{R}
-\]
-is also finite.
+\end{equation}
+is also finite.  
 \end{proof}
 \end{corollary}
+\footnote{The inequality~\ref{Tleq1LR} is actually an equality,
+  see~\ref{sT1sl} below.}
 
 Now it is an initially surprising, very useful, and cool fact that the
 trees with no infinite paths and no shared subtrees are actually the
@@ -1947,7 +1940,7 @@ that is, no recursive tree $T$ has an infinite path or a shared subtree.
 The proof follows by structural induction on the
 definition of \rectr:
 
-\inductioncase{Base case}: ($T$ is a leaf).  $T$ has no infinite path
+\inductioncase{Base case}: ($T \in \leafset$).  $T$ has no infinite path
 or shared subtree because it has no proper subtrees at all.
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).  In this case,
@@ -2019,7 +2012,7 @@ definition of size:
 We define a function $\trsize{}: \rectr \to \integers^+$ by induction on
 the definition of \rectr:
 
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 \[
 \trsize{(T)} \eqdef 1.
 \]
@@ -2041,7 +2034,7 @@ for all $T \in \rectr$.
 \begin{proof}
 The proof is by structural induction on the definition of \rectr.
 
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 By Corollary~\ref{unionLR}, $\subbrn{T} = \set{T}$, so
 \[
 \trsize{(T)} \eqdef 1 = \card{\set{T}}.
@@ -2054,7 +2047,7 @@ We have by induction hypothesis that
 \text{sz{T)} = \trsize{(f(T))}, \qquad \text{for}\ f \in
 \set{\leftsub{}, \rightsub{}}.
 \end{equation}
-By Corollary~\ref{unionLR},
+We have from~\ref{unionTLR} that
 \[
 \subbrn{T} = \set{T} \union \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}},
 \]
@@ -2082,7 +2075,7 @@ the length of its longest path.  The formal definition is:
 
 Here is the recursive definition:
 \begin{definition}
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 \[
 \trdpth{(T)} \eqdef 0.
 \]
@@ -2144,7 +2137,7 @@ information about trees.
 It is enough to prove Theorem~\ref{szT2d1} for \trsize\ and \trdpth.
 The proof is by structural induction on the definition of \rectr:
 
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 \[
 \trsize{(T)} \eqdef 1 = 2^1 - 1 = 2^{\trdpth{(T)}+1} - 1.
 \]
@@ -2250,7 +2243,7 @@ for some $a \in \reals$ which we will derive in the course of the
 proof.
 
 \inductioncase{Base case}: ($d=0$).
-In this case $T$ is a leaf, so
+In this case $T \in \leafset$, so
 \[
 \trsize{(T)} \eqdef 1 = a^0,
 \]
@@ -2322,7 +2315,7 @@ The min and max will exist for any finite tree $T$.
 \begin{definition}\label{defsearchtree}
 The Search trees $T \in \brnch$ are defined recursively as follows:
 
-\inductioncase{Base case}: ($T$ is a leaf).  $T$ is a Search tree.
+\inductioncase{Base case}: ($T \in \leafset$).  $T$ is a Search tree.
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).
 If $\leftsub{(T)}$ and $\rightsub{(T)}$ are both Search trees, and
@@ -2369,7 +2362,7 @@ If $r = \nlbl{(T)}$, then
 If $r \neq \nlbl{(T)}$, then $\trsrch{(T,r)}$ is defined recursively
 on Definition~\ref{defsearchtree} of Search tree:
 
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 \[
 \trsrch{(T,r)} \eqdef \textbf{fail}.
 \]
@@ -2536,7 +2529,7 @@ The function
 \]
 is defined as follows:
 
-If $r = \nlbl{(T)}$, or if $T$ is a leaf with two labels and $r \in
+If $r = \nlbl{(T)}$, or if $T \in \leafset$ with two labels and $r \in
 \nlbl{(T)}$, then
 \[
 \trsrch{(T,r)} \eqdef T,
@@ -2545,13 +2538,13 @@ If $r = \nlbl{(T)}$, or if $T$ is a leaf with two labels and $r \in
 Otherwise $\avlnsrt{(T,r)}$ is defined recursively on
 Definition~\ref{defsearchtree} of Search tree:
 
-\inductioncase{Base case}: ($T$ is a leaf).
+\inductioncase{Base case}: ($T \in \leafset$).
 
-\inductioncase{subcase}: ($T$ is a leaf with one label).  Then
+\inductioncase{subcase}: ($T \in \leafset$ with one label).  Then
 $\avlnsrt{(T,r)}$ is defined to be a leaf $T'$ labelled with the set
 of two values $\set{r,\nlbl{(T)}}$.
 
-\inductioncase{subcase}: ($T$ is a leaf with two labels)
+\inductioncase{subcase}: ($T \in \leafset$ with two labels)
 Then $\avlnsrt{(T,r)}$ is defined to be a depth one Search tree $T'$
 whose labels are the three values $\set{r} \union \nlbl{(T)}$.
 
@@ -2561,22 +2554,22 @@ whose labels are the three values $\set{r} \union \nlbl{(T)}$.
 \eqdef \dpth{L}, d_R \eqdef \dpth{R}.$ \fi
 
 \inductioncase{subcase}: ($r < \nlbl{(T)})$.  Let $S \eqdef
-\avlnsrt{(\leftsub{T}, r)}$.
+\avlnsrt{(\leftsub{(T)}, r)}$.
 
-\inductioncase{subsubcase}: ($\dpth{S} \leq \dpth{\rightsub{T}}+1$.)
+\inductioncase{subsubcase}: ($\dpth{S} \leq \dpth{\rightsub{(T)}}+1$.)
 Then $\avlnsrt{(T,r)} \eqdef T'$ where
 \begin{itemize}
 
 \item $T'$ is a ``new'' tree, that is, $T' \notin \subbrn{S} \union
-  \subbrn \rightsub{T}$,
+  \subbrn \rightsub{(T)}$,
 
-\item $\leftsub{T'} = S$,
+\item $\leftsub{(T')} = S$,
 
-\item $\rightsub{T'} = \rightsub{T}$.
+\item $\rightsub{(T')} = \rightsub{(T)}$.
 
 \end{itemize}
 
-\inductioncase{subsubcase}: ($\dpth{S} = \dpth{\rightsub{T}}+2$.)
+\inductioncase{subsubcase}: ($\dpth{S} = \dpth{\rightsub{(T)}}+2$.)
 
 Then we may assume $T$ has subtrees $T_1,T_2,\dots,T_7$ where
 $\nlbl{(T_2)} = \nlbl{(T)}$

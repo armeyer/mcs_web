@@ -1,7 +1,8 @@
 \documentclass[problem]{mcs}
 \begin{pcomments}
   \pcomment{CP_leaves_vs_nodes}
-  \pcomment{ARM 10/3/17}
+  \pcomment{prereq for generalization in PS_shared_leaves}
+  \pcomment{ARM 10/5/17}
 \end{pcomments}
 
 \pkeywords{
@@ -19,27 +20,97 @@
 \begin{problem}
 For $T \in \brnch$, define
 \begin{align*}
-\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat S\ \text{is a leaf}}\\
-\text{internal}(T) & \eqdef \set{S \in \subbrn{T} \suchthat S \in \brnchng}
+\text{leaves}(T)   & \eqdef \set{S \in \subbrn{T} \suchthat S \in \leafset}\\
+\text{internal}(T) & \eqdef \set{S \in \subbrn{T} \suchthat S \in \brnchng}.
 \end{align*}
 
-Prove that in a recursive tree, there is always one more leaf than
+\bparts
+
+\ppart Explain why it follows immediately from the definitions that if
+$T \in \brnchng$,
+\begin{align}
+\text{internal}(T)
+& = \set{T} \union \text{internal}(\leftsub{(T)})
+            \union \text{internal}(\rightsub{(T)}), \tag{trnlT}\\
+\text{leaves}(T)
+& =  \text{leaves}(\leftsub{(T)}) \union
+     \text{leaves}(\rightsub{(T)}). \tag{lvT}
+\end{align}
+
+\begin{staffnotes}
+It is a good idea to remark at the start that this is a triviality
+intended just to review the definitions.
+\end{staffnotes}
+
+\begin{solution}
+\inhandout{We know that}\inbook{By equation~(\bref{unionTLR}),}
+\begin{equation}\tag{TLR}
+\subbrn{T} = \set{T} \union \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}}.
+\end{equation}
+$T \in \brnchng$, so~(trnlT) follows by intersecting both sides of
+this equality with \brnchng, and $T$ is not a leaf, so~(lvT) follows
+by intersecting both sides of~(TLR) with \leafset.
+\end{solution}
+
+\ppart Prove by structural induction on the definition of \rectr
+\inbook{(Definition~\bref{def:rectree})}
+that in a recursive tree, there is always one more leaf than
 there are internal subtrees:
 
 \begin{lemma*}
 If $T \in \rectr$, then
-\[
+\begin{equation}\tag{lf-vs-in}
 \card{\text{leaves}(T)} = 1 + \card{\text{internal}(T)}.
-\]
+\end{equation}
 \end{lemma*}
 \begin{solution}
 
 \begin{proof}
-The proof is by structural induction on the definition of \rectr.
 
-\TBA{rest of proof}
+\inductioncase{Base case}: ($T \in \leafset$).  The only subtree of
+$T$ is $T$ itself, so $\text{leaves}(T) = \set{T}$ and
+$\text{internal}(T) = \emptyset$.  Therefore,
+\[
+\card{\text{leaves}(T)} = 1 = 1 + 0 
+= 1 + \card{\emptyset} = 1 + \card{\text{internal}(T)}.
+\]
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).
+We may assume by induction hypothesis that
+\begin{align*}
+\card{\text{leaves}(\leftsub{(T)})} & = 1 + \card{\text{internal}(\leftsub{(T)})},\\
+\card{\text{leaves}(\rightsub{(T)})} & = 1 + \card{\text{internal}(\rightsub{(T)})},
+\end{align*}
+Also, for recursive $T$, the unions in~(trnlT) and~(lvT) are disjoint,
+so
+\begin{align}
+\card{\text{internal}(T)}
+& = 1+ \card{\text{internal}(\leftsub{(T)})} +
+    \card{\text{internal}(\rightsub{(T)})},\tag{ctrnlT}\\
+\card{\text{leaves}(T)}
+& = \card{\text{leaves}(\leftsub{(T)})} +
+    \card{\text{leaves}(\rightsub{(T)})}. \tag{clvT}\\
+\end{align}
+Therefore
+\begin{align*}
+\card{\text{leaves}(T)} 
+& = \card{\text{leaves}(\leftsub{(T)})} +
+     \card{\text{leaves}(\rightsub{(T)})}
+        & \text{(by~(clvT))}\\
+& = (1 + \card{\text{internal}(\leftsub{(T)})}) +
+    (1 + \card{\text{internal}(\rightsub{(T)})})
+        & \text{(by ind hypothesis)}\\
+& = 1 + (1+ \card{\text{internal}(\leftsub{(T)})} +
+        \card{\text{internal}(\rightsub{(T)})})\\
+& = 1+ \card{\text{internal}(T)}
+        & \text{(by~(ctrnlT))}.
+\end{align*}
 \end{proof} 
+
 \end{solution}
+
+\eparts
+
 \end{problem}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
