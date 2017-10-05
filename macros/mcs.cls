@@ -1476,6 +1476,9 @@
 \newcommand{\rmin}[1]{\text{recmin}#1}
 
 \newcommand{\trsrch}[1]{\text{srch}#1}
+
+\newcommand{\avlrot}[1]{\text{rotate}#1}
+
 \newcommand{\avlnsrt}[1]{\text{insert}#1}
 
 \if@usecolor@

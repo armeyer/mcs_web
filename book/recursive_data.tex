@@ -1509,10 +1509,18 @@ at 3.7. So the search ends successfully.
 \begin{center}
 \begin{verbatim}
                 6.8
-          pi             8  
-     3          4.9    7   9 
-  0.5  3.1    3.7  5
-.4  .6       3.2 4 
+               /   \
+              /     \
+             /       \
+            /         \
+          pi           8  
+         / \          / \
+        /   \        7   9
+       3    4.9  
+      / \    /  \
+    0.5 3.1 3.7  5
+   /\       / \
+ .4 .6     3.2 4 
 \end{verbatim}
 \end{center}
 
@@ -1543,12 +1551,21 @@ and the exponential savings evaporates.
 \begin{center}
 \begin{verbatim}
                 0
+               / \
+              /   \
             .5     1
+                  / \
+                 /   \
                1.5    2
-                  2.5    3
-                     3.5   .
-                        .    .
-                          .    .
+                     / \
+                    /   \
+                 2.5     3  
+                    .     .
+                     .     .
+                      .     .
+                           / \
+                          /   \
+                       n+1/2   n  
 \end{verbatim}   
 \end{center}
 
@@ -1561,10 +1578,15 @@ and the exponential savings evaporates.
 By treating search trees as a recursive data type, we will be able to
 describe simple recursive procedures for tree management, and we also
 will have a powerful inductive proof method for proving properties of
-these trees and procedures.  This will allow simple explanations of
-how to grow search trees whose top-to-bottom paths are close to the
-same length, and how to maintain this property as the data evolves
-through adding and removing values.
+these trees and procedures.  This will allow concise formal
+definitions of search trees whose top-to-bottom paths are close to the
+same length, and precise definitions of procedures for maintaining this
+property as the data evolves through adding and removing values.
+
+Although we will wind up with an some elegant and efficient
+algorithms, the aim of this section is to illustrate how to give
+simple recursive definitions of a data type and functions on the data
+type, along with correctness proofs
 
 \subsection{Binary Branching}
 
@@ -2377,7 +2399,7 @@ on Definition~\ref{defsearchtree} of Search tree:
 \]
 \end{definition}
 
-\begin{theorem}
+\begin{theorem}\label{thm:correct-search}
 If $r \in \text{nums}(T)$, then $\trsrch{(T,r)}$ is a sequence of
 selectors and
 \[
@@ -2388,11 +2410,19 @@ Otherwise, $\trsrch{(T,r)}$ will be a sequence of the form
 $\textbf{fail}\cdot \vec{P}$ for some sequence~$\vec{P}$.
 \end{theorem}
 
+Theorem~\ref{thm:correct-search} can be proved by a straightforward
+structural induction on the recursive Definition~\ref{defsearchtree}
+of Search Tree.  We'll leave it as an exercise.\footnote{At this early
+  stage of practicing structural induction, the full proof really
+  belongs in the text.  We'll include it when we get a chance.}
+
+\iffalse
 \begin{proof}
 
 \TBA{By induction on the definition of \trsrch{}.}
 
 \end{proof}
+\fi
 
 \subsection{Insertions into AVL trees}
 The procedure for inserting a value $r$ into an AVL tree $T$ can be
@@ -2421,15 +2451,15 @@ That is,
 \[
 \nums{S} = \set{r} \union \nums{A}.
 \]
-Moreover, the depth of $S$ will be at most one larger that the depth
-of $A$.
+Moreover, the depth of $S$ will be at most one larger and no smaller
+that the depth of $A$.
 
 Now we let $N$ be a new tree the same label as $T$, with one branch of
 $N$ equal to $S$ and the other branch of $N$ equal to the $B$.  This
-makes $N$ a Search tree whose labels are $r$ along with the labels of
-$T$.  Moreover, both of whose branches of $N$ are AVL trees.  Now if
-the depth of $S$ is at most one greater than the depth of $B$, then
-$N$ will be the desired AVL tree.
+makes $N$ a Search tree whose branches are AVL trees and whose labels
+are $r$ along with the labels of $T$.  Now if the depth of $S$ is at
+most one greater than the depth of $B$, then $N$ will be the desired
+AVL tree.
 
 The only problem is that $N$ may not be an AVL tree because the depth
 of $S$ may now be two greater than the depth of the $B$.  The fix is
@@ -2438,91 +2468,174 @@ to balance depths.
 
 To explain rotation, we need to identify some subtrees of $S$ and that
 will get rearranged.  Let $d \eqdef \dpth{B}$.  We know that $\dpth{S}
-= d+2$.  This means $S$ has branches $R,U$ of depths $d,d+1$ with at
-least one $d+1$.  If both are depth $d+1$, then let $U$ be the one
-with values furthest from the middle.  If the depth of $U$ is $d+1$,
-then it must have branches $C,D$ of depths $d,d-1$ with at least one
-$d$.  In this case, we re-arrange as shown in (on the right below).
-Otherwise, the depth of $U$ is $d$ and of $R$ is $d+1$, in which case
-$R$ must in turn have a branches $V,W$ of depths $d$ or $d-1$ with at
-least one $d$.  This is illustrated in Figure~\ref{rotate1} with
-integer labels corresponding to the relative values of the labels of
-these trees.
+= d+2$.  This means $S$ has branches $R,U$ whose depths are either $d$
+or $d+1$ with at least one of the with depth $d+1$.  Let $U$ be the
+branch furthest from the middle.  This is illustrated in
+Figure~\ref{rotate1}.
 
-\begin{figure}                                                          X6                  
-                                                           d+1,2  Z2             y7  d+1    
-                                                                1   4        C6.6  D8       
+\iffalse
+where the integer labels indicate the relative sizes of the numerical
+labels\fi
+
+\begin{figure}
 \begin{verbatim}
-           N2                 
-           /\
-          /  \
-        B1   S6
-             /\
-            /  \
-           /    \
-          /      \
-        R4        U8
-        / \       /\
-       /   \     /  \
-     V3     W5  C7   D8 
+                             N
+                             /\
+                            /  \
+                           B    S
+                               /\
+                              /  \
+                             R    U
 \end{verbatim}
 
-\caption{Tree before rotation.}
+\caption{The Tree N before rotation.}
 
 \label{rotate1}
 
 \end{figure}
 
-In Figure~\ref{rotate1},
-\begin{align*}
-\dpth{B} & = d\\
-\dpth{S} & = d+2,\\
-\dpht{R} & = d+1,\\
-\dpht{U} & = d\\
-\dpht{V} & = d,\\
-\dpht{W} \in  \set{d, d-1}.\\
-\end{align*}
-
-The result of the rotation is defined to be three new trees $X,Y,Z$
-with subtrees as shown in Figure~\ref{rotate2} and values as indicated
-by integers corresponding to those in Figure~\ref{rotate1}.  That is,
-\begin{align*}
-\nlbl{X}  & = \nlbl{R},\\
-\nlbl{Y}  & = \nlbl{N}  & = \nlbl{T},\\
-\nlbl{Z}  &= \nlbl{S},\\
-\dpth{Y} & = d+1,\\
-\dpth{Z} & = d+1,
-\end{align*}
+The simplest case of rotation is when $\dpth{R} = d$.  In that case we
+define the rotation of $N$ to be the tree $X$ shown in
+Figure~\ref{rotate2}.
 
 \begin{figure}
 
-%\graphic{}
-
 \begin{verbatim}
-           X4                         X4                                     N2                 
-           /\                         /\                                     /\                 
-          /  \                       /  \                                   /  \                
-         /    \                     /    \                              d  B1   S6 d+2
-       Y2      Z6                 Y2      Z6                                   /\               
-       /\      /\                 /\      /\                                  /  \              
-      /  \    /  \               /  \    /  \                       d,d+1   R4   U7 d+1
-     B1  V3  W5  U7             B1  V3  C6.5  D8                            / \                 
-\end{verbatim}                                                             /   \                
-                                                                         V3     W5    C6.5   D8 
-\caption{Tree after rotation is AVL.}
+                              X   num(X) = num(S)
+                             / \
+                            /   \
+         num(Y) = num(N)   Y     U
+                          / \  
+                         /   \
+                        B     R   
+\end{verbatim}
 
-\label{rotate2}                                                    
+\caption{X is the rotation of tree N in Figure~\ref{rotate1}.}
+
+\label{rotate2}
                                                                    
 \end{figure}                                                       
 
-Now it is easy to check that $X$ 
+Here $X \in \rectr$ is a ``new'' tree---that is, $X \notin
+\subbrn{N}$---with the same label as $S$, and $Y$ is a new tree with
+the same label as $N$.  We leave it to the reader to check that $X$ is
+an AVL tree and $\nlbl{X} = \nlbl{N}$.  Moreover, $X$ has very nearly
+the same subtrees as $N$.  In particular,
+\[
+\subbrn{X} = \set{X,Y} \union (subbrn{N} - \set{N,S}).
+\]
 
-A small technicality comes up because sets of values can be any size,
-but the size of a recursive tree is always odd.  We handle this by
-allowing \emph{leaves} to be labelled with one or two values.
+There are a couple of similar rotations that work in the case that
+$\dpth{R} = d+1$.  We'll leave those as exercises.  As a consequence, we have:
+
+\begin{lemma}(Rotation)\label{lem:rot}
+There is a function
+\[
+\avlrot{}: (\text{(AVL Trees)} \times \reals\times \text{(AVL Trees)}) \to \text{(AVL Trees)},
+\]
+such that if $B$ and $S$ are AVL trees, $r \in \reals$, $\dpth{S}=\dpth{B}+2$, and either
+\[
+\max(B) < r < \min(S),\quad \text{or}\quad  \max(S) < r < \min(B),
+\]
+then
+\[
+    \nums{\avlrot{(B,r,S)} = \nums{B} \union \set{r} \union \nums{S},
+\]
+\[
+\dpth{\avlrot{(B,r,S)}} = \dpth{B}+1,
+\]
+and there are two size-three sets $S_{\text{new}}$, $S_{\text{old}}$
+of AVL trees, such that
+\[
+\subbrn{\avlrot{(B,r,S)}} = (\subbrn{B} \union \subbrn{S} \union S_{\text{new}}) - S_{\text{old}}.
+\]
+\end{lemma}
+
+
+%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
+%% by integers corresponding to those in Figure~\ref{rotate1}. 
+
+%%  If both are depth $d+1$, then let $U$ be the one
+%% with values.  If the depth of $U$ is $d+1$,
+%% then it must have branches $C,D$ of depths $d,d-1$ with at least one
+%% $d$.  In this case, we re-arrange as shown in (on the right below).
+%% Otherwise, the depth of $U$ is $d$ and of $R$ is $d+1$, in which case
+%% $R$ must in turn have a branches $V,W$ of depths $d$ or $d-1$ with at
+%% least one $d$.  This is illustrated in Figure~\ref{rotate1} with
+%% integer labels corresponding to the relative values of the labels of
+%% these trees.
+%%                                        X6                  
+%%                          d+1,2  Z2             y7  d+1    
+%%                               1   4        C6.6  D8     
+  
+%% \begin{figure}
+%% \begin{verbatim}
+%%                              N2                 
+%%                              /\
+%%                             /  \
+%%                           B1   S4
+%%                                /\
+%%                               /  \
+%%                              /    \
+%%                             /      \
+%%                           R3        U5
+%% \end{verbatim}
+
+%% \caption{Tree before rotation.}
+
+%% \label{rotate1}
+
+%% \end{figure}
+
+%% In Figure~\ref{rotate1},
+%% \begin{align*}
+%% \dpth{B} & = d\\
+%% \dpth{S} & = d+2,\\
+%% \dpht{R} & = d+1,\\
+%% \dpht{U} & = d\\
+%% \dpht{V} & = d,\\
+%% \dpht{W} \in  \set{d, d-1}.\\
+%% \end{align*}
+
+%% The result of the rotation is defined to be three new trees $X,Y,Z$
+%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
+%% by integers corresponding to those in Figure~\ref{rotate1}.  That is,
+%% \begin{align*}
+%% \nlbl{X}  & = \nlbl{R},\\
+%% \nlbl{Y}  & = \nlbl{N}  & = \nlbl{T},\\
+%% \nlbl{Z}  &= \nlbl{S},\\
+%% \dpth{Y} & = d+1,\\
+%% \dpth{Z} & = d+1,
+%% \end{align*}
+
+%% \begin{figure}
+
+%% %\graphic{}
+
+%% \begin{verbatim}
+%%            X4                         X4                                     N2                 
+%%            /\                         /\                                     /\                 
+%%           /  \                       /  \                                   /  \                
+%%          /    \                     /    \                              d  B1   S6 d+2
+%%        Y2      Z6                 Y2      Z6                                   /\               
+%%        /\      /\                 /\      /\                                  /  \              
+%%       /  \    /  \               /  \    /  \                       d,d+1   R4   U7 d+1
+%%      B1  V3  W5  U7             B1  V3  C6.5  D8                            / \                 
+%% \end{verbatim}                                                             /   \                
+%%                                                                          V3     W5    C6.5   D8 
+%% \caption{Tree after rotation is AVL.}
+
+%% \label{rotate2}                                                    
+                                                                   
+%% \end{figure}                                                       
+
+In defining the insert function, one small technicality has to be
+handled: because sets of values can be any size, but the size of a
+recursive tree is always odd.  We handle this by allowing
+\emph{leaves} to be labelled with one \emph{or two} values, with both
+values obeying the labelling rules for AVL trees.
 
 \begin{definition}
-
 The function
 \[
 \avlnsrt{}: \text{(AVL trees)} \times \reals \to \text{(AVL trees)}
@@ -2541,42 +2654,68 @@ Definition~\ref{defsearchtree} of Search tree:
 \inductioncase{Base case}: ($T \in \leafset$).
 
 \inductioncase{subcase}: ($T \in \leafset$ with one label).  Then
-$\avlnsrt{(T,r)}$ is defined to be a leaf $T'$ labelled with the set
-of two values $\set{r,\nlbl{(T)}}$.
+$\avlnsrt{(T,r)}$ will be leaf labelled with the set of two values
+$\set{r,\nlbl{(T)}}$.
 
-\inductioncase{subcase}: ($T \in \leafset$ with two labels)
-Then $\avlnsrt{(T,r)}$ is defined to be a depth one Search tree $T'$
-whose labels are the three values $\set{r} \union \nlbl{(T)}$.
+\inductioncase{subcase}: ($T \in \leafset$ with two labels) Then
+$\avlnsrt{(T,r)}$ is defined to be a depth one Search tree whose
+labels are the three values $\set{r} \union \nlbl{(T)}$.
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).  
 
-\iffalse Let $L \eqdef \leftsub{(T)}, R \eqdef \rightsub{(T)}, d_L
-\eqdef \dpth{L}, d_R \eqdef \dpth{R}.$ \fi
+Then $\avlnsrt{(T,r)}$ is defined by cases.
 
-\inductioncase{subcase}: ($r < \nlbl{(T)})$.  Let $S \eqdef
-\avlnsrt{(\leftsub{(T)}, r)}$.
+\inductioncase{subcase}: ($r > \nlbl{(T)})$.  Let $S \eqdef
+\avlnsrt{(\rightsub{(T)}, r)}$ and $B \eqdef \leftsub{(T)}$.
 
-\inductioncase{subsubcase}: ($\dpth{S} \leq \dpth{\rightsub{(T)}}+1$.)
-Then $\avlnsrt{(T,r)} \eqdef T'$ where
-\begin{itemize}
+Let $N$ be a ``new'' tree, that is,
+\[
+N \notin \subbrn{S} \union \subbrn{B},
+\]
+chosen to satisfy
+\begin{align}
+ &\nlbl{N} = \nlbl{T},\\
 
-\item $T'$ is a ``new'' tree, that is, $T' \notin \subbrn{S} \union
-  \subbrn \rightsub{(T)}$,
+ &\rightsub{(N)} = S,\\
 
-\item $\leftsub{(T')} = S$,
+ &\leftsub{(N)} = B.
+\end{align}
+(See Figure~\ref{rotate1}.)
 
-\item $\rightsub{(T')} = \rightsub{(T)}$.
+\inductioncase{subsubcase}: ($\dpth{S} \leq \dpth{B}+1$.)
+\[
+\avlnsrt{(T,r)} \eqef N.
+\]
 
-\end{itemize}
+\inductioncase{subsubcase}: ($\dpth{S} = \dpth{B}+2$.)
+\[
+\avlnsrt{(T,r)} \eqdef \avlrot{(B,r,S)}.
+\]
 
-\inductioncase{subsubcase}: ($\dpth{S} = \dpth{\rightsub{(T)}}+2$.)
-
-Then we may assume $T$ has subtrees $T_1,T_2,\dots,T_7$ where
-$\nlbl{(T_2)} = \nlbl{(T)}$
-
-\TBA{To be continued\dots}
-
+\inductioncase{subcase}: ($r < \nlbl{(T)})$.  Same as the case ($r >
+\nlbl{(T)}$) with left and right reversed.
 \end{definition}
+
+Here is the formal theorem that shows that $\avlnsrt{(T,r)}$ is
+correct.  Moreover, the subtrees of $T$ and $\avlnsrt{(T,r)}$ are the
+same except for at most $5 \log_2(\sz{(T)})$ subtrees, reflecting the
+fact that the time for an insertion, like the time for a search, is
+exponentially smaller than the size of the data set.
+
+\begin{theorem}\label{thm:correct-avl-insert}
+Suppose $T$ is an AVL tree and $r \in reals$.
+Then $\avlnsrt{((T,r))}$ is an AVL tree, and
+\[
+\nums{\avlnsrt{(T,r)}} = \set{r} \union \nums{T},
+\]
+\[
+\dpth{T} \leq \dpth{\avlnsrt{(T,r)}} \leq \dpth{T}+1,
+\]
+and there are two size-($5 \log_2(\sz{(T)})$ sets $S_{\text{new}}$,
+$S_{\text{old}}$ of AVL trees, such that
+\[
+\subbrn{\avlnsrt{(T)}} = (\subbrn{T}\union S_{\text{new}}) - S_{\text{old}}.
+\]
 
 \begin{problems}
 \practiceproblems
