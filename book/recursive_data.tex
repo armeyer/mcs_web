@@ -2403,51 +2403,75 @@ $\textbf{fail}\cdot \vec{P}$ for some sequence~$\vec{P}$.
 
 \subsection{Insertions into AVL trees}
 The procedure for inserting a value $r$ into an AVL tree $T$ can be
-defined recursively on the definition of AVL tree.  One small
-technicality comes up because sets of values can be any size, but the
-size of a recursive tree is always odd.  We handle this by allowing
-\emph{leaves} to be labelled with one or two values.
+defined recursively on the definition of AVL tree.  
 
 \iffalse The other technicality comes about because we will be taking
 a tree and defining a new tree sharing some of its subtrees.  To avoid
 sharing in the new tree, the recursive definition we will need trees
-that are combinations of subtrees trees using subtrees of \fi
+that are combinations of subtrees trees using subtrees of 
+
+The insertion
+procedure is usually described as a process of rearranging the
+``links'' that hold $T$ together.
+\fi
 
 The procedure to insert a value $r$ parallels the procedure to search
 for $r$.  If $r$ is already a value in $T$, the search will discover
 this and the insert procedure doesn't have to do anything.  If $r$ is
 not a value in $T$, then it has to be inserted recursively into one of
-the branches of $T$ depending on how it compares $\nlbl{(T)}$.  This
-creates a tree $N$ with the same label as $T$, with one branch $S$
-equal to the subtree with $r$ inserted and the other branch the same
-as in $T$.  Now $N$ will be a Search tree, both of whose branches will
-(by induction) be AVL trees.  The only problem is that $N$ may not be
-an AVL tree because the depth of $S$ may now be two greater than the
-depth of the other branch.  The fix is to apply a ``rotation
-operation'' that rearranges the top few subtrees to balance the
-depths.
+the branches of $T$ depending on how it compares $\nlbl{(T)}$.  More
+precisely, suppose $A$ and $B$ are the branches of $T$, that is,
+$\set{A,B}= \set{leftsub{T}, rightsub{T}}$, and $A$ is the subtree
+into which $r$ will be inserted.  The result of inserting $r$ into $A$
+will be a new AVL tree $S$ with the same labels as $A$ along with $r$.
+That is,
+\[
+\nums{S} = \set{r} \union \nums{A}.
+\]
+Moreover, the depth of $S$ will be at most one larger that the depth
+of $A$.
 
-To explain rotation, suppose the the left branch of a tree $N$ has
-depth $d$ and the right branch is $S$ with depth $d+2$.  Then $N$ must
-have subtrees as indicated in Figure~\ref{rotate1}.  The rotation
-operation re-arranges them into the more balaced tree in
-Figure~\ref{rotate2}.
+Now we let $N$ be a new tree the same label as $T$, with one branch of
+$N$ equal to $S$ and the other branch of $N$ equal to the $B$.  This
+makes $N$ a Search tree whose labels are $r$ along with the labels of
+$T$.  Moreover, both of whose branches of $N$ are AVL trees.  Now if
+the depth of $S$ is at most one greater than the depth of $B$, then
+$N$ will be the desired AVL tree.
 
-\begin{figure}
+The only problem is that $N$ may not be an AVL tree because the depth
+of $S$ may now be two greater than the depth of the $B$.  The fix is
+to apply a ``rotation operation'' that rearranges the top few subtrees
+to balance depths.
 
-%\graphic{}
+To explain rotation, we need to identify some subtrees of $S$ and that
+will get rearranged.  Let $d \eqdef \dpth{B}$.  We know that $\dpth{S}
+= d+2$.  This means $S$ has branches $R,U$ of depths $d,d+1$ with at
+least one $d+1$.  If both are depth $d+1$, then let $U$ be the one
+with values furthest from the middle.  If the depth of $U$ is $d+1$,
+then it must have branches $C,D$ of depths $d,d-1$ with at least one
+$d$.  In this case, we re-arrange as shown in (on the right below).
+Otherwise, the depth of $U$ is $d$ and of $R$ is $d+1$, in which case
+$R$ must in turn have a branches $V,W$ of depths $d$ or $d-1$ with at
+least one $d$.  This is illustrated in Figure~\ref{rotate1} with
+integer labels corresponding to the relative values of the labels of
+these trees.
 
+\begin{figure}                                                          X6                  
+                                                           d+1,2  Z2             y7  d+1    
+                                                                1   4        C6.6  D8       
 \begin{verbatim}
-           T2=N
+           N2                 
            /\
           /  \
-        T1   T6=S
+        B1   S6
              /\
             /  \
-          T4   T7
-          / \
-         /   \
-       T3     T5
+           /    \
+          /      \
+        R4        U8
+        / \       /\
+       /   \     /  \
+     V3     W5  C7   D8 
 \end{verbatim}
 
 \caption{Tree before rotation.}
@@ -2457,41 +2481,52 @@ Figure~\ref{rotate2}.
 \end{figure}
 
 In Figure~\ref{rotate1},
-\begin{itemize}
-\item $\dpth{T_1} = d$,
-\item $\dpth{T_6} = d+2$,
-\item $\max\setr{\dpht{T_3},\dpth{T_5}} = d$, $\min\setr{\dpht{T_3},\dpth{T_5}} = d-1$,
-\item $d \leq \dpth{T_7} \leq d+1$.
-\end{itemize}
+\begin{align*}
+\dpth{B} & = d\\
+\dpth{S} & = d+2,\\
+\dpht{R} & = d+1,\\
+\dpht{U} & = d\\
+\dpht{V} & = d,\\
+\dpht{W} \in  \set{d, d-1}.\\
+\end{align*}
+
+The result of the rotation is defined to be three new trees $X,Y,Z$
+with subtrees as shown in Figure~\ref{rotate2} and values as indicated
+by integers corresponding to those in Figure~\ref{rotate1}.  That is,
+\begin{align*}
+\nlbl{X}  & = \nlbl{R},\\
+\nlbl{Y}  & = \nlbl{N}  & = \nlbl{T},\\
+\nlbl{Z}  &= \nlbl{S},\\
+\dpth{Y} & = d+1,\\
+\dpth{Z} & = d+1,
+\end{align*}
 
 \begin{figure}
 
 %\graphic{}
 
 \begin{verbatim}
-           N4
-           /\
-          /  \
-         /    \
-       N2      N6
-       /\      /\
-      /  \    /  \
-     T1  T3  T5  T7
-\end{verbatim}
-
+           X4                         X4                                     N2                 
+           /\                         /\                                     /\                 
+          /  \                       /  \                                   /  \                
+         /    \                     /    \                              d  B1   S6 d+2
+       Y2      Z6                 Y2      Z6                                   /\               
+       /\      /\                 /\      /\                                  /  \              
+      /  \    /  \               /  \    /  \                       d,d+1   R4   U7 d+1
+     B1  V3  W5  U7             B1  V3  C6.5  D8                            / \                 
+\end{verbatim}                                                             /   \                
+                                                                         V3     W5    C6.5   D8 
 \caption{Tree after rotation is AVL.}
 
-\label{rotate2}
+\label{rotate2}                                                    
+                                                                   
+\end{figure}                                                       
 
-\end{figure}
+Now it is easy to check that $X$ 
 
-In Figure~\ref{rotate1},
-\begin{itemize}
-\item $\dpth{T_1} = d$,
-\item $\dpth{T_6} = d+2$,
-\item $\max\setr{\dpht{T_3},\dpth{T_5}} = d$, $\min\setr{\dpht{T_3},\dpth{T_5}} = d-1$,
-\item $d \leq \dpth{T_7} \leq d+1$.
-\end{itemize}
+A small technicality comes up because sets of values can be any size,
+but the size of a recursive tree is always odd.  We handle this by
+allowing \emph{leaves} to be labelled with one or two values.
 
 \begin{definition}
 
