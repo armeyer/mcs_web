@@ -1585,9 +1585,9 @@ property as the data evolves through adding and removing values.
 
 Although we will end up with an elegant and efficient algorithm for
 tree search and insertion, the importance of this section is its
-illustration of how to give simple recursive definitions for a basic
-data type and functions on the data, along with proofs of correctness
-by structural induction.
+illustration of simple recursive definitions for a basic data type and
+functions on the data, along with proofs of correctness by structural
+induction.
 
 \subsection{Binary Branching}
 
@@ -1614,14 +1614,14 @@ true.  Let \leafset\ be the set of leaves:
 \]
 The non-leaf trees are supposed to be the trees that actually have
 left and right branches.  In any representation of trees there has to
-be a way to select these branches, that is there have to be
+be a way to select these branches, that is, there have to be
 \term{selector functions} $\leftsub{}$ and $\rightsub{}$ that produce
 the left and right branches of non-leaf elements of \brnch.  We
 formalize this by defining $\brnchng \eqdef \brnch - \leafset$ and
 stipulating that that there are total functions
 \begin{align*}
-\leftsub{}: & \brnchng \to \brnch,\\
-\rightsub{}:& \brnchng \to \brnch.
+\leftsub{}: \brnchng  & \to \brnch,\\
+\rightsub{}:\brnchng  & \to \brnch.
 \end{align*}
 So by definition, the left branch of $T$ is the tree $\leftsub{(T)}$
 and the right branch is $\rightsub{(T)}$.
@@ -1634,15 +1634,16 @@ search tree.  Any such path can be described by the sequence of left
 and right branches you select.  For example in the tree given in
 Figure~\ref{searchtree1}, the sequence
 \begin{equation}\label{lslsrs}
-(\leftsub{},\leftsub{},\rightsub{}).
+(\rightsub{},\leftsub{},\leftsub{}).
 \end{equation}
-describes the path that starts at the top (6.8).  The selectors are
-applied in right-to-left order, so we first go to $\rightsub{(6.8)} =
-\pi$.  Then we take the left branch to $\leftsub{(\pi)} = 3$, and take a
-final left branch to end with the subtree $\leftsub{(3)} = 0.5$.  That
-is, the subtree at the end of the path given by the sequence~\eqref{lslsrs} is
+describes a length-three path that starts at the top (6.8).  The
+selectors are applied in right-to-left order, so we first go to
+$\leftsub{(6.8)} = \pi$.  Then we take the left branch to
+$\leftsub{(\pi)} = 3$, and take a final right branch to end with the
+subtree $\rightsub{(3)} = 3.1$.  That is, the subtree at the end of the
+path given by the sequence~\eqref{lslsrs} is
 \[
-\leftsub{(\leftsub{(\rightsub{(6.8)})})} = 0.5.
+\rightsub{(\leftsub{(\leftsub{(6.8)})})} = 3.1.
 \]
 
 More generally, let $\vec{P}$ be a finite sequence of selector
@@ -1650,11 +1651,13 @@ functions and suppose $T \in \brnch$.  The notation for the subtree at
 the end of the path described by $\vec{P}$ is $\rslt{T}{(\vec{P})}$.
 For example, we just saw that
 \[
-\rslt{(6.8)}{((\leftsub{},\leftsub{},\rightsub{}))} = 0.5.
+\rslt{(6.8)}{((\rightsub{},\leftsub{},\leftsub{}))} = 3.1.
 \]
 Notice that if the path $\vec{P}$ tries to continue past a leaf of
-$T$, there won't be any subtree at the end.  That is,
-$\rslt{T}{(\vec{P})}$ may not exist.
+$T$, there won't be any subtree at the end.  For example,
+$\rslt{(6.8)}{(\leftsub{},\rightsub{},\rightsub{})}$ is undefined
+since $\rslt{(6.8)}{(\rightsub{},\rightsub{})}=9$ is a leaf with no
+left branch.
 
 To formalize this, we will give a definition of $\rslt{T}{(\vec{P})}$
 by induction on path length.  We'll use the notation
@@ -1669,7 +1672,7 @@ sequence in~\eqref{lslsrs}, then
 \]
 is the length four sequence
 \[
-(\rightsub{}, \leftsub{},\leftsub{},\rightsub{}).
+(\rightsub{},\rightsub{}, \leftsub{},\leftsub{}).
 \]
 Likewise for $\vec{P} \cdot f$, so for example
 \[
@@ -1720,8 +1723,8 @@ The \term{proper subtrees} $\propbrn{T}$ are the subtrees that are
 actually ``below'' $T$.
 \[
 \propbrn{T} \eqdef \set{S \in \brnch \suchthat S =
-  \rslt{T}{(\vec{P})}\ \text{for some \emph{nonempty} selector
-    sequence}\ \vec{P}}.
+  \rslt{T}{(\vec{P})}\ \text{for some selector
+    sequence}\ \vec{P}\neq \emptystring}.
 \]
 So we have by definition that
 \begin{equation}\label{subtree-proptree}
@@ -1738,7 +1741,7 @@ For $T \in \brnch$,
 \[
 \propbrn{T} =
 \begin{cases}
-  \emptyset, & \text{if $T \in leafset$},\\
+  \emptyset, & \text{if $T \in \leafset$},\\
   \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}},
             & \text{if}\ T \in \brnchng.
 \end{cases}
@@ -1820,19 +1823,25 @@ Figure~\ref{inftree123}.
 %\graphic{}
 
 \begin{verbatim}
-                  0
-           1            2
-        3     4      5      6
-       7 8   9 10  11 12  13 14
-       .          .             . 
-      .           .              .
-     .            .               . 
-
+                                  0
+                                /   \
+                               /     \
+                              /       \
+                             /         \
+                           1             3
+                          / \           / \
+                         /   \         /   \
+                        4     5       6     7
+                       / \   / \     / \   / \
+                      8   9 10  11  12 13 14 15
+                       .           .         . 
+                      .            .          .
+                     .             .           . 
 \end{verbatim}
 
-\caption{An infinite tree with no leaves.}
+\caption{An infinite tree with no leaves.}                            
 
-\label{inftree123}
+\label{inftree123}                                                   
 
 \end{figure}
 
@@ -1936,11 +1945,11 @@ are finite, so by~\eqref{unionTLR},
 \begin{equation}\label{Tleq1LR}
 \sz{T} \leq 1 + \sz{L} + \sz{R}
 \end{equation}
-is also finite.  
+is also finite.\footnote{The inequality~\eqref{Tleq1LR} is actually an
+  equality, see~\eqref{sT1sl} below.}
 \end{proof}
 \end{corollary}
-\footnote{The inequality~\eqref{Tleq1LR} is actually an equality,
-  see~\eqref{sT1sl} below.}
+
 Now it is an initially surprising, very useful, and cool fact that the
 trees with no infinite paths and no shared subtrees are actually the
 \emph{same} as the recursively defined trees.  It takes a bit of
@@ -2059,14 +2068,14 @@ The proof is by structural induction on the definition of \rectr.
 \inductioncase{Base case}: ($T \in \leafset$).
 By Corollary~\ref{unionLR}, $\subbrn{T} = \set{T}$, so
 \[
-\trsize{(T)} \eqdef 1 = \card{\set{T}}.
+\trsize{(T)} \eqdef 1 = \card{\subbrn{T}} = \sz(T}.
 \]
 
 \inductioncase{Constructor case}: ($T \in\brnchng$).
 
 We have by induction hypothesis that
 \begin{equation}\label{sizefsub}
-\text{sz{T}} = \trsize{(f(T))}, \qquad \text{for}\ f \in
+\text{\sz{T}} = \trsize{(f(T))}, \qquad \text{for}\ f \in
 \set{\leftsub{}, \rightsub{}}.
 \end{equation}
 We have from~\ref{unionTLR} that
@@ -2075,7 +2084,7 @@ We have from~\ref{unionTLR} that
 \]
 for $T \in \brnch$.  Now if $T \in \rectr$, then these three sets are disjoint, so
 \begin{equation}\label{sT1sl}
-\sz{T} = 1 + \text{sz{T)}} + \text{sz{T)}}.
+\sz{T} = 1 + \text{\sz{T}} + \text{\sz{T}}.
 \end{equation}
 Now we have
 \begin{align*}
@@ -2122,9 +2131,10 @@ length of the longest path to a leaf, that is, the depth of the tree.
 So a first question to address is how short can we guarantee searches
 will be compared to the size of the set to be searched?  The simple
 answer is that if the set to be searched has $n$ values in it, then
-some searches will unavoidably take $\log_2 n$; moreover, there is a
-way to arrange the values so that no search takes any longer than this
-minimum amount.  The following two Theorems confirm this.
+some searches will unavoidably take $\log_2 n$ value comparisons;
+moreover, there is a way to arrange the values so that no search takes
+any longer than this minimum amount.  The following two Theorems
+confirm this.
 
 We fist prove a basic relation between size and depth of recursive
 trees:
@@ -2161,7 +2171,7 @@ The proof is by structural induction on the definition of \rectr:
 
 \inductioncase{Base case}: ($T \in \leafset$).
 \[
-\trsize{(T)} \eqdef 1 = 2^1 - 1 = 2^{\trdpth{(T)}+1} - 1.
+\trsize{(T)} \eqdef 1 = 2^{0+1} - 1 = 2^{\trdpth{(T)}+1} - 1.
 \]
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).
@@ -2191,14 +2201,14 @@ be at least one less than the base two logarithm of the size of the
 data set to be searched:
 
 \begin{corollary}
-For any recursive tree $T \rectr$,
+For any recursive tree $T \in \rectr$,
 \begin{equation}\label{}
 \dpth{T} \geq \log_2(\sz{T}) - 1.
 \end{equation}
 \end{corollary}
 
-On the other hand, searches need not be any longer than log base two
-of the size of the set of values.  Namely, define a tree to be \term{fully
+On the other hand, searches need not be any longer than $log_2$ of the
+size of the set of values.  Namely, define a tree to be \term{fully
   balanced} when all the lengths of paths that end at leaves differ by
 at most one.
 
@@ -2225,10 +2235,11 @@ most $\log_2 n$.
 
 When a set of values may evolve by the insertion or deletion of
 values, maintaining a fully balanced tree may require changing the
-branches of up to half the subtrees, an effort that would swamp the
-time saved by having short searches.  A ``have your cake and eat it
-too'' approach is to loosen the fully balanced requirement while still
-maintaining logarithmic search length.  
+branches of all the subtrees (Problem~\bref{PS_update_balanced}), an
+effort that would swamp the time saved by having short searches.  A
+``have your cake and eat it too'' approach is to loosen the fully
+balanced requirement while still maintaining logarithmic search
+length.
 
 In a fully balanced tree, most subtrees will have to be complete
 trees.  This means the depth of the left and right branches of most
@@ -2723,9 +2734,14 @@ $S_{\text{old}}$ of AVL trees, such that
 
 \classproblems
 \pinput{CP_leaves_vs_nodes}
+\begin{editingnotes}
+CP verify rotate2 above
+PS Verify another rotation case
+\end{editingnotes}
 
 \homeworkproblems
 \pinput{PS_shared_leaves}
+\pinput{PS_update_balanced}
 
 \examproblems
 \pinput{MQ_recursive_tree_depth}
