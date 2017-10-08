@@ -1,7 +1,7 @@
 \documentclass[problem]{mcs}
 \begin{pcomments}
   \pcomment{PS_update_balanced}
-  \pcomment{ARM 10/5/17}
+  \pcomment{ARM 10/8/17}
 \end{pcomments}
 
 \pkeywords{
@@ -16,64 +16,145 @@
 % Problem starts here
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problem}
+The \emph{isomorphism} relation between recursive tree $T,U \in
+\rectr$ is defined recursively
+
+\inductioncase{Base case}: ($T \in \leafset$).  $T$ is isomorphic to
+$U$ iff $U$ is a leaf.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  $T$ is
+isomorphic to $U$ iff
+\[
+U \in \brnchng\ \QAND\
+ \leftsub{U}\ \text{isomorphic to}\ \leftsub{T}\ \QAND\
+\rightsub{U}\ \text{isomorphic to}\ \rightsub{T}.
+\]
+
 \bparts
 
-\ppart\label{zint12n-1} Prove that for any given set $V$ of $2^n-1$
-real numbers and fully balanced tree $B$ of size $2^n-1$, there is
-\emph{only one way} to label $B$ with these values so that $B$ is a
-search tree.
-
-\hint Induction on $n$.
+\ppart Prove that if $T$ and $U$ are isomorphic, then $\sz{T} = \sz{U}$.
 
 \begin{solution}
-Let $V_{low}$ be the $2^{n-1}-1$ smallest values in $V$ and $V_{high}$
-be the $2^{n-1}-1$ largest values.  In a balanced search tree for $V$,
-the values in the left branch must be $V_{low}$, the values in the
-left branch must be $V_{high}$, and the tree itself must be labelled
-with the median value.  Since in a balanced tree, the left and right
-hand branches must also be balanced, there is, by induction, only way
-way to label the branches of $B$ with these respective sets of values.
-This uniquely determines the labelling of $B$.
+Trivial by structural induction:
+
+\inductioncase{Base case}: ($T \in \leafset$).  If $T$ is isomorphic
+to $U$, then $U$ must also be a leaf, so $\sz{T} = 1 = \sz{U}$.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  If $U$
+isomorphic to $T$, then by def. of isomorphism, $\leftsub{T}$ is isomorphic to $\leftsub{U}$, and so 
+\[
+\sz{\leftsub{T}} = \sz{\leftsub{U}}
+\]
+by induction hypothesis.  Likewise, 
+\[
+\sz{\rightsub{T}} = \sz{\rightsub{U}}.
+\]
+Therefore,
+\[
+\sz{T} = 1 + \sz{\leftsub{T}} + \sz{\rightsub{T}} = 1 + \sz{\leftsub{U}} + \sz{\rightsub{U}} = \sz{U}.
+\]
 \end{solution}
 
-\ppart Let $W$ be a set of values that results from deleting
-$\min\set{V}$ and inserting some element $m > \max\set{V}$ into $V$,
-that is,
+\ppart Show that if $T$ and $U$ are isomorphic and are labelled to be
+search trees for the same set of values, then $\nlbl{T} = \nlbl{U}$.
+
+\hint By def of isomorphism and search tree.  No induction needed.
+
+\begin{solution}
+
+\inductioncase{Base case}: ($T \in \leafset$).  There is only one
+possible labelling of $T$ and $U$ with the same value.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  For $T$ to be
+labelled as a search tree, all the values $\nlbls{(\leftsub{T})}$ in
+$\leftsub{T}$ must be less than the label $nlbl{(T)}$ of $T$, and
+likewise all the labels in $\nlbls{(\rightsub{T})}$ must be greater
+than $nlbl{(T)}$.  So $\nlbls{(\leftsub{T})}$ must be the smallest
+$\sz{\leftsub{T}}$ values in $\nlbls{(T)}$, and $nlbl{(T)}$ must be
+the $\sz{\leftsub{T}}+1$st smallest value.  Since $T$ and $U$ are
+isomorphic, the sizes of their corresponding branches are the same, so
+by the same reasoning, $\nlbl{(U)}$ must also be the
+$\sz{\leftsub{T}}+1$st smallest value.
+\end{solution}
+
+\ppart Suppose $T,U \in \rectr$ have the same label.  $T,U$
+\emph{clash} when only one of them is a leaf, or else both are
+branching and
+\begin{itemize}
+\item $\nlbl{(\leftsub{T})} \neq \nlbl{(\leftsub{U})}$, or
+\item $\nlbl{(\rightsub{T})} \neq \nlbl{(\rigtsub{U})}$.
+\end{itemize}
+
+Let $R$ and $S$ be isomorphic trees that are each labelled as search
+trees for their respective sets of values $\nlbls{R}$ and $\nlbls{S}$.
+Now suppose $\nlbls{S}$ is the set that results from deleting
+$\min(R)$ from $\nlbls{(R)}$ and then inserting some element $m >
+\max(R)$, that is,
 \[
-W \eqdef (V - \set{\min\set{V}}) \union \set{m}
+\nlbls{(S)} \eqdef (\nlbls{(R)} - \set{\min(R)) \union \set{m}.
 \]
 
-Let $\text{num}_V$ be the unique search tree labelling of $B$ with
-values $V$, and likewise for $\text{num}_W$.  Let
-\[
-\text{leafnums}_V \eqdef
-\set{r \suchthat r = \text{num}_V(T)\ \text{for some leaf of}\ B}
-\]
-and likewise for $\text{leafnums}_V$.
-Show that
-\[
-\text{leafnums}_V \intersect \text{leafnums}_W = \emptyset.
-\]
+Prove that if $T$ is a subtree of $R$ with the same label as a subtree
+$U$ of $S$, then $T$ and $U$ clash.
 
 \hint Induction again.
 
 \begin{solution}
-Note that
-\[
-W_{\text{low}} = (V_{\text{low}} - \set{\min\set{V}}) \union \set{r_{\text{low}}}
-\]
-where $r_{\text{low}}$ is the median element of $V$.  
+\inductioncase{Base case}: ($R \in \leafset$).  Then $\nlbl{(S)} = m >
+\nlbl{(R)}$, so there are no subtrees with the same label.
 
-By induction, we have
+\inductioncase{Constructor case}: ($R \in \brnchng$).  We know that
+$\leftsub{(R)}$ will a search tree isomorphic to the search tree
+$\leftsub{(S)}$.  Also
 \[
-\text{leafnums}_{V_{\text{low}}} \intersect \text{leafnums}_{W_{\text{low}}} = \emptyset.
+\nlbls{(\leftsub{S})} = (\nlbls{(\leftsub{R})} - \min\set{R}) \union \nlbl{(R)}.
 \]
-But $\text{num}_V$ and $\text{num}_{V_{\text{low}}}$ must agree on
-$\leftsub{B}$ and likewise for $\rightsub{B}$, so \TBA{to be continued}.
+So by induction hypothesis, any subtree of $\leftsub{R}$ clashes with
+the subtree of $\leftsub{S}$ with the same label.  Likewise for
+subtrees of $\rightsub{R}$ and $\rightsub{S}$ with the same label.
 
+All that remains is to show that the $R$ and $S$ clash \TBA{TBA\dots}.
 \end{solution}
 
+\iffalse
+
+numberings clash $\nlbl{}_V(T)$.
+Suppose $R$ is the unique subtree with $\nlbl{R}_W = \nlbl{}_V(T)$.
+We know that $\nlbl{}_W(T)$ is the next largest value in $V$ after
+$\nlbl{}_V(T)$.  In particular, $\nlbl{}_W(T) \neq \nlbl{}_V(T)$, so
+$R \neq T$.  Assume wlog that $R$ is a subtree of $\leftsub{T}$.
+Since $\nlbl{}_W$ is a search tree labelling, 
+\[
+\nlbl{}_W(\rightsub{R}) < \nlbl{}_W(T),
+\]
+so 
+\begin{equation}\tag{*}
+\nlbl{}_W(\rightsub{R}) < \leq \nlbl{}_V(T).
+\end{equation}
+But since $\nlbl{}_V$ is a search tree labelling, 
+\begin{equation}\tag{**}
+\nlbl{}_V(T) < \nlbl{}_V(\rightsub{T}).
+\end{equation}
+Now~(*) and~(**) imply
+\[
+\nlbl{}_W(\rightsub{R}) \neq \nlbl{}_V(\rightsub{T}),
+\]
+confirming that $\nlbl{}_W$ and $\nlbl{}_V$ clash at $\nlbl{}_V(T)$.
+
+
+\begin{staffnotes}
+The point of this is to show that two isomorphic trees $T$, $U$ with
+$T$ a search tree for $V$ and $U$ a search tree under the same
+labelling function for $V - \min\set{V}) \union m$, then $T$ and $U$
+have no subtree in common.  So if we tried to maintain the shape of a
+search tree after just one deletion and one insertion, we might have
+to change all $\card{V}$ subtrees instead of only $\log_2 \card{V}$ as
+with AVL trees, where the tree shape may change after an insertion and
+deletion.
+\end{staffnotes}
+
 \eparts
+\fi
 
 \end{problem}
 
