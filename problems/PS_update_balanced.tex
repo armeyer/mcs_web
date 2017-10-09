@@ -16,7 +16,28 @@
 % Problem starts here
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problem}
-The \emph{isomorphism} relation between recursive tree $T,U \in
+
+This problem will show that if $T$ is a search tree, and $U$ is a
+search tree of the \emph{same shape} as $T$ for the same values as $T$
+after one deletion and one insertion, then $T$ and $U$ have no subtrees
+in common.  So if we tried to maintain the shape of a search tree,
+then after just one deletion and one insertion we might have to find
+$\sz{T}$ new subtrees.  This dramatically contrasts with the case of
+AVL trees, where by allowing the shape of $U$ to differ somewhat from
+the shape of $T$, the search trees $T$ and $U$ can share all but
+proportional to $\log_2(\sz{T})$ subtrees.
+
+We assume there is a fixed numerical tree labelling $\nlbl{}: \rectr
+\to \reals$.  We'll say that $R,S \in \rectr$ \emph{clash} when only
+one of them is a leaf, or else both are branching and
+\begin{align*}
+          \nlbl{(R)} & \neq \nlbl{(S)},\ \text{or}\\
+\nlbl{(\leftsub{(R)})} & \neq \nlbl{(\leftsub{(S)})},\ \text{or}\\
+\nlbl{(\rightsub{(R)})}& \neq \nlbl{(\rightsub{(S)})}.
+\end{align*}
+If $R$ and $S$ clash, then of course $R \neq S$.
+
+The \emph{isomorphism} relation between recursive trees $T,U \in
 \rectr$ is defined recursively
 
 \inductioncase{Base case}: ($T \in \leafset$).  $T$ is isomorphic to
@@ -26,8 +47,8 @@ $U$ iff $U$ is a leaf.
 isomorphic to $U$ iff
 \[
 U \in \brnchng\ \QAND\
- \leftsub{U}\ \text{isomorphic to}\ \leftsub{T}\ \QAND\
-\rightsub{U}\ \text{isomorphic to}\ \rightsub{T}.
+ \leftsub{(U)}\ \text{isomorphic to}\ \leftsub{(T)}\ \QAND\
+\rightsub{(U)}\ \text{isomorphic to}\ \rightsub{(T)}.
 \]
 
 \bparts
@@ -41,120 +62,113 @@ Trivial by structural induction:
 to $U$, then $U$ must also be a leaf, so $\sz{T} = 1 = \sz{U}$.
 
 \inductioncase{Constructor case}: ($T \in \brnchng$).  If $U$
-isomorphic to $T$, then by def. of isomorphism, $\leftsub{T}$ is isomorphic to $\leftsub{U}$, and so 
+isomorphic to $T$, then by def.\ of isomorphism, $\leftsub{(T)}$ is isomorphic to $\leftsub{(U)}$, and so 
 \[
-\sz{\leftsub{T}} = \sz{\leftsub{U}}
+\sz{\leftsub{(T)}} = \sz{\leftsub{(U)}}
 \]
 by induction hypothesis.  Likewise, 
 \[
-\sz{\rightsub{T}} = \sz{\rightsub{U}}.
+\sz{\rightsub{((T))}} = \sz{\rightsub{(U)}}.
 \]
 Therefore,
-\[
-\sz{T} = 1 + \sz{\leftsub{T}} + \sz{\rightsub{T}} = 1 + \sz{\leftsub{U}} + \sz{\rightsub{U}} = \sz{U}.
-\]
+\begin{align*}
+\sz{T} & = 1 + \sz{\leftsub{(T)}} + \sz{\rightsub{(T)}}\\
+       & = 1 + \sz{\leftsub{(U)}} + \sz{\rightsub{(U)}} = \sz{U}.
+\end{align*}
 \end{solution}
 
-\ppart Show that if $T$ and $U$ are isomorphic and are labelled to be
-search trees for the same set of values, then $\nlbl{T} = \nlbl{U}$.
+\ppart\label{uniqnum} Show that if $T$ and $U$ are isomorphic search
+trees and $T$ and $U$ are search trees for the same set of values,
+that is, $\nlbls{(T)} = \nlbls{(U)}$, then $\nlbl{(T)} = \nlbl{(U)}$.
 
-\hint By def of isomorphism and search tree.  No induction needed.
+\hint By definition of isomorphism and search tree.  No induction needed.
 
 \begin{solution}
 
 \inductioncase{Base case}: ($T \in \leafset$).  There is only one
 possible labelling of $T$ and $U$ with the same value.
 
-\inductioncase{Constructor case}: ($T \in \brnchng$).  For $T$ to be
-labelled as a search tree, all the values $\nlbls{(\leftsub{T})}$ in
-$\leftsub{T}$ must be less than the label $nlbl{(T)}$ of $T$, and
-likewise all the labels in $\nlbls{(\rightsub{T})}$ must be greater
-than $nlbl{(T)}$.  So $\nlbls{(\leftsub{T})}$ must be the smallest
-$\sz{\leftsub{T}}$ values in $\nlbls{(T)}$, and $nlbl{(T)}$ must be
-the $\sz{\leftsub{T}}+1$st smallest value.  Since $T$ and $U$ are
+\inductioncase{Constructor case}: ($T \in \brnchng$).  Since $T$ is a
+search tree, all the values $\nlbls{(\leftsub{(T)})}$ in
+$\leftsub{(T)}$ must be less than the label $\nlbl{(T)}$ of $T$, and
+likewise all the labels in $\nlbls{(\rightsub{(T)})}$ must be greater
+than $\nlbl{(T)}$.  So $\nlbls{(\leftsub{(T)})}$ must be the smallest
+$\sz{\leftsub{(T)}}$ values in $\nlbls{(T)}$, and $\nlbl{(T)}$ must be
+the $\sz{\leftsub{(T)}}+1$st smallest value.  Since $T$ and $U$ are
 isomorphic, the sizes of their corresponding branches are the same, so
-by the same reasoning, $\nlbl{(U)}$ must also be the
-$\sz{\leftsub{T}}+1$st smallest value.
+by the same reasoning, $\nlbl{(U)}$ must also be the same
+$\sz{\leftsub{(T)}}+1$st smallest value.
 \end{solution}
 
-\ppart Suppose $T,U \in \rectr$ have the same label.  $T,U$
-\emph{clash} when only one of them is a leaf, or else both are
-branching and
-\begin{itemize}
-\item $\nlbl{(\leftsub{T})} \neq \nlbl{(\leftsub{U})}$, or
-\item $\nlbl{(\rightsub{T})} \neq \nlbl{(\rigtsub{U})}$.
-\end{itemize}
-
-Let $R$ and $S$ be isomorphic trees that are each labelled as search
-trees for their respective sets of values $\nlbls{R}$ and $\nlbls{S}$.
-Now suppose $\nlbls{S}$ is the set that results from deleting
-$\min(R)$ from $\nlbls{(R)}$ and then inserting some element $m >
-\max(R)$, that is,
+\ppart Let $T \in \rectr$ be a search tree.  Say that \emph{$U$ is a
+  shift of $T$} when $U \in \rectr$ is another search tree that is
+isomorphic to $T$, and $\nlbls{(U)}$ is the set that results from
+deleting $\min(T)$ from $\nlbls{(T)}$ and then inserting some element
+$m > \max(T)$, that is,
 \[
-\nlbls{(S)} \eqdef (\nlbls{(R)} - \set{\min(R)) \union \set{m}.
+\nlbls{(U)} \eqdef (\nlbls{(T)} - \set{\min(T)}) \union \set{m}.
 \]
 
-Prove that if $T$ is a subtree of $R$ with the same label as a subtree
-$U$ of $S$, then $T$ and $U$ clash.
+%\begin{equation}\tag{shiftnums}
+%\end{equation}
 
-\hint Induction again.
+Prove that every subtree of $T$ clashes with with every subtree of a
+shift of $T$.
 
-\begin{solution}
-\inductioncase{Base case}: ($R \in \leafset$).  Then $\nlbl{(S)} = m >
-\nlbl{(R)}$, so there are no subtrees with the same label.
+\hint Structural induction on $T$.
 
-\inductioncase{Constructor case}: ($R \in \brnchng$).  We know that
-$\leftsub{(R)}$ will a search tree isomorphic to the search tree
-$\leftsub{(S)}$.  Also
+\begin{solution} 
+Suppose $U$ is a shift of $T$.  We prove that all the subtrees of $T$
+and $U$ clash by structural induction on the definition of $T \in
+\rectr$, with induction hypothesis
 \[
-\nlbls{(\leftsub{S})} = (\nlbls{(\leftsub{R})} - \min\set{R}) \union \nlbl{(R)}.
+P(T) \eqdef 
+\forall R \in \subbrn{T}, S \in \subbrn{U}.\, R\ \text{clashes with}\ S.
 \]
-So by induction hypothesis, any subtree of $\leftsub{R}$ clashes with
-the subtree of $\leftsub{S}$ with the same label.  Likewise for
-subtrees of $\rightsub{R}$ and $\rightsub{S}$ with the same label.
+\begin{proof}
 
-All that remains is to show that the $R$ and $S$ clash \TBA{TBA\dots}.
+\inductioncase{Base case}: ($T \in \leafset$).  We know $\nlbl{(U)} =
+m > \nlbl{(T)}$ by definition of shift, so $T$ and $U$ clash.  There
+are no other subtrees of $T$ and $U$, so $P(T)$ holds.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  By definition
+of isomorphism, $\leftsub{(T)}$ will be isomorphic to $\leftsub{(U)}$.
+Moreover, both will be search trees by definition of search tree.  Finally,
+\begin{equation}\tag{subnums}
+\nlbls{(\leftsub{(U)})} = (\nlbls{(\leftsub{(T)})} - \min\set{T}) \union \nlbl{(T)},
+\end{equation}
+by definition of shift.  This means that $\leftsub{(U)}$ is a shift
+of $\leftsub{(T)}$.  So by induction hypothesis, every subtree of
+$\leftsub{(T)}$ clashes with every subtree of $\leftsub{(U)}$.
+Likewise for subtrees of $\rightsub{(T)}$ and $\rightsub{(U)}$.
+
+Next, we observe that since $U$ is a shift of $T$, all the labels in
+$\leftsub{(U)}$ are less than all the labels in $\rightsub{(T)}$, and
+likewise all the labels in $\rightsub{(U)}$ are larger than those in
+$\leftsub{(T)}$.  So any pair of subtrees from opposite branches must
+have different labels and therefore clash.
+
+Finally, we argue that $T$ itself clashes with the unique subtree $S
+\in \subbrn{U}$ such that $\nlbl{(S)} = \nlbl{(T)}$.
+
+From part~\eqref{uniqnum}, we know $\nlbl{(U)}$ is the next largest
+number in $\nlbls{(T)}$ after $\nlbl{(T)}$, so $\nlbl{(U)} >
+\nlbl{(T)}$.  Therefore $S \neq U$.  We can assume wlog that $S \in
+\leftsub{(U)}$.  Now~(subnums) implies that every label in $S$ is less
+than $\nlbl{(U)}$ and therefore is $\leq \nlbl{(T)}$.  In particular,
+\[
+\nlbl{(\rightsub{(S)})} \leq \nlbl{(T)} < \nlbl{(\rightsub{(T)})},
+\]
+proving that $T$ and $S$ clash.  A symmetrical argument shows that $U$
+clashes with the unique subtree of $T$ with the same label.
+
+This proves that all the subtrees of $T$ clash with all the subtrees
+of $U$, that is, $P(T)$.
+\end{proof}
+
 \end{solution}
-
-\iffalse
-
-numberings clash $\nlbl{}_V(T)$.
-Suppose $R$ is the unique subtree with $\nlbl{R}_W = \nlbl{}_V(T)$.
-We know that $\nlbl{}_W(T)$ is the next largest value in $V$ after
-$\nlbl{}_V(T)$.  In particular, $\nlbl{}_W(T) \neq \nlbl{}_V(T)$, so
-$R \neq T$.  Assume wlog that $R$ is a subtree of $\leftsub{T}$.
-Since $\nlbl{}_W$ is a search tree labelling, 
-\[
-\nlbl{}_W(\rightsub{R}) < \nlbl{}_W(T),
-\]
-so 
-\begin{equation}\tag{*}
-\nlbl{}_W(\rightsub{R}) < \leq \nlbl{}_V(T).
-\end{equation}
-But since $\nlbl{}_V$ is a search tree labelling, 
-\begin{equation}\tag{**}
-\nlbl{}_V(T) < \nlbl{}_V(\rightsub{T}).
-\end{equation}
-Now~(*) and~(**) imply
-\[
-\nlbl{}_W(\rightsub{R}) \neq \nlbl{}_V(\rightsub{T}),
-\]
-confirming that $\nlbl{}_W$ and $\nlbl{}_V$ clash at $\nlbl{}_V(T)$.
-
-
-\begin{staffnotes}
-The point of this is to show that two isomorphic trees $T$, $U$ with
-$T$ a search tree for $V$ and $U$ a search tree under the same
-labelling function for $V - \min\set{V}) \union m$, then $T$ and $U$
-have no subtree in common.  So if we tried to maintain the shape of a
-search tree after just one deletion and one insertion, we might have
-to change all $\card{V}$ subtrees instead of only $\log_2 \card{V}$ as
-with AVL trees, where the tree shape may change after an insertion and
-deletion.
-\end{staffnotes}
 
 \eparts
-\fi
 
 \end{problem}
 
@@ -163,8 +177,3 @@ deletion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
-
-
-
-
-
