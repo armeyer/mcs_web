@@ -1401,9 +1401,9 @@
 \newcommand{\twdone}{\mathbb{F}}
 \newcommand{\Zintv}[2]{\Zintvcc{#1}{#2}}
 \newcommand{\Zintvcc}[2]{[#1..#2]}
-\newcommand{\Zintvoc}[2]{(#1..#2]}
-\newcommand{\Zintvco}[2]{[#1..#2)}
-\newcommand{\Zintvoo}[2]{(#1..#2)}
+\newcommand{\Zintvoc}[2]{\textbf{\large (}#1\textbf{..}#2\textbf{\large ]}}
+\newcommand{\Zintvco}[2]{\textbf{\large [}#1\textbf{..}#2\textbf{\large )}}
+\newcommand{\Zintvoo}[2]{\textbf{\large (}#1\textbf{..}#2\textbf{\large )}}
 
 %% Math -- Arithmetic
 
