@@ -1483,6 +1483,8 @@
 
 \newcommand{\avlnsrt}[1]{\text{insert}#1}
 
+\newcommand{\avldel}[1]{\text{delete}#1}
+
 \if@usecolor@
     \newcommand{\lefbrk}{\text{\textbf{\large \textcolor{red}{[\,}}}}
     \newcommand{\rhtbrk}{\text{\textbf{\large \textcolor{blue}{]\,}}}}

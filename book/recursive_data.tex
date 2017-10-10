@@ -2438,14 +2438,14 @@ of Search Tree.  We'll leave it as an exercise.\footnote{At this early
 The procedure for inserting a value $r$ into an AVL tree $T$ can be
 defined recursively on the definition of AVL tree.  
 
-\iffalse The other technicality comes about because we will be taking
-a tree and defining a new tree sharing some of its subtrees.  To avoid
+\iffalse
+The other technicality comes about because we will be taking a tree
+and defining a new tree sharing some of its subtrees.  To avoid
 sharing in the new tree, the recursive definition we will need trees
-that are combinations of subtrees trees using subtrees of 
+that are combinations of subtrees trees using subtrees of
 
-The insertion
-procedure is usually described as a process of rearranging the
-``links'' that hold $T$ together.
+The insertion procedure is usually described as a process of
+rearranging the ``links'' that hold $T$ together.
 \fi
 
 The procedure to insert a value $r$ parallels the procedure to search
@@ -2465,11 +2465,11 @@ Moreover, the depth of $S$ will be at most one larger and no smaller
 that the depth of $A$.
 
 Now we let $N$ be a new tree the same label as $T$, with one branch of
-$N$ equal to $S$ and the other branch of $N$ equal to the $B$.  This
-makes $N$ a Search tree whose branches are AVL trees and whose labels
-are the labels of $T$ along with $r$.  Now if the depth of $S$ is at
-most one greater than the depth of $B$, then $N$ will be the desired
-AVL tree.
+$N$ equal to $S$ and the other branch of $N$ equal to the $B$ as shown
+in Figure~\ref{rotate1}.  This makes $N$ a Search tree whose branches
+are AVL trees and whose labels are the labels of $T$ along with $r$.
+Now if the depth of $S$ is at most one greater than the depth of $B$,
+then $N$ will be the desired AVL tree.
 
 The only problem is that $N$ may not be an AVL tree because the depth
 of $S$ may now be two greater than the depth of the $B$.  The fix is
@@ -2480,8 +2480,7 @@ To explain rotation, we need to identify some subtrees of $S$ and that
 will get rearranged.  Let $d \eqdef \dpth{B}$.  We know that $\dpth{S}
 = d+2$.  This means $S$ has branches $R,U$ whose depths are either $d$
 or $d+1$ with at least one of them with depth $d+1$.  Let $U$ be the
-branch furthest from the middle.  This is illustrated in
-Figure~\ref{rotate1}.
+branch furthest from the middle, as shown in Figure~\ref{rotate1}.
 
 \iffalse
 where the integer labels indicate the relative sizes of the numerical
@@ -2492,7 +2491,7 @@ labels\fi
                              N
                              /\
                             /  \
-                           B    S
+                (depth d)  B    S  (depth d+2)
                                /\
                               /  \
                              R    U
@@ -2504,7 +2503,7 @@ labels\fi
 
 \end{figure}
 
-The simplest case of rotation is when $\dpth{R} = d$.  In that case we
+The simplest case of rotation is when $\dpth{U} = d+1$.  In that case we
 define the rotation of $N$ to be the tree $X$ shown in
 Figure~\ref{rotate2}.
 
@@ -2526,17 +2525,20 @@ Figure~\ref{rotate2}.
                                                                    
 \end{figure}                                                       
 
-Here $X \in \rectr$ is a ``new'' tree---that is, $X \notin
-\subbrn{N}$---with the same label as $S$, and $Y$ is a new tree with
-the same label as $N$.  We leave it to the reader to check that $X$ is
-an AVL tree and $\nlbls{(X)} = \nlbls{(N)}$.  Moreover, $X$ has very nearly
-the same subtrees as $N$.  In particular,
+Here $X \in \rectr$ with depth $d+2$ is a ``new'' tree ---that is, $X
+\notin \subbrn{N}$---with the same label as $S$, and $Y$ with depth
+$d+1$ is a new tree with the same label as $N$.  So $\nlbls{(X)} =
+\nlbls{(N)}$ and the depths of $X$ and $Y$ are properly balanced
+according to the AVL rule.  It is easy to check that $X$ is also a
+search tree, which makes it an an AVL tree.  Moreover, $X$ has very
+nearly the same subtrees as $N$.  In particular,
 \[
 \subbrn{X} = \set{X,Y} \union (\subbrn{N} - \set{N,S}).
 \]
 
-There are a couple of similar rotations that work in the case that
-$\dpth{R} = d+1$.  We'll leave those as exercises.  As a consequence, we have:
+There is another rearrangement of subtrees that handles the case when
+$\dpth{U} = d$ which we leave as an exercise
+(Problem~\bref{CP_AVL_rotate}).  As a consequence, we have:
 
 \begin{lemma}(Rotation)\label{lem:rot}
 There is a function
@@ -2552,7 +2554,7 @@ then
     \nlbls{(\avlrot{(B,r,S)})} = \nlbls{(B)} \union \set{r} \union \nlbls{(S)},
 \]
 \[
-\dpth{\avlrot{(B,r,S)}} = \dpth{B}+1,
+\dpth{\avlrot{(B,r,S)}} = \dpth{B}+2,
 \]
 and there are two size-three sets $S_{\text{new}}$, $S_{\text{old}}$
 of AVL trees, such that
@@ -2560,84 +2562,6 @@ of AVL trees, such that
 \subbrn{\avlrot{(B,r,S)}} = (\subbrn{B} \union \subbrn{S} \union S_{\text{new}}) - S_{\text{old}}.
 \]
 \end{lemma}
-
-
-%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
-%% by integers corresponding to those in Figure~\ref{rotate1}. 
-
-%%  If both are depth $d+1$, then let $U$ be the one
-%% with values.  If the depth of $U$ is $d+1$,
-%% then it must have branches $C,D$ of depths $d,d-1$ with at least one
-%% $d$.  In this case, we re-arrange as shown in (on the right below).
-%% Otherwise, the depth of $U$ is $d$ and of $R$ is $d+1$, in which case
-%% $R$ must in turn have a branches $V,W$ of depths $d$ or $d-1$ with at
-%% least one $d$.  This is illustrated in Figure~\ref{rotate1} with
-%% integer labels corresponding to the relative values of the labels of
-%% these trees.
-%%                                        X6                  
-%%                          d+1,2  Z2             y7  d+1    
-%%                               1   4        C6.6  D8     
-  
-%% \begin{figure}
-%% \begin{verbatim}
-%%                              N2                 
-%%                              /\
-%%                             /  \
-%%                           B1   S4
-%%                                /\
-%%                               /  \
-%%                              /    \
-%%                             /      \
-%%                           R3        U5
-%% \end{verbatim}
-
-%% \caption{Tree before rotation.}
-
-%% \label{rotate1}
-
-%% \end{figure}
-
-%% In Figure~\ref{rotate1},
-%% \begin{align*}
-%% \dpth{B} & = d\\
-%% \dpth{S} & = d+2,\\
-%% \dpht{R} & = d+1,\\
-%% \dpht{U} & = d\\
-%% \dpht{V} & = d,\\
-%% \dpht{W} \in  \set{d, d-1}.\\
-%% \end{align*}
-
-%% The result of the rotation is defined to be three new trees $X,Y,Z$
-%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
-%% by integers corresponding to those in Figure~\ref{rotate1}.  That is,
-%% \begin{align*}
-%% \nlbl{X}  & = \nlbl{R},\\
-%% \nlbl{Y}  & = \nlbl{N}  & = \nlbl{T},\\
-%% \nlbl{Z}  &= \nlbl{S},\\
-%% \dpth{Y} & = d+1,\\
-%% \dpth{Z} & = d+1,
-%% \end{align*}
-
-%% \begin{figure}
-
-%% %\graphic{}
-
-%% \begin{verbatim}
-%%            X4                         X4                                     N2                 
-%%            /\                         /\                                     /\                 
-%%           /  \                       /  \                                   /  \                
-%%          /    \                     /    \                              d  B1   S6 d+2
-%%        Y2      Z6                 Y2      Z6                                   /\               
-%%        /\      /\                 /\      /\                                  /  \              
-%%       /  \    /  \               /  \    /  \                       d,d+1   R4   U7 d+1
-%%      B1  V3  W5  U7             B1  V3  C6.5  D8                            / \                 
-%% \end{verbatim}                                                             /   \                
-%%                                                                          V3     W5    C6.5   D8 
-%% \caption{Tree after rotation is AVL.}
-
-%% \label{rotate2}                                                    
-                                                                   
-%% \end{figure}                                                       
 
 In defining the insert function, one small technicality has to be
 handled: sets of values can be any size, but the size of a recursive
@@ -2726,6 +2650,16 @@ $S_{\text{old}}$ of AVL trees, such that
 \]
 \end{theorem}
 
+The same approach leads to a procedure for deleting a value from an
+AVL tree (Problem~\bref{PS_AVL_delete}).
+
+\begin{editingnotes}
+\subsection{Summary}
+abstract data with selectors (edit note: no constructors)
+real application of recursive data & structural induction
+exponential savings
+\end{editingnotes}
+
 \begin{problems}
 \practiceproblems
 \pinput{TP_recursive_min}
@@ -2733,14 +2667,12 @@ $S_{\text{old}}$ of AVL trees, such that
 
 \classproblems
 \pinput{CP_leaves_vs_nodes}
-\begin{editingnotes}
-CP verify rotate2 above
-PS Verify another rotation case
-\end{editingnotes}
+\pinput{CP_AVL_rotate}
 
 \homeworkproblems
 \pinput{PS_shared_leaves}
 \pinput{PS_update_balanced}
+\pinput{PS_AVL_delete}
 
 \examproblems
 \pinput{MQ_recursive_tree_depth}
@@ -2864,3 +2796,81 @@ processing computer programs.
 
 \endinput
 
+
+
+%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
+%% by integers corresponding to those in Figure~\ref{rotate1}. 
+
+%%  If both are depth $d+1$, then let $U$ be the one
+%% with values.  If the depth of $U$ is $d+1$,
+%% then it must have branches $C,D$ of depths $d,d-1$ with at least one
+%% $d$.  In this case, we re-arrange as shown in (on the right below).
+%% Otherwise, the depth of $U$ is $d$ and of $R$ is $d+1$, in which case
+%% $R$ must in turn have a branches $V,W$ of depths $d$ or $d-1$ with at
+%% least one $d$.  This is illustrated in Figure~\ref{rotate1} with
+%% integer labels corresponding to the relative values of the labels of
+%% these trees.
+%%                                        X6                  
+%%                          d+1,2  Z2             y7  d+1    
+%%                               1   4        C6.6  D8     
+  
+%% \begin{figure}
+%% \begin{verbatim}
+%%                              N2                 
+%%                              /\
+%%                             /  \
+%%                           B1   S4
+%%                                /\
+%%                               /  \
+%%                              /    \
+%%                             /      \
+%%                           R3        U5
+%% \end{verbatim}
+
+%% \caption{Tree before rotation.}
+
+%% \label{rotate1}
+
+%% \end{figure}
+
+%% In Figure~\ref{rotate1},
+%% \begin{align*}
+%% \dpth{B} & = d\\
+%% \dpth{S} & = d+2,\\
+%% \dpht{R} & = d+1,\\
+%% \dpht{U} & = d\\
+%% \dpht{V} & = d,\\
+%% \dpht{W} \in  \set{d, d-1}.\\
+%% \end{align*}
+
+%% The result of the rotation is defined to be three new trees $X,Y,Z$
+%% with subtrees as shown in Figure~\ref{rotate2} and values as indicated
+%% by integers corresponding to those in Figure~\ref{rotate1}.  That is,
+%% \begin{align*}
+%% \nlbl{X}  & = \nlbl{R},\\
+%% \nlbl{Y}  & = \nlbl{N}  & = \nlbl{T},\\
+%% \nlbl{Z}  &= \nlbl{S},\\
+%% \dpth{Y} & = d+1,\\
+%% \dpth{Z} & = d+1,
+%% \end{align*}
+
+%% \begin{figure}
+
+%% %\graphic{}
+
+%% \begin{verbatim}
+%%            X4                         X4                                     N2                 
+%%            /\                         /\                                     /\                 
+%%           /  \                       /  \                                   /  \                
+%%          /    \                     /    \                              d  B1   S6 d+2
+%%        Y2      Z6                 Y2      Z6                                   /\               
+%%        /\      /\                 /\      /\                                  /  \              
+%%       /  \    /  \               /  \    /  \                       d,d+1   R4   U7 d+1
+%%      B1  V3  W5  U7             B1  V3  C6.5  D8                            / \                 
+%% \end{verbatim}                                                             /   \                
+%%                                                                          V3     W5    C6.5   D8 
+%% \caption{Tree after rotation is AVL.}
+
+%% \label{rotate2}                                                    
+                                                                   
+%% \end{figure}                                                       
