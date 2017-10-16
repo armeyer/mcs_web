@@ -1515,8 +1515,8 @@
 \newcommand{\btg}{\text{binary-2PG}}
 \newcommand{\wnls}{\text{WinLoseGm}}
 \newcommand{\tg}{\text{2PerGm}}           %2PG
-\newcommand{\winend}{\ensuremath{\mathbf{win}}}
-\newcommand{\loseend}{\ensuremath{\mathbf{lose}}}
+\newcommand{\winend}{\ensuremath{\mathbf{P1Win}}}
+\newcommand{\loseend}{\ensuremath{\mathbf{P2Win}}}
 \newcommand{\ms}[1]{\operatorname{#1}}
 
 
