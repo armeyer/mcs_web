@@ -1153,7 +1153,8 @@ structural induction.
 
 \end{problems}
 
-\newcommand{\nimg}[1]{\text{Nim}_{\ang{#1}}}
+\newcommand{\nimg}[1]{\ensuremath{\text{Nim}_{\ang{#1}}}}
+\newcommand{\fmv}[1]{\ensuremath{\text{Fmv}_{\ang{#1}}}}
 
 \section{Games as a Recursive Data Type}\label{recursive_games}
 Chess, Checkers, Go, and Nim are examples of \emph{two-person games of
@@ -1178,17 +1179,11 @@ A Nim game starts with several piles of stones.  A move in the game
 consists of removing some positive number of stones from a single
 pile.  Player-1 and player-2 alternate making moves, and whoever takes
 the last stone wins.  So if there is only one pile, then the first
-player to move wins by taking the whole pile.  On the other hand, if
-the game starts with just two piles, each with the same number of
-stones, then the player who moves second can guarantee a win simply by
-mimicking the first player.  For example, if the first player removes
-three stones from one pile, then the second player removes three
-stones from the other pile.  It's worth thinking for a moment about
-why \textbf{the mimicking strategy guarantees a win} for the second
-player.
+player to move wins by taking the whole pile.
 
 A Nim game is defined by the sizes of the piles of stones at the
-start.  For example, let $\text{Nim}_{\ang{3,4,5}}$ be the game that
+start.  \iffalse
+For example, let $\text{Nim}_{\ang{3,4,5}}$ be the game that
 starts with piles of 3, 4 and 5 stones.  The first move in this game
 simply results in another Nim game.  Namely, the first player can
 remove one to three stones from the first pile leading to three
@@ -1223,31 +1218,69 @@ $\nimg{3,4}$ game, or one to four from the second pile, leaving one of
 O_{\ang{3,4}} \eqdef \set{\nimg{2,4}, \nimg{1,4}, \nimg{4}, \nimg{3,3},
   \nimg{3,2}, \nimg{3,1}, \nimg{3}}.
 \]
+\fi
 
-To keep going, suppose the second player's move is to choose $\nimg{3,2}
-\in O_{\ang{3,4}}$.  Now the first player can choose one of the third move games
+For example, let \nimg{3,2}\ be the Nim game that starts with one
+size-three pile and one size-two pile.  In this game, Player-1 has
+$2+3 =5$ possible moves corresponding to removing one to three stones
+from the size-three pile, or one to two stones from the size-two pile.
+These five moves lead respectively to five new Nim games in which Player-2 will move first:;
+\[\begin{array}{lr}
+\text{remove 1 from the size-three pile:} & \nimg{2, 2},\\
+\text{remove 2 from the size-three pile:} & \nimg{2, 1},\\
+\text{remove 3 from the size-three pile:} & \nimg{2},\\
+\text{remove 1 from the size-two pile:}   & \nimg{1, 3},\\
+\text{remove 2 from the size-two pile:}   & \nimg{3}.
+\end{array}\]
+Let's call these the \emph{first-move} games \fmv{3,2} of \nimg{3,2}:
+\begin{equation}\label{fmvnim32}
+\fmv{3,2} = \set{\nimg{2, 2}, \nimg{2, 1}, \nimg{2}, \nimg{1, 3},
+  \nimg{3}}.
+\end{equation}
+Now instead of saying Player-1's move is to pick some number of stones
+to remove from some pile, we can say that Player-1's move is to
+\emph{select one of these first-move Nim games in which
+  Player-2 will move first}.  Abstractly we can \emph{define} $\nimg{3,2}$
+to be its set of first moves:
 \[
-O_{\ang{3,2}} \eqdef \set{\nimg{2}, \nimg{3}, \nimg{1, 2}, \nimg{1, 3}, \nimg{2, 2}},
+\nimg{3,2} \eqdef \fmv{3,2}.
 \]
-in which the second player moves first.  The winning move for the
-first player would be to choose $\nimg{2, 2}$, since he can then ensure
-a win by playing the mimicking strategy.  But suppose instead the
-first player makes a bad move to $\nimg{2}$.  Now
-\[
-O_{\ang{2}} \eqdef \set{\text{Nim}_{\emptystring}, \nimg{1}}.
-\]
-This gives the second player a winning move to $\text{Nim}_{\emptystring}
-\in O_{\ang{2}}$ because this leaves the first player to choose a Nim
-game in
-\[
-O_{\emptystring} \eqdef \emptyset.
-\]
-Since there is no Nim game in $O_{\emptystring}$, the first player
-loses.
 
-Notice that we could keep expanding any Nim game until all the numbers
-disappeared leaving only a set of sets of sets\dots bottoming out at
-the empty set.  For example, the full expansion of $\nimg{3,2}$ is
+This is the big idea: we can \emph{recursively define a Nim game to be
+  a set of Nim games}.  The base case will be the empty set of Nim
+games, corresponding to the Nim game with no piles; this is the game
+in which the player who moves first immediately loses.
+
+Let's see how this works for \nimg{3,2}.  Each of the first-move games
+listed in~\eqref{fmvnim32} abstractly is the same as its own set of
+first-move games.  To take the simplest case, in the first-move game
+\nimg{2}, player-2 has two possible moves: he can remove one stone
+from the pile leaving \nimg{1}, or he can remove the whole pile
+leaving the game \nimg{\emptyset} with no piles.
+\[
+\fmv{2} = \set{\nimg{1}, \nimg{\emptyset}}.
+\]
+Since taking the whole pile leaves Player-1 with no move to make, that is,
+\[
+\nimg{\emptyset} \eqdef \fmv{\emptyset} = \emptyset,
+\]
+this is a winning move for player-2.
+
+But suppose player-2 chooses to remove only one stone.  This move
+leaves the one-pile one-stone game \nimg{1}.  Now player-1 has no
+choice but to choose the single first move in \fmv{1}:
+\[
+\fmv{1} \eqdef \set{\nimg{\emptyset}} = \set{\emptyset}.
+\]
+That is, player-1 must choose the empty set and then wins, since
+player-2 is left with no move to make.
+
+So abstractly, \nimg{2}\ is just a \emph{pure set made out of
+  nothing}:
+\[
+\nimg{2} = \set{\set{\emptyset}, \emptyset}.
+\]
+Likewise, the whole $\nimg{3,2}$ game abstractly is another pure set:
 \begin{align*}
 \left\{ \right. & \\
 & \set{\emptyset,\ \ \set{\emptyset}},\\
@@ -1258,15 +1291,29 @@ the empty set.  For example, the full expansion of $\nimg{3,2}$ is
 & \left. \right\}
 \end{align*}
 
-This example hints at some of the connections between Nim games and
-pure set theory,\footnote{Insert ref to Conway's \emph{nimbers}.}
-but that's an exploration outside our scope.
+In fact, we could keep expanding any Nim game until all the numbers
+disappeared leaving only a set of sets of sets of\dots bottoming out
+at the empty set.  This example hints at some of the connections
+between Nim games and pure set theory,\footnote{Insert ref to Conway's
+  \emph{nimbers}.}  but that's an exploration outside our scope.
+
+By the way, the winning move for player-1 in \nimg{3,2} is to remove
+one stone from the size-three pile, leaving player-2 the first move in
+\nimg{2, 2}.  This is a winning move because the player who moves
+second in any game of two same-size piles can guarantee a win simply
+by mimicking the first player.  For example, if the first player
+removes one stone from one pile, then the second player removes one
+stone from the other pile.  It's worth thinking for a moment about why
+\textbf{the mimicking strategy guarantees a win} for the second
+player.  More generally, there is an elegant procedure to figure out
+who has a winning strategy in any Nim game
+(Problem~\bref{PS_nim_strategy}).
 
 Nim games are special in that the two players are racing to the same
 goal, namely, leaving their opponent with no move.  More generally, a
 two-person game can end in different ways, some of which count as wins
-and others as losses for the first player.  With this idea in mind, we
-now give the formal definition.
+and others as losses for player-1.  With this idea in mind, we now
+give the formal definition of win-lose games.
 
 \begin{definition}
 The class \wnls\ of two-person win-lose games of perfect information
@@ -1336,11 +1383,11 @@ some finite length $n$ that ends with an outcome.  So this play of $G$
 is a length $n+1$ sequence that finishes with the same outcome.
 \end{proof}
 
-Among the games of Checker, Chess, Go and Nim, only Nim is genuinely a
-win-lose game,   The other games might end in a tie (draw, stalemate,
-jigo) rather than a win or loss.  However, by treating a tie in these
-games as a loss for the first player, the results about win-lose games
-will apply to games with ties.
+Among the games of Checkers, Chess, Go and Nim, only Nim is genuinely
+a win-lose game.  The other games might end in a tie (draw, stalemate,
+jigo) rather than a win or loss.  But the results about win-lose games
+will apply to games with ties if we simply treat a tie as a loss for
+the first player,
 
 In all the games like this that we're familiar with, there are only a
 finite number of possible first moves and a bound on the possible
@@ -1465,9 +1512,7 @@ strategy.\footnote{Checkers used to be in this list, but it's now been
   shown that each player has a strategy that forces a tie (reference
   TBA).}
 
-\begin{optional}
-
-\subsubsection{Infinite Games} 
+\subsubsection{Infinite Games [Optional]} 
 
 Suppose we play a tournament of $n$ chess games for some
 positive integer $n$.  This tournament will be a \wnls\ if we agree on a
@@ -1487,7 +1532,6 @@ would be a game with $n$ infinite sets of possible second moves.  Then
 we oould go to meta-meta tournaments,\dots.  Weird as these meta games
 may seem, the Fundamental Theorem still applies: in each of these
 games, one of the players will have winning strategy.
-\end{optional}
 
 %% Games as a Recursive Data Type Problems %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{problems}
@@ -1665,14 +1709,15 @@ Figure~\ref{searchtree1}, the sequence
 \begin{equation}\label{lslsrs}
 (\rightsub{},\leftsub{},\leftsub{}).
 \end{equation}
-describes a length-three path that starts at the top (6.8).  The
-selectors are applied in right-to-left order, so we first go to
-$\leftsub{(6.8)} = \pi$.  Then we take the left branch to
-$\leftsub{(\pi)} = 3$, and take a final right branch to end with the
-subtree $\rightsub{(3)} = 3.1$.  That is, the subtree at the end of the
+describes a length-three path that starts at the top tree (6.8) with
+label 6.8.  The selectors are applied in right-to-left order, so we
+first go to $\leftsub{(6.8)}$ which is the subtree labelled $\pi$.
+Then we take the left branch to the subtree $\leftsub{(\pi)}$ labelled
+3, and take a final right branch to end with the subtree
+$\rightsub{(3)}$ labelled 3.1.  That is, the subtree at the end of the
 path given by the sequence~\eqref{lslsrs} is
 \[
-\rightsub{(\leftsub{(\leftsub{(6.8)})})} = 3.1.
+\rightsub{(\leftsub{(\leftsub{(6.8)})})} = (3.1).
 \]
 
 More generally, let $\vec{P}$ be a finite sequence of selector
@@ -1680,18 +1725,18 @@ functions and suppose $T \in \brnch$.  The notation for the subtree at
 the end of the path described by $\vec{P}$ is $\rslt{T}{(\vec{P})}$.
 For example, we just saw that
 \[
-\rslt{(6.8)}{((\rightsub{},\leftsub{},\leftsub{}))} = 3.1.
+\rslt{(6.8)}{((\rightsub{},\leftsub{},\leftsub{}))} = (3.1).
 \]
 Notice that if the path $\vec{P}$ tries to continue past a leaf of
 $T$, there won't be any subtree at the end.  For example,
 $\rslt{(6.8)}{(\leftsub{},\rightsub{},\rightsub{})}$ is undefined
-since $\rslt{(6.8)}{(\rightsub{},\rightsub{})}=9$ is a leaf with no
+since $\rslt{(6.8)}{(\rightsub{},\rightsub{})}=(9)$ is a leaf with no
 left branch.
 
-There's a technicality worth noting here to avoid confusion.  When
+There's a technicality worth noting here that can be confusing.  When
 people talk about trees they normally mean the whole tree structure of
 the kind shown in Figures~\ref{searchtree1} and~\ref{unbalanced}
-above.  In this section, that's not what ``tree'' means.  Instead, a
+above.  In this section, that's \emph{not} what ``tree'' means.  Instead, a
 tree is just a single point or node, namely the ``root'' node at the
 top.  The rest of the nodes below the root are by themselves trees
 that are called the \emph{subtrees} of the tree.
@@ -1774,15 +1819,15 @@ The first is that a proper subtree of $T$ must be a subtree of its
 left subtree or its right subtree:
 
 \begin{corollary}\label{unionLR}
-For $T \in \brnch$,
+For $T \in \leafset$,
 \[
-\propbrn{T} =
-\begin{cases}
-  \emptyset, & \text{if $T \in \leafset$},\\
-  \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}},
-            & \text{if}\ T \in \brnchng.
-\end{cases}
+\propbrn{T} =  \emptyset.
 \]
+For $T \in \brnchng$,
+\[
+\propbrn{T} = \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}}.
+\]
+
 Therefore,
 \begin{equation}\label{unionTLR}
 \subbrn{T} = \set{T} \union \subbrn{\leftsub{(T)}} \union \subbrn{\rightsub{(T)}}.
@@ -1883,9 +1928,9 @@ Figure~\ref{inftree123}.
 \end{figure}
 
 The problem with both circular structures and infinite ones is that
-they will have infinite paths that you might keep searching down
-without ever finishing.  By forbidding infinite paths we ensure that
-searches will end, and we also stop all the circular and infinite
+they will have infinite paths that you might have to keep searching
+down without ever finishing.  By forbidding infinite paths we ensure
+that searches will end, and we also stop all the circular and infinite
 weirdness.
 
 Paths that result in subtrees are by definition finite, so we should
@@ -2173,7 +2218,7 @@ moreover, there is a way to arrange the values so that no search takes
 any longer than this minimum amount.  The following two Theorems
 confirm this.
 
-We fist prove a basic relation between size and depth of recursive
+We first prove a basic relation between size and depth of recursive
 trees:
 \begin{theorem}\label{szT2d1}
 For all $T \in \rectr$,
@@ -2195,12 +2240,10 @@ of length $d$.  So
 \]
 
 There is also a proof by structural induction.  The structural
-induction is less attractive in two ways: it involves some tedious
-manipulation of exponents, and it provides little insight into what's
-going on.  On the other hand, the structural induction goes through
-routinely with no need for ingenuity, and it can be checked by a proof
-checker---a person or a computer program---with no additional
-information about trees.
+induction provides little insight into what's going on and involves
+some tedious manipulation of exponents.  But it goes through routinely
+with no need for ingenuity, and it can be checked by a proof
+checker---a person or a computer program---with no insight into trees.
 
 \begin{proof} 
 It is enough to prove Theorem~\ref{szT2d1} for \trsize\ and \trdpth.
@@ -2271,7 +2314,7 @@ most $\log_2 n$.
 
 When a set of values may evolve by the insertion or deletion of
 values, maintaining a fully balanced tree may require changing the
-branches of all the subtrees (Problem~\bref{PS_update_balanced}), an
+branches of all the subtrees (Problem~\bref{PS_update_balanced})---an
 effort that would swamp the time saved by having short searches.  A
 ``have your cake and eat it too'' approach is to loosen the fully
 balanced requirement while still maintaining logarithmic search
@@ -2279,9 +2322,9 @@ length.
 
 In a fully balanced tree, most subtrees will have to be complete
 trees.  This means the depth of the left and right branches of most
-subtree will be the same.  In \term{AVL trees} this condition is
-relaxed so that left and right branch depths are allowed to differ
-by one everywhere.
+subtrees will be the same.  In \term{AVL trees} this condition is
+relaxed so that left and right branch depths are allowed to differ by
+one everywhere.
 
 \begin{definition}
 A tree $T\in \rectr$ is an \term{AVL tree} when
@@ -2446,6 +2489,9 @@ on Definition~\ref{defsearchtree} of Search tree:
 \]
 \end{definition}
 
+We can now rigorously prove that the \trsrch{}\ procedure always gives
+the correct answer.
+
 \begin{theorem}\label{thm:correct-search}
 If $r \in \nlbls{(T)}$, then $\trsrch{(T,r)}$ is a sequence of
 selectors and
@@ -2592,7 +2638,7 @@ then
     \nlbls{(\avlrot{(B,r,S)})} = \nlbls{(B)} \union \set{r} \union \nlbls{(S)},
 \]
 \[
-\dpth{\avlrot{(B,r,S)}} = \dpth{S},
+\dpth{S} \leq \dpth{\avlrot{(B,r,S)}} \leq  \dpth{S}+1,
 \]
 and there are two size-three sets $S_{\text{new}}$, $S_{\text{old}}$
 of AVL trees, such that
@@ -2681,7 +2727,7 @@ Then $\avlnsrt{(T,r)}$ is an AVL tree, and
 \[
 \dpth{T} \leq \dpth{\avlnsrt{(T,r)}} \leq \dpth{T}+1,
 \]
-and there are two size-($3\cdot 1.44 \log_2(\sz{T})$ sets $S_{\text{new}}$,
+and there are two size-$(3\cdot 1.44 \log_2 \sz{T})$ sets $S_{\text{new}}$,
 $S_{\text{old}}$ of AVL trees, such that
 \[
 \subbrn{\avlnsrt{(T)}} = (\subbrn{T}\union S_{\text{new}}) - S_{\text{old}}.
