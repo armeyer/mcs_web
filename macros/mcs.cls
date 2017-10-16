@@ -1463,6 +1463,9 @@
 \newcommand{\subbrn}[1]{\text{Subtrs}(#1)}
 \newcommand{\propbrn}[1]{\text{PropSubtrs}(#1)}
 
+\newcommand{\nimg}[1]{\ensuremath{\text{Nim}_{\ang{#1}}}}
+\newcommand{\fmv}[1]{\ensuremath{\text{Fmv}_{\ang{#1}}}}
+
 \newcommand{\fintr}{\text{FinTr}}
 
 \newcommand{\rectr}{\text{RecTr}}
