@@ -1,0 +1,154 @@
+\documentclass[problem]{mcs}
+\begin{pcomments}
+  \pcomment{PS_search_1-n}
+  \pcomment{fixes & subsumes PS_update_balanced}
+  \pcomment{part(a) similar to FP_unique_search_tree}
+  \pcomment{ARM 10/24/17}
+\end{pcomments}
+
+\pkeywords{
+  trees
+  binary_tree
+  search_tree
+  insertion
+  deletion
+  }
+
+\newcommand{\nlbla}[1]{\text{num}_{\text{alt}}{#1}}
+\newcommand{\nlblsa}[1]{\text{nums}_{\text{alt}}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+\bparts
+
+\ppart Label the subtrees in this size 11 tree $T$ so it becomes a
+search tree for the set of labels $\Zintv{1}{11}$.
+
+\begin{center}
+\begin{verbatim}
+                        T              
+                       / \             
+                      /   \            
+                     A     B
+                    / \   / \          
+                   /   \ E   F
+                  C     D
+                 / \   / \
+                G   H I   J
+\end{verbatim}         
+\end{center}
+
+\begin{solution}
+
+\begin{center}
+\noindent
+\begin{verbatim}
+                          8       
+                         / \      
+                        /   \     
+                       4     10    
+                      / \   / \   
+                     /   \ 9  11
+                    2     6       
+                   / \   / \      
+                  1   3 5   7      
+\end{verbatim}         
+\end{center}
+\end{solution}
+
+\instatements{Reminder:
+
+\begin{definition*}\label{defsearchtree}
+The Search trees $T \in \brnch$ are defined recursively as follows:
+
+\inductioncase{Base case}: ($T \in \leafset$).  $T$ is a Search tree.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).
+If $\leftsub{(T)}$ and $\rightsub{(T)}$ are both Search trees, and
+\[
+\text{max}(\leftsub{(T)}) < \nlbl{(T)} < \text{min}(\rightsub{(T)}),
+\]
+then $T$ is a Search tree.
+\end{definition*}
+}
+
+\ppart Let $T$ be a search tree whose labels are the integers in the
+interval $\Zintv{1}{n}$ where $n = \sz{T}$.  Prove by structural
+induction on the definition of search tree
+\inbook{(Definition~\bref{defsearchtree})} that the leaves of $T$ are
+precisely the subtrees whose label is an odd number:
+\begin{equation}\tag{odd}
+\text{leaves}(T) = \set{S \in \subbrn{T} \suchthat \nlbl{(S)}\text{ is odd}}.
+\end{equation}
+
+\inhandout{You may use the fact that the size of a search tree is an
+  odd number (see Problem~\bref{CP_leaves_vs_nodes}).  You may also
+  assume that if $T$ is a search tree under some labelling, then it
+  remains a search tree when the same constant $r \in \reals$ is added
+  to each label.}
+
+\begin{solution}
+\begin{proof}
+The induction hypothesis is $P(T) \eqdef \text{equation~(odd)}$.
+
+\inductioncase{Base case}: ($T \in \leafset$).  Since $T$ is a search
+tree for $\Zintv{1}{1}$, the label $\nlbl{(T)}$ equals 1, which is an
+odd number.
+
+\inductioncase{Constructor case}: ($T \in \brnchng$).  $T$ is a search
+tree for $\Zintv{1}{\sz{T}}$, so by definition of search tree,
+\begin{align*}
+\leftsub{(T)} & \text{ is a search tree for labels } \Zintv{1}{\sz{\leftsub{(T)}}},\\
+\nlbl{(T)} & = \sz{\leftsub{(T)}} + 1,\\
+\rightsub{(T)} & \text{ is a search tree for labels } \Zintv{(\nlbl{(T)}+1)}{(\nlbl{(T)}+\sz{\rightsub{(T)}})}.\\
+\end{align*}
+By induction hypothesis, the leaves of $\leftsub{(T)}$ are the odd
+numbers in $\Zintv{1}{\sz{\leftsub{(T)}}}$.  Also,
+$\sz{\leftsub{(T)}}$ is odd, so $\nlbl{(T)}$ is even.
+
+Since $\rightsub{(T)}$ is a search tree, it remains a search tree if
+$-\nlbl{(T)}$ is added to each label, that is, it becomes a search
+tree on $\Zintv{1}{\sz{\rightsub{(T)}}}$.  By induction hypothesis,
+under this labelling its leaves are labelled with the odd numbers in
+this interval.  Hence the leaves of $\rightsub{(T)}$ must originally
+have been labelled with the odd numbers in
+$\Zintv{(\nlbl{(T)}+1)}{(\nlbl{(T)}+\sz{\rightsub{(T)}})}$.
+This implies
+that the labels of the leaves of $T$ are the odd numbers in
+\begin{align*}
+\Zintv{1}{\sz{\leftsub{(T)}}}
+          & \union \Zintv{(\nlbl{(T)}+1)}{(\nlbl{(T)}+\sz{\rightsub{(T)}})}\\
+          & = \Zintv{1}{\sz{T}} - \set{\nlbl{(T)}}.
+\end{align*}
+But since $\nlbl{(T)}$ is even, these are the odd numbers in
+$\Zintv{1}{\sz{T}}$ which proves $P(T)$.
+\end{proof}
+
+\end{solution}
+\eparts
+
+\iffalse
+It follows that if $T$ is a search tree on $\Zintv{1}{n}$, and $U$ is
+an isomorphic tree for these values after deleting 1 and inserting
+$n+1$, then $T$ and $U$ have no subtrees in common.  So if we tried to
+maintain the shape of a search tree, then after just one deletion and
+one insertion we might have to find $\sz{T}$ new subtrees.  This
+contrasts dramatically with the case of AVL trees, where by allowing
+the shape of $U$ to differ somewhat from the shape of $T$, the search
+trees $T$ and $U$ can share all but proportional to $\log_2(\sz{T})$
+subtrees.
+\fi
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
