@@ -4,6 +4,7 @@
   \pcomment{CP_graph_logic_probability_S16}
   \pcomment{subsumes CP_graph_logic_probability, FP_graph_logic_probability}
   \pcomment{ARM 5/10/16}
+  \pcomment{soln to last part by ARM 11/8/17}
 \end{pcomments}
 
 \pkeywords{
@@ -173,19 +174,52 @@ on whether $\edge{x}{y}$ is an actual edge of $G$.  Therefore,
 \end{align*}
 \end{solution}
 
-\ppart\label{Wwxyz} Are $W(w,x)$ and $W(y,z)$ independent events?
-Briefly comment (proof not required).
+\ppart\label{Wwxyz} Show that $W(w,x)$ and $W(y,z)$ may not be independent events.
+\hint Just consider the case that $\vertices{G} = \set{w,x,y,z}$ and $p=1/2$.
 
 \examspace[0.75in]
 
 \begin{solution}
-The more randomly chosen edges there are in $G$, the more likely
-length two walks become.  Now $W(w,x)$ implies the existence of two
-edges---which might be incident to $y$ or $z$---and this makes
-$W(y,z)$ more likely given $W(w,x)$.
+Following the hint, assume $\vertices{G} = \set{w,x,y,z}$.  Now we
+observe that $W(w,x)$ depends only on the four edges $\edge{w}{y},
+\edge{w}{z}, \edge{x}{y}, \edge{x}{z}$:
+\[
+W(w,x)\quad \QIFF\quad (A(w,y) \QAND A(x,y)) \QOR  (A(w,z) \QAND A(x,z))
+\]
+so by Inclusion-Exclusion,
+\begin{align*}
+\lefteqn{\pr{W(w,x)}}\\
+& = \pr{A(w,y) \QAND A(x,y)} + \pr{A(w,z) \QAND A(x,z)}\\
+& \qquad   - \pr{A(w,y) \QAND A(x,y) \QAND A(w,z) \QAND A(x,z)}\\
+& = \paren{\frac{1}{2}}^2 + \paren{\frac{1}{2}}^2 - \paren{\frac{1}{2}}^4\\
+& = \frac{7}{16}.
+\end{align*}
+By symmetry, likewise
+\[
+\pr{W(y,z)} = \frac{7}{16}.
+\]
+
+However,
+\begin{align*}
+\lefteqn{[W(w,x)  \QAND W(y,z)]}\\
+   & \QIFF\ \text{at most one of the edges}\ \edge{w}{y}, \edge{w}{z}, \edge{x}{y}, \edge{x}{z}\ \text{is missing from}\ \vertices{G}.
+\end{align*}
+Now the probabilility that some particular edge are among these four
+is the only one missing is $(1/2)^4$ and the probability that none of
+missing is also equal to $(1/2)^4$, so by Inclusion-Exclusion,
+\[
+\pr{W(w,x) \QAND W(y,z)} = \binom{4}{3}\paren{\frac{1}{2}}^4 - \paren{\frac{1}{2}}^4 = \frac{5}{16}.
+\]
+In particular,
+\[
+\pr{W(w,x) \QAND W(y,z)} = \frac{5}{16} \neq \paren{\frac{7}{16}}^2 =  \pr{W(w,x)}\cdot \pr{W(y,z)},
+\]
+proving that $W(w,x)$ and $W(y,z)$ are not independent.
+\end{solution}
 
 \begin{staffnotes}
-%Attempted solution%
+Attempted general solution by Sibo 11/5/17:
+
 \begin{align*}
 \lefteqn{\prcond{\QNOT(W(w,x))}{W(y,z)}} \\
 	&= \prcond{\QNOT(W(w,x))}{\exists u \in \vertices{G} - \set{y,z}.\, A(y,u) \QAND\ A(u,z)}\\
@@ -195,11 +229,8 @@ $W(y,z)$ more likely given $W(w,x)$.
 	&= \frac{n-4}{n-2} \cdot (1-p^2)^{n-2} + \frac{2}{n-2} \cdot (1-p^2)^{n-4} \cdot (1-p)^2\\
 	& \leq r.
 \end{align*}
-\TBA{Derive formula} for $\prcond{W(w,x)}{W(y,z)}$ and see that it
-  differs from $r$.
 
 \end{staffnotes}
-\end{solution}
 
 \eparts
 \end{problem}
@@ -209,85 +240,6 @@ $W(y,z)$ more likely given $W(w,x)$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \endinput
-
-
-Original Solution: In this counterexample,
-\[
-W(w,x) \equiv (A(w,y) \QAND{} A(y,x)) \QOR{} (A(w,z) \QAND{} A(z,x))
-\]
-and
-\[
-W(x,y) \equiv (A(x,w) \QAND{} A(w,y)) \QOR{} (A(x,z) \QAND{} A(z,y)).
-\]
-
-By symmetry, we apply inclusion-exclusion to calculate the probability
-for either of these events:
-\[
-\paren{\frac{1}{2}}^2 + \paren{\frac{1}{2}}^2 - \paren{ \frac{1}{2}}^4 = \frac{7}{16}.
-\]
-
-Now consider $\prcond{W(w,x)}{W(x,y)}$, the fraction of outcomes
-satisfying $W(x, y)$ that also satisfy $W(w, x)$.  Partition the
-outcomes satisfying $W(x, y)$ by whether they also satisfy $A(w, y)$.
-Both sides of the partition are independent of $A(y, x)$ in the sense
-formalized above, since $A(y, x)$ doesn't appear in the definition of
-$W(x, y)$.  That means that the outcomes in the subcase for $A(w, y)$
-can be partitioned into equally sized sets, one with $A(y, x)$ and the
-other with $\bar{A(y, x)}$.  Clearly every element of the first set
-satisfies $W(w, x)$, so
-\[
-\prcond{W(w, x)}{W(x, y) \QAND{} A(y, x)} \geq \frac{1}{2}.
-\]
-
---------------
-  For
-  $|V| = 4$ and $p = \frac{1}{2}$, we have
-\[
-W(w,x) \equiv (A(w,y) \QAND\ A(y,x)) \QOR\ (A(w,z) \QAND\ A(z,x))
-\]
- and
-\[
-W(y,z) \equiv (A(y,x) \QAND\ A(x,z)) \QOR\ (A(y,w) \QAND\ A(w,z)).
-\]
-
-\[
-\prcond{W(w, x)}{W(y, z) \QAND{} (A(y,x) \QAND{} A(x,z))} = \frac{3}{4},
-\]
-since under these conditions the formula for $W(w,x)$ simplifies to
-$A(w,y) \QOR A(w,z)$.
-\[
-\prcond{W(w, x)}{W(y, z) \QAND\ \QNOT (A(y,x) \QAND\ A(x,z))} = \frac{1}{2}
-\]
-since under these conditions we know $A(y,w) \QAND\ A(w,z)$, and the
-formula for $W(w,x)$ simplifies to 
-\[
-(A(y,x) \QOR\ A(z,x)) \QAND\ \QNOT(A(y,x) \QAND\ A(z,x)).
-\]
-Both sides of the partition have probabilities no less than
-$\frac{1}{2}$, so $\prcond{W(w, x)}{W(y, z)} \geq \frac{1}{2}$, which
-again is above $\pr{W(w, x)}$, which can be computed as $\frac{7}{16}$
-as in the prior case.
------------
-
-The outcomes in the subcase for $\bar{A(w, y)}$ must all have $A(x,
-z)$, so, like above partitioning them based on $A(w, z)$, we get two
-equal-size sets, where the set with $A(w, z)$ all satisfy $W(w, x)$,
-and
-\[
-\prcond{W(w, x)}{W(x, y) \QAND\ \bar{A(y, x)}} \geq \frac{1}{2}.
-\]
-The true value of $\prcond{W(w, x)}{W(x, y)}$ must lie somewhere
-between these two values, so it also must be no less than
-$\frac{1}{2}$, and thus it must be greater than $\pr{W(w, x)} =
-\frac{7}{16}$.
-
-\vspace{0.05in} Less complicated explanation: We want to show that
-$\prcond{W(w,x)}{W(x,y)} \neq \Pr{W(w,x)}$.  If $W(x,y)$, this
-increases the probability of $A(z,x)$ and $A(w,y)$, which can be used
-for $W(w,x)$.
-
-\fi
-
 
 
 % Exam version commented out for use as a class problem.
@@ -305,3 +257,15 @@ definition of $W(x,y)$.
 \item $W(x,y) \eqdef \forall z.\ x \neq y \QIMPLIES\ [A(x,z) \QOR\ A(y,z)]$
 \end{itemize}
 \fi
+
+
+\begin{staffnotes}
+The more randomly chosen edges there are in $G$, the more likely
+length two walks become.  Now $W(w,x)$ implies the existence of two
+edges---which might be incident to $y$ or $z$---and this makes
+$W(y,z)$ more likely given $W(w,x)$.
+
+This intuitive argument implicitly relies on assumptions about
+independent choice of the ``more'' edges and is accordingly not really
+convincing.
+\end{staffnotes}
