@@ -1624,8 +1624,8 @@ It takes some ingenuity to prove this just for the case $k=2$.
 The following theorem says that a graph with few edges must have many
 connected components.
 \begin{theorem}\label{th:connectivity}
-Every graph $G$ has at least $\card{\vertices{G}} - \card{\edges{G}}$
-connected components.
+Every graph finite $G$ has at least $\card{\vertices{G}} -
+\card{\edges{G}}$ connected components.
 \end{theorem}
 Of course for Theorem~\ref{th:connectivity} to be of any use, there must
 be fewer edges than vertices.
@@ -1638,18 +1638,12 @@ every graph $G$ with $k$ edges has at least $\card{\vertices{G}}-k$
 connected components.
 \end{quote}
 
-\inductioncase{Base case} ($k=0$): In a graph with 0 edges, each
+\inductioncase{Base case}: ($k=0$).  In a graph with 0 edges, each
 vertex is itself a connected component, and so there are exactly
 $\card{\vertices{G}} = \card{\vertices{G}} - 0$ connected components.
 So $P(0)$ holds.
 
-\inductioncase{Inductive step}:
-
-\iffalse
-Now we assume that the induction hypothesis holds for every $k$-edge
-graph in order to prove that it holds for every $(k+1)$-edge graph,
-where $k \geq 0$.
-\fi
+\inductioncase{Inductive step}:($\card{\vertices{G}} = k+1$).
 
 Let $G_e$ be the graph that results from removing an edge, $e \in
 \edges{G}$.  So $G_e$ has $k$ edges, and by the induction hypothesis
@@ -1666,9 +1660,6 @@ component than $G_e$.  That is, $G$ has at least $(\card{\vertices{G}}
 - k) - 1 = (\card{\vertices{G}} - (k+1))$ connected components.  So in
 either case, $G$ has at least $\card{\vertices{G}} - (k+1)$
 components, as claimed.
-
-This completes the inductive step and hence the entire proof by
-induction.
 \end{proof}
 
 \begin{corollary}
@@ -1868,7 +1859,8 @@ one vertices.  Trees don't necessarily have a lot of leaves: the line
 graph $L_n$ has only two leaves.  But two leaves is the minimum.
 
 \begin{lemma}\label{lem:2leaves}
-If a tree has more than one vertex, then it has at least two leaves.
+If a finite tree has more than one vertex, then it has at least two
+leaves.
 
 \begin{proof}
   Let $u$ be a vertex at one end of a \emph{longest} path in the tree.
@@ -1877,58 +1869,87 @@ If a tree has more than one vertex, then it has at least two leaves.
   vertex to the path, so there can't be such an edge.  
 
   Since the tree has more than one vertex, a longest path must include
-  at least one edge, so there will be a vertex $v$ that comes just
-  before $u$ on the path.  Now if there was an edge from $u$ to a
-  vertex $w \neq v$ on the path, then the part of the path from $w$ to
-  $u$ followed by the edge back to $w$ would be a cycle.  So
-  $\edge{v}{u}$ must be the only edge incident to $u$.  That is, $u$
-  is a degree one leaf.  Likewise, the vertex at the other end of the
-  path must also be a leaf.
+  at least one edge, so there will be an final edge $\edge{v}{u}$ at
+  the end of the path.  Now if there was an edge from $u$ to a vertex
+  $w \neq v$ on the path, then the part of the path from $w$ to $u$
+  followed by the edge back to $w$ would be a cycle.  So $\edge{v}{u}$
+  must be the only edge incident to $u$.  That is, $u$ is a degree one
+  leaf.  Likewise, the vertex at the other end of the path must also
+  be a leaf.
 \end{proof}
 \end{lemma}
 
 \subsection{Tree Properties}
 
-Trees have many unique properties.  We have listed some of them in the
-following theorem.
+There are many equivalent ways to characterize trees.
 
 \begin{theorem}\label{th:treeprops}
-Every tree has the following properties:
+For any simple graph $G$ the following properties are equivalent:
 
 \begin{enumerate}
-\item Every connected subgraph is a tree.\label{treeprops:asub}
 
-\item There is a unique path between every pair of
-  vertices.\label{treeprops:uniquepath}
+\item\label{isatree} connected and acyclic ($G$ is a \emph{tree}).
 
-\item Adding an edge between any two nonadjacent vertices in a tree creates a
-  graph with a cycle.
+\item\label{minconnect} connected and every edge is a cut edge ($G$ is
+  \emph{edge-minimal connected}).
 
-\item Removing any edge disconnects the graph.  That is, every edge is
-  a cut edge.
+\item\label{maxacyclic} acyclic and adding an edge between any two nonadjacent
+  vertices creates a cycle ($G$ is \emph{edge-maximal acyclic}).
 
-\item\label{treeprops:v=e+1} The number of vertices in a tree is one
-  larger than the number of edges.
+\item\label{uniquepath} a unique path between every pair of
+  vertices.
+
 \end{enumerate}
 
 \end{theorem}
 
-\begin{editingnotes}
-It would be more interesting and useful for spanning tree proofs below
-to separate the implications from the equivalences, and include the
-equivalence of Lemma~\ref{lem:iffe=v-1}.  The equivalences are
-another chance to use the cycle-of-implications proof organization.
-\end{editingnotes}
+%\item Every connected subgraph is a tree.\label{treeprops:asub}
 
 \begin{proof}
 
 \begin{enumerate}
 
-\item A cycle in a subgraph is also a cycle in the whole graph, so any
-  subgraph of an acyclic graph must also be acyclic.  If the subgraph
-  is also connected, then by definition, it is a tree.
+\item \eqref{isatree}~implies~\eqref{minconnect}: If an edge of $G$
+  was not a cut edge, then by Lemma~\ref{lem:cutiffcycle} it is on a
+  cycle, contradicting~\eqref{isatree}.
 
-\item Since a tree is connected, there is at least one path between
+\item\eqref{isatree}~implies~\eqref{maxacyclic}: Connectedness implies
+  there is a path between any two vertices $u \neq v$.  If $u$ and $v$
+  are not adjacent, then an additional edge $\edge{u}{v}$ together
+  with the path between forms a cycle.
+
+\item\eqref{uniquepath}~implies~\eqref{minconnect}: Connectedness is
+  immediate from~\eqref{uniquepath}.
+
+  Suppose $u$ and $v$ are adjacent vertices.  Then the unique path
+  between $u$ and $v$ must just be the edge $\edge{u}{v}$.  Removing
+  this edge leaves no path between $u$ and $v$, which implies that the
+  graph is not connected.
+
+\item \eqref{uniquepath}~implies~\eqref{isatree}.  Connectedness is
+  immediate from~\eqref{uniquepath}.  If there were a cycle, then
+  there are two paths between any two distict vertices on the path,
+  contradicting uniqueness.  So the graph must be acyclic.
+
+\item \eqref{maxacyclic}~implies~\eqref{isatree}: Acyclic is immediate
+  from~\eqref{maxacyclic}.  If the graph was not connected, the adding
+  an edge between any two distinct components cannot create a cycle, so
+  the graph must be connected.
+
+\item \eqref{minconnect}~implies~\eqref{isatree}: Connectedness is
+  immediate from~\eqref{minconnect}.  If there was a cycle, then
+  Lemma~\ref{lem:cutiffcycle} an edge on the cycle would not be a cut
+  edge, contradicting~\eqref{minconnect}.  So the graph must be acyclic.
+
+
+\item\eqref{maxacyclic}~implies~\eqref{uniquepath}: Suppose to the
+  contrary that there are two paths between two distinct vertices.
+  Let $u \neq v$ be two such vertices such that the shortest path
+  between $u$ and $v$ is minimum length.  \TBA{MORE \dots}
+
+\iffalse
+
+ Since a tree is connected, there is at least one path between
   every pair of vertices.  Suppose for the purposes of contradiction,
   that there are two different paths between some pair of vertices.
   Then there are two distinct paths $\walkv{p} \neq \walkv{q}$ between
@@ -1943,7 +1964,6 @@ another chance to use the cycle-of-implications proof organization.
         vertices in common besides their endpoints, and so
         $\merge{\walkv{p}}{\text{reverse}(\walkv{q})}$ is a cycle.
 
-\iffalse
   Beginning at $u$, let $x$ be the first vertex where
   the paths diverge, and let $y$ be the next vertex they share.  (For
   example, see Figure~\ref{fig:5L}.)  Then there are two paths from
@@ -1958,47 +1978,47 @@ another chance to use the cycle-of-implications proof organization.
 \end{figure}
 \fi
 
-\item An additional edge $\edge{u}{v}$ together with the unique path
-  between $u$ and $v$ forms a cycle.
+\end{enumerate}
 
-\item Suppose that we remove edge $\edge{u}{v}$.  Since the tree
-  contained a unique path between $u$ and $v$, that path must have
-  been $\edge{u}{v}$.  Therefore, when that edge is removed, no path
-  remains, and so the graph is not connected.
+\end{proof}
 
-\item We use induction on the proposition
+The equivalences of Theorem~\ref{th:treeprops} hold even for infinite
+trees.\footnote{We encourage you to check that the proofs made no use
+  of finiteness.}  For finite trees, there are two more useful
+characterizations of trees.
+
+\begin{theorem}
+\label{thm:iffe=v-1}
+For any simple graph $G$ the following properties are equivalent:
+\end{theorem}
+
+\begin{enumerate}
+\item finite tree.
+
+\item finite, acyclic and  $\card{\vertices{G}} = \card{\edges{G}} +1$.
+
+
+\item finite, connected and $\card{\vertices{G}} = \card{\edges{G}} +1$.
+\end{enumerate}
+
+\begin{proof}
+\TBA{REVISE}
+
+We use induction on the proposition
 \[
-P(n) \eqdef \text{there are $n - 1$ edges in any $n$-vertex tree}.
+P(n) \eqdef \text{there are exactly $n - 1$ edges in any $n$-vertex tree}.
 \]
 
 \inductioncase{Base case} ($n = 1$): $P(1)$ is true since a tree with
 1 vertex has 0 edges and $1 - 1 = 0$.
 
-\inductioncase{Inductive step}: Now suppose that $P(n)$ is true and
-consider an $(n+1)$-vertex tree $T$.  Let $v$ be a leaf of the tree.
-You can verify that deleting a vertex of degree 1 (and its incident
-edge) from any connected graph leaves a connected subgraph.  So by
-Theorem~\ref{th:treeprops}.\ref{treeprops:asub}, deleting $v$ and its
-incident edge gives a smaller tree, and this smaller tree has $n - 1$
-edges by induction.  If we re-attach the vertex $v$ and its incident
-edge, we find that $T$ has $n = (n + 1) - 1$ edges.  Hence, $P(n + 1)$
-is true, and the induction proof is complete.  \qedhere
-
-\end{enumerate}
-
+\inductioncase{Inductive step}: Now suppose that $P(n)$ is true for
+some $n \geq 1$, and let $T$ be an $(n+1)$-vertex tree.  By
+Lemma~\ref{lem:2leaves}, $T$ has a leaf $v$.  Deleting $v$ and its
+incident edge leaves an $n$-vertex tree which has has $n - 1$ edges by
+induction.  If we re-attach the vertex $v$ and its incident edge, we
+find that $T$ has $n = (n - 1) + 1$ edges, which proves $P(n + 1)$.
 \end{proof}
-
-Various subsets of properties in Theorem~\ref{th:treeprops} provide
-alternative characterizations of trees.  For example,
-
-\begin{lemma}\label{lem:iffe=v-1}
-A graph $G$ is a tree iff $G$ is a forest and $\card{\vertices{G}} =
-\card{\edges{G}} +1$.
-\end{lemma}
-
-The proof is an easy consequence of
-Theorem~\ref{th:treeprops}.\ref{treeprops:v=e+1}, see
-Problem~\ref{TP_forest_edges}.
 
 \subsection{Spanning Trees}\label{spantree_subsec}
 Trees are everywhere.  In fact, every connected graph contains a
