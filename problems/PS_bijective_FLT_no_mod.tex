@@ -1,0 +1,192 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_bijective_FLT_no_mod}
+  \pcomment{same as PS_bijective_FLT_S16 but no ``mod p''}
+  \pcomment{ARM revise PS_bijective_FLT, 4/15/16}
+  \pcomment{S16.ps7, S13.ps10, F11.MQ}
+  \pcomment{soln edit by Chad Q 3/16/17}
+\end{pcomments}
+
+\pkeywords{
+  counting
+  Fermat
+  congruence
+  equivalence
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Fermat's Little Theorem~\bref{fermat_little}\footnote{This Theorem is usually stated as
+\[
+ a^{p-1}\equiv 1\pmod{p},
+\]
+for all primes $p$ and integers $a$ not divisible by $p$, which
+follows immediately from~\eqref{apeqvap}.}
+asserts that
+\begin{equation}\label{apeqvap}
+a^p - a\ \text{is divisible by}\ p
+\end{equation}
+for all primes $p$ and nonnegative integers $a$.  This is immediate
+for $a=0,1$ so we assume that $a \geq 2$.
+
+This problem offers a proof of~\eqref{apeqvap} by counting strings
+over a fixed alphabet with $a$ characters.
+
+\bparts
+
+\ppart\label{countak} How many length-$k$ strings are there over an
+$a$-character alphabet? \hfill\examrule
+\begin{solution}
+$a^k$.
+
+For each index in the length-$k$ string, there are $a$ possible choices
+for the character. Since there are $k$ indices, there are a total of 
+$a^k$ possible strings.
+\end{solution}
+How many of these are strings use more than one character? \hfill\examrule
+\begin{solution}
+$a^k-a$.
+
+For each of the $a$ characters, there is exactly one length-$k$
+string using only that character.  Therefore, the number of 
+length-$k$ strings that use more than one character is $a^k-a$
+\end{solution}
+
+\eparts
+
+\bigskip
+
+Let $z$ be a length-$k$ string.  The \emph{length-$n$ rotation} of $z$
+is the string $yx$, where $z = xy$ and the length $\lnth{x}$ of $x$
+is $\remainder(n,k)$.
+
+\bparts
+
+\ppart\label{rotateagain} Verify that if $u$ is a length-$n$ rotation
+of $z$, and $v$ is a length-$m$ rotation of $u$, then $v$ is a
+length-($n+m$) rotation of $z$.
+
+\begin{solution}
+There are two cases we need to consider.
+
+Case 1: [$\remainder(n,k) + \remainder(m,k) \le k$] Suppose $z = wxy$,
+where $\lnth{w} = \remainder(n,k)$ and $\lnth{x} = \remainder(m,k)$.  Then $u = xyw$,
+and so $v = ywx$. Therefore, $\lnth{wx} = \remainder(n,k) + \remainder(m,k)$, which
+is equal to $\remainder((\remainder(n,k)+\remainder(m,k)),k)$. But we know that
+$\remainder(n,k) + \remainder(m,k) \le k$, so $\lnth{wx} = \remainder(n+m,k)$.
+Thus, $v$ is the length-$n+m$ rotation of $z$.
+
+Case 2: [$\remainder(n,k) + \remainder(m,k) > k$] Suppose $z = wxy$,
+where $\lnth{wx} = \remainder(n,k)$ and $\lnth{yw} = \remainder(m,k)$. Then $u = ywx$,
+and so $v = xyw$. But $\lnth{w} = \lnth{wx} + \lnth{yw} - \lnth{z} = \remainder(n,k) +
+\remainder(m,k) + k$. Since $k < \remainder(n,k) + \remainder(m,k) \le 2k$, this means
+$\lnth{w} = \remainder((\remainder(n,k) + \remainder(m,k)),k) = \remainder(n + m,k)$.
+Thus, $v$ is the length-$n+m$ rotation of $z$.
+\end{solution}
+
+\ppart Let $\approx$ be the ``is a rotation of'' relation on strings.
+That is,
+\[
+v \approx z \quad \QIFF\quad v\ \text{is a length-$n$ rotation of}\ z
+\]
+for some $n \in \nngint$.  Prove that $\approx$ is an equivalence
+relation.
+
+\begin{solution}
+\begin{proof}
+Reflexivity follows since everything is a length 0 rotation of itself.
+Symmetry follows because $v$ is a length $m$ rotation of $z$ iff $z$
+is a length $\lnth{z} - \remainder(m,\lnth{z})$ rotation of $v$.
+Transitivity follows from part~\eqref{rotateagain}.
+\end{proof}
+\end{solution}
+
+\ppart\label{xyyxm*} Prove that if $xy=yx$ then $x$ and $y$ each consist of
+repetitions of some string $u$.  That is, if $xy=yx$, then $x,y \in
+u^*$ for some string $u$.
+
+\hint By induction on the length $\lnth{xy}$ of $xy$.
+
+\begin{editingnotes}
+(Old hint leading to more cumbersome proof: Let $u$ be the
+  shortest positive length string such that $uy=yu$.)
+\end{editingnotes}
+
+\begin{solution}
+\begin{proof}
+By strong induction with the induction hypothesis
+\[
+P(n) \eqdef \forall \text{strings}\ x,y. \lnth{xy} = n \QIMPLIES\ \exists u.\ x,y \in u^*.
+\]
+
+\inductioncase{Base case} ($n=0$).  Immediate.
+
+\inductioncase{Induction step}.  Suppose $\lnth{xy} = n+1$ and
+$xy=yx$.  We must now show that $x,y \in u^*$ for some string $u$.
+
+Since $x$ and $y$ are interchangeable in the hypotheses, we may assume
+that $\lnth{x} \leq \lnth{y}$.  If $\lnth{x} = 0$, then letting $u
+\eqdef y$ yields $x,y\in u*$, so we may assume $\lnth{x} > 0$.
+
+Now $xy=yx$ implies that $y = x y'$ for some string $y'$.  So we have
+\[
+x(xy')= xy = yx = (xy')x = x(y'x),
+\]
+and therefore
+\[
+xy' = y'x.
+\]
+Also $\lnth{xy'} < \lnth{xy}$.  By induction hypothesis, we have
+\[
+x,y' \in u^*
+\]
+for some string $u$.  Since $y = xy'$ is a concatenation of strings in
+$u^*$, we conclude that $y\in u^*$.
+\end{proof}
+
+\end{solution}
+
+\ppart\label{exactlyp} Conclude that if $p$ is prime and $z$ is a
+length-$p$ string containing at least two different characters, then
+$z$ is equivalent under $\approx$ to exactly $p$ strings (counting
+itself).
+
+\begin{solution}
+By part~\eqref{xyyxm*}, $z \in u^*$ for some string $u$.  Letting $m$
+be the length of the shortest such $u$, it follows that $z$ is
+$\approx$-equivalent to exactly $m$ strings.  In particular,
+$\lnth{z}$ is a multiple of $m$.
+
+But $\lnth{z} = p$, so $m$ must be 1 or $p$, and since $z$ has at
+least two different characters, $m \neq 1$.  So $z$ is equivalent to
+exactly $p$ strings.
+\end{solution}
+
+\ppart Conclude from parts~\eqref{countak} and~\eqref{exactlyp} that
+$p \divides (a^p -a$), which proves Fermat's Little
+Theorem~\eqref{apeqvap}.
+
+\begin{solution}
+From part~\eqref{countak}, there are $a^p-a$ length-$p$ strings made
+from an alphabet with $a$ characters that contain at least 2 different
+characters.  From~\eqref{exactlyp}, a length-$p$ string of at least
+two different characters is equivalent under $\approx$ to exactly $p$
+other strings.  Partitioning the strings with two or more characters
+into equivalence classes under $\approx$, it follows that each block
+of the partition has $p$ elements, and therefore the total number of
+strings is a multiple of $p$.  That is, $p \divides a^p-a$, and
+therefore $a^p \equiv a \pmod{p}$, as desired.
+\end{solution}
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
