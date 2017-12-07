@@ -4,7 +4,7 @@
   \pcomment{PS_binary_gcd}
   \pcomment{extended version in FP_binary_gcd}
   \pcomment{By ARM 4/24/11 based on Shoup}
-  \pcomment{revised ARM 3/17/14; 5/10/14}
+  \pcomment{revised ARM 3/17/14; 5/10/14; soln to part(c) edited 12/6/17}
 \end{pcomments}
 
 \pkeywords{
@@ -33,7 +33,7 @@
      &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\tag{i2}\\
      &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\tag{i3}\\
      &  (x-y, y, e)    & \text{(else if $x > y$)}\tag{i4}\\
-     &  (y-x, x, e)    & \text{(else if $y > x$)}\tag{i5}\\
+     &  (x, y-x, e)    & \text{(else if $y > x$)}\tag{i5}\\
      &  (1,   0, ex)   & \text{(otherwise ($x=y$))}.\tag{i6}
 \end{align}
 
@@ -141,10 +141,9 @@ then the invariant implies
 as required.
 
 To see why this is the only stopped state, note that a transition is
-always possible from the start state, and
-transitions~(i1)--(i5) do not lead to stopped
-states since the minimum of the new $x$ and $y$ values remains
-positive.
+always possible from the start state, and transitions~(i1)--(i5) do
+not lead to stopped states since the minimum of the new $x$ and $y$
+values remains positive.
 \end{solution}
 
 \ppart Prove that rule~(i1)
@@ -184,6 +183,10 @@ Now if rule~(i1) is not executed in some state $(x,y,e)$,
 then~(noteven) must hold, and since~(noteven) is
 preserved, we can conclude that rule~(i1) will never be
 executed in any subsequent state.
+
+REMARK: This is a nice example of a useful preserved invariant that
+will typically be \emph{false for the start state}, remain false for a
+while, and then become true.
 \end{solution}
 
 \ppart Prove that the machine reaches a final state in at most
@@ -193,13 +196,13 @@ be able to get a better one.)
 %\hint Strong induction on $\max(a,b)$.
 
 \begin{solution}
-Either $x$ or $y$ gets halved after at most three transitions---the
-worst case is when $x$ and $y$ are both odd and $y > x > 1$.  In that
-case, the first transition switches $x$ and $y$, the next subtracts
-one from the other yielding an even value of $x$, and the third
-transition will halve $x$.  So after at most $3(\log a + \log b)$
-transitions, one of $x$ and $y$ must have been reduced to 1, after
-which there can be at most one more transition.
+Either $x$ or $y$ gets halved after at most two transitions and
+neither one increases.  For example, if $x$ and $y$ are both odd and
+$x>y>0$, then the state $(x,y,e)$ transitions to $(x-y, y, e)$.  Then,
+since $x-y$ is even, the next transition will be to $((x-y)/2, y, e)$.
+So after at most $2(\log a + \log b)$ transitions, one of $x$ and $y$
+must have been reduced to 1, after which there can be at most one more
+transition.
 \end{solution}
 
 
