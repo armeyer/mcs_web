@@ -8,7 +8,7 @@
 
 \ProvidesClass{mcs}
 
-\def\currentsemester{spring17}
+\def\currentsemester{spring18}
 
 \newif\ifshowproblems
 \showproblemstrue
@@ -2843,7 +2843,7 @@
 \newcommand{\bookcopyrightyear}{%
   \message{^^JBookright year is *INCORRECT*.^^J^^J}}
 
-\renewcommand{\bookcopyrightyear}{2017}
+\renewcommand{\bookcopyrightyear}{2018}
 
 
 
