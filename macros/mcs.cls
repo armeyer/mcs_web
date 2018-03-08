@@ -1344,6 +1344,7 @@
 %\newcommand{\power}{\mathcal{P}}
 \newcommand{\power}{\mopt{pow}}
 \newcommand{\restrict}{\upharpoonright}
+\newcommand{\recset}{\text{Recset}}
 
 \newcommand{\embed}[1]{\mathcal{#1}}
 
@@ -1389,15 +1390,15 @@
 
 %\newcommand{\naturals}{\mathbb{N}}
 \newcommand{\nngint}{\ensuremath{\mathbb{N}}}
-\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\integers}{\ensuremath{\mathbb{Z}}}
 \newcommand{\Zmod}[1]{\mathbb{Z}_{#1}}
 \newcommand{\Zmods}[1]{\mathbb{Z}^*_{#1}}
-\newcommand{\rationals}{\mathbb{Q}}
-\newcommand{\reals}{\mathbb{R}}
-\newcommand{\complexes}{\mathbb{C}}
-\newcommand{\posints}{\integers^+}
+\newcommand{\rationals}{\ensuremath{\mathbb{Q}}}
+\newcommand{\reals}{\ensuremath{\mathbb{R}}}
+\newcommand{\complexes}{\ensuremath{\mathbb{C}}}
+\newcommand{\posints}{\ensuremath{\integers^+}}
 \newcommand{\finbin}{\ensuremath{\strings{\set{0,1}}}}
-\newcommand{\binw}{\infstrings{\set{0,1}}}
+\newcommand{\binw}{\ensuremath{\infstrings{\set{0,1}}}}
 \newcommand{\twdone}{\mathbb{F}}
 \newcommand{\Zintv}[2]{\Zintvcc{#1}{#2}}
 \newcommand{\Zintvcc}[2]{[#1..#2]}
