@@ -2,9 +2,7 @@
 
 \begin{pcomments}
   \pcomment{PS_infinite_ordinals}
-  \pcomment{NEEDS WORK}
   \pcomment{generalizes CP_finite_ordinals}
-  \pcomment{subsumed by PS_infinite_ordinals_full}
   \pcomment{revised ARM 3/14/18 from original 2/20/14}
 \end{pcomments}
 
@@ -21,92 +19,101 @@
 \newcommand{\Ord}{\text{Ord}}
 
 \begin{problem}
-For any set $x$, define $\nextset{x}$ to be the set consisting of all
-the elements of $x$, along with $x$ itself:
+For any set $y$, define $\nextset{y}$ to be the set consisting of all
+the elements of $y$, along with $y$ itself:
 \[
-\nextset{x}  \eqdef x \union \set{x}.
+\nextset{y}  \eqdef y \union \set{y}.
 \]
 So by definition,
-\begin{equation}\label{insubset}
-x \in \nextset{x}\text{ and }x \subset \nextset{x}.
+\begin{equation}\tag{*}
+x \in \nextset{y} \QIFF\ (x = y \QOR x \in y).
 \end{equation}
 
 Now we give a recursive definition of a collection $\Ord$ of sets
-called \term{ordinals} that provide a way to count infinite sets.
+called \term{ordinals} that provide a way to ``count'' infinite sets.
 Namely,
 \begin{definition*}
-\begin{align*}
-\emptyset & \in \Ord,\\
-\text{if } \nu & \in \Ord, \text{ then } \nextset{\nu} \in \Ord,\\
-\text{if } \emptyset \neq S & \subset \Ord, \text{ then } \lgunion_{\nu \in S} \nu \in \Ord.
-\end{align*}
-\end{definition*}
+\begin{itemize}
+\item $\emptyset \in \Ord$,
+\item if $\nu  \in \Ord$, then $\nextset{\nu} \in \Ord$,
+\item if
+\begin{equation}\tag{\dag}
+\nu_0 \in \nu_1  \in \nu_2 \in \cdots \nu_n \in \nu_{n+1} \in \cdots
+\end{equation}
+is a sequence of ordinals, then $\lgunion_{i \in \nngint} \nu_i\  \in \Ord$.
+\end{itemize}\end{definition*}
+
 The recursive definition of ordinals means we can prove things about them using
-structural induction.  Namely, let $P(x)$ be some property of sets.  The
+structural induction.  Namely, let $P(y)$ be some property of sets.  The
 \emph{Ordinal Induction Rule} says that to prove that $P(\nu)$ is true for all
 ordinals $\nu$, you need only show three things:
 \begin{itemize}
-\item $P(\emptyset)$
-\item If $P$ holds for a set $x$, it holds for $\nextset{x}$, and
-\item if $P$ holds for all members of some nonempty set $S$, then it holds for
-  their union.
-\end{itemize}  That is:
-
-\begin{mathrule*}
-\textbf{Ordinal Induction}
-\Rule{P(\emptyset)\\
-\forall x.\ P(x)\ \QIMPLIES\ P(\nextset{x}),\\
-\forall S \neq \emptyset.\ (\forall x \in S.\, P(x))\ \QIMPLIES\ P(\lgunion_{x \in S} x)}
-{\forall \nu \in \Ord.\, P(\nu)}
-\end{mathrule*}
+\item $P(\emptyset)$,
+\item If $P(y)$, then $P(\nextset{y})$, and
+\item if $P(\nu_i)$ holds for all $\nu_i$ in~(\dag), then
+  $P(\lgunion_{i \in \nngint} \nu_i)$.
+\end{itemize}
 
 \begin{definition*}
-A set $x$ is \emph{full} if every element of $x$ is also a
-subset of $x$, that is
+A set $y$ is \emph{full} if every element of $y$ is also a
+subset of $y$, that is
 \[
-\forall y \in x.\ y \subset x.
+\forall x \in y.\ \ x \subset y.
 \]
 \end{definition*}
+
+\begin{staffnotes}
+Possible preliminary exercise: Say that a set $z$ is \emph{closed
+  under membership} iff $\forall x,y.\ x \in y \in z \QIMPLIES x \in
+z$].  Verify that $z$ is closed under membership iff $z$ is full.
+
+\begin{solution}
+($\Rightarrow$) Suppose $z$ is closed under membership and $y \in z$.
+  We need to show $y \subset z$, that is, $\forall x.\ x \in y \QIMP x
+  \in z$.  But this follows immediately since $z$ is closed under
+  membership.
+
+($\Leftarrow$) Suppose $z$ is full and $x \in y \in z$.  We need to show
+  $x \in z$.  But $y \subset z$ since $z$ is full, and $x \in y
+  \subset z$ implies $x \in z$ by definition of $\subset$.
+\end{solution}
+\end{staffnotes}
 
 Prove that every ordinal $\nu$ is full.
 
 \begin{solution}
 \begin{proof}
-The proof is by Ordinal Induction with hypothesis
+The proof is by structural induction onthe definition of \Ord, with hypothesis
 \[
-P(x) \eqdef x \text{ is full}.
+P(z) \eqdef z \text{ is full}.
 \]
 
-Let $x$ be a set,
+\inductioncase{Case: ($z = \emptyset$)}.  $P(z)$ is vacuously true.
 
-\inductioncase{Case: ($\nextset{x}$)}: Suppose every $y \in \nextset{x}$ is
-full.  We need to prove that $\nextset{x}$ is full.  To do this, suppose $y \in
-\nextset{x}$.  We need to show $y \subset \nextset{x}$.  Since $x \subset
-\nextset{x}$ by~\eqref{insubset}, it is enough to show that $y \subseteq x$.
+\inductioncase{Case: ($z = \nextset{y}$)}: We need to prove that $z$
+is full, assuming by induction that $y$ is full.  That is, if $x \in
+z$, then we need to prove $x \subset z$.
 
-Now there are two subcases: if $y = x$ then $y \subseteq x$ trivially.  On the
-other hand, if $y \neq x$, then $y \in x$ by definition of $\nextset{x}$.
-Moreover, but $x \in \nextset{x}$, so $x$ is full by hypothesis.  Therefore, $y
-\subset x$ in this subcase too.
+If $x=y$, then $x \subset z$ since $y \subset \nextset{y}$ by
+definition.  Otherwise $x \in y$ by (*).  Since $y$ is full, we have
+$x \subset y \subset \nextset{y}$, which proves $x \subset z$.
 
-\inductioncase{Case: ($\lgunion$)}: Let $S$ be a set, $U \eqdef \lgunion_{x \in
-  S} x$, and suppose every $x$ in $S$ is full.  We need to prove that $U$ is
-full.  To do this, suppose $y \in U$.  Then we need to show that $y \subset U$.
+\inductioncase{Case: ($z = \lgunion_{i \in \nngint} \nu_i$)}: We need
+to show that if $x \in z$, then $x \subset z$, assuming each $\nu_i$
+is full.
 
-Now $y \in x_0$ for some $x_0 \in S$ by definition of $U$.  Moreover,
-$x_0$ will be full by hypothesis, and so $y \subset
-x_0$.  But $x_0 \subset U$ by definition of $U$, and hence $y \subset
-U$.
+Now $x \in z$ implies $x \in \nu_k$ for some $k \in \nngint$ by
+definition of $\lgunion$, and since $\nu_k$ is full, $x \subset
+\nu_k$.  But $\nu_k \subset z$ by definition of $\lgunion$, which
+proves $x \subset z$ as required.
 \end{proof}
 
 \end{solution}
 
-\begin{staffnotes}
-Prove $\nu$ is member-closed: $y \in x \in \nu \QIMPLIES y \in \nu$.
-
+\begin{editingnotes}
 Prove $forall S \in \text{Sets} \exists \nu \in \Ord.\ S \bij \nu$??
-
-\end{staffnotes}
+\end{editingnotes}
+%\eparts
 
 \end{problem}
 
