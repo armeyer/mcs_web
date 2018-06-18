@@ -1,0 +1,175 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_brents_theorem}
+  \pcomment{from: F06 pset5Back.tex, maybe same as F04 pset5}
+  \pcomment{major revision by ARM 10/3/09}
+  \pcomment{need cleaner proof for last part}
+  \pcomment{S11 email claims it is buggy?}
+\end{pcomments}
+
+\pkeywords{
+  partial_orders
+  chains
+  antichain
+  Brent
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We want to schedule $n$ tasks with prerequisite constraints among the
+tasks defined by a DAG.
+
+\bparts
+
+\ppart Explain why any schedule that requires only $p$ processors must
+take time at least $\ceil{n/p}$.
+
+\begin{solution}
+At any given time step in a schedule, at most $p$ tasks can be completed, so the
+maximum number of tasks that can be completed in $t$ parallel steps is
+$tp$.  So to complete all the tasks, we require that $tp \geq n$, which
+implies that $t \geq \ceil{n/p}$.
+\end{solution}
+
+\ppart\label{timeD} Let $D_{n,t}$ be the DAG with $n$
+elements that consists of a chain of $t-1$ elements, with the bottom
+element in the chain being a prerequisite of all the remaining elements as
+in the following figure:
+
+\begin{figure}[h]
+\graphic[height=2.5in]{pset5-hasse}
+\end{figure}
+
+What is the minimum time schedule for $D_{n,t}$?  Explain why it is
+unique.  How many processors does it require?
+
+\begin{solution}
+There is no choice but to schedule each of the $t-1$ vertices on
+the path one at a time in order.  A minimum time schedule then does all
+the remaining $n-(t-1)$ vertices at the $t$th time interval. Therefore, the number
+of processors required is $n-t+1$.  
+\end{solution}
+
+\ppart Write a simple formula $M(n,t,p)$ for the minimum time of a
+$p$-processor schedule to complete $D_{n,t}$.
+
+\begin{solution}
+As in part~\eqref{timeD}, there is no choice but to schedule each
+of the $t-1$ vertices on the path one at a time in order.  A minimum time
+schedule then does all the remaining $n-(t-1)$ vertices $p$ at a time, for
+a total time of
+\begin{equation}\label{tnp}
+M(n,t,p) \eqdef (t-1) + \ceil{\frac{n-(t-1)}{p}}.
+\end{equation}
+
+\end{solution}
+
+\ppart\label{Mntp-possible} Show that \emph{every} partial order with
+$n$ vertices and maximum chain size $t$ has a $p$-processor schedule
+that runs in time $M(n,t,p)$.
+
+\hint Use induction on $t$.
+
+\begin{staffnotes}
+\textbf{There must be a cleaner proof.}
+\end{staffnotes}
+
+\begin{solution}
+
+\begin{proof}
+Induction on $t$ with induction hypothesis that the statement of this
+problem part~\eqref{Mntp-possible} holds for all positive integers,
+$n,p$.
+
+\textbf{Base case} ($t=1$).  In this case there are $n$ vertices and no
+edges between them.  So any partition of the vertices into $\ceil{n/p}$
+blocks of size at most $p$ will be a $p$-processor schedule taking time
+$\ceil{n/p} = 0 + \ceil{(n-0)/p} = M(n,1,p)$.
+
+\textbf{Inductive step:}
+Assume $P(t)$ and conclude $P(t+1)$ where $t \geq 1$.
+
+Let $G$ be any partial order with $n$ elements and maximum chain size
+$t+1$.  Suppose $k$ elements are endpoints of maximum-size chains in
+$G$.  These elements must be maximal, for otherwise there would be a
+chain of length one more than the maximum chain size.  Let $H$ be the
+subset of $G$ obtained by removing these $k$ vertices.
+
+Now $H$ is a partial order with $n-k$ elements and maximum chain size
+$t$, so by Induction Hypothesis, there is a $p$-processor schedule for
+$H$ taking time $M(n-k,t,p)$.
+
+This $p$-processor schedule for $H$ can be extended to one for $G$ by
+adding $\ceil{k/p}$ disjoint blocks of the endpoints, all of size $\leq p$.
+So the time for this schedule for $G$ is
+\begin{align}
+\lefteqn{M(n-k,t,p) + \ceil{\frac{k}{p}}}\notag\\
+  & = (t-1) + \ceil{\frac{n-k-(t-1)}{p}} + \ceil{\frac{k}{p}} & \text{(def of $M$)}\notag\\
+  & = (t-1) + \ceil{\frac{n-t}{p} - \frac{k-1}{p}} + \ceil{\frac{k}{p}}\label{t1}
+\end{align}
+
+We complete the proof by showing that the expression~\eqref{t1} is $\leq
+M(n, t+1, p)$.  To do this, we consider two cases:
+
+\begin{itemize}
+
+\item \textbf{Case 1:} ($k-1$ is not a multiple of $p$):
+We have
+\begin{equation}\label{k1}
+\ceil{\frac{k-1}{p}} = \ceil{\frac{k}{p}},
+\end{equation}
+so
+\begin{align*}
+\text{\eqref{t1}}
+   & \leq (t-1) + \paren{1+ \ceil{\frac{n-t}{p}} - \ceil{\frac{k-1}{p}}}
+        + \ceil{\frac{k}{p}}
+            & \text{(by~\eqref{cab})}\\
+   & = (t-1) + \paren{1+ \ceil{\frac{n-t}{p}} - \ceil{\frac{k}{p}}}
+       + \ceil{\frac{k}{p}}
+            & \text{(by~\eqref{k1})}\\
+   & = t + \ceil{\frac{n-t}{p}}\\
+   & = M(n, t+1, p)
+            & \text{(def of $M$).}
+\end{align*}
+
+Here the first inequality used the fact that
+\begin{equation}\label{cab}
+\ceil{a-b} \leq 1 + \ceil{a} - \ceil{b}
+\end{equation}
+for all real numbers $a,b$.
+
+\item \textbf{Case 2:} ($k-1$ is a multiple of $p$): 
+Now we have
+\begin{equation}
+\ceil{\frac{k}{p}}=1+\frac{k-1}{p},\label{k+}
+\end{equation}
+so
+\begin{align*}
+\text{\eqref{t1}}
+  & = (t-1) + \left(\ceil{\frac{n-t}{p}} - \frac{k-1}{p}\right) +
+       \ceil{\frac{k}{p}} & \text{(since $(k-1)/p \in \integers$)}\\
+  & = (t-1) + \ceil{\frac{n-t}{p}} - \frac{k-1}{p} +
+  \left(1+\frac{k-1}{p}\right) & \text{(by~\eqref{k+})}\\
+   & = t + \ceil{\frac{n-t}{p}}\\
+   & = M(n, t+1, p). & \text{(def of $M$)}
+\end{align*}
+
+\end{itemize}
+
+\end{proof}
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

@@ -1,0 +1,158 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_structural_induction_rational_composition}
+  \pcomment{subsumes FP_structural_induction_rational_composition}
+  \pcomment{ARM 1/31/12}
+  \pcomment{soln revised ARM, adamc 3/17/15}
+\end{pcomments}
+
+\pkeywords{
+  structural_induction
+  functions
+  composition
+  rational_function}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\providecommand{\RAF}{\ms{RAF}}
+
+\begin{problem}
+
+\begin{definition*}
+The set $\RAF$ of \emph{rational functions} of one variable on the
+real numbers $\reals$ is the set of functions defined recursively as
+follows:
+
+\textbf{Base cases:}
+\begin{itemize}
+\item  The identity function
+  $\ide(r) \eqdef r$ is an $\RAF$,
+\item any constant function on $\reals$ is an $\RAF$.
+\end{itemize}
+
+\textbf{Constructor cases:} If $f,g$ are $\RAF$'s, then so is $f
+\circledast g$, where $\circledast$ is one of the operations
+\begin{enumerate}%\label{RAF+*}
+\item addition $+$,
+\item multiplication $\cdot$ and
+\item division $/$.
+%\item the inverse function $f^{(-1)}$,\label{L:inversefunc}
+%\item the composition $f \compose g$.\label{cmp}
+\end{enumerate}
+\end{definition*}
+
+\bparts
+
+\ppart Prove by structural induction that $\RAF$ is closed under
+composition.  That is, using the induction hypothesis,
+\begin{equation}\label{Phaghog}
+P(h) \eqdef \forall g \in \RAF.\, h \compose g \in \RAF,
+\end{equation}
+prove that $P(h)$ holds for all $h \in \RAF$.  Make sure to indicate
+explicitly
+\begin{itemize}
+\item each of the base cases, and
+\item each of the constructor cases.
+\hint One proof in terms of $\circledast$ covers all three cases.
+\end{itemize}
+
+\examspace[3.5in]
+\begin{solution}
+There is a basic identity connecting the sum and composition of
+all real-valued functions $e,f,g$ of one variable:
+  \[
+    (e + f) \compose g = (e \compose g) + (f \compose g),
+   \]
+This equation follows from the definition of the sum and composition
+of such functions.\footnote{Try proving this yourself before reading
+  the following proof, which essentially follows automatically from
+  the definitions:
+\begin{align*}
+[(e + f) \compose g](x)
+ & = [e+f](g(x)) & \text{(by def of composition)}\\
+ & =  e(g(x)) + f(g(x)) & (\text{since } [e+f](y) \eqdef e(y)+f(y))\
+ & = (e \compose g)(x) + (f \compose g)(x) & \text{(by def of composition)}\\
+ & = [(e \compose g) + (f \compose g)](x) & (\text{since } a(x)+b(x) =[a+b](x))
+\end{align*}}
+Corresponding identities hold for the other constructor
+operations for $\RAF$, namely,
+  \begin{equation}\label{ecdfcomp}
+    (e \circledast f) \compose g = (e \compose g) \circledast (f \compose g),
+  \end{equation}
+for all real-valued functions $e,f,g$ of one variable.  This is the
+key observation on which the Constructor case of the proof hinges.
+
+\begin{proof}
+  \inductioncase{Base case}: ($h = \ide_\reals$).  $P(h)$ holds
+  because $\ide_\reals \compose g = g$ for all real-valued functions
+  $g$, and so $h \in \RAF$ for all $g \in \RAF$.
+
+  \inductioncase{Base case}: ($h = \text{a constant-function, } c$).
+  $P(h)$ holds because $c \compose g = c$ for all real-valued
+  functions $g$, and $c \in \RAF$ by definition.
+  
+  \inductioncase{Constructor cases}: We are given $h = e \circledast
+  f$ for $e, f \in \RAF$.  We may assume by structural induction that
+  $P(e)$ and $P(f)$ both hold, and must prove $P(h)$, that is
+  \[
+  \forall g \in \RAF.\, h \compose g \in \RAF.
+  \]
+   Now by~\eqref{ecdfcomp},
+   \[
+   h \compose g = (e \compose g) \circledast (f \compose g).
+   \]
+   Also, if $g \in \RAF$, then $(e \compose g)$ and $(f \compose g)$ are
+   in $\RAF$ by induction hypothesis.  Therefore
+   \[
+   (e \compose g) \circledast (f\compose g) \in \RAF
+   \]
+   by the Constructor rules for $\RAF$. 
+
+   This proves $P(h)$ for all three of the constructor cases.
+
+   This completes the proof by structural induction, and we conclude
+   \[
+   \forall h \in \RAF.\, P(h).
+   \]
+\end{proof}
+
+\end{solution}
+
+\ppart Briefly indicate where a proof would break down using
+  the very similar induction hypothesis
+\[
+Q(g) \eqdef \forall h \in \RAF.\, h \compose g \in \RAF.
+\]
+
+\begin{solution}
+The problem is that the identity~\eqref{ecdfcomp}, namely that
+composition distributes from the left over each arithmetic operation
+$\circledast$, breaks down for composition from the right.  In
+particular,
+\[
+h \compose (g_1 + g_2) = (h \compose g_1) + (h \compose g_2)
+\]
+fails when $h$ is nonlinear.  For example, if $h(x) \eqdef x^2$, and
+$g_1=g_2= \ide_\reals$, then
+\begin{align*}
+{[}h \compose (g_1 + g_2)](x)
+   &  = (2x)^2 = 4x^2\\
+   & \neq 2x^2 = x^2 + x^2\\
+   & = {[}(h \compose g_1) + (h \compose g_2)](x).
+\end{align*}
+So even though the conclusion $\forall g. Q(g)$ is true, a direct
+proof using $Q(g)$ as the induction hypothesis quickly gets stuck.
+\end{solution}
+
+\eparts
+
+
+\end{problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

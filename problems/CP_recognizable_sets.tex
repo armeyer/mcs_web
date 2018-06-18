@@ -1,0 +1,201 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_recognizable_sets}
+  \pcomment{subsumed by notes section~\bref{halting_sec} & CP_computable_reducibility}
+  \pcomment{from: S06.cp2f, F09(?)}
+  \pcomment{revised by ARM 9/20/09 and more 3/16/10}
+  \pcomment{needs handy copy of Russell paradox or Theorem~\bref{powbig}}
+\end{pcomments}
+
+\pkeywords{
+  sets
+  set_theory
+  diagonal_argument
+  Russell_paradox
+  recognizable
+  halting_problem
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let's refer to a programming procedure (written in your favorite
+programming language---C++, or Java, or Python, \dots) as a
+\term{string procedure} when it is applicable to data of type
+\textbf{string} and only returns values of type \textbf{boolean}.
+When a string procedure $P$ applied to a \textbf{string} $s$
+returns \True, we'll say that $P$ \term{recognizes} $s$.  If
+$\mathcal{R}$ is the set of strings that $P$ recognizes, we'll call
+$P$ a \term{recognizer} for $\mathcal{R}$.
+
+\bparts
+
+\ppart\label{double_letters} Describe how a recognizer would work for
+the set of strings containing only lowercase Roman letters
+---\STR{a,b,\dots,z}---such that each letter occurs twice in a
+row.  For example, \STR{aaccaabbzz}, is such a string, but
+\STR{abb}, \STR{00bb}, \STR{AAbb}, and \STR{a} are not.
+(Even better, actually write a recognizer procedure in your favorite
+programming language).
+
+\begin{solution}
+  All the standard programming languages have built-in operations for
+  scanning the characters in a string.  So simply write a procedure
+  that checks an input string left to right, verifying that successive
+  pairs of characters in the string are duplicated, lowercase roman characters.
+
+%\textbf{ACTUAL PROGRAM TBA}
+
+\end{solution}
+
+\eparts
+
+A set of strings is called \emph{recognizable} if there is a
+recognizer procedure for it.  So the program you described above
+proves that the set of strings with doubled letters from
+part~\eqref{double_letters} is recognizable.
+
+When you actually program a procedure, you have to type the program
+text into a computer system.  This means that every procedure is
+described by some string of typed characters.  If a string $s$ is
+actually the typed description of some string procedure, let's refer
+to that procedure as $P_s$.  You can think of $P_s$ as the result of
+compiling $s$.\footnote{The string $s$ and the procedure $P_s$
+  have to be distinguished to avoid a type error: you can't apply a
+  string to string.  For example, let $s$ be the string that you wrote
+  as your program to answer part~\eqref{double_letters}.  Applying $s$
+  to a string argument, say \STR{aabbccdd}, should throw a type
+  exception; what you need to do is apply the procedure $P_s$ to
+  \STR{aabbccdd}.  This should result in a returned value \True,
+  since \STR{aabbccdd} consists of consecutive pairs of lowercase
+  roman letters.}
+
+In fact, it will be helpful to associate every string $s$ with a
+procedure $P_s$.  So if string $s$ is not the typed description of a
+string procedure, we will define $P_s$ to be some fixed string
+procedure---say one that always returns \False; so if $s$ is an
+ill-formed string, $P_s$ will be a recognizer for the empty set of
+strings.
+
+The result of this is that we have now defined a total function $f$
+mapping every string $s$ to the set $f(s)$ of
+strings recognized by $P_s$.  That is we have a total
+function,
+\begin{equation}\label{f:s-to-Ps}
+f: \textbf{string} \to \power(\textbf{string}).
+\end{equation}
+
+\bparts
+
+\ppart Explain why $\range{f}$ is the set of all recognizable sets of
+strings.
+
+\begin{solution}
+Since $f(s)$ is the set of strings recognized by $P_s$, everything in
+$\range{f}$ is a recognizable set.  Conversely, every recognizable set
+is in $\range{f}$: if $\mathcal{R}$ is a recognizable set, then by
+definition, there is a procedure that recognizes $R$.  Let $r$ be the
+typed input from which such a recognizer was compiled, that is,
+suppose $P_r$ is the recognizer for $R$.  This means $\mathcal{R} =
+f(r) \in \range{f}$.
+\end{solution}
+
+\eparts
+
+This is exactly the set up we need to apply the reasoning behind Russell's
+Paradox to define a set that is not in the range of $f$, that is, a set of
+strings $\mathcal{N}$ that is \emph{not} recognizable.
+
+\bparts
+
+\ppart\label{Ps-to-s}
+Let
+\[
+\mathcal{N} \eqdef \set{s \in \textbf{string} \suchthat s \notin f(s)}.
+\]
+
+Prove that $\mathcal{N}$ is not recognizable.
+
+\hint Similar to Russell's paradox or the proof of Theorem~\bref{powbig}.
+
+\begin{staffnotes}
+Refer students to the Russell paradox slide or the text for Theorem~\bref{powbig}.
+\end{staffnotes}
+
+\begin{solution}
+By definition of $\mathcal{N}$,
+\begin{equation}\label{Psnf}
+s \in \mathcal{N} \qiff s \notin f(s).
+\end{equation}
+for every \textbf{string} $s$.
+
+Now assume to the contrary that $\mathcal{N}$ was recognizable by some
+string procedure.  This procedure must have a string $w$ that
+describes it, so we have
+\begin{align}
+s \in \mathcal{N} & \qiff P_w \text{ applied to $s$ returns \True},\notag\\
+                  & \qiff s \in f(w) \label{Psfw} & \text{(by def.\ of $f$)}
+\end{align}
+for all \textbf{string}'s $s$.
+
+Combining~\eqref{Psnf} and ~\eqref{Psfw}, we have that for every string $s$
+\begin{equation}\label{snfsf}
+s \notin f(s) \qiff s \in f(w),
+\end{equation}
+for all \textbf{string}s $s$.
+
+Now letting $s$ be $w$ in~\eqref{snfsf}, we reach the contradiction
+\[
+w \notin f(w) \qiff w \in f(w).
+\]
+This contradiction implies that the assumption that $\mathcal{N}$ was
+recognizable must be false.
+
+\end{solution}
+
+\ppart Discuss what the conclusion of part~\eqref{Ps-to-s} implies about
+the possibility of writing ``program analyzers'' that take programs
+as inputs and analyze their behavior.
+
+\begin{solution}
+  Let's call a programming procedure ``unconscious'' if it does not
+  return \True\ when applied to its own textual definition.
+
+  Rephrased informally, the conclusion of part~\eqref{Ps-to-s} says
+  that it is logically impossible to design a \emph{general} program
+  analyzer, which takes as input the text of an arbitrary program, and
+  recognizes when the program is unconscious.  This implies that it is
+  impossible to write a program which does the more general analysis
+  of how an arbitrary procedure behaves when applied to arbitrary
+  arguments.
+
+  By the way, it \emph{is} feasible to write a general procedure that
+  recognizes the texts of ``conscious'' procedures, namely texts for
+  procedures that \emph{do} return \True\ when applied to their own
+  descriptions.  The ``consciousness'' recognizer simply takes an
+  input text $s$ and then simulates $P_s$ applied to $s$.  In other
+  words, this general procedure just acts like a virtual machine
+  simulator or ``interpreter'' for the programming language of its
+  input programs.  Note that this naive procedure runs forever on all
+  input programs that run forever!
+
+  It's also important to recognize that there's no hope of getting around
+  this by switching programming languages.  For example, by
+  part~\eqref{Ps-to-s}, no C++ program can analyze arbitrary C++ programs,
+  and no Java program can analyze Java programs, but you might wonder if a
+  language like C++, which allows more intimate manipulation of computer
+  memory than Java, might therefore allow a C++ program to analyze general
+  Java programs.  But there is no loophole here: since it's possible to
+  write a Java program that is a simulator/interpreter for C++ programs,
+  if a C++ program could analyze Java programs, so could the Java program
+  that simulated the C++ program, contradicting~\eqref{Ps-to-s}.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput

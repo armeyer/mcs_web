@@ -1,0 +1,1087 @@
+\chapter{Propositions}\label{prop_chap}
+
+\begin{definition*}
+A \term{proposition} is a statement that is either true or false.
+\end{definition*}
+
+For example, both of the following statements are propositions.  The
+first is true and the second is false.
+\begin{proposition}
+2 + 3 = 5.
+\end{proposition}
+\begin{proposition}
+1 + 1 = 3.
+\end{proposition}
+Being true or false doesn't sound like much of a limitation, but it
+does exclude statements such as, ``Wherefore art thou Romeo?'' and
+``Give me an \emph{A}!''.
+
+Unfortunately, it is not always easy to decide if a proposition is true
+or false, or even what the proposition means.  In part, this is
+because the English language is riddled with ambiguities.  For
+example, consider the following statements:
+%
+\begin{enumerate}
+\item ``You may have cake, or you may have ice cream.''
+\item ``If pigs can fly, then you can understand the Chebyshev bound.''
+\item ``If you can solve any problem we come up with, then you get an
+  \emph{A} for the course.''
+\item ``Every American has a dream.''
+\end{enumerate}
+%
+What \emph{precisely} do these sentences mean?  Can you have both cake
+and ice cream or must you choose just one dessert?  If the second
+sentence is true, then is the Chebyshev bound incomprehensible?  If
+you can solve some problems we come up with but not all, then do you
+get an \emph{A} for the course?  And can you still get an \emph{A}
+even if you can't solve any of the problems?  Does the last sentence
+imply that all Americans have the same dream or might some of them
+have different dreams?
+
+Some uncertainty is tolerable in normal conversation.  But when we need to
+formulate ideas precisely---as in mathematics and programming---the
+ambiguities inherent in everyday language can be a real problem.  We can't
+hope to make an exact argument if we're not sure exactly what the
+statements mean.  So before we start into mathematics, we need to
+investigate the problem of how to talk about mathematics.
+
+To get around the ambiguity of English, mathematicians have devised a
+special mini-language for talking about logical relationships.  This
+language mostly uses ordinary English words and phrases such as ``or'',
+``implies'', and ``for all''.  But mathematicians endow these words with
+definitions more precise than those found in an ordinary dictionary.
+Without knowing these definitions, you might sometimes get the gist of
+statements in this language, but you would regularly get misled about what
+they really meant.
+
+Surprisingly, in the midst of learning the language of mathematics, we'll
+come across the most important open problem in computer science---a
+problem whose solution could change the world.
+
+\section{Compound Propositions}
+
+In English, we can modify, combine, and relate propositions with words
+such as ``not'', ``and'', ``or'', ``implies'', and ``if-then''.
+For example, we can combine three propositions into one like this:
+%
+\begin{center}
+\textbf{If} all humans are mortal \textbf{and} all Greeks are human,
+\textbf{then} all Greeks are mortal.
+\end{center}
+
+For the next while, we won't be much concerned with the internals of
+propositions---whether they involve mathematics or Greek mortality---but
+rather with how propositions are combined and related.  So we'll
+frequently use variables such as $P$ and $Q$ in place of specific
+propositions such as ``All humans are mortal'' and ``$2 + 3 = 5$''.  The
+understanding is that these variables, like propositions, can take on only
+the values \true ~(true) and \false ~(false).  Such true/false variables are
+sometimes called \term{Boolean variables} after their inventor,
+George---you guessed it---Boole. 
+
+\subsection{\QNOT, \QAND, and \QOR}
+
+We can precisely define these special words using \term{truth tables}.
+For example, if $P$ denotes an arbitrary proposition, then the
+truth of the proposition ``$\QNOT(P)$'' is defined by the following
+truth table:
+%
+\[
+\begin{array}{c|c}
+P & \QNOT(P) \\ \hline
+\true & \false \\
+\false & \true \\
+\end{array}
+\]
+%
+The first row of the table indicates that when proposition $P$ is true,
+the proposition ``$\QNOT(P)$'' is false.  The second line indicates that
+when $P$ is false, ``$\QNOT(P)$'' is true.  This is probably what you would
+expect.
+
+In general, a truth table indicates the true/false value of a proposition
+for each possible setting of the variables.  For example, the truth table
+for the proposition ``$P \QAND Q$'' has four lines, since the two
+variables can be set in four different ways:
+%
+\[
+\begin{array}{cc|c}
+P & Q & P \QAND Q \\ \hline
+\true & \true & \true \\
+\true & \false & \false \\
+\false & \true & \false \\
+\false & \false & \false
+\end{array}
+\]
+%
+According to this table, the proposition ``$P \QAND Q$'' is true only when
+$P$ and $Q$ are both true.  This is probably the way you think about the
+word ``and.''
+
+There is a subtlety in the truth table for ``$P \QOR Q$'':
+%
+\[
+\begin{array}{cc|c}
+P & Q & P \QOR Q \\ \hline
+\true & \true & \true \\
+\true & \false & \true \\
+\false & \true & \true \\
+\false & \false & \false
+\end{array}
+\]
+%
+The third row of this table says that ``$P \QOR Q$'' is true even if
+\textit{both} $P$ and $Q$ are true.  This isn't always the intended
+meaning of ``or'' in everyday speech, but this is the standard definition
+in mathematical writing.  So if a mathematician says, ``You may have cake,
+or you may have ice cream,'' he means that you \textit{could} have both.
+
+If you want to exclude the possibility of both having and eating, you should use
+``exclusive-or'' ($\QXOR$):
+%
+\[\begin{array}{cc|c}
+P & Q & P \QXOR Q \\ \hline
+\true & \true & \false \\
+\true & \false & \true \\
+\false & \true & \true \\
+\false & \false & \false
+\end{array}
+\]
+%
+
+\subsection{\QIMPLIES}
+
+The least intuitive connecting word is ``implies.''  Here is its truth
+table, with the lines labeled so we can refer to them later.
+%
+\[
+\begin{array}{cc|cr}
+    P  &   Q    & \parbox[b]{13ex}{$P \QIMP Q$} \\ \hline
+\true  & \true  & \true & \text{(tt)}\\
+\true  & \false & \false  & \text{(tf)}\\
+\false & \true  & \true  & \text{(ft)}\\
+\false & \false & \true  & \text{(ff)}
+\end{array}
+\]
+Let's experiment with this definition.  For example, is the following
+proposition true or false?
+\begin{center}
+``If the Riemann Hypothesis is true, then $x^2 \geq 0$ for every real
+number $x$.''
+\end{center}
+The Riemann Hypothesis is a famous unresolved conjecture in
+mathematics ---no one knows if it is true or false.  But that
+doesn't prevent you from answering the question!  This proposition has
+the form $P \QIMPLIES Q$ where the \emph{hypothesis},~$P$, is ``the
+Riemann Hypothesis is true'' and the \emph{conclusion},~$Q$, is ``$x^2
+\geq 0$ for every real number $x$''.  Since the conclusion is
+definitely true, we're on either line (tt) or line (ft) of the truth
+table.  Either way, the proposition as a while is \emph{true}!
+
+One of our original examples demonstrates an even stranger side of
+implications.
+\begin{center}
+``If pigs can fly, then you can understand the Chebyshev bound.''
+\end{center}
+Don't take this as an insult; we just need to figure out whether this
+proposition is true or false.  Curiously, the answer has
+\emph{nothing} to do with whether or not you can understand the
+Chebyshev bound.  Pigs cannot fly, so we're on either line (ft) or
+line (ff) of the truth table.  In both cases, the proposition is
+\textit{true}!
+
+In contrast, here's an example of a false implication:
+%
+\begin{center}
+``If the moon shines white, then the moon is made of white cheddar.''
+\end{center}
+%
+Yes, the moon shines white.  But, no, the moon is not made of white
+cheddar cheese.  So we're on line (tf) of the truth table, and the
+proposition is false.
+
+The truth table for implications can be summarized in words as
+follows:
+%
+\begin{center}
+\textit{An implication is true exactly when the if-part is false or the
+then-part is true.}
+\end{center}
+%
+This sentence is worth remembering; a large fraction of all
+mathematical statements are of the if-then form!
+
+\subsection{IFF}
+
+Mathematicians commonly join propositions in one additional way that
+doesn't arise in ordinary speech.  The proposition ``$P$ if and only
+if $Q$'' asserts that $P$ and $Q$ are logically equivalent; that is,
+either both are true or both are false.
+%
+\[
+\begin{array}{cc|c}
+P & Q & P \QIFF Q \\ \hline
+\true & \true & \true \\
+\true & \false & \false \\
+\false & \true & \false \\
+\false & \false & \true
+\end{array}
+\]
+
+For example, the following if-and-only-if statement is true for every
+real number $x$:
+%
+\begin{center}
+$x^2 - 4 \geq 0 \qiff |x| \geq 2$
+\end{center}
+%
+For some values of $x$, \textit{both} inequalities are true.  For
+other values of $x$, \textit{neither} inequality is true .  In every
+case, however, the proposition as a whole is true.
+
+\subsection{Notation}
+
+Mathematicians have devised symbols to represent words like ``\QAND''
+and ``\QNOT''.  The most commonly-used symbols are summarized in the
+table below.
+%
+\begin{center}
+\begin{tabular}{ll}
+\textbf{English} & \textbf{Symbolic Notation} \\[1ex]
+$\QNOT(P)$ & $\neg P$ \quad (alternatively, $\bar{P}$) \\
+$P \QAND Q$ & $P \land Q$ \\
+$P \QOR Q$ & $P \lor Q$ \\
+$P \QIMP Q$ & $P \implies Q$ \\
+if $P$ then $Q$ & $P \implies Q$ \\
+$P \QIFF Q$ & $P \iff Q$
+\end{tabular}
+\end{center}
+%
+For example, using this notation, ``If $P \QAND \QNOT(Q)$, then $R$''
+would be written:
+%
+\[
+    (P \land \bar{Q}) \implies R
+\]
+This symbolic language is helpful for writing complicated logical
+expressions compactly.  But words such as ``\QOR'' and ``\QIMPLIES''
+generally serve just as well as the symbols~$\lor$ and~$\implies$, and
+their meaning is easy to remember.  We will use the prior notation for
+the most part in this text, but you can feel free to use whichever
+convention is easiest for you.
+
+\subsection{Logically Equivalent Implications}\label{sec:logical_equivalence}
+
+Do these two sentences say the same thing?
+%
+\begin{center}
+If I am hungry, then I am grumpy. \\
+If I am not grumpy, then I am not hungry.
+\end{center}
+%
+We can settle the issue by recasting both sentences in terms of
+propositional logic.
+Let $P$ be the proposition ``I am hungry'', and let $Q$ be ``I am
+grumpy''.  The first sentence says ``$P \QIMPLIES Q$'' and the second
+says ``$\QNOT(Q) \QIMP \QNOT(P)$''.  We can compare these two
+statements in a truth table:
+%
+\[
+\begin{array}{c|c|c|c}
+P & Q &
+    P \QIMP Q &
+    \QNOT(Q) \QIMP \QNOT(P) \\ \hline
+\true & \true & \true & \true \\
+\true & \false & \false & \false \\
+\false & \true & \true & \true \\
+\false & \false & \true & \true
+\end{array}
+\]
+%
+Sure enough, the columns of truth values under these two statements are
+the same, which precisely means they are equivalent.  In general,
+``$\QNOT(Q) \QIMP \QNOT(P)$'' is called the \term{contrapositive} of
+the implication ``$P \QIMP Q$.''  And, as we've just shown, the two
+are just different ways of saying the same thing.
+
+In contrast, the \term{converse} of ``$P \QIMP Q$'' is the statement
+``$Q \QIMP P$''.  In terms of our example, the converse is:
+%
+\begin{center}
+If I am grumpy, then I am hungry.
+\end{center}
+%
+This sounds like a rather different contention, and a truth table
+confirms this suspicion:
+%
+\[
+\begin{array}{c|c|c|c}
+P & Q &
+    P \QIMP Q &
+    Q \QIMP P \\ \hline
+\true & \true & \true & \true \\
+\true & \false & \false & \true \\
+\false & \true & \true & \false \\
+\false & \false & \true & \true
+\end{array}
+\]
+%
+Thus, an implication \textit{is} logically equivalent to its
+contrapositive but is \textit{not} equivalent to its converse.
+
+One final relationship: an implication and its converse together are
+equivalent to an iff statement.  For example,
+%
+\begin{center}
+If I am grumpy, then I am hungry, \QAND \\
+if I am hungry, then I am grumpy.
+\end{center}
+%
+are equivalent to the single statement:
+%
+\begin{center}
+I am grumpy $\QIFF$ I am hungry.
+\end{center}
+%
+Once again, we can verify this with a truth table:
+%
+\[
+\begin{array}{c|c|cc|c|c}
+P & Q
+& (P \QIMP Q) & (Q \QIMP P) 
+& (P\QIMP Q) \QAND (Q \QIMP P) & P \QIFF Q \\
+\hline
+\true  &  \true  &\true  &\true  &\true & \true \\
+\true  &  \false &\false &\true  &\false& \false\\
+\false &  \true  &\true  &\false &\false& \false\\
+\false &  \false &\true  &\true  &\true & \true 
+\end{array}
+\]
+
+\begin{problems}
+%\practiceproblems
+
+\classproblems
+\pinput{CP_differentiable_implies_continuous}
+\pinput{CP_truth_table_for_distributive_law}
+
+\homeworkproblems
+\pinput{PS_printout_binary_strings}
+\end{problems}
+
+\section{Propositional Logic in Computer Programs}
+
+Propositions and logical connectives arise all the time in computer
+programs.  For example, consider the following snippet, which could be
+either C, C++, or Java:
+%
+\begin{tabbing}
+\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
+\> \texttt{if ( x > 0 || (x <= 0 \&\& y > 100) )} \\
+\> \> \vdots\\
+\> \textit{(further instructions)}
+\end{tabbing}
+%
+The symbol \texttt{||} denotes ``\QOR'', and the symbol \texttt{\&\&}
+denotes ``\QAND''.  The \textit{further instructions} are carried out
+only if the proposition following the word \texttt{if} is true.  On
+closer inspection, this big expression is built from two simpler
+propositions.  Let $A$ be the proposition that \texttt{x > 0}, and let
+$B$ be the proposition that \texttt{y > 100}.  Then we can rewrite the
+condition ``$A \QOR (\QNOT(A) \QAND B)$''.
+%
+A truth table reveals that this complicated expression is logically
+equivalent to ``$A \QOR B$''.
+\[
+\begin{array}{cc|c|c}
+A & B &
+    A \QOR  (\QNOT(A) \QAND  B) &
+    A \QOR  B \\ \hline
+\true & \true & \true & \true \\
+\true & \false & \true & \true \\
+\false & \true & \true & \true \\
+\false & \false & \false & \false
+\end{array}
+\]
+%
+This means that we can simplify the code snippet without changing the
+program's behavior:
+%
+\begin{tabbing}
+\hspace{1in} \= \quad\quad \= \quad\quad \= \quad\quad \= \kill
+\> \texttt{if ( x > 0 || y > 100 )} \\
+\> \> \vdots\\
+\> \textit{(further instructions)}
+\end{tabbing}
+
+Rewriting a logical expression involving many variables in the
+simplest form is both difficult and important.  Simplifying
+expressions in software can increase the speed of your program.  Chip
+designers face a similar challenge---instead of minimizing
+\texttt{\&\&} and \texttt{||} symbols in a program, their job is to
+minimize the number of analogous physical devices on a chip.  The
+payoff is potentially enormous: a chip with fewer devices is smaller,
+consumes less power, has a lower defect rate, and is cheaper to
+manufacture.
+
+
+\begin{problems}
+%\practiceproblems
+\classproblems
+\pinput{CP_file_system_functioning_normally}
+\pinput{CP_binary_adder_logic}
+
+\homeworkproblems
+\pinput{PS_faster_adder_logic}
+
+\end{problems}
+
+\begin{problems}
+%\practiceproblems
+\classproblems
+\pinput{CP_valid_vs_satisfiable}
+
+\end{problems}
+
+
+\section{Predicates and Quantifiers}\label{pred_sec}
+
+\subsection{Propositions with Infinitely Many Cases}
+
+Most of the examples of propositions that we have considered thus far
+have been straightforward in the sense that it has been relatively easy to
+determine if they are true or false.  At worse, there were only a few
+cases to check in a truth table.  Unfortunately, not all propositions
+are so easy to check.  That is because some propositions may involve a
+large or infinite number of possible cases.  For example, consider the
+following proposition involving prime numbers.  (A \emph{prime} is an
+integer greater than~1 that is divisible only by itself and~1.  For
+example, 2, 3, 5, 7, and~11 are primes, but 4, 6, and~9 are not.  A
+number greater than~1 that is not prime is said to be
+\emph{composite}.)
+\begin{proposition}\label{41form}
+For every nonnegative integer, $n$, the value of $n^2 + n + 41$ is prime.
+\end{proposition}
+It is not immediately clear whether this proposition is true or
+false.  In such circumstances, it is tempting to try to determine its
+veracity by computing the value of\footnote{The symbol \term{$\eqdef$} means
+ ``equal by definition.''  It's always ok to simply write ``='' instead of
+ $\eqdef$, but reminding the reader that an equality holds by definition
+ can be helpful.}
+\begin{equation}\label{pn41}
+p(n) \eqdef  n^2 + n + 41.
+\end{equation}
+for several values of~$n$ and then checking to see if they are prime.
+If any of the computed values is not prime, then we will know that the
+proposition is false.  If all the computed values are indeed prime,
+then we might be tempted to conclude that the proposition is true.
+
+We begin the checking by evaluating $p(0) = 41$, which is prime.
+$p(1) = 43$ is also prime.  So is $p(2) = 47$, $p(3)=53$, \dots, and
+$p(20) = 461$, all of which are prime.  Hmmm\dots\ It is starting to
+look like $p(n)$ is a prime for every nonnegative integer~$n$.  In
+fact, continued checking reveals that $p(n)$ is prime for all $n \le
+39$.
+The proposition certainly does seem to be true.
+
+But $p(40) = 40^2 + 40 + 41 = 41 \cdot 41$, which is not prime.  So
+it's \emph{not} true that the expression is prime \emph{for all}
+nonnegative integers, and thus the proposition is false!
+
+Although surprising, this example is not as contrived or rare as you
+might suspect.  As we will soon see, there are many examples of
+propositions that seem to be true when you check a few cases (or even
+many), but
+which turn out to be false.  The key to remember is that you
+can't check a claim about an infinite
+set by checking a finite set of its elements, no matter how large the
+finite set.
+
+Propositions that involve \emph{all} numbers
+are so common that there is a special notation for them.  For example,
+Proposition~\ref{41form} can also be written as
+\begin{equation}\label{pn}
+\forall n \in \naturals.\; p(n) \text{ is prime}.
+\end{equation}
+Here the symbol \term{$\forall$} is read ``for all''.  The symbol
+\term{$\naturals$} stands for the set of \emph{nonnegative integers},
+namely, 0, 1, 2, 3, \dots (ask your instructor for the complete list).
+The symbol ``\term{$\in$}'' is read as ``is a member of,'' or
+``belongs to,'' or simply as ``is in''.  The period after the
+$\naturals$ is just a separator between phrases.
+
+\iffalse
+\begin{notesproblem}
+Show that no nonconstant polynomial can map all nonnegative integers into
+prime numbers.  (This can be proved using elementary algebra, but it's a
+little tricky.  It will be easier to show after we study modular
+arithmetic later in the term.)
+\end{notesproblem}
+\fi
+
+Here is another example of a proposition that, at first, seems to be
+true but which turns out to be false.
+\begin{proposition}\label{a4}
+$a^4 + b^4 + c^4 = d^4$ has no solution when $a, b, c, d$ are positive
+integers.
+\end{proposition}
+\idx{Euler} (pronounced ``oiler'') conjectured this proposition to be
+true in~1769.  It was checked by humans and then by computers for many
+values of $a$, $b$, $c$, and~$d$ over the next two centuries.
+Ultimately the proposition was proven false in~1987 by Noam
+\idx{Elkies}.  The solution he found was $a = 95800, b = 217519, c =
+414560, d = 422481$.  No wonder it took 218 years to show the
+proposition is false!
+
+In logical notation, Proposition~\ref{a4} could be written,
+\[
+\forall a \in \posints\, \forall b \in \posints\, \forall c \in
+\posints\, \forall d \in \posints.\; a^4 + b^4 + c^4 \neq d^4.
+\]
+Here, \term{$\posints$} is a symbol for the positive integers.
+Strings of $\forall$'s are usually abbreviated for easier reading, as
+follows:
+\[
+\forall a, b, c, d \in \posints.\; a^4 + b^4 + c^4 \neq d^4.
+\]
+
+The following proposition is even nastier.
+\begin{proposition}
+$313 (x^3 + y^3) = z^3$ has no solution when $x, y, z\in\posints$.
+\end{proposition}
+
+This proposition is also false, but the smallest counterexample values
+for $x$, $y$, and~$z$ have more than 1000 digits!  Even the world's
+largest computers would not be able to get that far with brute force.
+Of course, you may be wondering why anyone would care whether or not
+there is a solution to $313 (x^3 + y^3) = z^3$ where $x$, $y$, and~$z$
+are positive integers.  It turns out that finding solutions to such
+equations is important in the field of elliptic curves, which turns
+out to be important to the study of factoring large integers, which
+turns out (as we will see in Chapter~\ref{number_theory_chap}) to be
+important in cracking commonly-used cryptosystems, which is why
+mathematicians went to the effort to find the solution with thousands
+of digits.  
+
+Of course, not all propositions  that have infinitely many cases to
+check turn out to be
+false.  The following proposition (known as the ``Four-Color
+Theorem'') turns out to be true.
+\begin{proposition}\label{4colorprop}
+Every map can be colored with 4 colors so that adjacent\footnote{Two
+  regions are adjacent only when they share a boundary segment of
+  positive length.  They are not considered to be adjacent if their
+  boundaries meet only at a few points.} regions have different
+colors.
+\end{proposition}
+The proof of this proposition is difficult and took over a century to
+perfect.  Along the way, many incorrect proofs were proposed,
+including one that stood for 10 years in the late 19th century before
+the mistake was found.  An extremely laborious proof was finally found
+in 1976 by mathematicians Appel and Haken, who used a complex computer
+program to categorize the four-colorable maps; the program left a few
+thousand maps uncategorized, and these were checked by hand by Haken
+and his assistants---including his 15-year-old daughter.  There was a
+lot of debate about whether this was a legitimate proof: the proof was
+too big to be checked without a computer, and no one could guarantee
+that the computer calculated correctly, nor did anyone have the energy
+to recheck the four-colorings of the thousands of maps that were done by
+hand.  Within the past decade, a mostly intelligible proof of the
+Four-Color Theorem was found, though a computer is still needed to
+check the colorability of several hundred special maps.\footnote{See
+\href{http://www.math.gatech.edu/~thomas/FC/fourcolor.html}
+{\texttt{http://www.math.gatech.edu/\~{}thomas/FC/fourcolor.html}}
+
+The story of the Four-Color Proof is told in a well-reviewed
+  popular (non-technical) book: ``Four Colors Suffice.  How the Map
+  Problem was Solved.'' \emph{Robin Wilson}.  Princeton Univ. Press, 2003,
+  276pp. ISBN 0-691-11533-8.}
+
+In some cases, we do not know whether or not a proposition is true.
+For example, the following simple proposition (known as Goldbach's
+Conjecture) has been heavily studied since~1742 but we still do not
+know if it is true.  Of course, it has been checked by computer for
+many values of~$n$, but as we have seen, that is not sufficient to
+conclude that it is true.
+\begin{proposition}[Goldbach]
+Every even integer~$n$ greater than~2 is the sum of two primes.
+\end{proposition}
+
+While the preceding propositions are important in mathematics,
+computer scientists are often interested in propositions concerning
+the ``correctness'' of programs and systems, to determine whether a
+program or system does what it's supposed to do.  Programs are
+notoriously buggy, and there's a growing community of researchers and
+practitioners trying to find ways to prove program correctness.  These
+efforts have been successful enough in the case of CPU chips that they
+are now routinely used by leading chip manufacturers to prove chip
+correctness and avoid mistakes like the notorious Intel division bug
+in the 1990's.
+
+Developing mathematical methods to verify programs and systems remains an
+active research area.  We'll consider some of these methods later in the
+text.
+
+\subsection{Predicates}
+A \term{predicate} is a proposition whose truth depends on the value of
+one or more variables.  Most of the propositions above were defined in
+terms of predicates.  For example,
+%
+\begin{center}
+``$n$ is a perfect square''
+\end{center}
+%
+is a predicate whose truth depends on the value of $n$.  The predicate is
+true for $n = 4$ since four is a perfect square, but false for $n = 5$
+since five is not a perfect square.  
+
+Like other propositions, predicates are often named with a letter.
+Furthermore, a function-like notation is used to denote a predicate
+supplied with specific variable values.  For example, we might name
+our earlier predicate $P$:
+%
+\[
+P(n) \eqdef \text{``$n$ is a perfect square''}
+\]
+%
+Now $P(4)$ is true, and $P(5)$ is false.
+
+This notation for predicates is confusingly similar to ordinary function
+notation.  If $P$ is a predicate, then $P(n)$ is either \textit{true} or
+\textit{false}, depending on the value of $n$.  On the other hand, if $p$
+is an ordinary function, like $n^2 + n$, then $p(n)$ is a
+\textit{numerical quantity}.  \textbf{Don't confuse these two!}
+
+\subsection{Quantifiers}
+
+There are a couple of assertions commonly made about a predicate: that it
+is \emph{sometimes} true and that it is \emph{always} true.  For
+example, the predicate
+%
+\[
+\text{``$x^2 \geq 0$''}
+\]
+%
+is always true when $x$ is a real number.  On the other hand, the
+predicate
+%
+\[
+\text{``$5x^2 - 7 = 0$''}
+\]
+%
+is only sometimes true; specifically, when $x = \pm \sqrt{7/5}$.
+
+There are several ways to express the notions of ``always true'' and
+``sometimes true'' in English.  The table below gives some general
+formats on the left and specific examples using those formats on the
+right.  You can expect to see such phrases hundreds of times in
+mathematical writing!
+%
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{2}{c}{\textbf{Always True}} \\[1ex]
+For all $n$, $P(n)$ is true. & For all $x \in \reals$, $x^2 \geq 0$. \\
+$P(n)$ is true for every $n$. & $x^2 \geq 0$ for every $x \in \reals$. \\[2ex]
+\multicolumn{2}{c}{\textbf{Sometimes True}} \\[1ex]
+There exists an $n$ such that $P(n)$ is true. & There exists an $x \in \reals$ such that $5x^2 - 7 = 0$.\\
+$P(n)$ is true for some $n$. & $5x^2 - 7 = 0$ for some $x \in \reals$.\\
+$P(n)$ is true for at least one $n$. & $5x^2-7=0$ for at least one $x \in \reals$.
+\end{tabular}
+\end{center}
+
+All these sentences quantify how often the predicate is true.
+Specifically, an assertion that a predicate is always true, is called
+a \term{universally quantified} statement.  An assertion that a
+predicate is sometimes true, is called an \term{existentially
+  quantified} statement.
+
+Sometimes English sentences are unclear about quantification:
+%
+\begin{center}
+  ``If you can solve any problem we come up with, then you get an \emph{A}
+  for the course.''
+\end{center}
+%
+The phrase ``you can solve any problem we can come up with'' could
+reasonably be interpreted as either a universal or existential
+statement.  It might mean:
+%
+\begin{quote}
+``You can solve \emph{every} problem we come up with,''
+\end{quote}
+or maybe
+\begin{quote}
+``You can solve \emph{at least one} problem we come up with.''
+\end{quote}
+
+In the preceding example, the quantified phrase appears inside a
+larger if-then statement.  This is quite normal; quantified statements
+are themselves propositions and can be combined with \QAND, \QOR,
+\QIMPLIES, etc., just like any other proposition.
+
+\subsection{More Notation}
+
+There are symbols to represent universal and existential
+quantification, just as there are symbols for ``$\QAND$'' ($\wedge$),
+``$\QIMP$'' ($\implies$), and so forth.  In particular, to say
+that a predicate, $P(x)$, is true for all values of $x$ in some set,
+$D$, we write:
+\begin{equation}\label{AxDPx}
+\forall x \in D.\; P(x)
+\end{equation}
+The \term{universal quantifier} symbol $\forall$ is read ``for all,''
+so this whole expression~\eqref{AxDPx} is read ``For all $x$ in $D$,
+$P(x)$ is true.''  Remember that upside-down ``A'' stands for
+``\textbf{A}ll.''
+
+To say that a predicate $P(x)$ is true for at least one value of $x$
+in $D$, we write:
+\begin{equation}\label{ExDPx}
+\exists x \in D.\; P(x)
+\end{equation}
+The \term{existential quantifier} symbol \term{$\exists$}, is read
+``there exists.''  So expression~\eqref{ExDPx} is read, ``There exists
+an $x$ in $D$ such that $P(x)$ is true.''  Remember that backward
+``E'' stands for ``\textbf{E}xists.''
+
+The symbols $\forall$ and $\exists$ are always followed by a
+variable---typically with an indication of the set the variable ranges
+over---and then a predicate, as in the two examples above.
+
+As an example, let $\probs$ be the set of problems we come up with,
+$\solves(x)$ be the predicate ``You can solve problem $x$'', and $G$ be
+the proposition, ``You get an \emph{A} for the course.''  Then the two
+different interpretations of
+%
+\begin{quote}
+  ``If you can solve any problem we come up with, then you get an \emph{A}
+  for the course.''
+\end{quote}
+can be written as follows:
+\[
+(\forall x \in \probs.\; \solves(x)) \QIMP G,
+\]
+or maybe
+\[
+(\exists x \in \probs.\; \solves(x)) \QIMP G.
+\]
+
+\subsection{Mixing Quantifiers}
+
+Many mathematical statements involve several quantifiers.  For
+example, \term{Goldbach's Conjecture} states:
+%
+\begin{center}
+``Every even integer greater than 2 is the sum of two primes.''
+\end{center}
+%
+Let's write this more verbosely to make the use of quantification
+clearer:
+%
+\begin{quote}
+For every even integer $n$ greater than 2,
+there exist primes $p$ and $q$ such that $n = p + q$.
+\end{quote}
+%
+Let $\even$ be the set of even integers greater than 2, and let $\primes$ be the
+set of primes.  Then we can write Goldbach's Conjecture in logic
+notation as follows:
+%
+\[
+\underbrace{\forall n \in \even.}_{\substack
+    {\text{for every even} \\
+     \text{integer $n > 2$}}}
+\
+\underbrace{\exists p \in \primes\ \exists q \in \primes.}_{\substack
+    {\text{there exist primes} \\
+     \text{$p$ and $q$ such that}}}
+\ n = p + q.
+\]
+The proposition can also be written more simply as
+\[
+ \forall n \in \even.\, \exists p, q \in \primes. \; p + q = n.
+\]
+
+\subsection{Order of Quantifiers}
+
+Swapping the order of different kinds of quantifiers (existential or
+universal) usually changes the meaning of a proposition.  For example,
+let's return to one of our initial, confusing statements:
+\begin{center}
+``Every American has a dream.''
+\end{center}
+
+This sentence is ambiguous because the order of quantifiers is
+unclear.  Let $A$ be the set of Americans, let $D$ be the set of
+dreams, and define the predicate $H(a, d)$ to be ``American $a$ has
+dream $d$.''  Now the sentence could mean that there is a single dream
+that every American shares:
+\[
+\exists\, d \in D.\, \forall a \in A.\; H(a, d)
+\]
+For example, it might be that every American shares the dream of owning
+their own home.
+
+Or it could mean that every American has a personal dream:
+\[
+\forall a \in A.\, \exists\, d \in D.\; H(a, d)
+\]
+For example, some Americans may dream of a peaceful retirement, while
+others dream of continuing practicing their profession as long as they
+live, and still others may dream of being so rich they needn't think at
+all about work.
+
+Swapping quantifiers in \idx{Goldbach's Conjecture} creates a patently false
+statement; namely that every even number $\geq 2$ is the sum of \emph{the same}
+two primes:
+\[
+\underbrace{\exists\, p, q \in \primes.}_{\substack
+    {\text{there exist primes} \\
+     \text{$p$ and $q$ such that}}}
+\
+\underbrace{\forall n \in \even.}_{\substack
+    {\text{for every even} \\
+     \text{integer $n > 2$}}}
+\ n = p + q.
+\]
+
+\subsection{Variables Over One Domain}
+
+When all the variables in a formula are understood to take values from the
+same nonempty set, $D$, it's conventional to omit mention of $D$.  For
+example, instead of $\forall x \in D\; \exists y \in D.\; Q(x,y)$ we'd
+write $\forall x \exists y.\; Q(x,y)$.  The unnamed nonempty set that $x$
+and $y$ range over is called the \term{domain of discourse}, or just plain
+\term{domain}, of the formula.
+
+It's easy to arrange for all the variables to range over one domain.  For
+example, \idx{Goldbach's Conjecture} could be expressed with all variables
+ranging over the domain $\naturals$ as
+\[
+\forall n.\, (n \in \even)\ \QIMP\ (\exists p\, \exists q. \; p \in \primes \QAND
+q \in \primes \QAND n = p + q).
+\]
+
+\subsection{Negating Quantifiers}
+
+There is a simple relationship between the two kinds of quantifiers.  The
+following two sentences mean the same thing:
+%
+\begin{quote}
+
+It is not the case that everyone likes to snowboard.
+
+There exists someone who does not like to snowboard.
+
+\end{quote}
+%
+In terms of logic notation, this follows from a general property of
+predicate formulas:
+%
+\[
+\QNOT \paren{\forall x.\; P(x)}
+\quad \text{is equivalent to} \quad
+\exists x.\, \QNOT(P(x)).
+\]
+%
+Similarly, these sentences mean the same thing:
+%
+\begin{quote}
+There does not exist anyone who likes skiing over magma.
+
+Everyone dislikes skiing over magma.
+\end{quote}
+%
+We can express the equivalence in logic notation this way:
+%
+\begin{equation}\label{nE}
+\QNOT\paren{\exists x.\, P(x)}\  \QIFF\  \forall x.\, \QNOT(P(x)).
+\end{equation}
+%
+The general principle is that \emph{moving a ``not'' across a
+quantifier changes the kind of quantifier.}
+
+\iffalse
+Logicians have worked very hard to define strict rules for the
+use of logic notation so that ideas can be expressed with absolute rigor.
+It's all quite charming and clever.  However, the sad irony is that
+applied mathematicians usually use their beloved notation as a crude
+shorthand, breaking the rules and abusing the notation willy-nilly---sort
+of like pounding nails with fine china.
+\fi
+
+\section{Validity}\label{sec:validity}
+
+A propositional formula is called \term{valid} when it evaluates to \true\
+no matter what truth values are assigned to the individual propositional
+variables.  For example, the propositional version of the \idx{Distributive Law}
+is that $P \QAND (Q \QOR R)$ is equivalent to $(P \QAND Q) \QOR (P \QAND
+R)$.  This is the same as saying that
+\begin{equation}\label{eq:distributive_law}
+[P \QAND (Q \QOR R)] \QIFF [(P \QAND Q) \QOR (P \QAND R)]
+\end{equation}
+is valid.  This can be verified by checking the truth table for $P
+\QAND (Q \QOR R)$ and $(P \QAND Q) \QOR (P \QAND R)$:
+\begin{equation*}
+\begin{array}{c|c|c|c|c}
+
+P & Q & R & P \QAND (Q \QOR R) & (P \QAND Q) \QOR (P \QAND R) \\
+\hline
+
+\true & \true  & \true   & \true  & \true \\
+\true & \true  & \false  & \true  & \true \\
+\true & \false & \true   & \true  & \true \\
+\true & \false & \false  & \false & \false \\
+
+\false & \true  & \true  & \false & \false \\
+\false & \true  & \false & \false & \false \\
+\false & \false & \true  & \false & \false \\
+\false & \false & \false & \false & \false
+
+\end{array}
+\end{equation*}
+
+The same idea extends to predicate formulas, but to be valid, a
+formula now must evaluate to true no matter what values its variables
+may take over any unspecified domain, and no matter what
+interpretation a predicate variable may be given.  For example, we
+already observed that the rule for negating a quantifier is captured
+by the valid assertion~\eqref{nE}.
+
+Another useful example of a valid assertion is
+\begin{equation}\label{eaimpliesae}
+\exists x \forall y.\; P(x,y) \QIMP \forall y \exists x.\; P(x,y).
+\end{equation}
+
+Here's an explanation why this is valid:
+
+\begin{quote}
+Let $D$ be the domain for the variables and $P_0$ be some
+\idx{binary predicate}\footnote{That is, a predicate that depends on two variables.}
+on $D$.  We need to show that if
+\begin{equation}\label{exayp0}
+\exists x \in D\; \forall y \in D.\; P_0(x,y)
+\end{equation}
+holds under this interpretation, then so does
+\begin{equation}\label{ayexp0}
+\forall y \in D\; \exists x \in D.\; P_0(x,y).
+\end{equation}
+So suppose~\eqref{exayp0} is true.  Then by definition of $\exists$, this
+means that some element $d_0 \in D$ has the property that
+\[
+\forall y \in D.\, P_0(d_0, y).
+\]
+By definition of $\forall$, this means that
+\[
+P_0(d_0,d)
+\]
+is true for all $d \in D$.  So given any $d \in D$, there is an element in
+$D$, namely, $d_0$, such that $P_0(d_0,d)$ is true.  But that's exactly
+what~\eqref{ayexp0} means, so we've proved that~\eqref{ayexp0} holds under
+this interpretation, as required.
+\end{quote}
+
+We hope this is helpful as an explanation, although purists would not
+really want to call it a ``proof.''  The problem is that with something as basic
+as~\eqref{eaimpliesae}, it's hard to see what more elementary axioms are
+ok to use in proving it.  What the explanation above did was translate the
+logical formula~\eqref{eaimpliesae} into English and then appeal to the
+meaning, in English, of ``for all'' and ``there exists'' as justification.
+
+In contrast to~\eqref{eaimpliesae}, the formula
+\begin{equation}\label{aenotimplyea}
+\forall y \exists x.\; P(x,y) \QIMP \exists x \forall y.\; P(x,y).
+\end{equation}
+is \emph{not} valid.  We can prove this by describing an
+interpretation where the hypothesis, $\forall y \exists x.\; P(x,y)$, is
+true but the conclusion, $\exists x \forall y.\; P(x,y)$, is not true.
+For example, let the domain be the integers and $P(x,y)$ mean $x > y$.
+Then the hypothesis would be true because, given a value, $n$, for $y$ we
+could, for example, choose the value of $x$ to be $n+1$.  But under this
+interpretation the conclusion asserts that there is an integer that is
+bigger than all integers, which is certainly false.  An interpretation
+like this which falsifies an assertion is called a \term{counter model} to
+the assertion.
+
+\section{Satisfiability}\label{SAT_sec}
+
+A proposition is \textbf{satisfiable} if some setting of the variables
+makes the proposition true.  For example, $P \QAND \bar{Q}$ is
+satisfiable because the expression is true if $P$ is true or $Q$ is
+false.  On the other hand, $P \QAND \bar{P}$ is not satisfiable because
+the expression as a whole is false for both settings of $P$.  But
+determining whether or not a more complicated proposition is satisfiable
+is not so easy.  How about this one?
+%
+\[
+(P \QOR Q \QOR R) \QAND (\bar P \QOR \bar Q)
+                  \QAND (\bar P \QOR \bar R)
+                  \QAND (\bar R \QOR \bar Q)
+\]
+
+The general problem of deciding whether a proposition is satisfiable
+is called \term{SAT}.  One approach to SAT is to construct a truth
+table and check whether or not a $\true$ ever appears.  But this
+approach is not very efficient; a proposition with $n$ variables has a
+truth table with $2^n$ lines, so the effort required to decide about a
+proposition grows \idx{exponentially} with the number of variables.
+For a proposition with just 30 variables, that's already over a
+billion lines to check!
+
+Is there a more \textit{efficient} solution to SAT?  In particular, is
+there some, presumably very ingenious, procedure that determines in a
+number of steps that grows \emph{polynomially}---like $n^2$ or
+$n^{14}$---instead of exponentially, whether any given proposition is
+satisfiable or not?  No one knows.  And an awful lot hangs on the
+answer.  An efficient solution to SAT would immediately imply
+efficient solutions to many, many other important problems involving
+packing, scheduling, routing, and circuit verification, among other
+things.  This would be wonderful, but there would also be worldwide
+chaos.  Decrypting coded messages would also become an easy task (for
+most codes).  Online financial transactions would be insecure and
+secret communications could be read by everyone.
+
+Recently there has been exciting progress on \term{sat-solvers} for
+practical applications like digital circuit verification.  These
+programs find satisfying assignments with amazing efficiency even for
+formulas with millions of variables.  Unfortunately, it's hard to
+predict which kind of formulas are amenable to sat-solver methods, and
+for formulas that are NOT satisfiable, sat-solvers generally take
+exponential time to verify that.
+
+So no one has a good idea how to solve SAT in polynomial time, or how
+to prove that it can't be done---researchers are completely stuck.
+The problem of determining whether or not SAT has a polynomial time
+solution is known as the ``\textbf{P} vs.\ \textbf{NP}'' problem.  It
+is the outstanding unanswered question in theoretical computer
+science.  It is also one of the
+seven \href{http://www.claymath.org/millennium/}{Millenium Problems}:
+the Clay Institute will award you \$1,000,000 if you solve
+the \textbf{P} vs.\ \textbf{NP} problem.
+
+\problemsection
+
+\section{Problems}
+
+\begin{problems}
+%\practiceproblems
+%\pinput{}
+\classproblems
+\pinput{CP_logic_news_network}
+\pinput{CP_assertions_about_binary_strings}
+\pinput{CP_domain_of_discourse}
+\pinput{CP_counter_model}
+\homeworkproblems
+\pinput{PS_express_in_predicate_form}
+\pinput{PS_emailed_exactly_2_others}
+\end{problems}
+
+\begin{editingnotes}
+ARM, put this into a problem in the problem section at end of chapter:
+
+In fact, it's not hard to show that \emph{no} polynomial
+with integer coefficients can map all natural numbers into prime
+numbers, unless it's a constant.
+\end{editingnotes}
+
+\endinput

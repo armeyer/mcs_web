@@ -1,0 +1,167 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_token_state_machine_conflict}
+  \pcomment{minor variant of FP_token_state_machine}
+  \pcomment{F15.mid2conflict}
+  \pcomment{author: Zoran Dzunic, edited ARM 10/15/15}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  derived_variable
+  induction
+  congruences
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  ``Token replacing'' is a single player game using a set of tokens,
+  each colored black or white.  Except for color, the tokens are
+  indistinguishable.  %The game starts with one black token.
+  In each move, a player can replace one black token with two
+  white tokens, or replace one white token with two black tokens.
+
+% Zoran: I somehow prefer to introduce the start state here, as it may
+% be hinting too much if introduced in part (b). Also, I came up
+% with another part of the problem for which it may be better to
+% have the start state fixed as part of rules.
+
+  We can model this game as a state machine whose states are pairs
+  $(n_b,n_w)$ where $n_b \geq 0$ equals the number of black tokens,
+  and $n_w \geq 0$ equals the number of white tokens.
+  
+ Let us assume that the game starts with one black token, that is,
+ state $(1,0)$.
+
+\bparts
+
+\ppart\label{Tnbnwinvar} Define the predicate $T(n_b,n_w)$ by the rule:
+\[
+T(n_b,n_w) \eqdef\  [\remainder(n_w - n_b, 3) = 2].
+\]
+Prove that $T$ is true for all reachable states.
+
+\examspace[2.5in]
+
+\begin{solution}
+$T$ is true for the start state since $n_w - n_b = 0-1 = -1$ and
+  $\remainder(-1,3) = 2$.\inhandout{\footnote{Remainders are always
+      between zero and the divisor minus one.  The quotient of here
+      would be -1, so $3\cdot \qcnt{-1}{3} + \rem{-1}{3} = -1$.}}
+
+Next we show that $T$ is a preserved invariant.
+
+So suppose $T(n_b, n_w)$ holds.  The only two possible transitions are
+into a state $(n'_b,n'_w)$ equal to $(n_b - 1, n_w + 2)$ or to $(n_b +
+2, n_w - 1)$.  But since
+\[
+n'_w - n'_b = n_w - n_b \pm 3
+\]
+has the same remainder on division by three as $n_w - n_b$, we conclude
+that $T(n'_b,n'_w)$, which proves that $T$ is invariant.
+
+Since $T$ is a preserved invariant that is true for the start state,
+it is true for all reachable states by the Invariant Principle.
+\end{solution}
+
+\ppart Does the same hold for the predicate 
+\[
+\rem{n_b - n_w}{3} = 2?
+\]
+Explain.
+
+\examspace[1.5in]
+%\examspace
+
+\begin{solution}
+No. This predicate is not true for the start state.
+\end{solution}
+
+\ppart
+We will now prove the following:
+\begin{claim*}
+If $T(n_b, n_w)$, then state $(n_b, n_w)$ is reachable.
+\end{claim*}
+
+Note that this claim is entirely different from the result in
+part~\eqref{Tnbnwinvar} that $T$ is a preserved invariant.  A
+preserved invariant satisfied by the start state tells you what
+\emph{can't} be reached, namely, any state that does not satisfy the
+invariant.  It does not tell you what \emph{can} be reached.
+
+The proof of the Claim will be by induction in $n$ using induction
+hypothesis $P(n) \eqdef$
+\[
+ \forall (n_b, n_w).\,
+ [(n_b + n_w = n) \QAND  T(n_b,n_w)]
+     \QIMPLIES (n_b,n_w) \text{ is reachable}.
+\]
+
+The base cases will be when $n \leq 2$.  
+
+\begin{itemize}
+
+\item Assuming that the base cases have been verified, complete the
+  \textbf{Inductive Step}.
+
+\examspace[3.5in]
+
+\begin{solution}
+\begin{proof}
+Assume that the induction hypothesis holds for some $n \ge 2$.
+Suppose $n_b + n_w = n + 1$ and $T(n_b,n_w)$ holds.  We want to show
+that $(n_b, n_w)$ is reachable.
+
+Since $n+1 \geq 3$, either $n_b \geq 2$ or $n_w \geq 2$.
+
+In the case that $n_b \geq 2$, we have $n_b-2 \geq 0$, so
+$(n_b-2,n_w+1)$ is a state. Also, $T(n_b-2,n_w+1)$ holds because
+\[
+(n_b-2)-(n_w+1) = n_b-n_w -3,
+\]
+which has the same remainder on division by three as $n_b-n_w$.
+
+Since
+\[
+(n_b-2)+(n_w+1) = n_b+n_w - 1 = n,
+\]
+we conclude by induction hypothesis $P(n)$ that $(n_b-2,n_w+1)$ is
+reachable.  But $(n_b-2,n_w+1)$ transitions in one step to
+$(n_b,n_w)$, which proves that $(n_b,n_w)$ is reachable.
+
+The same argument applies in the case that $n_w \geq 2$.
+
+We conclude that in any case $(n_b,n_w)$ is reachable, which completes
+the induction step.
+\end{proof}
+\end{solution}
+
+\item Now verify the \textbf{Base Cases}: $P(n)$ for $n \leq 2$.
+
+\examspace[3.5in]
+
+\begin{solution}
+There are only six states with $n \leq 2$:
+\[
+(0,0), (1,0), (0,1), (1,1), (0,2), (2,0).
+\]
+Of these, only $T(1,0)$ and $T(0,2)$ hold.  The state $(1,0)$ is
+reachable since it is the start, and $(0,2)$ is reachable in one step
+from the start.  So all the states with $n \leq 2$ and satisfying
+property $T$ are reachable.
+\end{solution}
+
+\end{itemize}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

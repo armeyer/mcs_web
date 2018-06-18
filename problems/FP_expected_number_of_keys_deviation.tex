@@ -1,0 +1,123 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_expected_number_of_keys_deviation}
+  \pcomment{subsumes PS_n_keys}
+  \pcomment{overlaps FP_expected_number_of_keys}
+  \pcomment{ARM 12/12/15}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  Chebyshev
+  asymptotic
+  little_oh
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A man has a set of $n$ keys, one of which fits the door to his
+apartment.  He tries a key at random, and if it does not fit the door,
+he simply puts it back; so he might try the same ill-fitting key
+several times.  He continues until he finds the one right key that
+fits.
+
+Let $T$ be the number of times he tries keys until he finds the right
+key.
+
+\bparts
+
+\ppart Explain why
+\[
+\expect{T} =n \quad \text{and} \quad \variance{T} = n(n-1).
+\]
+
+%\hint Mean time to failure. 
+
+\examspace[0.75in]
+
+\begin{solution}
+Take finding the right key to be a ``failure''.  So the probability of
+failure on the any given try, given ``success'' on the previous tries,
+is $1/n$.  Therefore, using the formula for the mean and variance of
+mean time to failure (Lemma~\bref{lem:exp_time_to_fail},
+equation~(\bref{var_time_to_fail}))),
+\[
+\expect{T} = \frac{1}{p} = \frac{1}{1/n} = n,
+\]
+and
+\[
+\variance{T}=\frac{1-p}{p^2} =\frac{1-1/n}{(1/n)^2} = (n-1)n.
+\]
+\end{solution}
+
+\eparts
+\medskip
+
+Let 
+\[
+f_n(a) \eqdef \pr{T \geq an}.
+\]
+
+\bparts
+
+\ppart
+Use the Chebyshev Bound to show that for any fixed $n>1$,
+\begin{equation}\label{T2nO1n2}
+f_n(a) = \Theta\paren{\frac{1}{a^2}}.
+\end{equation}
+
+\examspace[1.7in]
+
+\begin{solution}
+\begin{align*}
+\pr{T \geq an}
+   & = \pr{T - n \geq (a-1) n}\\
+   & \leq \pr{\abs{T - n} \geq (a-1)n}\\
+   & \leq \frac{\variance{T}}{((a-1)n)^2}
+      & \text{(Chebyshev)}\\
+   & = \frac{(n-1)n}{((a-1)n)^2}\\
+   & = \frac{n-1}{(a-1)^2 n}\\
+   & = \Theta\paren{\frac{1}{a^2}}.
+\end{align*}
+\end{solution}
+
+\ppart Derive an upper bound for $f_n(a)$ that for any fixed $n>1$ is
+asymptoticaly smaller than Chebyshev's bound~\eqref{T2nO1n2}.
+
+You may assume that $n$ is large enough to use the approximation
+\[
+\paren{1-\frac{1}{n}}^{cn} \approx \frac{1}{e^c}
+\]
+
+\examspace[2.0in]
+
+\begin{solution}
+Let $p \eqdef 1/n$ and $q \eqdef 1-p$.
+\begin{align*}
+\pr{T \geq an}
+  & = \sum_{k=0}^\infty \pr{T= an+k}\\
+  & = \sum_{k=0}^\infty q^{an+k-1}p\\
+  & = q^{an-1}p \sum_{k=0}^\infty q^k\\
+  & = q^{an-1}p \frac{1}{1-q}
+        & \text{(geometric series)}\\
+  & = q^{an-1}\\
+  & = q^{-1} (1-p)^{an}\\
+  & = q^{-1} \paren{1-\frac{1}{n}}^{an}\\
+  & \approx q^{-1} \frac{1}{e^a}\\
+  & = o\paren{\frac{1}{a^2}}.
+\end{align*}
+This $\Theta(1/e^a)$ bound is not only little-oh, but is
+\emph{exponentially} smaller than the $1/a^2$ bound~\eqref{T2nO1n2}.
+\end{solution}
+
+\eparts
+
+\end{problem}
+\endinput

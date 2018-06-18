@@ -1,0 +1,229 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_pred_calc_model_N}
+  \pcomment{variant of CP_pred_calc_model_N_arrows}
+\end{pcomments}
+
+\pkeywords{
+  predicate
+  logic
+  nonnegative
+  model
+}
+
+\newcommand{\zerosym}{\textbf{\~0}}
+\newcommand{\nextsym}{\textbf{next}}
+\newcommand{\nextfun}{\textit{nextf}}
+\newcommand{\prevsym}{\textbf{prev}}
+\newcommand{\prevfun}{\textit{prevf}}
+\newcommand{\numerl}[1]{\widetilde{\text{#1}}}
+\newcommand{\nextarrow}{\stackrel{\nextsym}{\longrightarrow}}
+\newcommand{\prevarrow}{\stackrel{\prevsym}{\longleftarrow}}
+\newcommand{\nparrow}{\stackrel{\nextarrow}{\prevarrow}}
+\newcommand{\ltsym}{\mrel{\textbf{less}}}
+
+
+\newcommand{\nextel}{\emph{next}}
+\newcommand{\prev}{\emph{prev}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $\zerosym$ be a constant symbol, $\nextsym()$ and $\prevsym()$ be
+function symbols taking one argument.
+
+The aim of this problem is to develop a series of predicate formulas
+using only these symbols whose models must contain contain a ``copy''
+of the consecutive nonnegative integers $\nngint$.  Moreover, the
+model must assign $\nextsym()$ and $\prevsym()$ to be the plus one and minus
+one functions on the copy.
+
+To start, we can introduce some abbreviations for certain terms called
+\emph{numerals} built up using these symbols: namely, let
+\begin{align*}
+\numerl{1} & \eqdef \nextsym(\zerosym)\\
+\numerl{2} & \eqdef \nextsym(\numerl{1})\\
+\numerl{3} & \eqdef \nextsym(\numerl{2})\\
+           &\vdots
+\end{align*}
+For example, ``$\numerl{3}$'' is an abbreviation for the numeral
+\[
+\nextsym(\nextsym(\nextsym(\zerosym))).
+\]
+
+Now we will make $\nextsym$ act like the ``add one'' function on values
+of these terms.  In particular, adding one to two different elements
+will result in two different elements:
+\begin{equation}\label{next1to1}
+\forall x,y.\, x \neq y \QIMPLIES\ \nextsym(x) \neq \nextsym(y)\ .
+\end{equation}
+We also make $\prevsym$ act like the ``subtract one'' function on these
+values, namely subtracting one from zero has no effect:
+\begin{equation}\label{prev00}
+\prevsym(\zerosym)= \zerosym,
+\end{equation}
+and otherwise adding one undoes subtracting one.
+
+\bparts
+
+\ppart\label{previnvnext-part} Write a predicate formula expressing
+the requirement that adding one undoes subtracting one from nonzero elements.
+\begin{solution}
+\begin{equation}\label{previnvnext}
+\forall x\neq \zerosym.\, \nextsym(\prevsym(x)) = x\ .
+\end{equation}
+\end{solution}
+
+\iffalse
+\ppart Write a formula expressing the fact that subtracting one from
+two different nonzero elements will result in two different elements.
+
+I was going to add ``Explain why this formula is implied the earlier
+ones,'' but no time to check and problem long enough already.
+
+\begin{solution}
+\begin{equation}\label{prev1to1}
+\forall x,y \neq \zerosym.\, x \neq y \QIMPLIES\ \prevsym(x) \neq \prevsym(y)\ .
+\end{equation}
+\end{solution}
+\fi
+
+\eparts
+
+Now any interpretation that satisifies these formulas must assign
+different domain elements to each of the numerals.  (This is not
+completely obvious, by the way, but we will take it for granted in the
+rest of the problem.)  Moreover, interpretations of $\nextsym$ and
+$\prevsym$ must act like plus one and minus one on these elements.
+
+But although the values of the numerals in every model satisfying the
+formulas of~\eqref{next1to1}, \eqref{prev00}, and
+part~\eqref{previnvnext-part} form a copy of $\nngint$, a model may
+have other elements that lead to strange behavior.  For example, a
+model satisfying all the above formulas could have \emph{two} copies
+that act like $\nngint$, with $\nextsym$ and $\prevsym$ acting like add
+one and subtract one on each copy.  In this model, there would be two
+elements that act like zero.
+
+So let's fix this:
+\bparts
+
+\ppart Write a formula that forces there to be only one copy of
+$\nngint$ in the model.
+
+\begin{solution}
+It's enough to say there is only one element that can start a copy:
+\begin{equation}\label{uniqz}
+\forall x.\, \prevsym(x) = x \QIMPLIES x = \zerosym.
+\end{equation}
+\end{solution}
+\eparts
+
+But there still might be other elements with funny properties.  For
+example, there might be two elements, each of which was ``plus one''
+of the other:
+\[
+\exists x, y.\, \nextsym(x) = y \QAND \nextsym(y) = x.
+\]
+or a cycle of three:
+\[
+\exists x, y,z.\, \nextsym(x) = y \QAND\ \nextsym(y) = z \QAND\ \nextsym(z) = x\ .
+\]
+We could easily write a formula forbidding such cycles of length
+three, or forbidding cycles of any given length, but we would need an
+infinite number of formulas to forbid cycles of all lengths.
+
+To forbid all finite cycles using only a fixed number of formulas, we
+will need something further: we will allow a binary relation symbol
+$\ltsym$ and make it act like a less-than relation.  For this purpose,
+it's suggestive to write $x\ltsym y$ instead of $\textbf{less}(x,y)$.
+Then one requirement will be that for all $n,m \in \nngint$, if $n <
+m$, then $\numerl{n}\ltsym \numerl{m}$ must be true.  But we also want
+$\ltsym$ to define a relation that has the ``less-than'' properties on
+all domain elements.  For example, we will say that adding one makes
+numbers bigger with the formula
+\begin{equation}\label{Lnext}
+\forall x.\ x\ltsym \nextsym(x).
+\end{equation}
+
+\iffalse  CHECK THIS:
+\bparts
+
+\ppart Explain why the formulas above imply 
+\begin{equation}\label{Lprev}
+\forall x\neq \zerosym.\ \prevsym(x)\ltsym x\ .
+\end{equation}
+
+\begin{solution}
+If $x\ltsym\nextsym(x)$ and $x \neq \zerosym$, then
+\end{solution}
+\eparts
+\fi
+
+Then we can forbid all finite cycles by requiring
+\begin{equation}\label{irrform}
+\forall x.\, \QNOT(x\ltsym x)\ .
+\end{equation}
+
+\bparts
+
+\ppart Write down formulas of predicate calculus with only the symbols
+above whose models must have properties as much like $\nngint$ as
+you can manage.  In particular, make sure that all models of your
+formulas force $\ltsym$ to mean $<$ on the numeral values and ensure
+that~\eqref{irrform} implies there are no finite cycles of
+$\nextsym$'s.  (If you think you have formulas whose only models are
+exactly like $\nngint$, look again, because that is impossible.)
+
+\begin{solution}
+Assert that $\ltsym$ is \emph{transitive}
+\[
+\forall x,y,z.\, (x\ltsym y \QAND y\,L\,z) \QIMPLIES x\ltsym z,
+\]
+
+Further every two different elements are related by $L$ one way or the
+other:
+\begin{equation}\label{trichot}
+\forall x,y.\, x\ltsym y \QOR y\ltsym ,x \QOR x = y.
+\end{equation}
+
+Now the only models of all these formulas has the a copy of
+$\nngint$ along with some two-way infinite chains
+\[
+\dots \ltsym c_{-2}\, \ltsym c_{-1}\, \ltsym c_0\, \ltsym c_1\, \ltsym c_2\, \ltsym \dots.
+\]
+
+All the elements in one of these chains must be $L$-bigger than all
+the numeral values.  Also,~\eqref{trichot} ensures all these chains
+will have the property that every element of one chain will be $L$ of
+every member of the other chain.  So the chains themselves are
+``ordered'' by $L$, but there is nothing further that can be said of
+how chains are ordered: there might be none, some finite number, or
+even an infinite number of them.  And the chains might be ordered
+among themselves like the integers, or nonnegative integers, or real
+numbers,\dots.
+
+\end{solution}
+
+\ppart Describe a model that satisfies all your formulas but has
+elements that are not the numeral values.
+
+\begin{solution}
+The numeral values along with a single two-way infinite chain of
+successive elements ordered by $\ltsym$ is an example for the formulas
+given above.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

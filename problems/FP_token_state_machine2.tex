@@ -1,0 +1,149 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_token_state_machine2}
+  \pcomment{F15.final}
+  \pcomment{variation of FP_token_state_machine}
+\end{pcomments}
+
+\pkeywords{
+  state_machine
+  invariant
+  preserved_invariant
+  induction
+  congruence
+  reachable
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+\emph{Token Switching} is a process for updating a set of black and
+white tokens.  The process starts with a single black token.  At each
+step,
+
+
+\begin{enumerate}[i.]
+\item one black token can be replaced with two white tokens, or
+\item if the numbers of white and black tokens are not the same, the
+  colors of all the tokens can be switched: all the black tokens
+  become white, and the white tokens become black.
+\end{enumerate}
+
+We can model Token Switching as a state machine whose states are pairs
+$(b,w)$ of nonnegative integers, where $b$ equals the number of black
+tokens, and $w$ equals the number of white tokens.  So the start state
+is $(1,0)$.
+
+\bparts
+  
+\ppart Indicate which of the following states can be reached from the
+start state in \emph{exactly} two steps:
+\[
+(0,0),\ (1,0),\ (0,1),\ (1,1),\ (0,2),\ (2,0),\ (2,1),\ (1,2),\ (0,3),\ (3,0)
+\]
+
+\begin{solution}
+\[(1,0),\ (2,0)\]
+
+\begin{align*}
+(1,0) \to \begin{cases}
+          & (0,1) \to (1,0),\\
+          & (0,2) \to (2,0).
+          \end{cases}
+\end{align*}
+\end{solution}
+
+\ppart
+Define the predicate $F(b,w)$ by the rule:
+\[
+F(b,w) \eqdef\ (b - w)\ \text{is not a multiple of 3}.
+\]
+
+Prove the following
+\begin{claim*}
+If $F(b,w)$, then state $(b,w)$ is reachable from the start state.
+\end{claim*}
+
+\examspace[3.5in]
+
+\begin{solution}
+The proof will be by induction in $n$ using induction hypothesis $P(n)
+\eqdef$
+\[
+ \forall (b, w).\,
+ [(b + w = n) \QAND  F(b,w)]
+     \QIMPLIES (b,w) \text{ is reachable}.
+\]
+
+\begin{proof}
+
+\inductioncase{Base case} ($n \leq 1$):
+There are only two states with $n \leq 1$ that satisfy $F$:
+\[
+(1,0),\ (0,1).
+\]
+But $(1,0)$ is reachable since it is the start state, and $(0,1)$ is
+reachable in one step by switching white and black tokens.
+
+\inductioncase{Inductive step}: Suppose $b + w = n+1$ for some $n \geq
+1$ and $F(b,w)$ holds.  We want to show that $(b, w)$ is reachable.
+
+Since $n+1 \geq 2$, either $b \geq 2$ or $w \geq 2$ (the remaining
+case $(b,w)=(1,1)$ is ruled out by the condition $F(b,w)$).  Since
+$(b,w)$ is reachable iff $(w,b)$ is reachable, we can assume that $w \geq 2$.
+This implies that $(b+1,w-2)$ is a state that transitions to
+$(b,w)$ in one step.  So we need only show that $(b+1,w-2)$ is
+reachable.
+
+Now $F(b+1,w-2)$ holds because 
+\[
+(b+1)-(w-2) = (b-w) + 3  \equiv b-w \not\equiv 0 \pmod{3}.
+\]
+Also, since
+\[
+(b+1)+(w-2) = (b+w) - 1 = n,
+\]
+we conclude by induction hypothesis $P(n)$ that $(b+1,w-2)$ is
+reachable.
+\end{proof}
+\end{solution}
+
+\ppart Explain why state $(11^{6^{7777}}, 5^{10^{88}})$ is
+\emph{not} a reachable state.
+
+\hint Do not assume $F$ is a preserved invariant without proving it.
+
+\begin{solution}
+It is easy to see that $\rem{b-w}{3}$ remains unchanged by the the
+first transition rule and gets negated by the second rule, which
+implies that $F$ is indeed a preserved invariant.  Since $F$ holds for
+the start state $(1,0)$, it follows that it holds for all reachable
+states.
+
+We claim that $11^{6^{7777}}$ and $5^{10^{88}}$ are both $\equiv 1
+\bmod{3}$, so state $(11^{6^{7777}}, 5^{10^{88}})$ does not satisfy
+the invariant $F$ and is therefore unreachable.
+
+To prove this claim, note that
+\[
+11 \equiv 2 \equiv 5 \pmod{3},
+\]
+so both
+$11^{6^{7777}}$ and $5^{10^{88}}$ are congruent to
+\[
+2^{\text{even number}} \equiv 1 \pmod{3}.
+\]
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

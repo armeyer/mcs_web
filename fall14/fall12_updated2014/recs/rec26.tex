@@ -1,0 +1,319 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+%\newcommand{\Var}{\mathop{\textup{Var}}\nolimits}
+\newcommand{\var}[1]{\Var\left[#1\right]}
+
+\hidesolutions
+%\showsolutions
+
+\begin{document}
+
+\renewcommand{\pr}[1]{\mathop{\textup{Pr}}\nolimits\left[#1\right]}
+\newcommand{\prsub}[2]{\mathop{\textup{Pr}_{#1}}\nolimits\left[#2\right]}
+\renewcommand{\ex}[1]{\mathop{\textup{Ex}}\nolimits\left[#1\right]}
+\renewcommand{\ex}[1]{\mathop{\textup{Ex}}\nolimits\left[#1\right]}
+
+\recitation{26}{December 12, 2012}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{theorem}
+\label{th:num-events}
+Let $E_1, \ldots, E_n$ be events, and let $X$ be the number of these
+events that occur. Then:
+%
+\[
+\ex{X} = \pr{E_1} + \pr{E_2} + \ldots + \pr{E_n}
+\]
+\end{theorem}
+
+\begin{theorem}[Markov's Inequality]
+\label{th:markov}
+Let $X$ be a nonnegative random variable.  If $c > 0$, then:
+%
+\[
+\pr{X \geq c} \leq \frac{\ex{X}}{c}
+\]
+\end{theorem}
+
+\begin{theorem}[Chebyshev's Inequality]
+\label{th:chebyshev}
+For all $x > 0$ and any random variable $R$,
+$$\pr{|R-\ex{R}| \geq x} \leq \frac{\var{R}}{x^2}$$
+\end{theorem}
+
+\begin{theorem}[Union Bound]
+\label{th:union}
+For events $E_1, \ldots, E_n$:
+%
+\[
+\pr{E_1 \cup \ldots \cup E_n} \leq \pr{E_1} + \ldots + \pr{E_n}
+\]
+\end{theorem}
+
+\begin{theorem}[``Murphy's Law'']
+\label{th:murphy}
+If events $E_1, \ldots E_n$ are mutually independent and $X$ is the
+number of these events that occur, then:
+%
+\[
+\pr{E_1 \cup \ldots \cup E_n} \geq 1 - e^{-\ex{X}}
+\]
+\end{theorem}
+
+\begin{theorem}[Chernoff Bounds]
+\label{th:chernoff}
+Let $E_1, \ldots, E_n$ be a collection of mutually independent events,
+and let $X$ be the number of these events that occur.  Then:
+%
+\begin{align*}
+\pr{X \geq c \ex{X}} & \leq e^{\textstyle -(c \ln c - c + 1) \ex{X}}
+    & \text{when $c > 1$}
+\end{align*}
+\end{theorem}
+
+%\begin{corollary}
+%\label{cor:chernoff}
+%The second and third bounds in Theorem~\ref{th:chernoff} remain valid
+%when all instances of $\ex{X}$ are replaced by an upper bound on the
+%expectation of $X$.
+%\end{corollary}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+
+\section{Getting Dressed}
+Sometimes I forget a few items when I leave the house in the morning.
+
+ For example, here are probabilities that I forget various
+pieces of footwear:
+%
+\[
+\begin{array}{p{2in}l}
+left sock & 0.2 \\
+right sock & 0.1 \\
+left shoe & 0.1 \\
+right shoe & 0.3
+\end{array}
+\]
+%
+\begin{itemize}
+\item[a.]
+
+Let $X$ be the number of these that I forget.  What is $\ex{X}$?
+
+\solution[\vspace{1in}]{By Theorem~\ref{th:num-events}, the expected
+number of events that happen is the sum of the event probabilities.
+So,
+%
+\[
+\ex{X} = 0.2 + 0.1 + 0.1 + 0.3 = 0.7
+\]
+}
+
+\item[b.] Upper bound the probability that I forget one or more items.
+Make no independence assumptions.
+
+\solution[\vspace{1in}]{By the Union Bound, the probability that I
+forget something is at most:
+%
+\[
+0.1 + 0.1 + 0.2 + 0.3 = 0.7
+\]
+}
+
+\item[c.] Use the Markov Inequality to upper bound the probability that I
+forget 3 or more items.
+
+\solution[\vspace{1.5in}]{
+\begin{align*}
+\pr{X \geq 3} \leq \frac{\ex{X}}{3} = \frac{7}{30}
+\end{align*}
+}
+
+\item[d.] Now suppose that I forget each item of footwear independently. Use Chebyshev's Inequality to upper bound the probability that I forget two or more items.
+
+\solution[\vspace{1.5in}]{ Let $X_1$ be the event I bring my left sock, $X_2$ my right sock, $X_3$ my left shoe, and $X_4$ my right shoe. Then $\ex{X_1} = .2$, $\ex{X_2} = .1$, $\ex{X_3} = .1$, and $\ex{X_4} = .3$. Moreover, since the $X_i$ are Bernoulli random variables (binomial with $n=1$), we have $\var{X_1} = .2(1-.2) = .16, \var{X_2} = .1(1-.1) = .09, \var{X_3} = .1(1-.1) = .09$, and $\var{X_4} = .3(1-.3) = .21$.
+\\\\
+Let $X = \sum_{i=1}^4 X_i$. Then $\ex{X} = \sum_{i=1}^4 \ex{X_i} = .2 + .1 + .1 + .3 = .7$. Since the $X_i$ are independent, $\var{X} = \sum_{i=1}^4 \var{X_i} = .16 + .09 + .09 + .21 = .55$. Now by Chebyshev's Inequality,
+\begin{align*}
+\pr{X \geq 2}
+    & \leq \pr{|X-.7| \geq 1.3}\\
+    & = \pr{|X-\ex{X}| \geq 1.3}\\
+    & \leq \frac{\var{X}}{1.3^2}\\
+    & = \frac{.55}{1.3^2}\\
+    & \leq .326
+\end{align*}
+}
+
+\item[e.] Use Theorem~\ref{th:murphy} to lower bound the probability that I forget
+one or more items.
+
+\solution[\vspace{1.5in}]{Plugging into Theorem~\ref{th:murphy}, the
+probability that I forget one or more items:
+%
+\[
+1 - e^{-\ex{X}} = 1 - e^{-0.7} = 0.503\ldots
+\]
+}
+
+\iffalse
+\item[f.] I'm supposed to remember many other items, of course: clothing,
+watch, backpack, notebook, pencil, kleenex, ID, keys, etc.  Let $X$ be
+the total number of items I remember.  Suppose I remember items
+mutually independently and $\ex{X} = 36$.
+
+Give an upper bound on the probability that I remember 18 or fewer
+items.
+
+\solution[\vspace{2in}]{
+By the first Chernoff inequality:
+%
+\begin{align*}
+\pr{X \leq 18}
+    & = \pr{X \leq (1 - 1/2) \ex{X}} \\
+    & \leq e^{-(1/2)^2 36 / 2} \\
+    & = e^{-9/2}
+\end{align*}
+}
+\fi
+
+\item[g.] 
+I'm supposed to remember many other items, of course: clothing,
+watch, backpack, notebook, pencil, kleenex, ID, keys, etc.  Let $X$ be
+the total number of items I remember.  Suppose I remember items
+mutually independently and $\ex{X} = 36$.
+Use Chernoff's Bound to give an upper bound on the probability that I remember 48 or
+more items.
+
+\solution[\vspace{2in}]{
+By the Chernoff Bound,
+%
+\begin{align*}
+\pr{X \geq 48}
+    & = \pr{X \geq (1 + 1/3) \ex{X}} \\
+    & \leq e^{-(4/3 \ln 4/3 - 4/3 + 1) \cdot 36} \\
+    & \approx .1638\\
+\end{align*}
+}
+
+\item[h.] Give an upper bound on the probability that I remember $108$ or
+more items.
+
+\solution{By the Chernoff Bound,
+%
+\begin{align*}
+\pr{X \geq 108}
+    & = \pr{X \geq 3 \cdot \ex{X}} \\
+    & \leq e^{-(3 \ln 3 - 3 + 1) \cdot 36} \\
+    & \leq e^{-46} \approx 1.05\times 10^{-20}.
+\end{align*}
+}
+
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{A Financial Crisis}
+
+There are a lot of foreign words here, but don't be scared!  We will be trying to understand why the subprime mortgage collapse happened!
+
+For a more complete story of how the crisis happened, refer to section 19.5.3 of the text.  The following is a set of vocabulary that we will be using:
+
+\begin{itemize}
+	\item A \textbf{loan} is money lent to a borrower.  If the borrower does not pay on the loan, the loan is said to be in \textbf{default}, and collateral is seized.
+	In the case of mortgage loans, the borrower's home is used as collateral.  
+	
+	\item A \textbf{bond} is a collection of loans, packaged into one entity.  A bond can be divided into \textbf{tranches}, in some ordering, which tell us how to
+	assign losses from defaults.  Suppose a bond contains 1000 loans, and is divided into 10 tranches of 100 bonds each.  Then, all the defaults must fill up the lowest tranche
+	before the affect others.  For example, suppose 150 defaults happened.  Then, the first 100 defaults would occur in tranche 1, and the next 50 defaults would happen in tranche 2.
+
+	\item The lowest tranche of a bond is called the \textbf{mezzanine tranche}.  
+	
+	\item We can make a ``super bond'' of tranches called a \textbf{collateralized debt obligation (CDO)} by collecting mezzanine tranches from different bonds.  This super bond can then be itself separated into tranches, which are again ordered to indicate how to assign losses. 
+	
+\end{itemize}
+
+Armed with this knowledge, we can now solve problems about the crisis!
+
+\begin{enumerate}
+
+	\item Suppose that 1000 loans make up a bond, and the fail rate is $5\%$ in a year.  Assuming mutual independence, give an upper bound for the probability that there are one or more
+	failures in the second-worst tranche.  What is an upper bound on the probability that there are failures in the best tranche?
+	
+	\solution{
+        If we assume mutual independence, we can use Chernoff's Theorem to give an upper bound to this.  Because the fail rate is $5\%$, $\ex{X} = 50$.  From Chernoff, we have that
+        $$\pr{X \geq 2 \cdot 50} \leq e^{-(2\ln 2 - 2 + 1)\cdot 50}$$
+		which evaluates to $1.759 \cdot 10^{-6}$. 
+		
+		In order for failure to reach the best tranche, there must have been at least 900 failures.  This corresponds to $c=18$ in the Chernoff bound, so the bound is
+        $$\pr{X \geq 18 \cdot 50} \leq e^{-(18\ln 18 - 18 + 1)\cdot 50}$$
+		
+		This evaluates to $e^{-2551.33}$, which evaluates to less than $10^{-1000}$.
+	}
+	
+	
+	\item Now, do not assume that the loans are independent.  Give an upper bound for the probability that there are one or more failures in the second-worst tranche.  What is an upper bound for the
+        probability that the entire bond defaults? \emph{(Hint: Use Markov's theorem).}  Show that it is a tight bound.
+	\solution{
+		From the Markov bound, we have that 
+		
+        $$\pr{X \geq 100} \leq \frac{50}{100} = 1/2$$
+		
+		Applying Markov's theorem again in the case of failures occuring in every bond, we have
+        $$\pr{X \geq 1000} \leq \frac{50}{1000} = 1/20$$
+		
+		We can see that these bounds are tight by constructing situations where they occur.  In the first case, consider if the bond consisted of 100 bonds that always defaulted half the time,
+		and the other bonds never defaulted.  In the second case, assume that all the bonds are completely correlated (they all default or all do not default), and default $5\%$ of the time.
+	}
+	
+	
+	\item  Given this setup (and assuming mutual independence between the loans), what is the expected failure rate in the mezzanine tranche?
+	\solution{
+		The expected number of failures per bond is $50$.  Because all losses are sent to the mezzanine, the expected failure rate is $50\%$ (mighty high!).
+	}
+	
+	
+	\item  We take the mezzanine tranches from 100 bonds and create a CDO.  What is the expected number of underlying failures to hit the CDO?  
+	\solution{
+		From the previous part, each mezzanine tranche has a $50\%$ rate of failure.  The CDO contains $10000$ loans, at a $50\%$ rate of failure, and so we expect
+		$5000$ failures in the CDO.
+	}
+	
+	\item  We divide this CDO into $10$ tranches of $1000$ bonds each.  Assuming mutual independence, give an upper bound on the probability of one or more failures in the best tranche.  
+	The third tranche?
+	\solution{
+		We use a $50\%$ failure rate to model the loans in this CDO.  If we assume mutual independence, we use the Chernoff bound to bound this.  One or more failures in the best tranche
+		corresponds to over $9000$ failures in the CDO.  Using the Chernoff bound, we find that
+		
+        $$\pr{X \geq 9/5\cdot 5000} \leq e^{-(9/5 \ln(9/5) - 9/5 + 1) \cdot 5000}$$ 
+		
+		which is approximately zero.
+		
+		For the third tranche, we make a similar calculation, finding the probability that there are over $7000$ failures in the CDO.
+
+        $$\pr{X \geq 7/5\cdot 5000} \leq e^{-(7/5 \ln(7/5) - 7/5 + 1) \cdot 5000}$$ 
+		
+		This is about $10^{-155}$-- that is, still vanishingly small.
+		 
+	}
+	
+	\item  Repeat the previous question without the assumption of mutual independence.
+	\solution {
+	    Without a mutual independence assumption, the best we can do is bounds from Markov's theorem, like we did in part b.  Thus, the upper bound on failures in the top tranche, or over $9000$ failures, is: 
+	
+        $$\pr{X \geq 9000} \leq \frac{5000}{9000} = 5/9$$
+
+		For failures in the third tranch, Markov's theorem gives us:
+
+        $$\pr{X \geq 7000} \leq \frac{5000}{7000} = 5/7$$
+		
+		To put it generously, these probabilities are not very low.
+	}
+
+\end{enumerate}
+
+\end{document}

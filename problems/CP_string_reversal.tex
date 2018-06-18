@@ -1,0 +1,104 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_string_reversal}
+  \pcomment{ARM 3.2.17: does it really require
+    PS_string_cancellation?}
+ \pcomment{by  ARM 2/23/11}
+\end{pcomments}
+
+\pkeywords{
+  string
+  structural_induction
+  induction
+  concatenation
+  associativity
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The \emph{reversal} of a string is the string written backwards, for
+example, $\rev{abcde} = edcba$.
+
+\bparts
+
+\ppart Give a simple recursive definition of $\rev{s}$ based on the
+recursive definitions~\bref{recstring_def} of $s \in \strings{A}$ and
+of the concatenation operation~\bref{concat_def}.
+
+\begin{solution}
+
+\begin{itemize}
+\item $\rev{\emptystring} \eqdef \emptystring$.
+\item
+\[
+\rev{\ang{a,s}} \eqdef s \cdot a.
+\]
+
+\end{itemize}
+\end{solution}
+
+\ppart Prove that 
+\begin{equation}\label{revstrevt}
+\rev{s \cdot t} = \rev{t} \cdot \rev{s},
+\end{equation}
+for all strings $s,t \in \strings{A}$.  You may assume that
+concatenation is associative:
+\[
+(r \cdot s) \cdot t = r \cdot (s \cdot t)
+\]
+for all strings $r,s,t \in \strings{A}$\inbook{ (Problem~\bref{CP_string_associativity})}.
+
+\begin{solution}
+The proof is by structural induction on the recursive definition of
+concatenation~\bref{concat_def} with induction hypothesis
+\[
+P(s) \eqdef \forall t \in \strings{A}.\,\rev{s \cdot t} = \rev{t} \cdot \rev{s}.
+\]
+
+\inductioncase{Base case}: ($s = \emptystring$).
+\begin{align*}
+\rev{s \cdot t} & = \rev{\emptystring \cdot t}\\
+     & = \rev{t}
+          & \text{($\emptystring$ is a left identity by def of $\cdot$)}\\
+     & = \rev{t} \cdot \emptystring
+          & \text{($\emptystring$ is a right identity\inbook{ (Lemma~\bref{rightidempty})})}\\
+     & = \rev{t} \cdot \rev{\emptystring}
+               & \text{(base case of def of reverse)}\\
+     & = \rev{t} \cdot \rev{s}.
+\end{align*}
+So $P(\emptystring)$ is true.
+
+\inductioncase{Constructor case}: ($s = a \cdot r$).
+\begin{align*}
+\rev{s \cdot t} & = \rev{(a \cdot r) \cdot t}\\
+       & = \rev{a \cdot (r \cdot t)}
+           & \text{(def of $\cdot$)}\\
+       & = \rev{r \cdot t} \cdot a
+           & \text{(def of reverse)}\\
+       & = (\rev{t} \cdot \rev{r}) \cdot a
+           & \text{(ind hyp $P(r)$)}\\
+       & = \rev{t} \cdot (\rev{r} \cdot a)
+            & \text{(associativity of $\cdot$)}\\
+       & = \rev{t} \cdot \rev{a \cdot r}
+            & \text{(def of reverse)}\\
+       & = rev{t} \cdot \rev{s}.
+\end{align*}
+This prove $P(s)$.  We conclude by structural induction that $P(s)$ is
+true for all $s \in \strings{A}$, and therefore
+equation~\eqref{revstrevt} is true for all $s,t$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

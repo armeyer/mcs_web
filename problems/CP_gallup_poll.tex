@@ -1,0 +1,171 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_gallup_poll}
+  \pcomment{from: F05 cp14f, S08 cp13f}
+  \pcomment{revised a lot by ARM 12/5/09}
+  \pcomment{edited 5/11/14}
+\end{pcomments}
+
+\pkeywords{
+ pairwise_independent
+ sampling
+ variance
+ estimate
+ confidence
+ probability
+ uniform
+ independent
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+	
+  A recent Gallup poll found that 35\% of the adult population of the
+  United States believes that the theory of evolution is ``well-supported
+  by the evidence.''  Gallup polled $1928$ Americans selected uniformly
+  and independently at random.  Of these, $675$ asserted belief in
+  evolution, leading to Gallup's estimate that the fraction of Americans
+  who believe in evolution is $675/1928 \approx 0.350$.  Gallup claims a
+  margin of error of 3 percentage points, that is, he claims to be
+  confident that his estimate is within 0.03 of the actual percentage.
+
+\bparts
+
+\ppart\label{varindicator} What is the largest variance an indicator
+variable can have?
+
+\begin{solution}
+\[
+\frac{1}{4}
+\]
+
+Let $H$ be an indicator variable with probability $p$ being $1$ and
+probability $q$, which is $(1-p)$, being 0.  By
+Lemma~\bref{bernoulli-variance}, $\variance{H} = pq = p(1-p)$.
+
+\begin{staffnotes}
+Here's a proof starting from the definition of variance:
+\begin{align*}
+\variance{H}
+     & = \expect{(H-p)^2}
+                   & \text{(def of $\variance{}$)}\\
+     & = \expect{H^2-2pH+p^2}\\
+     & = \expect{H^2} - 2p\expect{H} + p^2
+                   & \text{(linearity of $\expect{}$)}\\
+     & = p - p^2   & \text{(since $\expect{H} =p$ and $H^2 = H$)}\\
+     & = pq        & (q \eqdef 1-p).
+\end{align*}
+
+\end{staffnotes}
+
+Noting that the derivative of $p(1-p)$ with respect to $p$ is $2p-1$.
+This derivative is zero when $p=1/2$; it follows that $p(1-p)$ is
+maximal when $p = 1/2$, and so the maximum value of $\variance{H}$ is
+$(1/2)(1 -(1/2)) = 1/4$.
+\end{solution}
+
+\iffalse
+\ppart What is the variance of a binomial variable, $B_{n,p}$?
+\begin{solution}
+\[
+B_{n,p} = H_1 + H_2 + \cdots + H_n
+\]
+where the $H_i$'s are mutually independent indicator variables with
+$\pr{H_i=1} = p$.  By independence and part~\eqref{varindicator},
+\[
+\variance{H_1 + H_2 + \cdots + H_n} = \variance{H_1} + \variance{H_2} + \cdots +
+\variance{H_n} = npq.
+\]
+
+\end{solution}
+\fi
+
+\ppart Use the Pairwise Independent Sampling Theorem to determine a
+confidence level with which Gallup can make his claim.
+
+\begin{solution}
+By the Pairwise Independent Sampling Theorem, the probability that a
+sample of size $n=1928$ is further than $x = 0.03$ of the actual
+fraction is at most
+\[
+\paren{\frac{\sigma}{x}}^2 \cdot \frac{1}{n}
+\leq \paren{\frac{1/2}{0.03}}^2 \cdot \frac{1}{1928} \leq 0.144,
+\]
+so we can be confident of Gallup's estimate at the 85.6\% level.
+\end{solution}
+
+\ppart Gallup actually claims greater than 99\% confidence in his
+estimate.  How might he have arrived at this conclusion?  (Just explain
+what quantity he could calculate; you do not need to carry out a
+calculation.)
+
+\begin{solution}
+The variance $\sigma^2$ of a single sample might really be as bad as
+1/4 (this happens when $p=1/2$) and the variance of $n$ samples might
+be as bad as $n\sigma^2$, so there is no better mileage to be gotten
+out of the Chebyshev bound.
+
+Instead, Gallup could use the fact that the sample has a binomial
+distribution $B_{1928,p}$, where $p$ is the unknown quantity to be
+estimated. \iffalse We estimate that the unknown fraction $p$ is about
+$0.35$, and the question is how much confidence to hold in that
+estimate.\fi The tails of a binomial distribution decrease much more
+rapidly than arbitrary distributions (see
+Section~\bref{binomial_distribution_section}),\iffalse and this
+decrease is exponential rather than quadratic\fi{} so confidence
+degrees calculated using this distribution will be higher than
+calculations based solely on variance.
+
+So Gallup wants an upper bound on
+\[
+\Prob{\abs{\frac{B_{1928,p}}{1928} - p} > 0.03}
+\]
+By part~\eqref{varindicator}, the variance of $B_{n,p}$ is largest
+when $p =1/2$, which suggests that the probability that a binomial
+random variable differs from its mean will be largest
+when $p=1/2$.  This is in fact the case.  So Gallup will calculate
+\begin{eqnarray*}
+\Prob{\abs{\frac{B_{1928,p}}{1928} - p} > 0.03}
+    &=& \Prob{\abs{B_{1928,p} - 1928p} > 0.03(1928)}\\
+    &\leq& \Prob{\abs{B_{1928,1/2} - 1928(1/2)} > 0.03(1928)}\\
+    &=& \pr{906 \leq B_{1928,1/2} \leq 1021}\\
+    &=& \frac{\sum_{i=906}^{1021} \binom{1928}{i}}{2^{1928}} \approx 0.9912.
+\end{eqnarray*}
+\emph{Mathematica} will actually calculate this sum exactly.  There
+are also simple ways to use Stirling's formula to get a good estimate
+of this value.
+\end{solution}
+
+\ppart Accepting the accuracy of all of Gallup's polling data and
+calculations, can you conclude that there is a high probability that
+the percentage of adult Americans who believe in evolution is $35 \pm
+3$ percent?
+
+\begin{solution}
+No.  As explained in Notes and lecture, the assertion that
+fraction $p$ is in the range $0.35\pm 0.03$ is an assertion of fact that
+is either true or false.  The number $p$ is a \emph{constant}.  We
+don't know its value, and we don't know if the asserted fact is true or
+false, but there is nothing probabilistic about the fact's truth or
+falsehood.
+
+We \emph{can} say that either the assertion is true or else a 1-in-100
+event occurred during the poll.  Specifically, the unlikely event is
+that Gallup's random sample was unrepresentative.  This may convince you
+that $p$ is ``probably'' in the range $0.35 \pm 0.03$, but this informal
+``probably'' is not a mathematical probability.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

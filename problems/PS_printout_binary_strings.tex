@@ -1,0 +1,90 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_printout_binary_strings}
+  \pcomment{from: S17.cp2f, S09.ps1}
+  \pcomment{rewritten by ARM 1/1/13}
+\end{pcomments}
+
+\pkeywords{
+  binary
+  truth_tables
+  program
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Describe a simple procedure which, given a positive integer argument,
+$n$, produces a width $n$ array of truth-values whose rows would be
+all the possible truth-value assignments for $n$ propositional
+variables.  For example, for $n=2$, the array would be:
+
+\[\begin{array}{|cc|}
+\hline \true & \true\\
+\true & \false\\
+\false & \true\\
+\false & \false\\
+\hline
+\end{array}\]
+
+Your description can be in English, or a simple program in some
+familiar language such as Python or Java.  \inbook{If you do write a program,
+be sure to include some sample output.}
+
+\begin{solution}
+A simple recursive approach is to start with an $n=1$ array, namely a
+$1 \times 2$ array whose first row has the entry $\true$ and whose
+second row has the entry $\false$.  Build the width-$(n+1)$ array for
+$n+1$ variables recursively by making two copies of the width-$n$
+array for $n$ variables.  Then add a $\false$ entry at the beginning
+of each row of the first copy to form an array of width-$(n+1)$, add a
+$\true$ entry at the beginning of each row of the second copy to form
+a second array of width-$(n+1)$, and finally, place the first
+width-$(n+1)$ array on top of the second width-$(n+1)$ array, forming
+a width-$(n+1)$ array of twice the height of the width-$n$ array.
+This is the answer.
+
+Here's a Python program that carries generates the rows of the array
+for $n$ variables in this way:
+
+\begin{verbatim}
+def truth_values(n):
+    if n <= 0:
+        return [[]]
+    else:
+        def choice(elems):
+            return [[False] + e for e in elems] + \
+                    [[True] + e for e in elems]
+        return choice(truth_values(n - 1))
+
+>>> print truth_values(3)
+[[False, False, False], [False, False, True],
+    [False, True, False], [False, True, True],
+    [True, False, False], [True, False, True],
+    [True, True, False], [True, True, True]]
+\end{verbatim}
+
+\medskip
+
+An alternative approach makes the observation that the rows of the
+array for $n$ variables as constructed above consist of the $n$-bit
+binary representations of the successive integers 0 to $2^n -1$, when
+we treat $\false$ as a code for 0 and $\true$ as a code for 1.  For
+example, if, in the above array for $n=3$, we number successive rows
+starting with zero, then row number three has binary representation
+\STR{011}, which corresponds to the labelling $(\false\ \true\
+\true)$.  So we generate the $k$th row of the array for $n$ variables by
+finding the length-$n$ binary representation of $k$ and converting
+\STR{0}'s back to $\false$ and \STR{1}'s back to $\true$.
+
+\end{solution}
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

@@ -1,0 +1,186 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_filling_buckets_with_water}
+  \pcomment{from: F09.ps4, F02.ps5}
+  \pcomment{edited by ARM 2/26/11 and 4/24/11}
+  \pcomment{amateurish soln needs rewrite}
+\end{pcomments}
+
+\pkeywords{
+	state_machines
+        invariant
+        jug
+        die_hard
+        gcd
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let's extend the jug filling scenario of
+Section~\bref{jug_invar_subsubsec} to three jugs and a receptacle.
+Suppose the jugs can hold $a$, $b$ and $c$ gallons of water,
+respectively.
+
+The receptacle can be used to store an unlimited amount of water, but
+has no measurement markings.  Excess water can be dumped into the
+drain.  Among the possible moves are:
+
+\begin{enumerate}
+
+\item\label{hose-bucket3} fill a bucket from the hose,
+
+\item pour from the receptacle to a bucket until the bucket is full
+or the receptacle is empty, whichever happens first,
+
+\item empty a bucket to the drain,
+
+\item\label{bucket-receptacle} empty a bucket to the receptacle, and
+
+\item pour from one bucket to another until either the first is empty or the second is full.
+
+\end{enumerate}
+
+\bparts
+
+\ppart
+Model this scenario with a state machine.  (What are the states?  How does
+a state change in response to a move?)
+
+\begin{solution}
+The states are quadruples $(w,x,y,z)$ which give the current amount of
+water in the three buckets and the receptacle, respectively.
+The initial state is $(0,0,0,0)$.
+
+Here are the corresponding transitions for each of the above moves:
+\begin{enumerate}
+\item fill a bucket from the hose
+\[
+(w,x,y,z) \rightarrow \left \{ \begin{array}{l}
+(a,x,y,z) \mbox{ if filling jug A from the hose } \\
+(w,b,y,z) \mbox{ if filling jug B from the hose }\\
+(w,x,c,z) \mbox{ if filling jug C from the hose }\\
+\end{array} \right.
+\]
+
+\item pour from the receptacle to a bucket until the bucket is full
+or the receptacle is empty, whichever happens first
+\[
+(w,x,y,z) \rightarrow \left \{ \begin{array}{l}
+(a,x,y,z-(a-w)) \mbox{ if pouring to A and } z \geq (a-w) \\
+(w+z,x,y,0) \mbox{ if pouring to A and } z < (a-w) \\
+(w,b,y,z-(b-x)) \mbox{ if pouring to B and } z \geq (b-x) \\
+(w,x+z,y,0) \mbox{ if pouring to B and } z < (b-x)\\
+(w,x,c,z-(c-y)) \mbox{ if pouring to C and } z \geq (c-y) \\
+(w,x,y+z,0) \mbox{ if pouring to C and } z < (c-y)
+\end{array} \right.
+\]
+
+\item empty a bucket to the drain
+\[
+(w,x,y,z) \rightarrow \left \{ \begin{array}{l}
+(0,x,y,z) \mbox{ if emptying A to the drain } \\
+(w,0,y,z) \mbox{ if emptying B to the drain }\\
+(w,x,0,z)\mbox{ if emptying C to the drain }
+\end{array} \right.
+\]
+
+\item empty a bucket to the receptacle
+\[
+(w,x,y,z) \rightarrow \left \{ \begin{array}{l}
+(0,x,y,z+w) \mbox{ if emptying A to the receptacle } \\
+(w,0,y,z+x) \mbox{ if emptying B to the receptacle }\\
+(w,x,0,z+y) \mbox{ if emptying C to the receptacle }
+\end{array} \right.
+\]
+
+
+\item Pour from one bucket to another until either the first is empty
+  or the second is full. Note that it is enough to show the transition
+  ``Pouring from $A$ to $B$ until either $A$ is empty or $B$ is full"
+  because the other 5 transitions are symmetrical.
+
+Pour from $A$ to $B$ until either $A$ is empty or $B$ is full, whichever happens first
+\[
+(w,x,y,z) \rightarrow \left \{ \begin{array}{l}
+(0,x+w,y,z) \mbox{ if } w < (b-x) \\
+(w-(b-x),b,y,z) \mbox{ if } w \geq (b-x)
+\end{array} \right.
+\]
+\end{enumerate}
+
+\end{solution}
+
+
+\ppart \label{gcd-iff}
+Prove that Bruce can get $k\in\nngint$ gallons of water into the
+receptacle using the above operations if $\gcd(a,b,c) \divides k$.
+
+\begin{solution}
+\begin{proof}
+
+We know there exist integers $s, t, u$ such that $\gcd(a, b, c) =
+sa+tb+uc$.  Now $\gcd(a, b, c) \divides k$ means $k =n\gcd(a, b)$ for
+some $n \in \nngint$, and hence $n(sa+tb+uc) = k$.  Assume, without
+loss of generality, that $sa \ge tb \ge uc$ (otherwise, exchange the
+buckets in the following argument).
+
+We can fill the receptacle with $k$ gallons: First, we note that if
+$sa \ge tb \ge uc$ then $s \ge 0$, or else $n(sa+tb+uc) = k < 0$,
+which cannot be true. We can repeat $ns$ times moves 1 and 4, filling
+the $A$ bucket and pouring its content into the receptacle. With this
+series of moves we will get from state (0, 0, 0, 0) to (0, 0, 0,
+$nsa$).
+
+Then, if $t = 0$ and $u = 0$, we are already done since $k = nsa$. If
+$t > 0$, we repeat $nt$ times moves 1 and 4, but now with bucket
+$B$. This produces the transition from (0, 0, 0, $nsa$) to (0, 0, 0,
+$nsa+ntb$). If $t < 0$, we instead repeat $n\abs{t}$ times moves 2 and 3
+using bucket $B$. In this case, we transition from (0, 0, 0, $nsa$) to
+(0, 0, 0, $nsa-n\abs{t}b$).
+
+It is important to see that $nsa-nb\abs{t}$ cannot become negative
+when $t < 0$.  We prove this by contradiction: assume that
+$nsa-nb\abs{t} < 0$. Note that when $t < 0$ and $tb \ge uc$, then $u <
+0$.  Then, $k = nsa-n\abs{t}b+nuc < 0$. But $k$ cannot be
+negative. Therefore, we reach a contradiction and conclude that
+$nsa-ntb$ cannot become negative.
+
+Finally, we must consider cases regarding the value of $u$.  If $u =
+0$, we are done since $k = nsa + ntb$. If $u > 0$, we repeat $nu$
+times moves 1 and 4, but now with bucket $C$. This produces the
+transition from (0, 0, 0, $nsa+ntb$) to (0, 0, 0, $nsa+ntb+nuc$). If
+$u < 0$, we instead repeat $n\abs{u}$ times moves 2 and 3 using bucket
+$C$. In this case, we transition from (0, 0, 0, $nsa+ntb$) to (0, 0,
+0, $nsa+ntb-n\abs{u}c$). Similar to the earlier $t < 0$ case,
+$nsa+ntb-n\abs{u}c$ cannot become negative, because it is also equal
+to $k$, which we know to be positive.
+
+At the end of this series, we will be in state $(0, 0, 0, nsa+ntb+nuc)
+= (0, 0, 0, k)$.
+
+\end{proof}
+\end{solution}
+
+%\ppart Prove conversely, that if $\gcd(a,b,c) \divides k$, then Bruce
+%can get actually get $k$ gallons of water into the receptacle.
+
+%\begin{editingnotes}
+%This part may be out of place because needs gcd = linear combination.
+%\end{editingnotes}
+
+%\begin{solution}
+%\TBA{solution}
+%\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

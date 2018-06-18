@@ -1,0 +1,934 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use Cwd;
+
+use File::Basename;
+
+use File::Copy;
+
+use File::Spec::Functions qw(rel2abs catdir catfile);
+
+use File::Temp qw(tempfile);
+
+use Getopt::Long qw(:config no_ignore_case);
+
+######################################################################
+##                                                                  ##
+##                            CONSTANTS                             ##
+##                                                                  ##
+######################################################################
+
+my $PROBLEMS_DIR = "problems";
+
+######################################################################
+##                                                                  ##
+##                         GLOBAL VARIABLES                         ##
+##                                                                  ##
+######################################################################
+
+my $DRIVER = $ENV{DRIVER_FILE} || 'mcs';
+
+my %TRANSLATION = (texttt  => '',
+                   protect => '',
+                   relax   => '',
+                   textsc  => '',
+    );
+
+my $CWD = getcwd();
+
+my $ROOT = dirname(rel2abs($CWD));
+
+my $VIEW_DIR = catdir($ROOT, 'mcs-web');
+
+######################################################################
+##                                                                  ##
+##                             OPTIONS                              ##
+##                                                                  ##
+######################################################################
+
+our %OPT = (index    => 1,
+            glossary => 1,
+            bibtex   => 1,
+            xrefs    => 1,
+            max_runs => 4,
+            exolinks => 0,
+            mode     => 'scroll',
+            include  => 1,
+            verbose  => 0,
+            ftl      => undef,
+            );
+
+######################################################################
+##                                                                  ##
+##                           SUBROUTINES                            ##
+##                                                                  ##
+######################################################################
+
+sub program_name() {
+    return basename $0;
+}
+
+sub usage() {
+    my $program_name = program_name;
+
+    print << "EOF";
+Usage: $program_name [options] chapter
+
+Options:
+    -nobib   : omit per-chapter bibliography
+    -noindex : omit per-chapter index
+    -noglossary : omit per-chapter glossary
+EOF
+
+    exit 0;
+}
+
+sub nonempty( ;$ ) {
+    my $string = @_ == 1 ? shift : $_;
+
+    return defined $string && $string !~ /^\s*$/;
+}
+
+sub fwrite($@) {
+    my $fh = shift;
+
+    return print {$fh} @_ or die "write error: $!";
+}
+
+sub latex( $ ) {
+    my $chapter = shift;
+
+    my $first_line;
+
+    if ($OPT{ftl}) {
+        $first_line .= q{\PassOptionsToClass{ftl}{mcs}};
+    }
+
+    if (! $OPT{include}) {
+        $first_line = $chapter;
+    } else {
+        if ($chapter ne $DRIVER) {
+            $first_line .= qq{\\includeonly{$chapter}};
+
+            if ($OPT{exolinks}) {
+                $first_line .= q{\PassOptionsToClass{exolinks}{mcs}};
+            }
+
+            # if ($OPT{bibtex}) {
+            #     $first_line .= qq{\\AtEndDocument{\\printchapbib{$chapter}}};
+            # }
+
+            if ($OPT{index}) {
+                $first_line .= qq{\\AtEndDocument{\\printchapindex{$chapter}}};
+            }
+
+            if ($OPT{glossary}) {
+                $first_line .= qq{\\AtEndDocument{\\printchapglossary{$chapter}}};
+            }
+        }
+
+        $first_line .= qq{\\input{$DRIVER}};
+    }
+
+    system "pdflatex --interaction $OPT{mode}mode '$first_line'";
+}
+
+sub bibtex( $ ) {
+    my $chapter = shift;
+
+    return unless $OPT{bibtex};
+
+    my $original_size;
+    my $chap_aux = "$chapter.aux";
+
+    if ($chapter ne $DRIVER) {
+        my $bib_style = '\bibstyle{alpha}';
+        my $bib_data  = '\bibdata{extra/main}';
+
+        my $bib_aux = 'bib.aux';
+
+        if (open(my $fh, "<", $bib_aux)) {
+            local $_;
+
+            while (<$fh>) {
+                chomp;
+
+                /\A \\bibstyle/smx and do {
+                    $bib_style = $_;
+                };
+
+                /\A \\bibdata/smx and do {
+                    $bib_data = $_;
+                };
+            }
+
+            close($fh);
+        }
+
+        $original_size = -s $chap_aux;
+
+        open(my $aux, ">>", $chap_aux) or die "Can't open $chap_aux: $!\n";
+
+        fwrite $aux, $bib_style, "\n";
+        fwrite $aux, $bib_data, "\n";
+
+        close($aux) or die "Error writing $chap_aux: $!\n";
+    }
+
+    system "bibtex $chapter";
+
+    if ($original_size) {
+        truncate($chap_aux, $original_size) or do {
+            die "Couldn't truncate $chap_aux: $!\n";
+        };
+    }
+}
+
+sub copy_idx_entries($$;$) {
+    my $aux_file = shift;
+    my $idx_file = shift;
+
+    my $type = shift || 'default';
+
+    return 0 unless -e $aux_file;
+
+    open(my $aux, "<", $aux_file) or do {
+        warn "Can't read $aux_file: $!\n";
+
+        return 0;
+    };
+
+    my $num_entries = 0;
+
+    while (<$aux>) {
+        chomp;
+
+        /\A \\\@v?writefile \{$type\} \{ (.*?) \} $/smx and do {
+            fwrite $idx_file, $1, "\n";
+            $num_entries++;
+        };
+    }
+
+    close($aux);
+
+    return $num_entries;
+}
+
+sub make_sort_key( $ ) {
+    my $text = shift;
+
+    # This replaces hyphens by spaces in the sort key.  Change to
+    # s/-//g to delete them.
+
+    $text =~ s/(?<=[^-])-+/ /g;
+
+    # Delete { and }.
+
+    $text =~ s/[{}]//g;
+
+   $text =~ s/\\([a-z]+)(\s*)/ exists $TRANSLATION{$1} ? $TRANSLATION{$1} : "\\$1$2" /eg;
+
+    return $text;
+}
+
+sub munge_idx_file( $ ) {
+    my $idx_file = shift;
+
+    print "\nScanning $idx_file to adjust sort keys\n\n";
+
+    return unless -e $idx_file;
+
+    my $saved_idx_file = "$idx_file.original";
+
+    rename $idx_file, $saved_idx_file or do {
+        die "Can't rename $idx_file to $saved_idx_file: $!\n";
+    };
+
+    open(my $old, "<", $saved_idx_file) or die "Can't read $saved_idx_file: $!";
+
+    open(my $new, ">", $idx_file) or die "Can't read $idx_file: $!";
+
+    while (<$old>) {
+        chomp;
+
+        /^\\indexentry\s*\{(.*)\}\{(.*)\}$/ and do {
+            my ($entry, $page) = ($1, $2);
+
+            my @piece = split /(?<!")!/, $entry;
+
+            for (my $i = 0; $i < @piece; $i++) {
+                $piece[$i] =~ /^([^|]+)(.*)$/;
+
+                my ($text, $extra) = ($1, $2);
+
+                my ($sort_key, $print_text);
+
+                if ($text =~ /\@/) {
+                    ($sort_key, $print_text) = split /\@/, $text;
+                } else {
+                    $sort_key = $print_text = $text;
+                }
+
+                my $new_sort_key = make_sort_key($sort_key);
+
+                if ($new_sort_key ne $sort_key) {
+                    if ($OPT{verbose}) {
+                        print "Line $.: replacing\n    '$sort_key'\nby\n    '$new_sort_key'\n\n";
+                    }
+
+                    $piece[$i] = "$new_sort_key\@$print_text$extra";
+                }
+            }
+
+            $entry = join '!', @piece;
+
+            print { $new } "\\indexentry{$entry}{$page}\n";
+
+            next;
+        };
+
+        warn "unrecognized entry: \"$_\"\n";
+
+        print { $new } $_, "\n";
+    }
+
+    close($old);
+
+    close($new);
+
+    return;
+}
+
+sub makeindex( $ ) {
+    my $chapter = shift;
+
+    return unless $OPT{index};
+
+    my $aux_file = "$chapter.aux";
+
+    return unless -e $aux_file;
+
+    if ($chapter ne $DRIVER && $chapter !~ m{\A part}smx) {
+        my $idx_file = "$chapter.idx";
+
+        open(my $idx, ">", $idx_file) or die "Can't write $idx_file: $!\n";
+
+        my $num_entries = copy_idx_entries($aux_file, $idx);
+
+        $num_entries += copy_idx_entries("$DRIVER.aux", $idx);
+
+        close($idx) or die "Error writing $idx_file: $!\n";
+
+        # if ($num_entries == 0) {
+        #     unlink $idx_file;
+        #     return;
+        # }
+    }
+
+    munge_idx_file("$chapter.idx");
+
+    # -r : Don't automatically convert consecutive page numbers into
+    #      -page ranges
+    # -l : "letter-by-letter" alphabetization
+
+    system "makeindex -l -r $chapter.idx"; 
+}
+
+sub makeglossary( $ ) {
+    my $chapter = shift;
+
+    return unless $OPT{glossary};
+
+    my $aux_file = "$chapter.aux";
+
+    return unless -e $aux_file;
+
+    if ($chapter ne $DRIVER) {
+        my $gdx_file = "$chapter.gdx";
+
+        open(my $gdx, ">", $gdx_file) or die "Can't write $gdx_file: $!\n";
+
+        my $num_entries = copy_idx_entries($aux_file, $gdx, "glo");
+        $num_entries += copy_idx_entries("$DRIVER.aux", $gdx, "glo");
+
+        close($gdx) or die "Error writing $gdx_file: $!\n";
+
+        if ($num_entries == 0) {
+            unlink $gdx_file;
+            return;
+        }
+    }
+
+    munge_idx_file("$chapter.gdx");
+
+    # -r : Don't automatically convert consecutive page numbers into
+    #      -page ranges
+    # -l : "letter-by-letter" alphabetization
+
+    system "makeindex -l -r -o $chapter.gnd $chapter.gdx"; 
+}
+
+sub unresolved_xrefs( $ ) {
+    my $chapter = shift;
+
+    (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
+
+    if ($OPT{include}) {
+        $log_file = "$DRIVER.log";
+    }
+
+    open(my $log, "<", $log_file) or die "Can't open $log_file: $!\n";
+
+    local $_;
+
+    while (<$log>) {
+        return 1 if /Rerun to get cross-references right/;
+
+        return 1 if /Rerun to get the bars right on input/;
+
+        return 1 if /has been referenced but does not exist/;
+
+        return 1 if /Grades table was \*NOT PRINTED\*\./;
+    }
+
+    close($log);
+
+    return;
+}
+
+sub summarize_errors( $ ) {
+    my $chapter = shift;
+
+    my $has_solutions = 0;
+    my $has_staffnotes = 0;
+    my $has_editnotes  = 0;
+
+    (my $log_file = $chapter) =~ s/(\.tex)?$/.log/;
+
+    if ($OPT{include}) {
+        $log_file = "$DRIVER.log";
+    }
+
+    print "\nScanning log file for errors and warnings\n";
+
+    if (! -e $log_file) {
+        die "No file $log_file\n";
+    }
+
+    if (! -r $log_file) {
+        die "Can't read $log_file\n";
+    }
+
+    my $found = 0;
+
+    open(my $log, "<", $log_file) or die "Can't open $log_file: $!\n";
+
+    local $_;
+
+    while (<$log>) {
+        /Solutions \*INCLUDED\*/ and do {
+            $has_solutions = 1;
+
+            next;
+        };
+
+        /Staff notes \*INCLUDED\*/ and do {
+            $has_staffnotes = 1;
+
+            next;
+        };
+
+        /Editing notes \*INCLUDED\*/ and do {
+            $has_editnotes = 1;
+
+            next;
+        };
+
+        # Avoid any !'s that occur as part of an overfull or underfull
+        # box warning.
+
+        /^(Ov|Und)erfull \\[hv]box/ and do {
+            while (<$log>) {
+                last if /^\s*$/;
+            }
+        };
+
+        /^!/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^Class mcs Warning/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: (Citation|Reference) \`([^ ]+)\' .*undefined/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: Reference \`([^ ]+)\'/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: Label \`([^ ]+)\' .*multiply defined/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        /^LaTeX Warning: \S.*Rerun to get cross-references right/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+
+        # "Missing character: There is no ^^e9 in font cmbx12!"
+
+        /^Missing character: There is no/ and do {
+            print;
+
+            $found = 1;
+
+            next;
+        };
+    }
+
+    close($log);
+
+    if ($found == 0) {
+        print "No errors found\n";
+    }
+
+    return ($has_solutions, $has_staffnotes, $has_editnotes);
+}
+
+sub get_temp_file($;@) {
+    (my $suffix = shift) =~ s/^\.?/\./;
+
+    my %opt = @_;
+
+    my $program_name = "mcs";
+
+    my $unlink = exists $opt{UNLINK} ? $opt{UNLINK} : 1;
+
+    my $dir = $opt{DIR} || $ENV{TMPDIR} || "/tmp";
+
+    my ($fh, $file) = tempfile("$program_name-XXXXXX",
+                               DIR => $dir,
+                               SUFFIX => $suffix,
+                               UNLINK => $unlink)
+      or do {
+          warn "Could not create temporary $suffix file: $!\n";
+
+          return;
+      };
+
+    if (wantarray) {
+        return ($fh, $file);
+    } else {
+        close($fh);
+        return $file;
+    }
+}
+
+sub unlock_pdf( $ ) {
+    my $pdf_file = shift;
+
+    my $password = "mcs";
+
+    print "Attempting to enable comments to PDF file $pdf_file\n";
+
+    my $tmp_pdf = get_temp_file("pdf") or do {
+        die "temp file error\n";
+    };
+
+    my @perms = qw(allow AllFeatures);
+
+    # pdftk fail.pdf output fail.pdf owner_pw FOO allow Printing allow DegradedPrinting allow CopyContents allow ScreenReaders
+
+    my @cmd = (pdftk    => $pdf_file,
+               output   => $tmp_pdf,
+               owner_pw => $password,
+               @perms );
+
+    # print STDERR "pdftk command: @cmd\n";
+
+    my $status = system @cmd;
+
+    die "pdftk failed: $!\n" if $status;
+
+    copy($tmp_pdf, $pdf_file) or do {
+        die "Unable to overwrite $pdf_file: $!\n";
+    };
+
+    return;
+}
+
+sub process_chapter($) {
+    my $chapter = shift;
+
+    my $generated_pdf;
+    my $generated_log;
+
+    if ($OPT{include}) {
+        $generated_pdf = "$DRIVER.pdf";
+        $generated_log = "$DRIVER.log";
+    } else {
+        $generated_pdf = "$chapter.pdf";
+        $generated_log = "$chapter.log";
+    }
+
+    my $saved_pdf;
+
+    if (-e $generated_pdf) {
+        print "Saving $generated_pdf\n";
+
+        $saved_pdf = "$generated_pdf-saved";
+
+        rename($generated_pdf, $saved_pdf) or do {
+            die "Can't rename $generated_pdf to $saved_pdf: $!\n";
+        };
+
+        if (-e $generated_log) {
+            print "Saving $generated_log\n";
+
+            my $saved_log = "$generated_log-saved";
+
+            rename($generated_log, $saved_log) or do {
+                die "Can't rename $generated_log to $saved_log: $!\n";
+            };
+        }
+    }
+
+    print "Running latex for the first time\n";
+
+    my $num_runs = 0;
+
+    latex($chapter);
+
+    $num_runs++;
+
+    if ($OPT{bibtex}) {
+        print "Running bibtex\n";
+
+        bibtex($chapter);
+
+        print "Running latex to incorporate bibliography\n";
+
+        latex($chapter);
+
+        $num_runs++;
+    }
+
+    if ($OPT{index}) {
+        print "Running makeindex for the first time\n";
+
+        makeindex($chapter);
+        makeglossary($chapter);
+
+        print "Running latex to incorporate index\n";
+
+        latex($chapter);
+
+        $num_runs++;
+
+        print "Running makeindex and latex again to incorporate xrefs\n";
+
+        makeindex($chapter);
+        makeglossary($chapter);
+
+        latex($chapter);
+
+        $num_runs++;
+    }
+
+    while ($OPT{xrefs} && $num_runs < $OPT{max_runs} && unresolved_xrefs($chapter)) {
+        latex($chapter);
+
+        $num_runs++;
+
+        ## In case the crossrefs have caused any changes in
+        ## pagination:
+
+        if ($OPT{index}) {
+            print STDERR "Running makeindex for a second time\n";
+
+            makeindex($chapter);
+
+            print STDERR "Rerunning latex after second makeindex\n";
+
+            latex($chapter);
+
+            $num_runs++;
+        }
+    }
+
+    my ($has_solutions, $has_staffnotes, $has_editnotes)
+        = summarize_errors($chapter);
+
+    my $target_pdf = "$chapter";
+    my $target_log = "$chapter";
+
+    if ($OPT{ftl}) {
+        $target_pdf = "${chapter}-ftl";
+        $target_log = "${chapter}-ftl";
+    } else {
+        if ($has_solutions) {
+            if ($has_staffnotes) {
+                $target_pdf = "${chapter}-staff";
+                $target_log = "${chapter}-staff";
+            } else {
+                $target_pdf = "${chapter}sol";
+                $target_log = "${chapter}sol";
+            }
+        }
+    }
+
+    if ($has_editnotes) {
+        $target_pdf .= "-edit";
+        $target_log .= "-edit";
+    }
+
+    $target_pdf .= ".pdf";
+    $target_log .= ".log";
+
+    if ($generated_pdf ne $target_pdf) {
+        print "\nMoving $generated_pdf to $target_pdf\n";
+
+        rename($generated_pdf, $target_pdf) or do {
+            die "Can't rename $generated_pdf to $target_pdf: $!\n";
+        };
+
+        print "Moving $generated_log to $target_log\n";
+
+        rename($generated_log, $target_log) or do {
+            die "Can't rename $generated_log to $target_log: $!\n";
+        };
+
+        if (nonempty($saved_pdf)) {
+            (my $restored_pdf = $saved_pdf) =~ s/-saved$//;
+
+            if ($restored_pdf ne $target_pdf) {
+                print "Restoring $restored_pdf\n";
+
+                rename($saved_pdf, $restored_pdf) or do {
+                    die "Can't restore $saved_pdf to $restored_pdf: $!\n";
+                };
+
+                (my $saved_log = $saved_pdf) =~ s/\.pdf-saved$/.log-saved/;
+                (my $restored_log = $restored_pdf) =~ s/\.pdf$/.log/;
+
+                if (-e $saved_log) {
+                    print "Restoring $restored_log\n";
+
+                    rename($saved_log, $restored_log) or do {
+                        die "Can't restore $saved_log to $restored_log: $!\n";
+                    };
+                }
+            }
+        }
+    }
+
+    if (-e $target_pdf) {
+        eval { unlock_pdf($target_pdf) };
+
+        if ($@) {
+            warn "Unable to enable comments to $target_pdf: $@\n";
+        } else {
+            print "Successfully enabled comments to $target_pdf\n";
+        }
+
+        if (-d $VIEW_DIR) {
+            copy($target_pdf, $VIEW_DIR) or do {
+                warn "Couldn't copy $target_pdf to $VIEW_DIR: $!\n";
+            };
+        }
+    } else {
+        warn "No file '$target_pdf' to unlock or install in $VIEW_DIR\n";
+    }
+
+    return;
+}
+
+sub is_problem( $ ) {
+    my $name = shift;
+
+    my $tex_file = "$name.tex";
+
+    my $is_problem = 0;
+
+    local $_;
+
+    open(my $fh, "<", $tex_file) or die "Can't open $tex_file: $!\n";
+
+    while (<$fh>) {
+        m{^\\documentclass\[.*\bproblems?\b} and do {
+            return 1;
+        };
+    }
+
+    return $is_problem;
+}
+
+sub is_note( $ ) {
+    my $name = shift;
+
+    my $tex_file = "$name.tex";
+
+    my $is_note = 0;
+
+    local $_;
+
+    open(my $fh, "<", $tex_file) or die "Can't open $tex_file: $!\n";
+
+    while (<$fh>) {
+        m{^\\documentclass\[.*\bhandout\b} and do {
+            return 1;
+        };
+        m{^\\documentclass\[.*\bquiz\b} and do {
+            return 1;
+        };
+    }
+
+    return $is_note;
+}
+
+######################################################################
+##                                                                  ##
+##                           ENVIRONMENT                            ##
+##                                                                  ##
+######################################################################
+
+sub add_to_environment($@) {
+    my $varname = shift;
+    my @values = @_;
+
+    push @values, "";
+
+    $ENV{$varname} = join ":", @values;
+
+    return;
+}
+
+sub customize_environment() {
+    my $paths = catfile($ROOT, ".paths");
+
+    print STDERR "CWD=$CWD\n";
+    print STDERR "ROOT=$ROOT\n";
+
+    open(my $fh, $paths) or do {
+        warn "Can't read file $paths\n";
+
+        die "Unable to continue without custom path information.\n";
+    };
+
+    my $trunk = $ROOT;
+
+    my %env;
+
+    local $_;
+
+    while (<$fh>) {
+        chomp;
+
+        next if m{\A\s*\z}smx;
+
+        m{\A (\w+): \s* (\S+) \z}smx and do {
+            my $varname = $1;
+            my $path    = $2;
+
+            $path =~ s{<CWD>}{$CWD}g;
+            $path =~ s{<ROOT>}{$ROOT}g;
+            $path =~ s{<TRUNK>}{$trunk}g;
+
+            if ($varname eq 'TRUNK') {
+                $trunk = rel2abs(catdir($ROOT, $path));
+
+                print STDERR "TRUNK=$trunk\n";
+            } else {
+                push @{ $env{$varname} }, $path;
+
+                print STDERR "$varname: adding $path\n";
+            }
+
+            next;
+        };
+
+        warn "Invalid .paths line: $_\n";
+    }
+
+    close($fh);
+
+    while (my ($varname, $paths) = each %env) {
+        add_to_environment($varname, @{ $paths });
+    }
+
+    return;
+}
+
+######################################################################
+##                                                                  ##
+##                               MAIN                               ##
+##                                                                  ##
+######################################################################
+
+GetOptions("index!"     => \$OPT{index},
+           "bib!"       => \$OPT{bibtex},
+           "xrefs!"     => \$OPT{xrefs},
+           "exolinks!"  => \$OPT{exolinks},
+           "max_runs=i" => \$OPT{max_runs},
+           "mode=s"     => \$OPT{mode},
+           "include!"   => \$OPT{include},
+           "ftl!"       => \$OPT{ftl},
+           "verbose!"   => \$OPT{verbose}
+) or usage();
+
+if ($OPT{ftl}) {
+    $OPT{index} = 0;
+}
+
+usage unless @ARGV;
+
+customize_environment();
+
+while (my $chapter = shift) {
+    if (is_note($chapter)) {
+        local $OPT{include} = 0;
+
+        process_chapter($chapter);
+    } elsif (is_problem($chapter)) {
+        local $OPT{include} = 0;
+
+        process_chapter($chapter);
+    } elsif ($chapter =~ m{\A part}smx) {
+        local $OPT{include} = 0;
+
+        process_chapter($chapter);
+    } else {
+        process_chapter($chapter);
+    }
+}
+
+__END__

@@ -1,0 +1,211 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_VG}
+  \pcomment{formerly CP_VG}
+  \pcomment{revision of PS_50_point_games, PS_value_games by ARM 3/4/16, revised 3/8/17}
+  \pcomment{S16.ps4, S17.cp5f}
+\end{pcomments}
+
+\pkeywords{
+  recursive_data
+  structural_induction
+  games
+  perfect_information
+  max-value
+  min-value
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\VG}{\ensuremath{\text{VG}}}
+
+\begin{problem}
+We're going to characterize a large category of games as a recursive
+data type and then prove, by structural induction, a fundamental
+theorem about game strategies.  We are interested in two person games
+of perfect information that end with a numerical score.  Chess and
+Checkers would count as value games using the values $1,-1, 0$ for a
+win, loss or draw for the first player.  The game of Go really does
+end with a \emph{score} based on the number of white and black stones
+that remain at the end.
+
+Here's the formal definition:
+\begin{definition*}
+Let $V$ be a nonempty set of real numbers.  The class \VG\ of
+\emph{$V$-valued two-person deterministic games of perfect
+  information} is defined recursively as follows:
+
+\inductioncase{Base case}:
+A value $v \in V$ is a \VG\ known as a \emph{payoff}.
+
+\inductioncase{Constructor case}: If $G$ is a nonempty set of \VG's,
+then $G$ is a $\VG$.  Each game $M \in G$ is called a possible
+\emph{first move} of $G$.
+\end{definition*}
+
+\begin{staffnotes}
+In all the games like this that we're familiar with, there are only a
+finite number of possible first moves and a bound on the possible
+length of play.  It's worth noting that the definition of \VG\ does
+not require this.  An infinite \VG\ might have plays of every finite
+length, but it can't have an infinite play.  Since finiteness is not
+needed to prove any of the results below, it would potentially even be
+misleading to assume it.  Later, we'll suggest how games with an
+infinite number of possible first moves might come up.
+
+Infinite games do have their uses in the study of set theory and logic.
+\end{staffnotes}
+
+A \emph{strategy} for a player is a rule that tells the player which
+move to make whenever it is their turn.  That is, a strategy is a
+function $s$ from games to games with the property that $s(G) \in G$
+for all games $G$.  Given which player has the first move, a pair of
+strategies for the two players determines exactly which moves the
+players will choose.  So the strategies determine a unique play of the
+game and a unique payoff.\footnote{We take for granted the fact that
+  no \VG\ has an infinite play.  The proof of this by structural
+  induction is essentially the same as that for win-lose games given
+  \inbook{in Lemma~\bref{goutcom}.} \inhandout{in the text.}}
+
+The \emph{max-player} wants a strategy that guarantees as high a
+payoff as possible, and the \emph{min-player} wants a strategy that
+guarantees as low a payoff as possible.
+
+The Fundamental Theorem for deterministic games of perfect information
+says that in any game, each player has an optimal strategy, and these
+strategies lead to the same payoff.  More precisely,
+
+\begin{theorem*}[Fundamental Theorem for \VG's]
+Let $V$ be a finite set of real numbers and $G$ be a $V$-valued \VG.
+Then there is a value $v \in V$, called a \term{max-value}
+$\text{max}_G$ for $G$, such that if the \emph{max-player moves
+  first},
+\begin{itemize}
+
+\item the max-player has a strategy that will finish with a payoff of
+  \emph{at least} $\text{max}_G$, no matter what strategy the min-player
+  uses, and
+
+\item the min-player has a strategy that will finish with a payoff of
+  \emph{at most} $\text{max}_G$, no matter what strategy the max-player
+  uses.
+\end{itemize}
+\end{theorem*}
+
+It's worth a moment for the reader to observe that the definition of
+$\text{max}_G$ implies that if there is one for $G$, it is unique.  So
+if the max-player has the first move, the Fundamental Theorem means
+that there's no point in playing the game: the min-player may just as
+well pay the max-value to the max-player.
+
+\bparts
+
+\ppart Prove the Fundamental Theorem for \VG's.
+
+\hint \VG's are a recursively defined data type, so the basic method
+for proving that all \VG's have some property is structural induction
+on the definition of \VG.  Since the min-player moves first in
+whichever game the max-player picks for their first move, the
+induction hypothesis will need to cover that case as well.
+
+\begin{solution}
+The proof is by structural induction on the definition of a game $G
+\in \VG$.  The induction hypothesis $P(G)$ will be that
+\[
+P(G) \eqdef G\ \text{has both a max-value $\text{max}_G$ and a min-value $\text{min}_G$},
+\]
+where a min-value for $G$ is defined in the same way as a max-value
+except that max and min are switched.  To be precise, a
+\emph{min-value} for $G$ is a value $\text{min}_G \in V$ such that if the
+\emph{min-player moves first},
+\begin{itemize}
+\item the min-player has a strategy that will finish with a payoff of
+  \emph{at most} $\text{min}_G$, no matter what strategy the max-player
+  uses, and
+
+\item the max-player has a strategy that will finish with a payoff of
+  \emph{at least} $\text{min}_G$, no matter what strategy the min-player
+  uses.
+\end{itemize}
+
+In general, the max-value and the min-value for $G$ are different,
+since playing $G$ with the max-player moving first is quite different
+from playing $G$ with the min-player moving first.
+
+\begin{proof}
+
+\inductioncase{Base case}: ($G = v \in V$).  The max-value and
+min-value will be $v$.  The strategy for the players---regardless of
+who moves first---is ``Suck it up, the game is over and you have to
+take $v$ as your payoff.''  This proves $P(G)$.
+
+\inductioncase{Constructor case}: ($G$ is a nonempty set of \VG's).
+By structural induction we may assume that each $M \in G$ has a a
+min-value $\text{min}_M$. Define
+\[
+v_\text{max} \eqdef \max\set{\text{min}_M \suchthat M \in G}.
+\]
+This $\text{max}$ will exist because $V$ is finite.
+
+We claim that $\text{max}_G = v_\text{max}$.  To prove this, we begin
+by describing a strategy with the max-player moving first that
+guarantees a payoff of at least $v_\text{max}$.  Namely, the
+max-player's first move should be to some $M \in G$ such that
+$\text{min}_M = v_\text{max}$.  After this first move, the max-player
+has a strategy that, by definition of $\text{min}_M$, guarantees a
+payoff off of at least $\text{min}_M = v_\text{max}$ in the game $M$
+where the min-player moves first.  The max-player should then use this
+strategy in the game $M$.
+
+Moreover, with the max-player moving first, the min-player has a
+strategy for $G$ that guarantees a payoff of at most $v_\text{max}$.
+Namely, if the first player's first move is to $M \in G$, the
+min-player has a strategy that, by definition of $\text{min}_M$,
+guarantees a payoff of at most $\text{min}_M$ in the game $M$ where
+the min-player moves first.  The min-player should then use this
+strategy in the game $M$.  Since by definition $v_\text{max} \geq
+\text{min}_M$, this strategy guarantees the min-player a payoff in $G$
+of at most $v_\text{max}$.
+
+This proves that $v_\text{max}$ has the properties required of
+$\text{max}_G$, and since $\text{max}_G$ is by definition unique, it
+follows that $\text{max}_G = v_\text{max}$.
+
+Reasoning as above with max and min switched similarly proves that $G$
+has a min-value.  This proves $P(G)$, and we conclude by structural
+induction that $P(G)$ is true for every $\VG$ $G$ with a finite number
+of payoff values.  In particular every $G$ has a max-value, as
+claimed.
+\end{proof}
+\end{solution}
+
+\begin{staffnotes}
+Add problem: Prove that it is better to move first: the max-value of
+$G$ is always $\geq$ the min-value.
+\end{staffnotes}
+
+\ppart \textbf{(OPTIONAL)}.  State some reasonable generalization of
+the Fundamental Theorem to games with an infinite set $V$ of possible
+payoffs.
+
+\begin{solution}
+A straighforward generalization is to redefine the max-value to be the
+least upper bound of the values for which the max-player has a
+guaranteed strategy.  With an infinite number of possible payoffs,
+some games may now have an infinite max-player value, and even in the
+case that the max-value is finite, it might not be guaranteed exactly
+by player strategies.  Rather, for any $v < \text{max}_G$, when the
+max-player moves first, there will be a strategy for the max-player
+that guarantees a payoff of at least $v$, and there will be a strategy
+for the min-player that guarantees a payoff of at most $v +
+(\text{max}_G - v)/2$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput

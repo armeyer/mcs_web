@@ -1,0 +1,194 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_directed_Euler_circuits}
+  \pcomment{digraph version of PS_Euler_circuits}
+  \pcomment{adapted to digraphs by ARM 3/7/11}
+\end{pcomments}
+
+\pkeywords{
+  Euler
+  Euler_circuit
+  Euler_tours
+  trail
+  cycle
+  degree
+  closed_walk
+  digraph
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  An \term{Euler tour}\footnote{In some other texts, this is called an
+    \emph{Euler circuit}.} of a graph is a closed walk that includes
+  every edge exactly once.  Such walks are named after the famous 17th
+  century mathematician Leonhard Euler.  (Same Euler as for the
+  constant $e\approx 2.718$ and the totient function $\phi$---he did
+  a lot of stuff.)
+
+\iffalse
+
+Does the graph in the following figure contain an Euler tour?
+
+\begin{figure}
+\graphic{example}
+\end{figure}
+
+Well, if it did, the edge $\edge{E}{F}$ would need to be included.  If
+the walk does not start at $F$ then at some point it includes edge
+$\edge{E}{F}$, and now it is stuck at $F$ since $F$ has no other edges
+incident to it and an Euler tour can't include $\edge{E}{F}$ twice.
+But then the walk could not be a tour.  On the other hand, if the walk
+starts at $F$, it must then go to $E$ along $\edge{E}{F}$, but now it
+cannot return to $F$.  It again cannot be a tour.  This argument
+generalizes to show that if a graph has a vertex of degree $1$, it
+cannot contain an Euler tour.
+
+\begin{staffnotes}
+On the other hand, it is easy to see that any cycle has an Euler
+tour. You can just start at any vertex and walk around back to it.
+\end{staffnotes}
+\fi
+
+So how do you tell in general whether a graph has an Euler tour?  At
+first glance this may seem like a daunting problem (the similar
+sounding problem of finding a cycle that touches every vertex exactly
+once is one of those million dollar NP-complete problems known as the
+\emph{Hamiltonian Cycle Problem})---but it turns out to be easy.
+
+\bparts
+
+\ppart\label{in=out} Show that if a graph has an Euler tour, then the
+in-degree of each vertex equals its out-degree.
+
+\begin{solution}
+Let
+\[
+C \eqdef v_1\ \diredge{v_1}{v_2}\ v_2\ \dots\ \diredge{v_r}{v_1}\ v_1
+\]
+be an Euler tour.  Except for the initial and final occcurrences of
+$v_1$, each occurrence of a vertex $v$ in the tour is immediately
+preceded by an edge $\diredge{u}{v}$ and immediately followed by an
+edge $\diredge{v}{w}$.  It follows that if $v\neq v_1$ occurs $s$
+times in $C$, then $\indegr{v} = \outdegr{v} = s$ since every edge incident to $v$
+occurs in $C$ exactly once.  For the same reason, if $v_1$ occurs $s$ times on the path,
+then $\indegr{v_1} = \outdegr{v_1} = s-1$.
+\end{solution}
+\eparts
+
+A digraph is \term{weakly connected} if there is a ``path'' between
+any two vertices that may follow edges backwards or
+forwards.\footnote{More precisely, a graph $G$ is weakly connected
+  iff there is a path from any vertex to any other vertex in the graph
+  $H$ with
+\begin{align*}
+\vertices{H} & = \vertices{G}, \text{and}\\
+\edges{H} & = \edges{G} \union \set{\diredge{v}{u} \suchthat \diredge{u}{v} \in \edges{G}}.
+\end{align*}
+\iffalse is strongly connected.  \fi In other words $H = G \union
+G^{-1}$.}  In the remaining parts, we'll work out the converse.
+Suppose a graph is weakly connected, and the in-degree of every vertex
+equals its out-degree.  We will show that the graph has an Euler tour.
+
+A \emph{trail}%
+\index{directed graph!walk!trail|textbf} 
+is a walk in which each edge occurs \iffalse To do
+this, let's define an \term{Euler walk} to be a walk that includes
+each edge \fi \emph{at most} once.
+
+\bparts
+
+\ppart\label{conn} Suppose that a trail in a weakly connected graph
+does not include every edge.  Explain why there must be an edge not on
+the trail that starts or ends at a vertex on the trail.
+
+\begin{solution}
+  If an edge not on the trail starts or ends on it, then that
+  already is the desired edge.  So suppose there's an edge $e$ not
+  on the trail that neither starts nor ends at a vertex on the trail.
+  Since $G$ is weakly connected, there is a path $\walkv{p}$ in $G
+  \union G^{-1}$ from any vertex $v$ on the trail to an endpoint of
+  $e$.  Then the first edge in $\walkv{p}$ that is not on the trail
+  will be the desired edge of $G$.
+\end{solution}
+
+\eparts
+
+In the remaining parts, assume the graph is weakly connected, and the
+in-degree of every vertex equals its out-degree.  Let $\walkv{w}$ be
+the \emph{longest} trail in the graph.
+
+\bparts
+
+\ppart\label{cycle-circuit} Show that if $\walkv{w}$ is closed, then it
+must be an Euler tour.
+
+\hint part~\eqref{conn}
+
+\begin{solution}
+Suppose $\walkv{w}$ is closed and some edge is not on $\walkv{w}$.  By
+part~\eqref{conn}, there must be an edge $e$ not on $\walkv{w}$ that
+starts or ends on $\walkv{w}$.  If $e$ starts on $\walkv{w}$ at some
+vertex $v$ then since $\walkv{w}$ is closed, we may assume that it
+starts and ends at $v$.  It follows that $\catv{\walkv{w}}{v}{e}$ a
+trail that is longer than $\walkv{w}$ by one edge, contradicting its
+maximality.
+
+Similarly, if $e$ ends on $\walkv{w}$ at some vertex $v$ then the
+walk $\catv{e}{v}{\walkv{w}}$ is a longer trail, again contradicting
+maximality.
+
+So no edge can be missing from $\walkv{w}$.
+\end{solution}
+
+\ppart\label{already} Explain why all the edges starting at the end of
+$\walkv{w}$ must be on $\walkv{w}$.
+
+\begin{solution}
+Otherwise we could extend $\walkv{w}$ to a longer trail with any edge
+leaving the end not already in $\walkv{w}$.
+\end{solution}
+
+\ppart\label{biggerthanout} Show that if $\walkv{w}$ was not closed,
+then the in-degree of the end would be bigger than its out-degree.
+
+\hint part~\eqref{already}
+
+\begin{solution}
+Let $v$ be the end vertex of $\walkv{w}$.  Given that $v$ is not the
+start of $\walkv{w}$, it follows that, other than at the end, any
+occurrence of $v$ in $\walkv{w}$ is preceded by an edge that ends at
+$v$ and is followed by an edge that leaves $v$.  Since $\walkv{w}$ is
+a trail, all the edges are distinct among these pairs of edges at each
+non-end occurrence $v$.  In addition, the final edge in $\walkv{w}$
+ends at $v$ and is distinct from all the paired edges.  Altogether,
+this implies that there are an equal number of edges in $\walkv{w}$
+that enter $v$ and that leave $v$, except for the last edge, which
+enters $v$ and so adds 1 more to the in-degree.  So there is one more
+edge in $\walkv{w}$ entering $v$ than leaving $v$.  But by
+part~\eqref{already}, all edges leaving $v$ are in $\walkv{w}$,
+proving that $\indegr{v} \geq 1+ \outdegr{v}$.
+\end{solution}
+
+\ppart Conclude that if the in-degree of every vertex equals its
+out-degree in a finite, weakly connected digraph, then the digraph has
+an Euler tour.
+
+\begin{solution}
+If all vertices in $G$ have equal in- and out-degree, then by
+part~\eqref{biggerthanout}, the only possibility is that the end of
+$\walkv{w}$ equals the start, that is, $\walkv{w}$ is closed.  So by
+part~\eqref{cycle-circuit}, $\walkv{w}$ is an Euler tour.
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

@@ -1,0 +1,533 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_pred_calc_model_N_arrows}
+  \pcomment{variant of CP_pred_calc_model_N}
+  \pcomment{ARM 2/17/16}
+\end{pcomments}
+
+\pkeywords{
+  predicate
+  logic
+  nonnegative
+  model
+  arrow
+}
+
+\newcommand{\zerosym}{\textbf{\~0}}
+\newcommand{\nextsym}{\textbf{next}}
+\newcommand{\nextfun}{\textit{nextf}}
+\newcommand{\prevsym}{\textbf{prev}}
+\newcommand{\prevfun}{\textit{prevf}}
+\newcommand{\numerl}[1]{\widetilde{\text{#1}}}
+\newcommand{\nextarrow}{\stackrel{\nextsym}{\longrightarrow}}
+\newcommand{\prevarrow}{\stackrel{\prevsym}{\longleftarrow}}
+\newcommand{\nparrow}{\stackrel{\nextarrow}{\prevarrow}}
+\newcommand{\ltsym}{\mrel{\textbf{less}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $\zerosym$ be a constant symbol, $\nextsym$ and $\prevsym$ be
+function symbols taking one argument.
+
+We can picture any model for these symbols by representing domain
+elements as points.  The model must interpret $\zerosym$ as some point
+$e_0$.  It also interprets the symbols $\nextsym$ and $\prevsym$ as
+total functions $\nextfun$ and $\prevfun$ on the domain.  We can
+picture the functions by having an arrow labelled $\nextsym$ go out
+from each point $e$ into the point $\nextfun(e)$, and an arrow
+labelled $\prevsym$ go out from each $e$ into $\prevfun(e)$.  In
+particular,
+
+\emph{Every point has exactly one $\nextsym$-arrow, and exactly one
+  $\prevsym$-arrow, going out of it.}
+
+The aim of this problem is to develop a series of predicate formulas
+using just the symbols $\zerosym$, $\nextsym$ and $\prevsym$ such that
+every model satisfying these formulas will contain contain a copy of
+the nonnegative integers $\nngint$, with $\nextfun$ acting on the copy
+as the ``$+1$'' or \emph{successor function} and $\prevfun$ acting as
+the ``$-1$'' or \emph{predecessor function}.
+
+More precisely, the ``copy'' of $\nngint$ in a model will look like an
+infinite sequence of distinct points starting with $e_0$, with a
+$\nextsym$-arrow going from each point to the next in the sequence:
+\[
+e_0 \nextarrow e_1 \nextarrow e_2 \nextarrow  \dots \nextarrow e_n \nextarrow \dots
+\]
+so that $\nextfun$ acts like plus one.  We also want $\prevfun$ to act
+like minus one: whenever a $\nextsym$-arrow goes into an element $e$,
+then the $\prevsym$-arrow out of $e$ goes back to the beginning of the
+$\nextsym$-arrow:
+\begin{equation}\label{Ncopyshape}
+e_0 \nparrow e_1 \nparrow e_2 \nparrow  \dots \nparrow e_n \nparrow \dots.
+\end{equation}
+Not shown is a further $\prevsym$-arrow self-loop from $e_0$ to $e_0$,
+reflecting the convention for nonnegative integers that subtracting
+from zero has no effect.
+
+There is a simple way to express this requirement as a predicate
+formula:
+\begin{equation}\label{previnvnext}
+\forall x.\, \prevsym(\nextsym(x)) = x\ .
+\end{equation}
+Formula~\eqref{previnvnext} means that the $\prevsym$-arrow out of any
+point $e$ goes back to the beginning of any $\nextsym$-arrow into $e$.
+Of course this will not be possible if there is more than one
+$\nextsym$-arrow into $e$.
+
+\begin{staffnotes}
+\textbf{Remark:}
+
+The formula~\eqref{previnvnext} implies that at most one
+$\nextsym$-arrow can go into any point $e$.  Another way to say this
+is that $\nextsym$-arrows that go out from different points have to go
+into different points:
+\begin{equation}\label{next1to1}
+\forall x,y.\, \nextsym(x) = \nextsym(y)\ \QIMPLIES\ x = y.
+\end{equation}
+
+So if a model satisfies~\eqref{previnvnext}, then it will
+satisfy~\eqref{next1to1}.  In other words,
+\[
+\text{\eqref{previnvnext}} \QIMPLIES\ \text{\eqref{next1to1}}
+\]
+is a \emph{valid formula}.
+\end{staffnotes}
+
+There are some standard terms called \emph{numerals} used to describe
+the elements $e_0, e_1,\dots$ in \eqref{Ncopyshape}.  Namely, the
+numeral for $e_0$ will be $\zerosym$, and the numeral for $e_n$ will
+be the application $n$ times of $\nextsym$ to $\zerosym$.  For example, 
+the numeral for three would be:
+\begin{equation}\label{3numer}
+\nextsym(\nextsym(\nextsym(\zerosym))).
+\end{equation}
+We'll refer to the numeral for $e_n$ as $\numerl{n}$.  So $\numerl{3}$
+refers to the term~\eqref{3numer}.
+
+But we don't quite have the desired situation pictured
+in~\eqref{Ncopyshape}: there is nothing so far that prevents all the
+numerals having the same value.  In other words, the formulas above
+are consistent with the formula $\nextsym(\zerosym) = \zerosym$.
+(You should check this yourself right now.)  We might try to fix this
+by requiring that no $\nextsym$-arrow can begin and end at the same
+element, but there still could be a pair of numeral values, each of which
+was $\nextfun$ of the other.  That is, the model might satisfy
+\textcolor{red}{
+\[
+\numerl{2} \eqdef \nextsym(\nextsym(\zerosym)) = \zerosym.
+\]
+}
+We could go on to forbid such length two cycles of $\nextsym$-arrows,
+but then there might be a cycle of three:
+\iffalse
+\[
+\exists x, y,z.\, \nextsym(x) = y \QAND\ \nextsym(y) = z \QAND\ \nextsym(z) = x\ ,
+\]
+\fi
+
+\textcolor{red}{
+\[
+\numerl{3} \eqdef \nextsym(\nextsym(\nextsym(\zerosym))) = \zerosym,
+\]}
+and so on.  Fortunately, something we want to do anyway will
+fix this potential problem with the numeral values: we haven't yet
+provided a formula that will make the interpretion $e_0$ of
+$\zerosym$ behave like zero.
+
+\bparts
+
+\ppart\label{zero-part} Write a predicate formula expressing the fact
+that the value of $\zerosym$ is not plus-one of anything.  Also, by
+convention, subtracting one from zero has no effect.
+
+\begin{solution}
+\[
+\QNOT(\exists x.\, \nextsym(x) = \zerosym)\ \QAND\ \prevsym(\zerosym) = \zerosym.
+\]
+\end{solution}
+\eparts
+
+The formulas of part~\eqref{zero-part} and~\eqref{previnvnext}
+together imply that the numeral values will yield the
+copy~\eqref{Ncopyshape} of $\nngint$ we want.  To verify this, we
+just need to show that the values of all the numerals are distinct.
+
+\bparts
+
+\ppart Explain why two different numerals must have different values
+in any model satisfying~\eqref{previnvnext} and
+part~\eqref{zero-part}.
+
+\hint It helps to describe the meaning of~\eqref{previnvnext} by what
+it says about arrows.  There is also an explanation based on the Well
+Ordering Principle.
+
+\begin{solution}
+There are a couple of ways to confirm this claim, one using arrows and
+the other well-ordering and the given formulas.
+
+An arrow explanation goes as follows:
+\begin{proof}
+Suppose we start at the point denoted by $\zerosym$ and proceed to
+generate a sequence of points by following successive $\nextsym$-arrows
+out of each point and into the next.  These points are, by definition,
+the values of all the numerals.  But the formula of
+part~\eqref{zero-part} implies that no $\nextsym$-arrow goes into the
+starting point.  Also, no $\nextsym$-arrow between points in the sequence
+can go into any other earlier point in the sequence, because all the
+earlier nonzero points already a $\nextsym$-arrow going into it.  So each
+$\nextsym$-arrow goes into a new point and therefore no point has a
+repeat occurrence.
+\end{proof}
+
+Here is an alternate explanation based on the Well Ordering Principle.
+\begin{proof}
+Suppose to the contrary that two different numerals had the same value
+in some interpretation satisfying~\eqref{previnvnext} and
+part~\eqref{zero-part}.  Then there is a minimum $n \in \nngint$
+such that $\numerl{n}$ has the same value as numeral $\numerl{m}$ for
+some $n < m$.
+
+But $n \neq 0$ because by part~\eqref{zero-part}, the interpretation
+of $\zerosym$ is not $\nextfun$ of anything, while all the other
+numerals are by definition $\nextfun$ of the previous numeral.
+
+Now with $n,m>0$ the interpretation
+of the numerals will satisfy
+\begin{align}
+\prevsym(\numerl{n}) & \eqdef \prevsym(\nextsym(\numerl{n-1})) = \numerl{n-1}
+& \text{(by~\eqref{previnvnext})},\label{nneqn-1}\\
+\prevsym(\numerl{m}) & \eqdef \prevsym(\nextsym(\numerl{m-1})) = \numerl{m-1},
+& \text{(by~\eqref{previnvnext})},\label{mmeqm-1}
+\end{align}
+So by~\eqref{nneqn-1},~\eqref{mmeqm-1}, the assumption that
+$\numerl{n} = \numerl{m}$ is true in the model implies
+\[
+ \numerl{n-1} = \numerl{m-1}
+\]
+is also true, contradicting the minimality of $n$.
+
+So the assumption leads to a contradiction, and we conclude that in
+every model satisfying~\eqref{previnvnext} and part~\eqref{zero-part},
+the numerals all have different values.
+
+\iffalse
+\footnote{A careful look
+at this argument reveals that for each $n\neq m \in \nngint$,
+there is a direct proof that
+  \[
+  \QNOT(\numerl{n} = \numerl{m}
+   \]
+using part~\eqref{zero-part} once and~\eqref{previnvnext} $n$ times
+\emph{without} appeal to Well Ordering.  This observation leads to the
+conclusion that provability even in a very limited proof system with
+just a few axioms and elementary logical rules, without Well Ordering
+or Induction, is undecidable.}\fi
+\end{proof}
+\end{solution}
+
+\eparts
+
+So we have verified that any model satisfying~\eqref{previnvnext} and
+the formula of part~\eqref{zero-part} has the desired copy of
+$\nngint$.
+
+\begin{staffnotes}
+FYI; will be inserted into text at some point:
+
+This helps explain why verifying valid formulas of predicate calculus
+is so hard.  The explanation begins with the observation that lots of
+famous mathematical problems---Fermat's Last Theorem, the Goldbach
+Conjecture or the Twin Primes Conjecture, for example---can easily be
+expressed in predicate logic using a symbols $\nextsym,\prevsym$ along
+with symbols for plus and times (see Problem
+\bref{CP_express_goldbach_twinprime_in_logic}).  So it is not
+surprising that, in general, it is very hard\footnote{In
+  Chapter~\bref{halting_sec} we'll explain why it is actually
+  impossible to verify truth of arithmetic formulas.} to determine
+whether a predicate formula expressing properties of plus and times on
+the nonnegative integers is \emph{true}.
+
+But if we use formula~\eqref{previnvnext} and the formula of
+part~\eqref{zero-part} as axioms that force a model to have a copy of
+$\nngint$, and we throw in a few more axioms describing some defining
+properties of plus and times, we can conclude that to determine if
+Fermat's Last Theorem or Goldbach's Conjecture is a \emph{true} when
+the domain of discourse is $\nngint$, all we have to do is determine
+if Goldbach's Conjecture is a \emph{valid} consequence of the axioms.
+So if we accept that determining truth is generally very hard, then
+determining if a predicate formula is valid is also going to be very
+hard.
+\end{staffnotes}
+
+The distinction between formulas that are \emph{true} over the domain
+$\nngint$ and formulas that are valid, that is true over \emph{all
+  domains} can be confusing on first sight.  To highlight the
+distinction, it is worth seeing that the formula of
+part~\eqref{zero-part} together with~\eqref{previnvnext} do \emph{not}
+ensure that their models consist \emph{solely} of a copy of $\nngint$.
+
+For example, a model might consist of two separate copies of
+$\nngint$.  We can stifle this particular possibility of extra copies
+of $\nngint$ pretty easily.  Any such copy has to start with a
+zero-like element, namely one that is not in the range of $\nextfun$.
+So we just assert that there is the only zero-like element.
+
+\bparts
+
+\ppart\label{uniquezero-part} Write a formula such that any model has
+only one copy of $\nngint$.
+
+\begin{solution}
+\begin{equation}\label{uniquezero}
+\forall x.\, \QNOT(\exists y.\, \nextsym(y) = x)\ \QIMPLIES\ x = \zerosym.
+\end{equation}
+\end{solution}
+
+\eparts
+
+But the additional axiom of part~\eqref{uniquezero-part} still leaves
+room for models that, besides having a copy of $\nngint$, also have
+``extra stuff'' with weird properties.
+
+\bparts
+
+\ppart Describe a model that satisfies the formula of
+part~\eqref{uniquezero-part} along with~\eqref{previnvnext},
+part~\eqref{zero-part} and also satisfies
+\begin{equation}\label{x=nx}
+\exists x.\, x =\nextsym(x).
+\end{equation}
+
+\begin{solution}
+\begin{staffnotes}
+More explanation would be helpful.
+\end{staffnotes}
+$\nngint \union \set{\infty}$ will serve.
+\end{solution}
+
+\eparts
+ 
+\begin{center}
+  \textbf{Supplemental Part}
+\end{center}
+
+\bparts
+
+\ppart Prove that
+\begin{equation}\label{nextinvprev}
+  \forall x \neq \zerosym.\ \nextsym(\prevsym(x)) = x.
+\end{equation}
+
+\begin{solution}
+We know that every element $e \neq e_0$ equals
+$\nextfun(e')$ for some $e'$.  So
+\begin{align*}
+\nextfun(\prevfun(e))
+   & = \nextfun(\prevfun(\nextfun(e')))
+        & \text{(def of $e'$)}\\
+   & = \nextfun(e')
+        & \text{(by~\eqref{previnvnext})}\\  
+   & = e.
+        & \text{(def of $e'$)}.
+\end{align*}
+\end{solution}
+
+\eparts
+
+\iffalse
+
+The above formulas serve to control the properties of the numeral
+values that make up our copy~\eqref{Ncopyshape} of $\nngint$, but
+they do not do much to ensure that all the elements in the domain have
+properties like the numeral values.
+
+For example, there might still be a $\nextsym$ cycle of non-numeral
+values, that is,
+\begin{equation}\label{n3x=x}
+\exists x.\, \nextsym(\nextsym(\nextsym(x))) = x.
+\end{equation}
+might still be satisfiable.
+
+We can forbid models from having finite cycles of $\nextsym$-arrows
+like~\eqref{x=nx} or~\eqref{n3x=x} if we introduce another symbol
+into formulas, namely, the binary relation symbol $\ltsym$.  Our
+objective will be to force $\ltsym$ to act like the less-than
+relation $<$ on numbers.  For this purpose, it's suggestive to write
+$x \ltsym y$ instead of $\textbf{ltsym}(x,y)$.
+
+One requirement will be that $\ltsym$ behave as expected in the copy
+of $\nngint$.  Namely, for all $n,m \in \nngint$, if $n < m$, then
+$\numerl{n}\ltsym \numerl{m}$ must be true.  But we also want $\ltsym$
+to define a relation that has the ``less-than'' properties on all
+domain elements.  One key property is called \emph{transitivity}
+\[
+\forall x,y,z.\, (x \ltsym y \QAND y\ltsym z) \QIMPLIES x\ltsym z.
+\]
+
+\bparts
+
+\ppart Another key property is that the $\ltsym$ relation interacts
+properly with $\nextsym$, namely, that if $y$ can be obtained by
+repeatedly adding one to $x$, then $x \ltsym y$.  Write a formula that
+ensures $\ltsym$ has this property.
+
+\begin{solution}
+It's enough to say that $\ltsym$ respects adding one only once,
+because if doing it once is OK, transitivity will imply that repeated
+adding will be OK.  So we just write:
+\begin{equation}\label{Lnext}
+\forall x.\ x \ltsym \nextsym(x),
+\end{equation}
+along with
+\[
+\forall x.\, \QNOT(x \ltsym \zerosym.)
+\]
+\end{solution}
+
+\eparts
+
+Now we see that if an element is in a cycle of $\nextsym$-arrows, then
+by transitivity, it will be $\ltsym$ itself.  By forbidding this, we
+also forbid $\nextsym$-arrow cycles.
+
+\bparts
+
+\ppart Write a formula that is unsatisfiable in an model with a cycle
+of $\nextsym$-arrows.
+
+\begin{solution}
+By the preceding discussion, The following formula will do the job:
+\begin{equation}\label{irrform}
+\forall x.\, \QNOT(x\ltsym x)
+\end{equation}
+\end{solution}
+
+\ppart The final key property is \emph{trichotomy}: every given
+element is either bigger or smaller than each other element.  Write a
+formula that expresses trichotomy.
+
+\begin{solution}
+\begin{equation}\label{trichot}
+\forall x,y.\, x\ltsym y\ \QOR\ y \ltsym x\ \QOR\ x = y.
+\end{equation}
+\end{solution}
+
+\eparts
+
+At this point, the only models that satisfy all the above formulas
+must have a single copy of $\nngint$ along with some two-way
+infinite chains
+\[
+\dots \nextarrow c_{-2} \nextarrow c_{-1} \nextarrow c_0 \nextarrow
+c_1 \nextarrow c_2 \nextarrow \dots.
+\]
+
+\bparts \ppart Verify that the set $\reals^{\geq 0}$ of nonnegative
+real numbers is a model satisfying all the above formulas.
+
+\begin{solution}
+Easy to check formula by formula.
+\end{solution}
+
+\begin{staffnotes}
+Might not want stuff between $x$ and $\nextfun(x)$:
+\[
+\forall x, y.\, \QNOT(x \ltsym y \ltsym \nextsym(x)).
+\]
+
+In this case, the trichotomy property,~\eqref{trichot} ensures all
+these chains will have the property that every element of one chain
+will be $\ltsym$ of every member of the other chain.  So the chains
+themselves are ``ordered'' by $\ltsym$.
+
+There seems to be nothing further that can be said of how chains are
+ordered: there might be none, some finite number, or even an infinite
+number of them.  And the chains might be ordered among themselves like
+the integers, nonnegative integers, real numbers,\dots.
+\end{staffnotes}
+
+\eparts
+\fi
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+\iffalse
+\[
+\zerosym, \nextsym(\zerosym), \nextsym(\nextsym(\zerosym)),
+\nextsym(\nextsym(\nextsym(\zerosym))), dots.
+\]
+\fi 
+
+\iffalse
+The values that a model gives to these numerals will be called its
+\emph{numeral values}.  We will use the numeral values to be the
+elements $e_0,e_1,\dots$ in the copy~\eqref{Ncopyshape} of $\nngint$
+we are trying to create, with $e_n$ being the value of $\numerl{n}$.
+\fi
+
+\iffalse
+\ppart Write a formula expressing the fact that subtracting one from
+two different nonzero elements will result in two different elements.
+
+I was going to add ``Explain why this formula is implied the earlier
+ones,'' but no time to check and problem long enough already.
+
+\begin{solution}
+\begin{equation}\label{prev1to1}
+\forall x,y \neq \zerosym.\, x \neq y \QIMPLIES\ \prevsym(x) \neq \prevsym(y)\ .
+\end{equation}
+\end{solution}
+\fi
+
+\iffalse  CHECK THIS:
+\bparts
+
+\ppart Explain why the formulas above imply 
+\begin{equation}\label{Lprev}
+\forall x\neq \zerosym.\ \prevsym(x)\,L\,x\ .
+\end{equation}
+
+\begin{solution}
+If $x\,L\,\nextsym(x)$ and $x \neq \zerosym$, then
+\end{solution}
+\eparts
+\fi
+
+\iffalse
+\ppart Explain why every such model has exactly one copy of
+$\nngint$.
+\begin{solution}
+A copy must start with a point with no $\nextsym$-arrow coming in, and
+only $e_0$ has this property.
+\end{solution}
+\fi
+
+\iffalse
+ Write down formulas of predicate calculus with only the symbols
+above whose models must have properties as much like $\nngint$ as
+you can manage.  In particular, make sure that all models of your
+formulas force $\ltsym$ to mean $<$ on the numeral values and ensure
+that~\eqref{irrform} implies there are no finite cycles of
+$\nextsym$'s.  (If you think you have formulas whose only models are
+exactly like $\nngint$, look again, because that is impossible.)
+
+All the elements in one of these chains must be $ltsym$ all the
+numeral values.
+, but there is nothing further that can be said
+of how chains are ordered: there might be none, some finite number, or
+even an infinite number of them.  And the chains might be ordered
+among themselves like the integers, or nonnegative integers, or real
+numbers,\dots.
+\fi

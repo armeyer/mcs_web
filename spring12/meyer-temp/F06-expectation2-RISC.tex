@@ -1,0 +1,528 @@
+
+\documentclass[12pt,twoside]{article}
+\usepackage{light}
+
+\newtheorem{false_corollary}[theorem]{False Corollary}
+
+\newenvironment{qproof}
+{\begin{proof}[``Proof'']}
+{\end{proof}}
+
+\begin{document}
+
+\lecture{Expected Value II}{December 2, 2004}
+
+\section{The Expected Number of Events that Happen}
+
+Last time, we looked at linearity of expectation, the wonderful rule
+that say that the expectation of a sum is the sum of the expectations:
+%
+\[
+\ex{R_1 + R_2 + \cdots + R_k} = \ex{R_1} + \ex{R_2} + \cdots + \ex{R_k}
+\]
+%
+This gave us easy solutions to both the hat-check and Chinese
+appetizer problems.
+
+More generally, suppose that $E_1, \ldots, E_n$ are arbitrary events
+that may or may not occur.  For example, $E_i$ might be the event that
+the $i$-th man gets his own hat back or the event that the $i$-th
+person gets her own appetizer after the lazy susan in spun.  Then we
+can ask, ``What is the expected number of these events that happen?''
+In the hat check problem, this amounts to asking how many men get
+their own hat back.  The following theorem, based on linearity of
+expectation, provides a simple answer to the general question.
+
+\begin{theorem}
+Let $E_1, \ldots, E_n$ be events.  Then the expected number of events
+that occur is:
+%
+\[
+\pr{E_1} + \pr{E_2} + \ldots + \pr{E_n}
+\]
+\end{theorem}
+
+\begin{proof}
+Let $R_i$ be an indicator random variable for the event $E_i$:
+%
+\[
+R_i(w) =
+\begin{cases}
+1 & \text{if $w \in E_i$} \\
+0 & \text{if $w \not\in E_i$}
+\end{cases}
+\]
+%
+The number of events that happen is then the sum of these indicators:
+%
+\[
+T = R_1 + R_2 + \ldots + R_n
+\]
+%
+We can evaluate this sum using linearity of expectation:
+%
+\begin{align*}
+\ex{T}
+    & = \sum_{i=1}^n \ex{R_i} \\
+    & = \sum_{i=1}^n \pr{R_i = 1} \\
+    & = \sum_{i=1}^n \pr{E_i}
+\end{align*}
+%
+On the second line, we're using the fact that the expected value of an
+indicator is equal to the probability that the indicator is 1.  The
+last line uses the fact that $R_i$ is an indicator for event $E_i$;
+thus, $R_i = 1$ if and only if event $E_i$ happens.
+\end{proof}
+
+\subsection{A Coin Problem--- the Easy Way}
+
+Whenever you're confronted by a complicated expected value problem,
+your first question should be, ``Can I use linearity of expectation?''
+Sometimes you can, sometimes you can't.  But when using linearity is
+an option, it is often the best option by far.  For example, suppose
+that we flip $n$ fair coins.  What is the expected number of heads
+that come up?
+
+Let $E_i$ be the event that the $i$-th coin is heads.  Since each of
+the $n$ coins is heads with probabilty $1/2$, the expected number of
+these events that occur is:
+%
+\[
+\pr{E_1} + \pr{E_2} + \ldots + \pr{E_n} = n \cdot \frac{1}{2}
+\]
+%
+That was easy!  Furthermore, we did \textit{not} assume that the
+results of the coin tosses were mutually independent.  Our solution is
+valid even if, say, pairs of coins are taped together, provided that
+each coin individually is fair.
+
+\subsection{The Hard Way}
+
+To better appreciate linearity of expectation, let's try to determine
+the expected number of heads on $n$ coin tosses directly.  Let the
+random variable $R$ be the number of heads that come up in $n$ tosses.
+Now we need to compute:
+%
+\[
+\ex{R} = \sum_{k=0}^n k \cdot \pr{R = k}
+\]
+%
+The probability that $R = k$ is the probability of flipping exactly
+$k$ heads, which is
+%
+\[
+\pr{R = k} = \binom{n}{k} 2^{-n}
+\]
+%
+since there are $\binom{n}{k}$ different heads/tails sequences with
+exactly $k$ heads and each of these sequences has probability
+$2^{-n}$.  (Here we're assuming that the results of the coin tosses
+are mutually independent; without that assumption, we'd be really
+stuck!)  Plugging this into expectation formula gives:
+%
+\[
+\ex{R} = \sum_{k=0}^n k \cdot \binom{n}{k} 2^{-n}
+\]
+%
+It isn't obvious, but this nasty sum is actually equal $n/2$.  (In
+fact, since we already know that $\ex{R} = n/2$ via linearity of
+expectation, we have a ``probabilistic proof'' of this fact.)
+
+That wasn't so easy \textit{and} this approach is only valid if the
+coins are mutually independent.
+
+\section{The Coupon Collector Problem}
+
+Every time I purchase a kid's meal at Taco Bell, I am graciously
+presented with a miniature ``Racin' Rocket'' car together with a
+launching device which enables me to project my new vehicle across any
+tabletop or smooth floor at high velocity.  Truly, my delight knows no
+bounds.
+
+There are $n$ different types of Racin' Rocket car (blue, green, red,
+gray, etc.).  The type of car awarded to me each day by the kind woman
+at the Taco Bell register appears to be selected uniformly and
+independently at random.  What is the expected number of kids meals
+that I must purchase in order to acquire at least one of each type of
+Racin' Rocket car?
+
+The same mathematical question shows up in many guises: for example,
+what is the expected number of people you must poll in order to find
+at least one person with each possible birthday?  Here, instead of
+collecting Racin' Rocket cars, you're collecting birthdays.  The
+general question is commonly called the \term{coupon collector
+problem} after yet another interpretation.
+
+\subsection{A Solution Using Linearity of Expectation}
+
+Linearity of expectation is somewhat like induction and the pigeonhole
+principle; it's a simple idea that can be used in all sorts of
+ingenious ways.  For example, we can use linearity of expecatation in
+a clever way to solve the coupon collector problem.  Suppose there are
+five different types of Racin' Rocket, and I receive this sequence:
+%
+\begin{center}
+blue \quad green \quad green \quad red \quad blue \quad orange \quad blue \quad orange \quad gray
+\end{center}
+%
+Let's partition the sequence into 5 segments:
+%
+\[
+\underbrace{\text{blue}}_{X_0} \quad
+\underbrace{\text{green}}_{X_1} \quad
+\underbrace{\text{green} \quad \text{red}}_{X_2} \quad
+\underbrace{\text{blue} \quad \text{orange}}_{X_3} \quad
+\underbrace{\text{blue} \quad \text{orange} \quad \text{gray}}_{X_4}
+\]
+%
+The rule is that a segment ends whenever I get a new kind of car.  For
+example, the middle segment ends when I get a red car for the first
+time.  In this way, we can break the problem of collecting every type
+of car into stages.  Then we can analyze each stage individually and
+assemble the results using linearity of expectation.
+
+Let's return to the general case where I'm collecting $n$ Racin'
+Rockets.  Let $X_k$ be the length of the $k$-th segment.  The total
+number of kid's meals I must purchase to get all $n$ Racin' Rockets is
+the sum of the lengths of all these segments:
+%
+\[
+T = X_0 + X_1 + \ldots + X_{n-1}
+\]
+
+Now let's focus our attention of the $X_k$, the length of the $k$-th
+segment.  At the beginning of segment $k$, I have $k$ different types
+of car, and the segment ends when I acquire a new type.  When I own
+$k$ types, each kid's meal contains a type that I already have with
+probability $k / n$.  Therefore, each meal contains a new type of car
+with probability $1 - k / n = (n - k) / n$.  Thus, the expected number
+of meals until I get a new kind of car is $n / (n - k)$ by the ``mean
+time to failure'' formula that we worked out last time.  So we have:
+%
+\[
+\ex{X_k} = \frac{n}{n - k}
+\]
+
+Linearity of expecatation, together with this observation, solves the
+coupon collector problem:
+%
+\begin{align*}
+\ex{T}
+  & = \ex{X_0 + X_1 + \ldots + X_{n-1}} \\
+  & = \ex{X_0} + \ex{X_1} + \ldots + \ex{X_{n-1}} \\
+  & = \frac{n}{n - 0} + \frac{n}{n - 1} + \ldots + \frac{n}{3} + \frac{n}{2} + \frac{n}{1} \\
+  & = n \paren{\frac{1}{n} + \frac{1}{n-1} + \ldots + \frac{1}{3} + \frac{1}{2} + \frac{1}{1}} \\
+  & = n H_n
+\end{align*}
+%
+The summation on the next-to-last line is the $n$-th harmonic sum with
+the terms in reverse order.  As you may recall, this sum is denoted
+$H_n$ and is approximately $\ln n$.
+
+Let's use this general solution to answer some concrete questions.
+For example, the expected number of die rolls required to see every
+number from 1 to 6 is:
+%
+\[
+6 H_6 = 14.7 \ldots
+\]
+%
+And the expected number of people you must poll to find at least one
+person with each possible birthday is:
+%
+\[
+365 H_{365} = 2364.6\ldots
+\]
+
+\section{Expected Value of a Product}
+
+Enough with sums!  What about the expected value of a \textit{product}
+of random variables?  If $R_1$ and $R_2$ are independent, then the
+expected value of their product is the product of their expected
+values.
+
+\begin{theorem}
+\label{th:prod}
+For \textbf{\emph{independent}} random variables $R_1$ and $R_2$:
+%
+\[
+\ex{R_1 \cdot R_2} = \ex{R_1} \cdot \ex{R_2}
+\]
+\end{theorem}
+
+\begin{proof}
+We'll transform the right side into the left side:
+%
+%  uuuugly...
+%
+\begin{align*}
+\ex{R_1} \cdot \ex{R_2}
+    & = \paren{\sum_{x \in \text{Range}(R_1)} x \cdot \pr{R_1 = x}} \cdot
+        \paren{\sum_{x \in \text{Range}(R_1)} y \cdot \pr{R_2 = y}} \\
+    & = \sum_{x \in \text{Range}(R_1)} \sum_{y \in \text{Range}(R_2)}
+        x y \pr{R_1 = x} \pr{R_1 = y} \\
+    & = \sum_{x \in \text{Range}(R_1)} \sum_{y \in \text{Range}(R_2)}
+        x y \pr{R_1 = x \cap R_1 = y}
+%
+\intertext{The second line comes from multiplying out the product of
+sums.  Then we used the fact that $R_1$ and $R_2$ are independent.
+Now let's group terms for which the product $xy$ is the same:}
+%
+   & = \sum_{z \in \text{Range}(R_1 \cdot R_2)}
+       \sum_{x, y:\ xy = z} x y \pr{R_1 = x \cap R_1 = y} \\
+   & = \sum_{z \in \text{Range}(R_1 \cdot R_2)} \paren{z
+       \sum_{x, y:\ xy = z} \pr{R_1 = x \cap R_1 = y}} \\
+   & = \sum_{z \in \text{Range}(R_1 \cdot R_2)} z \cdot \pr{R_1 \cdot R_2 = z} \\
+   & = \ex{R_1 \cdot R_2}
+\end{align*}
+\end{proof}
+
+\subsection{The Product of Two Independent Dice}
+
+Suppose we throw two independent, fair dice and multiply the numbers
+that come up.  What is the expected value of this product?
+
+Let random variables $R_1$ and $R_2$ be the numbers shown on the two
+dice.  We can compute the expected value of the product as follows:
+%
+\begin{align*}
+\ex{R_1 \cdot R_2}
+	& = 	\ex{R_1} \cdot \ex{R_2} \\
+	& = 	3\frac{1}{2} \cdot 3\frac{1}{2} \\
+	& = 	12\frac{1}{4}
+\end{align*}
+%
+On the first line, we're using Theorem~\ref{th:prod}.  Then we use the
+result from last lecture that the expected value of one die is $3
+\frac{1}{2}$.
+
+\subsection{The Product of Two Dependent Dice}
+
+Suppose that the two dice are not independent; in fact, suppose that
+the second die is always the same as the first.  Does this change the
+expected value of the product?  Is the independence condition in
+Theorem~\ref{th:prod} \textit{really} necessary?
+
+As before, let random variables $R_1$ and $R_2$ be the numbers shown
+on the two dice.  We can compute the expected value of the product
+directly as follows:
+%
+\begin{align*}
+\ex{R_1 \cdot R_2}
+	& = 	\ex{R_1^2} \\
+	& = 	\sum_{i=1}^6 i^2 \cdot \Pr(R_1 = i) \\
+	& = 	\frac{1^2}{6} + \frac{2^2}{6} + \frac{3^2}{6} + 
+		\frac{4^2}{6} + \frac{5^2}{6} + \frac{6^2}{6} \\
+	& = 	15 \frac{1}{6}
+\end{align*}
+%
+The first step uses the fact that the outcome of the second die is
+always the same as the first.  Then we expand $\ex{R_1^2}$ using one
+of our formulations of expectation.  Now that the dice are no longer
+independent, the expected value of the product has changed to $15
+\frac{1}{6}$.  So the expectation of a product of dependent random
+variables need not equal the product of their expectations.
+
+\subsection{Corollaries}
+
+Theorem~\ref{th:prod} extends to a collection of mutually independent
+variables.
+%
+\begin{corollary}
+If random variables $R_1, R_2, \ldots, R_n$ are mutually independent,
+then
+%
+\[
+\ex{R_1 \cdot R_2 \cdots R_n} = \ex{R_1} \cdot \ex{R_2} \cdots \ex{R_n}
+\]
+\end{corollary}
+
+The proof uses induction, Theorem~\ref{th:prod}, and the definition of
+mutual independence.  We'll omit the details.
+
+%
+% This is not a pretty ordering of results...
+%
+
+Adjusting a random variable by an additive or multiplicative constant
+adjusts the expected value in the same way.
+%
+\begin{corollary}
+If $R$ is a random variable and $a$ and $b$ are constants, then
+%
+\[
+\ex{a R + b} = a \ex{R} + b
+\]
+\end{corollary}
+%
+This corollary follows if we regard $a$ and $b$ as random variables
+that each take on one particular value with probability 1.  Constants
+are always independent of other random variables, so the equation
+holds by linearity of expectation and Theorem~\ref{th:prod}.
+
+We now know the expected value of a sum or product of random
+variables.  Unfortunately, the expected value of a reciprocal is not
+so easy to characterize.  Here is a flawed attempt.
+
+\begin{false_corollary}
+If $R$ is a random variable, then
+%
+\[
+\ex{\frac{1}{R}} = \frac{1}{\ex{R}}
+\]
+\end{false_corollary}
+
+As a counterexample, suppose the random variable $R$ is 1 with
+probability $\frac{1}{2}$ and is 2 with probability $\frac{1}{2}$.
+Then we have:
+%
+\begin{align*}
+\frac{1}{\ex{R}}
+    & = \frac{1}{1 \cdot \frac{1}{2} + 2 \cdot \frac{1}{2}} \\
+    & = \frac{2}{3} \\
+\ex{\frac{1}{R}}
+    & = \frac{1}{1} \cdot \frac{1}{2} + \frac{1}{2} \cdot \frac{1}{2} \\
+    & = \frac{3}{4}
+\end{align*}
+%
+The two quantities are not equal, so the corollary must be false.  But
+here is another false corollary, which we can actually ``prove''!
+
+\begin{false_corollary}
+\label{cor:false}
+If $\ex{R/T} > 1$, then $\ex{R} > \ex{T}$.
+\end{false_corollary}
+
+\begin{qproof}
+We begin with the if-part, multiply both sides by $\ex{T}$, and then
+apply Theorem~\ref{th:prod}:
+%
+\begin{align*}
+\ex{R/T} & > 1 \\
+\ex{R/T} \cdot \ex{T} & > \ex{T} \\
+\ex{R} & > \ex{T}
+\end{align*}
+\end{qproof}
+
+This ``proof'' is bogus!  The first step is valid only if $\ex{T} > 0$.
+More importantly, we can't apply Theorem~\ref{th:prod} in the second step
+because $R/T$ and $T$ are not necessarily independent.  Unfortunately, the
+fact that Corollary~\ref{cor:false} is false does not mean it is never
+used!
+
+\subsubsection{A RISC Paradox}
+
+The following data is taken from a paper by some famous professors.
+They wanted to show that programs on a RISC processor are generally
+shorter than programs on a CISC processor.  For this purpose, they
+made a table of program lengths for some benchmark problems, which
+looked like this:
+%
+\[
+\begin{array}{lccc}
+\text{Benchmark}	& \text{RISC}	& \text{CISC}	& \text{CISC / RISC}\\
+\hline
+\text{E-string search}	& 150		& 120		& 0.8 \\
+\text{F-bit test}	& 120		& 180		& 1.5 \\
+\text{Ackerman}		& 150		& 300		& 2.0 \\
+\text{Rec 2-sort}	& 2800		& 1400		& 0.5 \\
+\hline
+\text{Average}		&		&		& 1.2
+\end{array}
+\]
+%
+Each row contains the data for one benchmark.  The numbers in the
+first two columns are program lengths for each type of processor.  The
+third column contains the ratio of the CISC program length to the RISC
+program length.  Averaging this ratio over all benchmarks gives the
+value 1.2 in the lower right.  The authors conclude that ``CISC
+programs are 20\% longer on average''.
+
+But there's a pretty serious problem here.  Suppose we redo the final
+column, taking the inverse ratio, RISC / CISC instead of CISC / RISC.
+%
+\[
+\begin{array}{lccc}
+\text{Benchmark}	& \text{RISC}	& \text{CISC}	& \text{RISC / CISC}\\
+\hline
+\text{E-string search}	& 150		& 120		& 1.25 \\
+\text{F-bit test}	& 120		& 180		& 0.67 \\
+\text{Ackerman}		& 150		& 300		& 0.5 \\
+\text{Rec 2-sort}	& 2800		& 1400		& 2.0 \\
+\hline
+\text{Average}		&		&		& 1.1
+\end{array}
+\]
+%
+By exactly the same reasoning used by the authors, we could conclude
+that RISC programs are 10\% longer on average than CISC programs!
+What's going on?
+
+\subsubsection{A Probabilistic Interpretation}
+
+To shed some light on this paradox, we can model the RISC vs. CISC
+debate with the machinery of probability theory.
+
+Let the sample space be the set of benchmark programs.  Let the random
+variable $R$ be the length of the RISC program, and let the random
+variable $C$ be the length of the CISC program.  We would like to
+compare the average length of a RISC program, $\ex{R}$, to the average
+length of a CISC program, $\ex{C}$.
+
+To compare average program lengths, we must assign a probability to
+each sample point; in effect, this assigns a ``weight'' to each
+benchmark.  One might like to weigh benchmarks based on how frequently
+similar programs arise in practice.  But let's follow the original
+authors' lead.  They assign each ratio equal weight in their average,
+so they're implicitly assuming that similar programs arise with equal
+probability.  Let's do that same and make the sample space uniform.
+We can now compute $\ex{R}$ and $\ex{C}$ as follows:
+%
+\begin{align*}
+\ex{R}	& = 	\frac{150}{4}+\frac{120}{4}+\frac{150}{4}+\frac{2800}{4} \\
+	& = 	805 \\
+\ex{C}	& = 	\frac{120}{4}+\frac{180}{4}+\frac{300}{4}+\frac{1400}{4} \\
+	& = 	500
+\end{align*}
+%
+So the average length of a RISC program is actually $\ex{R}/\ex{C} =
+1.61$ times greater than the average length of a CISC program.  RISC
+is even worse than either of the two previous answers would suggest!
+
+In terms of our probability model, the authors computed $C / R$ for
+each sample point and then averaged to obtain $\ex{C / R} = 1.2$.
+This much is correct.  However, they interpret this to mean that CISC
+programs are longer than RISC programs on average.  Thus, the key
+conclusion of this milestone paper rests on Corollary~\ref{cor:false},
+\textit{which we know to be false!}
+
+\subsubsection{A Simpler Example}
+
+The root of the problem is more clear in the following, simpler
+example.  Suppose the data were as follows.
+%
+\[
+\begin{array}{lcccc}
+\text{Benchmark}	& \text{Processor A}	& \text{Processor B}
+			& B / A			& A / B \\
+\hline
+\text{Problem 1}	& 2			& 1		
+			& 1/2			& 2 \\
+\text{Problem 2}	& 1			& 2
+			& 2			& 1/2 \\
+\hline
+\text{Average}		&			&
+			& 1.25			& 1.25 \\
+\end{array}
+\]
+%
+Now the statistics for processors A and B are exactly symmetric.  Yet,
+from the third column we would conclude that Processor B programs are
+25\% longer on average, and from the fourth column we would conclude
+that Processor A programs are 25\% longer on average.  Both
+conclusions are obviously wrong.  The moral is that \textit{averages
+of ratios can be very misleading}.  More generally, if you're
+computing the expectation of a quotient, think twice; you're going to
+get a value ripe for misuse and misinterpretation.
+\end{document}
+

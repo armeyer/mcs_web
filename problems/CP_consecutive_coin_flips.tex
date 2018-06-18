@@ -1,0 +1,173 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_consecutive_coin_flips}
+  \pcomment{from: S09.cp14m}
+\end{pcomments}
+
+\pkeywords{
+  expectation
+  total_expectation
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+\bparts
+
+\ppart Suppose we flip a fair coin and let $N_\mathtt{TT}$ be the
+number of flips until the first time two consecutive Tails appear.  What
+is $\expect{N_\mathtt{TT}}$?
+
+\hint Let $D$ be the tree diagram for this process.  Explain why
+$D$ can be described by the tree in Figure~\ref{tree_D}.
+\iffalse
+\[
+D = H\cdot D + T\cdot(H\cdot D + T).
+\]
+\fi
+Use the \textbf{Law of Total Expectation}%
+\inbook{~\bref{total_expect}.}%
+\inhandout{: Let $R$~be a random variable and $A_1$, $A_2$, \dots, be
+  a partition of the sample space.  Then
+\[
+    \expect{R} = \sum_i \expcond{R}{A_i} \prob{A_i}.
+\]
+}
+
+\begin{figure}
+\graphic{tree_D}
+  \caption{Sample space tree for coin toss until two consecutive tails.}
+  \label{tree_D}
+\end{figure}
+
+
+\begin{staffnotes}
+Ask what's wrong with the following argument: \emph{the probability of
+  flipping two heads in a row in 1/4, so by the mean time to failure
+  rule, $\expect{N_\mathtt{TT}} = 1/(1/4) = 4$, contradicting the
+  value 6 derived above.}
+
+The answer is that MTF applies only if the probability of failure at
+each step is the same \emph{independent} of the previous flips, but
+that is obviously not true here, since the probability is twice as
+large if the previous flip was $\mathtt{T}$ than if it was
+$\mathtt{H}$.
+\end{staffnotes}
+
+\begin{solution}
+\[
+\expect{N_\mathtt{TT}}=6.
+\]
+
+Let $H$ be the event that a Head appears on the first flip, $TH$ the
+event that the first flips are Tail then Head, and likewise $TT$.
+From $D$ and the Law of Total Expectation:
+
+\begin{align*}
+\expect{N_\mathtt{TT}}
+    & = \expcond{N_\mathtt{TT}}{H}    \cdot \pr{H}
+       + \expcond{N_\mathtt{TT}}{TH}  \cdot \pr{TH}
+       + \expcond{N_\mathtt{TT}}{TT}  \cdot \pr{TT}\\ 
+  & = \paren{1 + \expect{N_\mathtt{TT}}}\cdot \frac{1}{2} +
+      \paren{2 + \expect{N_\mathtt{TT}}}\cdot \frac{1}{4} +
+       2 \cdot \frac{1}{4}\\
+  & = \frac{1}{2} + \frac{\expect{N_\mathtt{TT}}}{2}
+       + \frac{1}{2} + \frac{\expect{N_\mathtt{TT}}}{4}
+       + \frac{1}{2}\\
+  & = \frac{3}{2} + \frac{3\expect{N_\mathtt{TT}}}{4}
+\end{align*}
+So
+\[
+\expect{N_\mathtt{TT}} = \frac{3}{2} \cdot 4 = 6.
+\]
+\end{solution}
+
+
+\ppart Let $N_\mathtt{TH}$ be the number of flips until a Tail
+immediately followed by a Head comes up.  What is
+$\expect{N_\mathtt{TH}}$?
+
+\begin{solution}
+\[
+\expect{N_\mathtt{TH}}=4.
+\]
+
+\begin{editingnotes}
+Replace the formula below with a tree figure as in fig~\ref{tree_D}.
+\end{editingnotes}
+
+This time the tree diagram is $C \eqdef H\cdot C +T\cdot B$, where the
+subtree $B \eqdef H + T\cdot B$.
+
+So
+\[
+\expect{N_\mathtt{TH}} =  \paren{1+ \expect{N_\mathtt{TH}}} \cdot \frac{1}{2}
++  (1+ \expect{N_B}) \cdot \frac{1}{2}
+\]
+where $N_B$ is the expected number of flips in the $B$ subtree.  But
+\[
+\expect{N_B} = 1 \cdot \frac{1}{2} + (1+\expect{N_B}) \cdot  \frac{1}{2}.
+\]
+That is, $\expect{N_B} = 2$.  Hence,
+\[
+\expect{N_\mathtt{TH}} = \frac{1}{2} +\frac{\expect{N_\mathtt{TH}}}{2}
++ \frac{1}{2} + \frac{2}{2}
+\]
+which implies $\expect{N_\mathtt{TH}} = 4$.
+\end{solution}
+
+\ppart Suppose we now play a game: flip a fair coin until either
+\STR{TT} or \STR{TH} occurs.  You win if \STR{TT} comes up
+first, and lose if \STR{TH} comes up first.  Since \STR{TT}
+takes 50\% longer on average to turn up, your opponent agrees that he
+has the advantage.  So you tell him you're willing to play if you pay
+him \$5 when he wins, and he pays you with a mere 20\% premium---that
+is \$6---when you win.
+
+If you do this, you're sneakily taking advantage of your opponent's
+untrained intuition, since you've gotten him to agree to unfair odds.
+What is your expected profit per game?
+
+\begin{staffnotes}
+After the problem is solved, start a discussion of the apparent
+paradox: \STR{TT} and \STR{TH} are equally likely to show up
+first, but \STR{TT} takes longer to show up on average.
+\end{staffnotes}
+
+\begin{solution}
+It's easy to see that both \STR{TT} and \STR{TH} are equally
+likely to show up first: every game play consists of a sequence of
+\STR{H}'s followed by a \STR{T}, after which the game ends with
+a \STR{T} or an \STR{H}, with equal probability.  So your
+expected profit is
+\[
+\frac{1}{2}\cdot 6 + \frac{1}{2}\cdot (-5)
+\]
+dollars, that is 50 cents per game.
+%You leap to play.
+
+It may seem paradoxical that \STR{TT} and \STR{TH} are equally
+likely to show up first, but \STR{TT} takes longer to show up on
+average.  The explanation is that \STR{TT} takes longer to show up
+after \STR{TH} has appeared than \STR{TH} takes to show up after
+\STR{TT} has appeared.  That's because when \STR{TT} appears,
+we're already one step along the way to having \STR{TH} appear
+afterward, yet when \STR{TH} shows up first, we have to start
+waiting for \STR{TT} to appear without a similar head start.
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

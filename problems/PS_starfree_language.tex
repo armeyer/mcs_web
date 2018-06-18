@@ -1,0 +1,361 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+\pcomment{PS_starfree_language}
+\pcomment{omitted from book}
+\pcomment{same as the recursive version PS_starfree_recursive; label conflict}
+\pcomment{ARM 2/10/15}
+  \pcomment{S15.ps2}
+\end{pcomments}
+
+\pkeywords{
+  sequence
+  word
+  complement
+  union
+  concatenation
+  language
+  starfree}
+
+\newcommand{\CDlang}{\text{C-D}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A \emph{binary word} is a finite sequence of \STR{0}'s and
+\STR{1}'s.  For example, $(\STR{1},\STR{1},\STR{0})$ and
+$(\STR{1})$ are words of length three and one, respectively.  We
+usually omit the parentheses and commas in the descriptions of words,
+so the preceding binary words would just be written as $\STR{110}$
+and $\STR{1}$.
+
+The basic operation of placing one word immediately after another is
+called \term{concatentation}.  For example, the concatentation of
+$\STR{110}$ and $\STR{1}$ is $\STR{1101}$, and the
+concatentation of $\STR{110}$ with itself is $\STR{110110}$.
+
+We can extend this basic operation on words to an operation on
+\emph{sets} of words.  To emphasize the distinction between a word and
+a set of words, from now on we'll refer to a set of words as a
+\emph{language}.  Now if $R$ and $S$ are languages, then $R \cdot S$
+is the language consisting of all the words you can get by
+concatenating a word from $R$ with a word from $S$.  That is,
+\[
+R \cdot S \eqdef \set{rs \suchthat r \in R \QAND s \in S}.
+\]
+For example,
+\[
+\set{\STR{0},\STR{00}}\cdot \set{\STR{00},\STR{000}} =
+\set{\STR{000},\STR{0000},\STR{00000}}
+\]
+
+Another example is $D \cdot D$, abbreviated as $D^2$, where $D \eqdef
+\set{\STR{1}, \STR{0}}$ is just the two binary digits.
+\[
+D^2 = \set{\STR{00},\STR{01},\STR{10},\STR{11}}.
+\]
+In other words, $D^2$ is the language consisting of all the length-two
+words.  More generally, $D^n$ will be the language of all the words of
+length $n$.
+
+If $S$ is a language, the language you can get by concatenating any
+number of copies of words in $S$ is called $S^*$---pronounced ``$S$
+star.''  (By convention, the empty word $\emptystring$ always
+included in $S^*$.)  For example, $\set{\STR{0},\STR{11}}^*$ is the
+language consisting of all the words you can make by stringing
+together $\STR{0}$'s and $\STR{11}$'s.  This language could also be
+described as consisting of the words whose blocks of $\STR{1}$'s are
+always of even length.  Another example is $(D^2)^*$, which consists
+of all the even length words.  Finally, the language $B$ of
+\emph{all} binary words is just $D^*$.
+
+A language is called \emph{Concatenation-Definable} (\CDlang) if it
+can be constructed by starting with finite languages and then applying
+the operations of concatenation, union, and complement (relative to
+$B$) to these languages a finite number of times.
+\iffalse
+\footnote{ We can
+  assign to each c-d language a \emph{count} which bounds the number
+  of the allowed operations (Union, Concatenation, and Complement) it
+  takes to make it.
+
+Since finite languages are given to be C-D, they are the 0-count
+languages.  For example,
+\begin{itemize}
+\item  $\set{00, 111}$,
+\item  the words of length $\leq 10^{10}$, and
+\item  the empty language $\emptyset$
+\end{itemize}
+are all 0-count.
+
+We get a 1-count language by applying one of the operations to a
+0-count language.  So applying the complement operation to each of the
+above 0-count languages gives the following 1-count languages:
+\begin{itemize}
+\item  $\overline{\set{00, 111}}$, the language of all binary words
+       except $\STR{00}$ and $\STR{111}$,
+\item  the words of length $> 10^{10}$, and
+\item  the language $B$ of all words.
+\end{itemize}
+These languages are all infinite, so none of them are 0-count.
+
+Notice that you don't get anything new by using the Union operation to
+combine two 0-count languages, since the union of finite sets is
+finite.  Likewise, you don't get anything new by concatenating two
+0-count languages because the Concatenation of two finite languages is
+finite---if $R$ and $S$ are finite languages respectively containing
+$n$ and $m$ words, then $R \cdot S$ contains at most $mn$ words.
+(Exercise, give an example where $R \cdot S$ contains \emph{fewer}
+than $mn$ words.)
+
+So the 1-count languages that are not 0-count are precisely those that
+come from complementing a finite language.  That is, they are the
+languages that include all but a finite number of words.
+
+We can apply Concatenation to a 0-count and a 1-count language to get a
+2-count language.  For example,
+\[
+\set{\STR{00}, \STR{111}} \cdot B
+\]
+is a 2-count language consisting of all the words that start with
+either 00 or 111.  Notice that this language is not 0-count or
+1-count, since both it and its complement are infinite.
+
+Doing a concatenation of the 1-count language $B$ with this 2-count
+language, gives a $1+1+2 =4$-count language
+\[
+B \cdot \set{00,111}\cdot B
+\]
+which consists of all the words that have either two consecutive
+\STR{0}'s or three consecutive \STR{1}'s.  We don't know at this point
+whether this language is also 3-count, or even 2-count, because we
+haven't ruled out the possibility that it could be built using fewer
+than 4 operations (though we don't think it can).
+
+Now doing a complement of this 4-count language give a 5-count
+language consisting of all the words in which
+
+\begin{itemize}
+
+\item every occurrence of \STR{0} is followed by a \STR{1},
+  except for a possible \STR{0} at the end of the word, and also
+
+\item every occurrence of\STR{11} is followed by a \STR{0}, except for
+  a possible \STR{11} at the end of the word.
+
+\end{itemize}
+
+The c-d languages are precisely the languages that are $n$-count for
+some nonnegative integer $n$.}
+\fi
+
+Note that the $^*$-operation is \emph{not} allowed.  For this reason,
+the c-d languages are also called the ``star-free languages,''
+\cite{Meyer69}.
+
+Lots of interesting languages turn out to be concatenation-definable,
+but some very simple languages are not.  This problem ends with the
+conclusion that the language $\set{\STR{00}}^*$ of even length words
+whose bits are all \STR{0}'s is not a C-D language.
+
+\begin{problemparts}
+\ppart Show that the set $B$ of all binary words is C-D.
+\hint The empty set is finite.
+
+\begin{solution}
+The empty set $\emptyset$ is fiite and therefore C-D by base case
+definition.  Therefore, $\bar{\emptyset}$ which equals $B$ is C-d
+using the set-complement constructor
+\end{solution}
+
+\eparts
+
+\medskip
+
+Now a more interesting example of a C-D set is the language of all
+binary words that include three consecutive \STR{1}'s:
+\[
+B\STR{111}B.
+\]
+Notice that the proper expression here is ``$B \cdot
+\set{\STR{111}} \cdot B$.''  But it causes no confusion and helps
+readability to omit the dots in concatenations and the curly braces
+for sets with only one element.
+
+\bparts 
+\ppart Show that the language consisting of the binary words that
+start with \STR{0} and end with \STR{1} is C-D.
+
+\begin{solution}
+$0B1$.
+\end{solution}
+
+\ppart Show that $\STR{0}^*$ is C-D.
+
+\begin{solution}
+This is simply the binary words that do not contain a \STR{1}
+\[
+\STR{0}^* = \bar{B \STR{1} B}.
+\]
+\end{solution}
+
+\ppart\label{RiScd}  Show that if $R$ and $S$ are C-D, then so is $R \intersect S$.
+
+\begin{solution}
+By DeMorgan's Law for sets
+\[
+R \intersect S = \bar{\bar{R} \union \bar{S}}.
+\]
+\end{solution}
+
+\ppart Show that $\set{\STR{01}}^*$ is C-D.
+
+\begin{solution}
+This language consists of the words that do not include \STR{00} or
+\STR{11}, and start with \STR{0}, and end with \STR{1}, along with the
+empty word $\emptystring$ which is the complement of the set of
+words of length one or more:
+\begin{align*}
+\set{\emptystring} & = \overline{\set{\STR{0},\STR{1}}B},\\
+\set{\STR{01}}^*   & = (\bar{B\set{\STR{00},\STR{11}}B} \intersect 0B1) \union \set{\emptystring}.
+\end{align*}
+
+Another way to say this is that $\set{\STR{01}}^*$ consists of the
+words that do \emph{not} start wrong, end wrong, or contain a wrong
+substring:
+\[
+\set{\STR{01}}^* = \bar{1B \union B0 \union B\set{\STR{00},\STR{11}}B }
+\]
+\end{solution}
+
+\eparts
+
+\medskip
+
+Let's say a language $S$ is \STR{0}-\emph{finite} when it includes
+only a finite number of words whose bits are all \STR{0}'s, that is,
+when $S \intersect \STR{0}^*$ is a finite set of words.  A langauge
+$S$ is \STR{0}-\emph{boring}---boring, for short---when either $S$ or
+$\bar{S}$ is \STR{0}-finite.
+
+\bparts
+
+\ppart Explain why $\set{\STR{00}}^*$ is not boring.
+
+\begin{solution}
+The language $\set{\STR{00}}^*$ is an infinite set consisting of all
+even length all-\STR{0} words, and so is not \STR{0}-finite.  Its
+complement contains the infinite set of all the odd length all-\STR{0}
+words, and so is also not \STR{0}-finite.
+\end{solution}
+
+\ppart\label{uc0simp} Verify that if $R$ and $S$ are boring, then so
+is $R \union S$.
+
+\begin{solution}
+There are two cases:
+
+\inductioncase{Case 1}: (Both $R$ and $S$ are \STR{0}-finite.)
+
+Since the union of finite sets is finite, $R \union S$ must also be
+\STR{0}-finite, so $R \union S$ is boring.
+
+\inductioncase{Case 2}: (At least one $\bar{R}$ and $\bar{S}$ is
+\STR{0}-finite.)
+
+We can safely assume that it is $\bar{R}$ that is \STR{0}-finite.
+But $\bar{R \union S} \subseteq \bar{R}$, so $\bar{R \union S}$ must
+also be \STR{0}-finite.  Therefore $R \union S$ is boring in this
+case as well.
+\end{solution}
+
+\ppart Verify that if $R$ and $S$ are boring, then so is $R \cdot S$.
+
+\hint By cases: whether $R$ and $S$ are both \STR{0}-finite,
+whether $R$ or $S$ contains no all-\STR{0} words at all (including
+the empty word $\emptystring$), and whether neither of these cases
+hold.
+
+\begin{solution}
+There are four cases.
+
+\inductioncase{Case 1}: (Both $R$ and $S$ are \STR{0}-finite.)
+
+Since the concatenation of two finite sets of words is finite, $R
+\cdot S$ is \STR{0}-finite and therefore is boring in this case.
+
+\inductioncase{Case 2}: (Either $R$ or $S$ contains no all-\STR{0} words.)
+
+In this case, $R \cdot S$ won't contain any all-\STR{0} words
+either, which means it is \STR{0}-finite and boring.
+
+\inductioncase{Case 3}: ($\bar{R}$ is \STR{0}-finite.)
+
+Let's say the length of the longest all-\STR{0} word in $\bar{R}$
+is $n$.  Then $R$ must contain every all-\STR{0} word longer than
+$n$.  We can assume that $S$ includes some all-\STR{0} word, say of
+length $k$, since otherwise Case 2.\ would apply.  But this means that
+that $R \cdot S$ contains every all-\STR{0} word longer than $n+k$.
+So every all-\STR{0} word in $\bar{R \cdot S}$ has length at most
+$n+k$, and there are only a finite number of such words.  Hence $R
+\cdot S$ is \STR{0}-finite and therefore is boring.
+
+\inductioncase{Case 4}: ($\bar{S}$ is \STR{0}-finite.)  Same proof as
+for Case 3.
+\end{solution}
+
+\ppart\label{cdimp0s} Explain why all C-D languages are boring.
+
+\begin{solution}
+The starting C-D languages are the finite sets, and these are boring
+by definition.  Also, $S$ is boring iff $\bar{S}$ is boring, because
+$S = \bar{\bar{S}}$.  By part~\eqref{uc0simp}, we conclude that all
+the operations for constructing C-D languages preserve boredome.
+Hence all C-D languages are boring.
+\end{solution}
+
+So we have proved that the set $(\STR{00})^*$ of even length
+all-\STR{0} words is not a C-D language.
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
+\iffalse
+
+\eparts
+
+Let $w$ be a binary word and $n$ a nonnegative integer.  A set $S$ of
+words \emph{$n$-repeats $w$}, a word with $n$ consecutive occurrences
+of $w$ is in $S$ iff that word with an extra occurrence of $w$ is also
+in $S$.  That is,
+\[
+xw^ny \in S \QIFF xw^nwy \in S.
+\]
+We say a set of words is \emph{$n$-repeating} if it $n$-repeats every
+word $w$.  For example, $\STR{0}^*$ is 1-repeating and $B$ is actually 0-repeating.
+
+\begin{problemparts}
+\ppart Verify that $\set{\STR{01}}^*$ is 2-repeating.
+
+\begin{solution}
+TBA
+\end{solution}
+
+\ppart Explain why $\set{\STR{00}}^*$ is not $n$-repeating for any $n$.
+
+\begin{solution}
+$\set{\STR{00}}^*$ does not $n$-repeat \STR{0} for any $n$,
+  because \STR{0}^n is in $\set{\STR{00}}^*$ but $\STR{0}^n
+  \STR{0}$ is not.
+\end{solution}
+\fi

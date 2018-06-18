@@ -1,0 +1,119 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_card_shuffle_state_machine}
+  \pcomment{S03.ps7}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  shuffle
+  cards
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem} Suppose that you have a regular deck of cards arranged as
+follows, from top to bottom:
+\[
+A \heartsuit\ 2 \heartsuit \dots K \heartsuit\
+A \spadesuit\ 2 \spadesuit \dots K \spadesuit\
+A \clubsuit\ 2 \clubsuit \dots K \clubsuit\
+A \diamondsuit\ 2 \diamondsuit \dots K \diamondsuit
+\]
+
+Only two operations on the deck are allowed: \emph{inshuffling} and
+\emph{outshuffling}.  In both, you begin by cutting the deck exactly in
+half, taking the top half into your right-hand and the bottom into
+your left.  Then you shuffle the two halves together so that the cards
+are perfectly interlaced; that is, the shuffled deck consists of one
+card from the left, one from the right, one from the left, one from
+the right, etc.  The top card in the shuffled deck comes from the
+right-hand in an outshuffle and from the left-hand in an inshuffle.
+
+\begin{problemparts}
+
+\ppart Model this problem as a state machine.
+
+\begin{solution}
+Let the set of states $Q$ be all the possible orderings of
+the deck of cards.  Let the set of start states $Q_0$ consist of the
+single ordering listed above.  For each state $(c_1, \ldots c_{52}) \in
+Q$, there are two transitions in $\delta$:
+
+\begin{align*}
+(c_1, \dots c_{52})
+	& \rightarrow
+		(c_1, c_{27}, c_2, c_{28}, \dots, c_{26}, c_{52}) \\
+(c_1, \dots c_{52})
+	& \rightarrow
+		(c_{27}, c_1, c_{28}, c_2, \dots, c_{52}, c_{26})
+\end{align*}
+\end{solution}
+
+\ppart Use the Invariant Principle to prove that you cannot make
+the entire first half of the deck black through a sequence of
+inshuffles and outshuffles.
+
+\begin{solution}
+Define two cards to be \emph{opposites} if the sum of their positions
+is 53.  For example, the top card is opposite the bottom card, the
+second card from the top is opposite the second from the bottom, etc.
+
+Let $P$ be the property that $A \heartsuit$ is opposite $K
+\diamondsuit$, $2 \heartsuit$ is opposite $Q \diamondsuit$, etc., as
+in the initial configuration.  We claim that $P$ is a preserved
+invariant.  Suppose that $P$ holds for a given state and consider the
+two types of transition out of that state.  Note that, for both types
+of transition, cards in opposite positions are mapped to opposite
+positions.  Therefore, the property $P$ still holds.  Thus, $P$ is a
+preserved invariant.
+
+If the above explanation doesn't convince you, consider this
+arithmetical justification.  Suppose two cards that are correctly
+paired in some configuration.  That is, the cards are at positions $i,
+j$ with $i <j$, and $i + j = 53$.  Considering the first
+of the transitions shown in part (a)'s solution, we can see that:
+\begin{itemize}
+\item A card at position $k$ in the first half of the deck is moved
+  to position $2k - 1$
+\item A card at position $k$ in the second half of the deck is moved
+  to position $2(k - 26)$
+\end{itemize}
+
+Thus, the new position of the card from position $i$ is $2i - 1$, and
+the new position of the card from position $j$ is $2(j - 26) = 2(53 -
+i - 26) = 54 - 2i$.  Now the sum of the new positions $(2i - 1) + (54
+- 2i) =53$, so the invariant is maintained for this pair of matched
+cards.  Since we imposed no further conditions on the pair we chose,
+we see that any shuffle of this variety preserves the invariant.
+Similar reasoning holds for the other sort of shuffle.
+
+We finish by noting that $P$ holds for the start state by definition.
+However, $P$ cannot hold when all black cards are in the top half of
+the deck; in that case, every black card is opposite a red card, which
+was \emph{not} true for any cards in the original configuration.
+Therefore, by the Invariant Principle, that state is not reachable.
+\end{solution}
+
+\end{problemparts}
+
+\emph{Note}: Discovering a suitable invariant can be difficult!  This
+is the part of a correctness proof that generally requires some
+insight, and there is no simple recipe for finding invariants.  A
+standard initial approach is to identify a bunch of reachable states
+and then look for a pattern---some feature that they all share.
+
+\iffalse
+\footnote{If this does not work, consider twitching and drooling until
+  someone takes the problem away.}
+\fi
+
+\end{problem}
+
+\endinput

@@ -1,0 +1,215 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_erasable_strings}
+  \pcomment{from: S09.cp5m}
+  \pcomment{revised to use strong induction by ARM, 2/22/11}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  matching_brackets
+  recursive_data
+  strings
+  structural_induction
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  Let $p$ be the string $\lefbrk\rhtbrk$.  A string of
+  brackets is said to be \emph{erasable} iff it can be reduced to
+  the empty string by repeatedly erasing occurrences of $p$.  For
+  example, to erase the string
+\[
+\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk\rhtbrk\lefbrk\rhtbrk,
+\]
+start by erasing the three occurrences of $p$ to obtain
+\[
+\lefbrk\lefbrk\rhtbrk\rhtbrk.
+\]
+Then erase the single occurrence of $p$ to obtain,
+\[\lefbrk\rhtbrk,\]
+which can now be erased to obtain the empty string $\emptystring$.
+
+On the other hand the string
+\begin{equation}\label{lrrlllll}
+\lefbrk\rhtbrk\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk\rhtbrk
+\end{equation}
+is not erasable, because when we try to erase, we get stuck.  Namely,
+start by erasing the two occurrences of $p$ in~\eqref{lrrlllll} to obtain
+\[
+\rhtbrk\lefbrk\lefbrk\lefbrk\lefbrk\rhtbrk.
+\]
+The erase the one remaining occurrence of $p$ to obtain.
+\[
+\rhtbrk\lefbrk\lefbrk\lefbrk.
+\]
+At this point we are stuck with no remaining occurrences of $p$.
+\footnote{Notice that there are many ways to erase a string, depending
+  on when and which occurrences of $p$ are chosen to be erased.  It
+  turns out that given any initial string, the final string reached
+  after performing all possible erasures will be the same, no matter
+  how erasures are performed.  We take this for granted here, although
+  it is not altogether obvious.  \inbook{(See
+    Problem~\bref{PS_commuting_rewrite_confluence} for a proof).}}
+
+Let $\ES$ be the set of erasable strings of brackets.  Let $\RM$ be
+the recursive data type of strings of \emph{matched} brackets
+\inbook{given in Definition~\bref{RM-def}}\inhandout{defined
+  recursively:
+\begin{itemize}
+
+\item \inductioncase{Base case}: $\emptystring \in\RM$.
+
+\item \inductioncase{Constructor case}: If $s,t \in\RM$, then
+$\lefbrk s\, \rhtbrk t \in \RM$.
+\end{itemize}}
+
+% (The definition of $\RM$ is repeated in the Appendix.)
+
+\bparts
+
+\ppart\label{RMsubES} Use structural induction to prove that
+\[
+\RM \subseteq \ES.
+\]
+
+\begin{solution}
+\begin{proof}
+We prove by structural induction on the definition of $\RM$ that
+  the predicate
+\[
+P(x) \eqdef x \in \ES
+\]
+is true for all $x \in \RM$.
+
+\textbf{Base case} ($x = \emptystring$): The empty string is erasable by
+definition of $\ES$---it can be reduced to itself by erasing the
+substring $p$ zero times.
+
+\textbf{Constructor case} ($x = \lefbrk s\, \rhtbrk t$ for $s,t \in \RM$):  By
+structural induction hypothesis, we may assume that $s,t \in \ES$.  So to
+erase $x$, erase $s$ and then erase $t$ to be left with the substring
+$\lefbrk\rhtbrk$, and one more erasure leads to the empty string.
+
+This completes the proof by structural induction, so we conclude that
+\[
+\forall x.\ x\in \RM\ \QIMPLIES\ x \in \ES
+\]
+which by definition means that $\RM \subseteq \ES$.
+
+\end{proof}
+\end{solution}
+
+\ppart\label{RMES} Supply the missing parts (labeled by ``(*)'') of the following proof that
+\[
+\ES \subseteq \RM.
+\]
+
+\begin{proof}
+We prove by strong induction that every length $n$ string in \ES\ is
+also in \RM.  The induction hypothesis is
+\[
+P(n) \eqdef \forall x \in \ES.\, \lnth{x} = n \QIMPLIES x \in \RM.
+\]
+
+\textbf{Base case}:
+
+(*) What is the base case?  Prove that $P$ is true in this case.
+
+\begin{solution}
+The base case is ($n = 0$).  Now $P(0)$ is true because the
+  empty string is the only string of length 0, and it is in $\RM$ by the
+  base case of Definition~\bref{RM-def} of $\RM$.
+\end{solution}
+
+\textbf{Inductive step}: To prove $P(n+1)$, suppose $\lnth{x} = n+1$
+and $x \in \ES$.  We need to show that $x \in \RM$.
+
+Let's say that a string $y$ is an \emph{erase} of a string $z$ iff $y$
+is the result of erasing a \emph{single} occurrence of $p$ in $z$.
+
+Since $x \in \ES$ and has positive length, there must be an erase, $y
+\in \ES$, of $x$.  So $\lnth{y} = n-1 \ge 0$, and since $y \in \ES$,
+we may assume by induction hypothesis that $y \in \RM$.
+
+Now we argue by cases:
+
+\textbf{Case} ($y$ is the empty string):
+
+(*) Prove that $x \in \RM$ in this case.
+
+\begin{solution}
+In this case $x = p \in \RM$.
+\end{solution}
+
+\textbf{Case} ($y = \lefbrk s\, \rhtbrk t$ for some strings $s, t \in \RM$):
+Now we argue by subcases.
+\begin{itemize}
+
+\item \textbf{Subcase}($x=py$):
+
+(*) Prove that $x \in \RM$ in this subcase.
+
+\begin{solution}
+The string $x = \lefbrk \emptystring \rhtbrk y$ is the result of
+applying the $\RM$ constructor to $\emptystring, y \in \RM$.
+\end{solution}
+
+\item \textbf{Subcase} ($x$ is of the form $\lefbrk s'\, \rhtbrk t$ where $s$
+  is an erase of $s'$):
+
+  Since $s \in \RM$, it is erasable by part~\eqref{RMES}, which implies
+  that $s'\in \ES$.  But $\lnth{s'} < \lnth{x}$, so by induction
+  hypothesis, we may assume that $s' \in \RM$.  This shows that $x$ is
+  the result of the constructor step of $\RM$, and therefore $x \in \RM$.
+
+\item \textbf{Subcase} ($x$ is of the form $\lefbrk s\, \rhtbrk t'$ where $t$ is an
+  erase of $t'$):
+
+(*) Prove that $x \in \RM$ in this subcase.
+
+\begin{solution}
+The proof is essentially identical to the previous case, with
+  $t,t'$ in place of $s,s'$:
+
+  Now $t$ is erasable by part~\eqref{RMES}, so $t'\in \ES$.  But
+  $\lnth{t'} < \lnth{x}$, so by induction hypothesis, we may assume that
+  $t' \in \RM$.  This proves that $x$ is the result of the constructor
+  step of $\RM$ and therefore $x \in \RM$.
+
+\end{solution}
+
+\end{itemize}
+
+(*) Explain why the above cases are sufficient.
+
+\begin{solution}
+The cases arise from the possible positions of the occurrence
+of $p$ in $x$ that was erased to yield $y = \lefbrk s\, \rhtbrk t$.
+Namely, the erased $p$ could have appeared to the left of the initial left
+bracket in $y$, to the right of that initial left bracket but before its 
+matching right bracket, or after the matching right bracket.
+\end{solution}
+
+This completes the proof by strong induction on $n$, so we conclude
+that $P(n)$ holds for all $n \in \nngint$.  Therefore $x \in \RM$
+for every string $x \in \ES$.  That is, $\ES \subseteq \RM$.
+Combined with part~\eqref{RMsubES}, we conclude that
+\[
+\ES = \RM.
+\]
+
+\end{proof}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

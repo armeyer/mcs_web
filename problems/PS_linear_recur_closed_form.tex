@@ -1,0 +1,186 @@
+%PS_binomial_problem
+
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_linear_recur_closed_form}
+  \pcomment{from: F06.ps8 modified to use generating function}
+  \pcomment{soln needs to be revised to style of PS_Fibonacci_and_bunnies}
+\end{pcomments}
+
+\pkeywords{
+  generating_functions
+  linear_recurrence
+  partial_fractions
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+  Let $x_0 \eqdef 0, x_1 \eqdef 1$ and for $n \geq 2$, let $x_n$ be
+  defined by the linear recurrence:
+
+  % \bparts
+
+%   \ppart $x_{n} = 12 x_{n-2} - 16 x_{n-3} \quad
+%     (x_0 = 1, x_1 = 2, x_2 = 3)$
+% 
+%   Hint: 2 is a root.
+% 
+% \begin{solution}
+%   The characteristic equation is $r^3 - 12 r +  16 = 0$.
+%   Solving a cubic equation can be messy process, but in this case the
+%   roots are easy to find:
+%   \begin{align*}
+%   r_1 & =  2 \\
+%   r_2 & =  2 \\
+%   r_3 & = -4 
+%   \end{align*}
+% 
+%   Therefore a general form for a solution is
+%   \[
+%   x_n  = A 2^n + B n 2^n + C (-4)^n.
+%   \]
+% 
+%   Substituting the initial conditions into this general form gives a
+%   system of linear equations.
+%   \begin{align*}
+%   1 & =  A + C \\
+%   2 & =  2 A + 2 B -4 C \\
+%   3 & =  4 A + 8 B + 16 C
+%   \end{align*}
+% 
+%   The solution to this linear system is $A = 37/36$, $B = -1/12$ and
+%   $C = -1/36$.  The complete solution to the recurrence is therefore
+%   \[
+%   x_n  =  \frac{37}{36}2^{n} - \frac{1}{12}n 2^{n} - \frac{1}{36}(-4)^{n}.
+%   \]
+% \end{solution}
+
+  % \ppart
+  \[
+  x_{n} = 3x_{n-1} - 2 x_{n-2} + n.  % \quad (x_0 = 0, x_1 = 1)
+  \]
+  Find a closed form expression for $x_n$.  
+
+\iffalse
+  \hint The solution should be of the form 
+  \[
+  x_n = A \cdot 2^n + B \cdot n^2 + C \cdot n + D.
+  \]
+\fi
+
+\begin{solution}
+  
+  We begin by finding the generating function for the sequence as defined
+  by the recurrence:
+\[
+X(z) \eqdef x_0+x_1z+x_2z^2+\cdots+x_nz^n+\cdots.
+\]
+\iffalse
+
+  \[
+  \ang{0,\ 1,\ 3 f_1 - 2 f_0 + 2,\ 3 f_2 - 2 f_1 + 3,\ 3 f_2 - 2 f_1 + 4,\ \dots}
+  \]
+\fi
+  
+We can do this by breaking the sequence into a sum of three sequences:
+\[
+X(z) = 3zX(z) -2z^2X(z) + \frac{z}{(1-z)^2}
+\]  
+\iffalse
+  \[
+  \begin{array}{ccccccccccl}
+    & \langle & 0, & 3 f_0, & 3 f_1, & 3 f_2, & \dots & \rangle
+      & \corresp & 3 x F(x) \\
+    & \langle & 0, & 0, & -2 f_0, & -2 f_1, & \dots & \rangle
+      & \corresp & -2 x^2 F(x) \\
+  + & \langle & 0, & 1, & 2, & 3, & \dots & \rangle
+      & \corresp & \frac{x}{(1-x)^2} \\ \hline
+    & \langle & 0, & 3 f_0 + 1, & 3 f_1 - 2 f_0 + 2, & 3 f_2 - 2 f_1 + 3, & \dots & \rangle
+      & \corresp & 3 x F(x) - 2 x^2 F(x) + \frac{x}{(1-x)^2} \\
+  \end{array}
+  \]
+ 
+
+  As we can see, the sum of the three sequences is equal to the sequence defined by the 
+  recurrence, so we may solve for $X(z)$ by solving the following:
+  \[
+  X(z) = 3 x X(z) - 2 x^2 X(z) + \frac{x}{(1-x)^2}
+  \]
+\fi
+
+  So
+  \[
+  X(z) \cdot (1 - 3z + 2z^2) = \frac{z}{(1-z)^2}
+  \]
+  Since $(1 - 3z + 2z^2) = (1 - 2z)(1 - z)$, we get:
+  \[
+  X(z) = \frac{z}{(1-z)^3 (1-2z)}
+  \]
+  
+  Now, to find the closed form for the $n$th coefficient of this generating function, 
+  let's expand $X(z)$ into partial fractions:
+  \[
+  \frac{z}{(1-z)^3  (1-2z)} = \frac{A}{(1-z)^3} + \frac{B}{(1-z)^2} + \frac{C}{1-z} + \frac{D}{1-2z}
+  \]
+  
+  To find the constants $A,B,C,D$, we can multiply both sides by the
+  denominator $(1-z)^3 (1-2z)$, so
+\[
+  z = A(1-2z) + B(1-z)(1-2z) + C(1-z)^2(1-2z) + D(1-z)^3
+\]
+  Now letting $z=1$, yields $A = -1$, and letting $z=1/2$ yields $1/2
+  = D/2^3$, that is, $D=4$.  Then letting $z=0$ then yields $B+C=-3$,
+  and letting $z=2$ yields $B-C=1$, so $B=-1$ and $C=-2$.
+
+\iffalse
+  We can solve for the other terms via a similar process:
+  \begin{gather*}
+  A = -1 \\
+  B = -1 \\
+  C = -2 \\
+  D = 4
+  \end{gather*}
+\fi
+  
+  So
+  \[
+  X(z) = \frac{z}{(1-z)^3 (1-2z)} = - \frac{1}{(1-z)^3} - \frac{1}{(1-z)^2} - \frac{2}{1-z} + \frac{4}{1-2z}.
+  \]
+  
+  We know the coefficient of $z^n$ in the power series for each term in this
+  partial fraction expansion:
+  \begin{align*}
+  - \frac{1}{(1-z)^3} & = - (1 + z +  \cdots + \binom{n+2}{2}z^n +\cdots) \\
+  - \frac{1}{(1-z)^2} & = - (1 + z +  \cdots + \binom{n+1}{1}z^n +\cdots) \\
+  - \frac{2}{1-z} & = -2 (1 + z +  \cdots + z^n +\cdots) \\
+  \frac{4}{1-2z} & = 4 (1 + z +  \cdots + 2^n z^n +\cdots)
+  \end{align*}
+  
+\iffalse
+  (Note that $\frac{1}{(1-x)^3}$ is $\frac{1}{2}$ the derivative of
+  $\frac{1}{(1-x)^2}$, so its coefficient for $x^n$ is $\frac{1}{2}$
+  the coefficient of $\frac{1}{(1-x)^2}$ left shifted by 1 and
+  multiplied by $(n+1)$.)
+\fi
+  
+  Summing up the coefficients of $z^n$ in each of these power series gives:
+  \begin{align*}
+  x_{n} & = - \frac{(n+1)(n+2)}{2} - (n+1) - 2 + 4 \cdot 2^n \\
+        & = - \paren{\frac{n^2}{2} + \frac{3n}{2} +1} - n - 1 - 2 + 4 \cdot 2^n \\
+        & =  2^{n+2} - \frac{n^2}{2} - \frac{5n}{2} - 4.
+  \end{align*}
+  
+\end{solution}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

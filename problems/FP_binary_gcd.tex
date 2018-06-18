@@ -1,0 +1,181 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_binary_gcd}
+  \pcomment{lighter version of PS_binary_gcd}
+  \pcomment{By ARM 4/24/11 based on Shoup}
+  \pcomment{revised ARM 3/17/14; 5/13/14}
+\end{pcomments}
+
+\pkeywords{
+  preserved_invariant
+  GCD
+  binary_GCD
+  state_machine
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The following \idx{Binary GCD} state machine computes the GCD of
+positive integers $a$ and $b$:
+\begin{align*}
+\text{states}      & \eqdef \nngint^3\\
+\text{start state} & \eqdef (a, b, 1)\\
+\text{transitions} & \eqdef \text{ if } \min(x,y) > 0, \text{ then }
+\end{align*}
+\begin{numcases}{(x,  y, e) \movesto}
+       (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\tag{i1}\\%x2y22e
+       (x/2, y, e)    & \text{(else if $2 \divides x$)}\tag{i2}\\%x2ye
+       (x, y/2, e)    & \text{(else if $2 \divides y$)}\tag{i3}\\%xy2e
+       (x-y, y, e)    & \text{(else if $x > y$)}\tag{i4}\\%x-yx>y
+       (y-x, x, e)    & \text{(else if $y > x$)}\tag{i5}\\%y-xy>x
+       (1,   0, ex)   & \text{(otherwise ($x=y$))}. \tag{i6}%x0ex
+\end{numcases}
+
+The predicate
+\begin{equation}\tag{Inv1}
+\gcd(a,b) = e\gcd(x,y)
+\end{equation}
+is claimed to be a preserved invariant of this state machine.
+
+\bparts 
+
+\ppart Verify that equation~(Inv1) is a preserved invariant
+under transition rules~(i1), and~(i2)\iffalse ,
+and~(i4)\fi.  Explictly state any basic GCD properties you
+need, but you do not have to prove them.
+
+\examspace[2.0in]
+
+\begin{solution}
+To verify preserved invariance, we assume that the invariant holds for
+state $(x,y,e)$ and show that if $(x,y,e) \movesto (x',y',e')$, then
+$\gcd(a,b) = e'\gcd(x',y')$.  We do so by proof by cases according to which kind of transition occurs.
+
+\inductioncase{Case}~(i1): ($2 \divides x$ and $2 \divides y$).  
+In this case, $(x',y',e') = (x/2, y/2, 2e)$.
+
+We use the the gcd property from Lemma~\bref{lem:gcd-hold}
+\begin{equation}\tag{agcd}%auavauv
+\gcd(au,av) = a\gcd(u,v).
+\end{equation}
+
+Now,
+\begin{align*}
+\gcd(a,b)
+  & =  e\gcd(x,y)
+        & \text{(by the invariant for $(x,y,e)$)}\\
+  & = e 2\gcd(x/2,y/2)
+        & \text{(by~(agcd))}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+\inductioncase{Case}~(i2): ($2 \divides x$ and $2 \nmid y$).
+In this case, $(x',y',e') = (x/2,y, e)$.
+
+We use the easily verified fact
+\begin{equation}\tag{acancel}%auvvuv
+\gcd(au,v) = \gcd(u,v)
+\end{equation}
+for all $a$'s relatively prime to $v$.
+
+Now,
+\begin{align*}
+\gcd(a,b)
+  & = e\gcd(x,y)
+      & \text{(by the invariant for $(x,y,e)$)}\\
+  & = e\gcd(x/2,y)
+      & \text{(by~(acancel))}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+\iffalse
+
+\inductioncase{Case}~(i4): ($x>y, 2 \nmid x,\text{ and } 2 \nmid y$)
+In this case $(x',y',e') = (x-y,y,e)$.
+
+We use the easily verified fact that
+\begin{equation}\tag{gcdu-v}
+\gcd(u-v,v) = \gcd(u,v).
+\end{equation}
+
+Now,
+\begin{align*}
+\gcd(a,b)
+  & = e\gcd(x,y) & \text{(by the invariant for $(x,y,e)$)}\\
+  & = e\gcd(x-y,y) & \text{(by~\eqref{gcdu-v})}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+proving that the invariant holds for $(x',y',e')$.
+
+\inductioncase{Case}~(i6): ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+
+Now we have
+\begin{align*}
+\gcd(a,b) 
+    & = e\gcd(x,y) 
+          & \text{(by the invariant for $(x,y,e)$)}\\
+    & = e\gcd(x,x) 
+          & \text{($x=y$)}\\    
+    & = ex\\
+    & = ex\gcd(1,0)
+          & \text{(since $\gcd(1,0) = 1$)}\\
+    & =  e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+Verification of the remaining cases follows similarly.
+%by symmetry between $a$ and $b$, and between $x$ and $y$.
+\fi
+
+\end{solution}
+
+\ppart Prove that rule~(i1)
+\iffalse
+\[
+(x, y, e) \to (x/2, y/2, 2e)
+\]\fi
+is never executed after any of the other rules is executed.
+
+\hint A preserved invariant about the parities of $x$ and $y$.
+
+\begin{solution}
+We claim that another preserved invariant is
+\begin{equation}\tag{noteven}%xybev
+\QNOT(2 \divides x\ \QAND\ 2 \divides y),
+\end{equation}
+that is, at least one of $x$ and $y$ is odd.
+
+To verify this, suppose a state $(x,y,e)$ satisfies~(noteven).
+Then the first rule~(i1) will not be executed.
+
+Suppose the second rule~(i2) gets executed, resulting in state
+$(x/2, y ,e)$.  Then $x$ must be even and $y$ must be odd; so this
+state satisfies~(noteven) since $y$ is odd.
+
+Suppose the fourth rule gets executed, resulting in state $(x-y,y,e)$.  Then if $y$ is odd this
+state satisfies~(noteven), and if $y$ is even, then $x$ must be odd, so this state
+satisfies~(noteven) because $x-y$ must be odd.
+
+The verification that~(noteven) is preserved by the other rules follows by similar routine
+reasoning.
+
+Now, if the first rule is not executed for some state $(x,y,e)$, then~(noteven) must hold,
+and since~(noteven) is preserved, we can conclude that the first rule will never be
+executed for any subsequent state.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

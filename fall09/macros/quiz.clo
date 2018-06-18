@@ -1,0 +1,44 @@
+\ProvidesFile{quiz.clo}
+
+\input handout.clo
+
+\renewcommand{\problempart}[1][0]{%
+    \item\print@points({)\;}#1%
+}%
+
+\def\problem{%
+    \mcs@thm{\let\thm@swap\@gobble\th@problem}{problem}{Problem}%
+%    \ifnum\mcsprob@points=\z@\else
+        \examtableupdate\mcsprob@points
+%    \fi
+}
+
+\def\print@mcsprob@title{%
+    \mcsprob@title
+}
+
+\def\mcs@begintheorem#1#2[#3]{%
+    \ifx\mcsprob@title\@empty
+        \@begintheorem{#1}{#2}[\textbf{\print@points\@empty\@empty\mcsprob@points}]%
+    \else
+        \@begintheorem{#1}{#2}[%
+            \print@mcsprob@title
+            \textbf{\print@points{\textmd{) (}}\@empty\mcsprob@points}]%
+    \fi
+}
+
+\def\mcs@thm@#1#2{%
+    \def\@tempa{#1}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{}}[]}%
+    \else
+        \refstepcounter{#1}%
+        \ifx\mcsprob@filename\@empty\else
+            \label\mcsprob@filename
+        \fi
+        \def\@tempa{\@oparg{\mcs@begintheorem{#2}{\csname the#1\endcsname}}[]}%
+    \fi
+    \@tempa
+}
+
+\endinput

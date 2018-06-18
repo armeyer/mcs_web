@@ -1,0 +1,128 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_random_grid_walk}
+  \pcomment{ZDz 12/08/15, rewritten by ARM 12/11/15}
+  \pcomment{f15.final}
+\end{pcomments}
+
+\pkeywords{
+  state_machine
+  preserved_invariant
+  counting
+  probability
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+We are interested in paths in the plane starting at $(0,0)$ that go
+one unit right or one unit up at each step.  To model this, we use a
+state machine whose states are $\nngint \times \nngint$, whose
+start state is $(0,0)$, and whose transitions are
+\begin{align*}
+(x, y) & \to (x+1,y),\\
+(x, y) & \to (x,y+1).
+\end{align*}
+\bparts
+
+\ppart How many length $n$ paths are there starting from the origin?
+\hfill \examrule[0.7in]
+
+\begin{solution}
+$2^n$.
+\end{solution}
+
+\ppart How many states are reachable in exactly $n$ steps? \hfill
+\examrule[0.7in]
+
+\begin{solution}
+$\card{\set{(x,y) \suchthat x + y = n}} = n+1$.
+\end{solution}
+
+\ppart How many states are reachable in at most $n$ steps?\hfill
+\examrule[0.9in]
+
+\examspace[0.5in]
+
+\begin{solution}
+\[\frac{(n+1)(n+2)}{2}.\]
+
+\begin{align*}
+\#\text{states reachable in $\leq n$ steps}
+& = \lefteqn{\card{{\set{(x,y) \suchthat x + y \leq n}}}}\\
+& = \card{{\set{(x,y,z) \suchthat x + y + z =  n}}}\\
+& = \binom{n+2}{2} = \frac{(n+1)(n+2)}{2}.
+\end{align*}
+\end{solution}
+
+\ppart If transitions occur independently at random, going right with
+probability $p$ and up with probability $q \eqdef 1-p$ at each step,
+what is the probability of reaching position $(x,y)$?  \hfill
+\examrule[1.0in]
+
+\examspace[0.75in]
+
+\begin{solution}
+\[
+\pr{(x,y)} = \binom{x+y}{x}p^xq^y.
+\]
+
+There have to be exactly $x$ right moves and $y$ up moves to get from
+$(0,0)$ to $(x,y)$.  Each such path has probability $p^{x}q^{y}$ and
+there are $\binom{x+y}{x}$ such paths.
+\end{solution}
+
+\ppart What is the probability of reaching state $(x,y)$ \emph{given}
+that the path to $(x,y)$ reached $(m,n)$ before getting to $(x,y)$?
+\hfill \examrule[1.0in]
+
+\examspace[0.75in]
+
+\begin{solution}
+\[
+\binom{x+y - (m+n)}{x-m}p^{x-m}q^{y-n},
+\]
+
+There have to be exactly $x-m$ right moves and $y-n$ up moves to get
+from $(m,n)$ to $(x,y)$.  Each such path has probability
+$p^{x-m}q^{y-n}$ and there are $\binom{(x-m)+(y -n ))}{x-m}$ such
+paths.
+
+Note that this conditional probability is zero if it is not possible
+to get from $(m,n)$ to $(x,y)$, that is, if $m >x$ or $n>y$.
+\end{solution}
+
+\ppart Show that the probability that a path ending at $(x,y)$ went
+through $(m,n)$ is the same for all $p$.
+
+\examspace[2.0in]
+
+\begin{solution}
+All paths from the origin to $(x,y)$ have the same probability, so the
+regardless of $p$, the probability of passing through $(m,n)$ \emph{en
+  route} to $(x,y)$ is just the fraction of these paths that goes
+through $(m,n)$.
+
+Even without this insight, the claim can be verified using Bayes Theorem:
+
+\begin{align*}
+\prcond{(m,n)}{(x,y)}
+   & = \frac{\pr{(m,n)}\prcond{(x,y)}{(m,n)}}{\pr{(x,y)}}\\
+   & = \frac{\binom{m+n}{m}p^mq^n \cdot \binom{x+y - (m+n)}{x-m}p^{x-m}q^{y-n}}{\binom{x+y}{x}p^xq^y}\\
+   & = \frac{\binom{m+n}{m} \cdot \binom{x+y - (m+n)}{x-m}}{\binom{x+y}{x}}.
+\end{align*}
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

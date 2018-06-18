@@ -1,0 +1,161 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_web_search}
+  \pcomment{created by adamc for S12:cp3t}
+\end{pcomments}
+
+\pkeywords{
+  relations
+  composition
+  inverse
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+  The language of sets and relations may seem remote from the
+  practical world of programming, but in fact there is a close
+  connection to \emph{relational databases}, a very popular
+  software application building block implemented by such software
+  packages as MySQL.  This problem explores the connection by
+  considering how to manipulate and analyze a large data set using
+  operators over sets and relations.  Systems like MySQL are able to
+  execute very similar high-level instructions efficiently on standard
+  computer hardware, which helps programmers focus on high-level
+  design.
+
+  Consider a basic Web search engine, which stores information on Web
+  pages and processes queries to find pages satisfying conditions
+  provided by users.  At a high level, we can formalize the key
+  information as:
+  \begin{itemize}
+
+  \item A set $P$ of \emph{pages} that the search engine knows about
+
+  \item A binary relation $L$ (for \emph{link}) over pages, defined
+    such that $p_1 \mrel{L} p_2$ iff page $p_1$ links to $p_2$
+
+  \item A set $E$ of \emph{endorsers}, people who have recorded their
+    opinions about which pages are high-quality
+
+  \item A binary relation $R$ (for \emph{recommends}) between
+    endorsers and pages, such that $e \mrel{R} p$ iff person $e$ has
+    recommended page $p$
+
+  \item A set $W$ of \emph{words} that may appear on pages
+
+  \item A binary relation $M$ (for \emph{mentions}) between pages and
+    words, where $p \mrel{M} w$ iff word $w$ appears on page $p$
+  \end{itemize}
+
+  Each part of this problem describes an intuitive, informal query
+  over the data, and your job is to produce a single expression using
+  the standard set and relation operators, such that the expression
+  can be interpreted as answering the query correctly, for any data
+  set.  Your answers should use only the set and relation symbols
+  given above, in addition to terms standing for constant elements of
+  $E$ or $W$, plus the following operators introduced in the text:
+  \begin{itemize}
+  \item set union $\union$.
+  \item set intersection $\intersect$.
+  \item set difference $-$.
+
+  \item relational image---for example, $R(A)$ for some set $A$, or
+    $R(a)$ for some specific element $a$.
+
+  \item relational inverse $\inv{}$.
+
+  \item \dots and one extra: \emph{relational composition} which
+    generalizes composition of functions
+\[
+a \mrel{(R \compose S)} c \eqdef\ \exists b \in B.\, (a \mrel{S} b)
+\QAND (b \mrel{R} c).
+\]
+In other words, $a$ is related to $c$ in $R \compose S$ if starting at
+$a$ you can follow an $S$ arrow to the start of an $R$ arrow and then
+follow the $R$ arrow to get to $c$.\footnote{Note the reversal of $R$
+  and $S$ in the definition; this is to make relational composition
+  work like function composition.  For functions, $f \compose g$ means
+  you apply $g$ first.  That is, if we let $h$ be $f \compose g$, then
+  $h(x) = f(g(x))$.}
+
+  \end{itemize}
+
+  Here is one worked example to get you started:
+
+  \begin{itemize}
+    \item \textbf{Search description:} The set of pages containing the word ``logic''
+    \item \textbf{Solution expression:} $\inv{M}(\textrm{``logic''})$
+  \end{itemize}
+
+  Find similar solutions for each of the following searches:
+
+  \bparts
+
+  \ppart The set of pages containing the word ``logic'' but not the word ``predicate''
+
+  \begin{solution}
+    $$\inv{M}(\textrm{``logic''}) - \inv{M}(\textrm{``predicate''})$$
+  \end{solution}
+
+  \ppart The set of pages containing the word ``set'' that have been recommended by ``Meyer''
+
+  \begin{solution}
+    $$\inv{M}(\textrm{``set''}) \intersect R(\textrm{``Meyer''})$$
+  \end{solution}
+
+  \ppart The set of endorsers who have recommended pages containing the word ``algebra''
+
+  \begin{solution}
+    $$\inv{R}(\inv{M}(\textrm{``algebra''}))$$
+Alternatively,
+\[
+\inv{(M \compose R)}(\textrm{``algebra''})
+\]
+  \end{solution}
+
+  \ppart The relation that relates endorser $e$ and word $w$ iff $e$ has recommended a page containing $w$
+
+  \begin{solution}
+    $$M \compose R$$
+  \end{solution}
+
+  \ppart The set of pages that have at least one incoming or outgoing link
+
+  \begin{solution}
+    $$L(P) \union \inv{L}(P)$$
+  \end{solution}
+
+  \ppart The relation that relates word $w$ and page $p$ iff $w$ appears on a page that links to $p$
+
+  \begin{solution}
+    $$L \compose \inv{M}$$
+  \end{solution}
+
+  \ppart The relation that relates word $w$ and endorser $e$ iff $w$
+  appears on a page that links to a page that $e$ recommends
+
+  \begin{solution}
+    $$\inv{R} \compose L \compose \inv{M}$$
+  \end{solution}
+
+  \ppart The relation that relates pages $p_1$ and $p_2$ iff $p_2$ can
+  be reached from $p_1$ by following a sequence of exactly 3 links
+
+  \begin{solution}
+    $$L \compose L \compose L$$
+  \end{solution}
+
+  \eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems end here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

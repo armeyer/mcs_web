@@ -1,0 +1,156 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_RSA_proving_correctness}
+  \pcomment{from: S09.cp8r}
+  \pcomment{revised for Zmodn and way simpler---ARM 3/28/13}
+\end{pcomments}
+
+\pkeywords{
+  number_theory
+  modular_arithmetic
+  primes
+  RSA
+  Euler_theorem
+  phi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  A critical fact about \idx{RSA} is, of course, that decrypting an
+  encrypted message always gives back the original message $m$.
+  Namely, if $n=pq$ where $p$ and $q$ are distinct primes, $m \in
+  \Zintvco{0}{pq}$, and
+    \[
+    d\cdot e \equiv 1 \pmod{(p-1)(q-1)},
+    \]
+    then
+    \begin{equation}\label{mdepq=m}
+      \widehat{m}^d \eqdef \paren{m^e}^d = m \inzmod{n}.
+      %\rem{\paren{\rem{m^d}{n}}^e}{n} = m.
+    \end{equation}
+
+We'll now prove this.
+
+\bparts
+
+\ppart\label{relprime:mdepq-m} Explain why~\eqref{mdepq=m} follows
+very simply from Euler's theorem when $m$ is \emph{relatively prime
+  to} $n$.
+
+\begin{solution}
+A key observation is that $(p-1)(q-1) = \phi(n)$, so $de \equiv 1
+\pmod{\phi(n)}$ by definition of $d$ and $e$.  Now $\paren{m^e}^d =
+m^{ed}$, so equation~\ref{mdepq=m} will follow from the general remark
+that if $a \equiv 1 \pmod{\phi(n)}$, then
+\begin{equation}\label{mamzn}
+m^a = m \inzmod{n}
+\end{equation}
+for any $n >1$ and $m$ relatively prime to $n$, that is, $m \in
+\relpr{n}$.  This follows from that fact, by definition of congruence
+mod $\phi(n)$, that $a$ must be of the form $1+k\phi(n)$.  So
+\begin{align*}
+m^a
+ & = m^{1 + k\phi(n)}\\
+ & = m \paren{m^{\phi(n)}}^k\\
+ & = m \cdot 1^k \inzmod{n}
+        & \text{(Euler's Theorem for $m \in \relpr{n}$)}\\
+ & = m.
+\end{align*}
+\end{solution}
+
+\eparts All the rest of this problem is about removing the restriction
+that $m$ be relatively prime to $n$.  That is, we aim to prove that
+equation~\eqref{mdepq=m} holds for \emph{all} $m \in \Zintvco{0}{n}$.
+
+It is important to realize that there is no practical reason to worry
+about---or to bother to check for---this relative primality condition
+before sending a message $m$ using RSA.  That's because the whole RSA
+enterprise is predicated on the difficulty of factoring.  If an $m$
+ever came up that wasn't relatively prime to $n$, then we could factor
+$n$ by computing $\gcd(m,n)$.  So believing in the security of RSA
+implies believing that the liklihood of a message $m$ turning up that
+was not relatively prime to $n$ is negligible.
+
+But let's be pure, impractical mathematicians and get rid of this
+technically unnecessary relative primality side condition, even if it
+is harmless.  One gain for doing this is that statements about RSA
+will be simpler without the side condition.  More important, the proof
+below illustrates a useful general method of proving things about a
+number $n$ by proving them separately for the prime factors of $n$.
+
+\bparts
+
+\ppart\label{pma} Prove that if $p$ is prime and $a \equiv 1
+\pmod{p-1}$, then
+\begin{equation}\label{mamp}
+m^a = m \inzmod{p}.
+\end{equation}
+
+\begin{solution}
+If $p \divides m$, then equation~\eqref{mamp} holds since both sides
+equal 0 in $\Zmod{p}$.  On the other hand, if $p$ does not divide
+$m$, then~\eqref{mamp} holds by~\eqref{mamzn} since $\phi(p) = p-1$.
+\end{solution}
+
+\ppart\label{abp} Give an elementary proof\footnote{There is no need
+  to appeal to the Chinese Remainder Theorem.} that if $a \equiv b
+\pmod {p_i}$ for distinct primes $p_i$, then $a \equiv b$ modulo the
+product of these primes.
+
+%\pmod{p_1p_1\cdots p_n}$.
+
+\begin{solution}
+If $a \equiv b \pmod {p_i}$, then by definition, $p_i \divides (a-b)$.
+By the Unique Factorization Theorem~\bref{thm:unique_factor}, the
+product of the $p_i$'s must therefore also divide $(a-b)$, which means
+that $a \equiv b$ modulo the product of all these primes.
+\end{solution}
+
+\ppart Note that~\eqref{mdepq=m} is a special case of
+\begin{claim*}
+If $n$ is a product of distinct primes and $a \equiv 1
+\pmod{\phi(n)}$, then
+\[
+m^a = m \inzmod{n}.
+\]
+\end{claim*}
+Use the previous parts to prove the Claim.
+
+\begin{solution}
+Suppose $n$ is a product of distinct primes,
+  $p_1p_2\cdots p_k$.  Then by multiplicativity of Euler's functions,
+  $\phi$, we have
+\[
+\phi(n) = \phi(p_1)\phi(p_2)\cdots \phi(p_k).
+\]
+
+Now suppose $a \equiv 1 \pmod{\phi(n)}$, that is, $a$ is 1 plus a
+multiple of $\phi(n)$.   So $a$ is also 1 plus a multiple of $\phi(p_i)$, namely,
+\[
+a \equiv 1 \pmod {\phi(p_i)}.
+\]
+Hence, by equation~\eqref{mamzn},
+\[
+m^a \equiv m \pmod{p_i}
+\]
+for all $m$.  Since this holds for all factors $p_i$ of $n$, we conclude
+from part~\eqref{abp} that
+\[
+m^a \equiv m \pmod{n},
+\]
+which proves the Claim.
+\end{solution}
+
+\eparts
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

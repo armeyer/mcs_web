@@ -1,0 +1,94 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{../light}
+
+
+\begin{document}
+\lecture{Graph Theory III}{September 30, 2008}
+
+
+\section{Build-Up Error}
+
+Here is a false proof about connectivity.  It exposes a very common
+flaw made on proofs by induction on graphs -- it even has a name --
+it is known as ``build-up error''.
+
+
+\begin{falseclm*}
+If every vertex in a graph has degee at least 1, then the graph is
+connected.
+\end{falseclm*}
+
+
+There are many counterexamples; here is one:
+
+\mfigure{!}{0.75in}{false-connect-cx}
+
+Since the claim is false, there must be at least one error in the
+following ``proof''.  
+
+\begin{proof}
+We use induction.  Let $P(n)$ be the proposition that if every vertex
+in an $n$-vertex graph has degree at least 1, then the graph is
+connected.
+
+\noindent \textit{Base case:} There is only one graph with a single
+vertex and it has degree 0.  Therefore, $P(1)$ is vacuously true,
+since the if-part is false.
+
+\noindent \textit{Inductive step:} We must show that $P(n)$ implies
+$P(n+1)$ for all $n \geq 1$.  Consider an $n$-vertex graph in which
+every vertex has degree at least 1.  By the assumption $P(n)$, this
+graph is connected; that is, there is a path between every pair of
+vertices.  Now we add one more vertex $x$ to obtain an $(n+1)$-vertex
+graph:
+
+\mfigure{!}{1.75in}{false-connect-pic}
+
+All that remains is to check that there is a path from $x$ to every
+other vertex $z$.  Since $x$ has degree at least one, there is an edge
+from $x$ to some other vertex; call it $y$.  Thus, we can obtain a
+path from $x$ to $z$ by adjoining the edge $\edge{x}{y}$ to the path
+from $y$ to $z$.  This proves $P(n+1)$.
+
+By the principle of induction $P(n)$ is true for all $n \geq 1$, which
+proves the theorem.
+\end{proof}
+
+That looks fine!  Where is the bug?  It turns out that
+faulty assumption underlying this argument is that
+\textit{every $(n+1)$-vertex graph with minimum degree 1 can be
+obtained from an $n$-vertex graph with minimum degree 1 by adding 1
+more vertex}.  Instead of starting by considering an arbitrary $(n+1)$- node
+graph, this proof only considered an $(n+1)$-node graph that you
+can make by starting with  an $n$-node graph with minimum degree 1.
+
+The counterexample above shows that this assumption is false; there is
+no way to build that 4-vertex graph from a 3-vertex graph with minimum
+degree 1.  Thus the first error in the proof is the statement ``This
+proves $P(n+1)$''.
+
+More generally, this is an example of ``build-up error''.  Generally,
+this arises from a faulty assumption that every size $n+1$ graph with
+some property can be ``built up'' from a size $n$ graph with the same
+property.  (This assumption is correct for some properties, but
+incorrect for others--- such as the one in the argument above.)
+
+One way to avoid an accidental build-up error is to use a ``shrink
+down, grow back'' process in the inductive step: start with a size
+$n+1$ graph, remove a vertex (or edge), apply the inductive hypothesis
+$P(n)$ to the smaller graph, and then add back the vertex (or edge)
+and argue that $P(n+1)$ holds.  Let's see what would have happened if
+we'd tried to prove the claim above by this method:
+
+\noindent \textit{Inductive step:} We must show that $P(n)$ implies
+$P(n+1)$ for all $n \geq 1$.  Consider an $(n+1)$-vertex graph $G$ in
+which every vertex has degree at least 1.  Remove an arbitrary vertex
+$v$, leaving an $n$-vertex graph $G'$ in which every vertex has
+degree... uh-oh!
+
+The reduced graph $G'$ might contain a vertex of degree 0, making the
+inductive hypothesis $P(n)$ inapplicable!  We are stuck--- and
+properly so, since the claim is false!
+
+\end{document}
+

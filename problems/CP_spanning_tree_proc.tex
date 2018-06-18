@@ -1,0 +1,200 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_spanning_tree_proc}
+  \pcomment{subsumes CP_Mark_a_spanning_tree}
+  \pcomment{essentially same as MQ_graph_state_machine}
+  \pcomment{from: S09.cp6t; revised ARM 3/2/10}
+  \pcomment{commented out in S09 so check/revise before using}
+  \pcomment{edited ARM 10/23/11}
+\end{pcomments}
+
+\pkeywords{
+  graphs
+  spanning_trees
+  state_machines
+  derived_variables
+  increasing
+  decreasing
+  termination
+  trees
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}%\mbox{} %latex artifact
+
+A procedure for connecting up a (possibly disconnected) simple graph
+and creating a spanning tree can be modelled as a state machine whose
+states are finite simple graphs.  A state is \emph{final} when no
+further transitions are possible.  The transitions are determined by the
+following rules:
+
+\textbox{
+%\begin{center}
+\textboxheader{Procedure \textbf{create-spanning-tree}}
+%\end{center}
+
+\begin{enumerate}
+\item If there is an edge $\edge{u}{v}$ on a cycle, then
+  delete $\edge{u}{v}$.
+
+\iffalse
+there is an edge of $G$ between $u$ and $v$ and there is
+also a path from $u$ to $v$ which does \emph{not} include this edge;
+in this case, delete the edge $\edge{u}{v}$.
+\fi
+
+\item If vertices $u$ and $v$ are not connected, then add the edge
+  $\edge{u}{v}$.
+\end{enumerate}
+}
+
+\bparts
+
+\ppart Draw all the possible final states reachable starting with the
+graph with vertices $\set{1,2,3,4}$ and edges
+\[
+\set{\edge{1}{2},\edge{3}{4}}.
+\]
+
+\begin{solution}
+It's not possible to delete any edge.  The procedure can only
+add an edge connecting exactly one of vertices 1 or 2 to exactly one of
+vertices 3 or 4, and then terminate.  So there are four possible final
+states.
+\end{solution}
+
+\ppart Prove that if the machine reaches a final state, then the final
+state will be a tree on the vertices of the graph on which it started.
+
+\begin{solution}
+We use the characterization of a tree as an acyclic connected
+graph.
+
+A final state must be connected, because otherwise there would be two
+unconnected vertices, and then a transition adding the edge between
+them would be possible, contradicting finality of the state.
+
+A final state can't have a cycle, because deleting any edge on the
+cycle would be a possible transition.
+\end{solution}
+
+\ppart \label{derived-ecs} For any graph $G'$, let $e$ be the number of
+edges in $G'$, $c$ be the number of connected components it has, and
+$s$ be the number of cycles.  For each of the quantities \iffalse
+derived variables\fi below, indicate the \emph{strongest} of the
+properties that it is guaranteed to satisfy, no matter what the
+starting graph is\inhandout{ and be prepared to briefly explain your
+  answer}.
+
+The choices for properties are: \emph{constant}, \emph{strictly
+increasing}, \emph{strictly decreasing}, \emph{weakly increasing},
+\emph{weakly decreasing}, \emph{none of these}.  %The quantiderived variables are
+
+\begin{enumerate}
+
+\item[(i)] $e$ \begin{solution}
+none of these
+\end{solution}
+
+\item[(ii)] $c$ \begin{solution}
+weakly decreasing
+\end{solution}
+
+\item[(iii)] $s$ \begin{solution}
+weakly decreasing
+\end{solution}
+
+\item[(iv)] $e-s$  \begin{solution}
+weakly increasing
+\end{solution}
+
+\item[(v)] $c+e$  \begin{solution}
+weakly decreasing
+\end{solution}
+
+\item[(vi)] $3c + 2e$  \begin{solution}
+strictly decreasing
+\end{solution}
+
+\item[(vii)] $c+s$ \begin{solution}
+strictly decreasing
+\end{solution}
+
+\iffalse  %uncomment when well-founded partial order topic is included.
+\item[(viii)] $(c,e)$, partially ordered coordinatewise (the
+  \emph{product} partial order~\bref{productrel}).
+\begin{solution}
+    none of these
+\end{solution}
+
+\item[(ix)] $(c,e)$, ordered lexicographically  \begin{solution}
+strictly decreasing
+\end{solution}
+\fi
+
+\end{enumerate}
+
+\ppart Prove that one of the quantities from part~\eqref{derived-ecs}
+strictly decreases at each transition.  Conclude that for every
+starting state, the machine will reach a final state.
+
+\iffalse
+by proving that one of the
+derived variables above is strictly decreasing under some well founded
+partial order.
+\fi
+
+\begin{solution}
+  If a value associated with states, known as a \term{derived
+    variable}, is nonnegative integer-valued and decreases at each
+  transition, then the machine must reach a final state after at most
+  as many transitions as the initial value of the variable.  So we
+  need only identify such a derived variable.  There are two in the
+  list above, namely (vi) and (vii).
+
+  To show that the variable (vi) strictly decreases, note that
+  the rule for deleting an edge ensures that the connectedness relation
+  does not change, so neither does the number of connected components $c$.
+  Meanwhile the number of edges $e$ decreases by one when an edge is
+  deleted.  Therefore the variable $3c+2e$ decreases by $2$.  The rule for
+  adding an edge ensures that the number of connected components $c$
+  decreases by one and the number of edges $e$ increases by one.
+  Therefore the variable $3c+2e$ decreases by $1$.
+
+  To show that the variable (vii) strictly decreases, note that the
+  rule for deleting an edge ensures that the number of connected
+  components $c$ does not change and the number of cycles $s$
+  decreases by $n$, where $n \geq 1$. Therefore the variable $c+s$
+  decreases by $n$.  The rule for adding an edge ensures that the
+  number of connected components $c$ decreases by one and the number
+  of cycles $s$ does not change.  Therefore the variable $c+s$
+  decreases by one.
+
+\iffalse
+  The variable (viii) is neither increasing nor decreasing since under
+  the rule for adding an edge, the number of connected components $c$
+  decreases by one and the number of edges $e$ increases by one.
+\fi
+
+\iffalse
+To show that the lexicographically ordered $(c,e)$ strictly decreases,
+note that the rule for deleting an edge ensures that the number of
+connected components $c$ does not change and the number of edges $e$
+decreases by one.  The rule for adding an edge ensures that the number of
+connected components $c$ decreases by one.
+\fi
+
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

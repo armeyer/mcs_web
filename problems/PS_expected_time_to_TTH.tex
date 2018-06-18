@@ -1,0 +1,84 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_expected_time_to_TTH}
+  \pcomment{from: SP11}
+\end{pcomments}
+
+\pkeywords{
+  expectation
+  tree_diagram
+  subtree
+  expected_time
+  coin_flip
+}
+
+\begin{problem}
+A coin will be flipped repeatedly until the sequence \STR{TTH}
+(tail/tail/head) comes up.  Successive flips are independent, and the
+coin has probability $p$ of coming up heads.  Let
+$N_\mathtt{\STR{TTH}}$ be the number of coin flips until
+\STR{TTH} first appears.  What value of $p$ minimizes
+$\expect{N_\STR{TTH}}$?
+
+\begin{solution}
+We can describe the event tree $D$ for the coin flips as follows:
+\[
+D = \STR{H}\cdot D + \STR{T}\cdot (\STR{H}\cdot D + \STR{T}\cdot G). 
+\]
+where
+\[
+G = \STR{H} + \STR{T}\cdot G
+\]
+is the tree for $N_\mathtt{H}$, the number of flips until a head shows.
+up.
+More concisely,
+\[
+D = \mathtt{H}\cdot D + \mathtt{TH}\cdot D + \mathtt{TT}\cdot G.
+\]
+Now we compute $\expect{N_\mathtt{TTH}}$:
+\[
+\expect{N_\mathtt{TTH}} = p\paren{1 + \expect{N_\mathtt{TTH}}}  + 
+(1-p)p ( 2 + \expect{N_\mathtt{TTH}}) + 
+ (1-p)^2 (2 + \expect{N_\mathtt{H}})
+\]
+We know $\expect{N_\mathtt{H}} = 1/p$, so we can solve for $\expect{N_\mathtt{TTH}}$ and get:
+\iffalse
+\[ 
+\expect{N_\mathtt{TTH}} = (p + (1-p)p) \expect{N_\mathtt{TTH}} + p + 2(1-p)p + (1-p)^2( 2 + 1/p).
+\]
+
+Notice how the $2 + 1/p$ term corresponds to the mean time to failure
+of the variable given we see \STR{TT} at the start. Also, if $p =
+0$ the $1/p$ term grows infinite, whereas if $p = 1$ the $(1-p)^2$
+term grows infinite.
+\fi
+\[
+\expect{N_\mathtt{TTH}}
+  = \frac{p + 2(1-p)p + (1-p)^2( 2 + 1/p)}{1 - p - (1-p)p}
+  = \frac{1}{p(1-p)^2}
+\]
+
+With $\expect{N_\mathtt{TTH}}$ now expressed in terms of $p$, we can
+minimize it using basic calculus.  The derivative of
+$\expect{N_\mathtt{TTH}}$ with respect to $p$ is
+\[
+\frac{1 - 3p }{(p-1)^3p^2}.
+\]
+This expression is minimized at $p = 1/3$, giving an expected time of
+$27/4 < 7$ flips to see \STR{TTH}, in contrast to an expected 8
+flips when $p = 1/2$.
+
+\begin{staffnotes}
+This generalizes to $\mathtt{T}^n\mathtt{H}$ with 
+\[
+\expect{N_{\mathtt{T}^n\mathtt{H}}} = \frac{1}{p(1-p)^n}
+\]
+which is minimized when $p = 1/(n+1)$, giving an expected number of flips equal to
+\[
+\frac{(n+1)^{n+1}}{n^n}.
+\]
+\end{staffnotes}
+
+\end{solution}
+\end{problem}

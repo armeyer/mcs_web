@@ -1,0 +1,106 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_infinite_repeat}
+  \pcomment{compare to MQ_infinite_repeat}
+  \pcomment{S11.final, F11.makeupfinal}
+  \pcomment{by ARM 5/13/11}
+\end{pcomments}
+
+\pkeywords{
+  infinite
+  expectation
+  mean_time_to_failure
+  Theta
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+You have a random process for generating a positive integer $K$.  The
+behavior of your process each time you use it is (mutually)
+independent of all its other uses.  You use your process to generate an
+integer, and then use your procedure repeatedly until you
+generate an integer as big as your first one.  Let $R$ be the number
+of additional integers you have to generate.
+
+\bparts
+
+\ppart\label{probKgeqk} State and briefly explain a simple closed formula for
+$\expcond{R}{K=k}$ in terms of $\prob{K \geq k}$.
+
+\examspace[1in]
+
+\begin{solution}
+\[
+\expcond{R}{K=k} = \frac{1}{\prob{K \geq k}}
+\]
+
+If $K=k$, then we can think of generating a number $\geq k$ as a
+failure, so the expected number of repeats is the mean time to
+failure, which is the reciprocal of probability of failure on a given
+try.
+\end{solution}
+
+\eparts
+\vspace{0.2in}
+Suppose $\prob{K = k} = \Theta(k^{-4})$.
+\vspace{0.2in}
+
+\bparts
+
+\ppart \label{probKgeqkTheta}
+Show that $\prob{K \geq k} = \Theta(k^{-3})$.
+
+\examspace[2.5in]
+
+\begin{solution}
+It follows from the definition of $\Theta()$ that
+\begin{equation}\label{Thetasum}
+\text{If $f = \Theta(g)$, then $\sum_{n \in S} f(n) = \Theta\paren{\sum_{n \in S} g(n)}$}
+\end{equation}
+for any countable set $S$.  Therefore, with a slight abuse of
+$\Theta()$ notation, we have
+\begin{align*}
+\prob{K \geq k}
+   & = \sum_{m \geq k} \prob{K = m}\\
+   & = \Theta\paren{\sum_{m \geq k} k^{-4}} & \text{by~\eqref{Thetasum}}\\
+   & = \Theta\paren{\int_k^{\infty} x^{-4}\, dx} & \text{(the Integral Method)}\\
+   & = \Theta\paren{k^{-3}}
+\end{align*}
+
+\end{solution}
+
+\ppart  Show that $\expect{R}$ is infinite.
+
+
+\begin{solution}
+It follows from the definition of $\Theta()$ that
+\begin{equation}\label{Thetamult}
+\text{If $f_1 = \Theta(g_1)$ and $f_2 = \Theta(g_2)$, then $f_1 \cdot
+  f_2 = \Theta(g_1 \cdot g_2)$.}
+\end{equation}
+Now we have By Total Expectation:
+\begin{align*}
+\expect{R}
+   & = \sum_{k \in \integers^+} \expcond{R}{K=k} \cdot \prob{K=k}\\
+   & = \sum_{k \in \integers^+} \frac{1}{\prob{K \geq k}} \cdot \prob{K=k}
+           & \text{by part~\eqref{probKgeqk}}\\
+   & = \Theta\paren{\sum_{k \in \integers^+} k^3 \cdot k^{-4}}
+            & \text{(by part~\eqref{probKgeqkTheta},~\eqref{Thetamult},~\eqref{Thetasum})}\\
+   & = \Theta\paren{\sum_{k \in \integers^+} k^{-1}} = \infty.
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+ 

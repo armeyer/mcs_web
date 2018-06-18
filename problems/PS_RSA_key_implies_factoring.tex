@@ -1,0 +1,147 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_RSA_key_implies_factoring}
+  \pcomment{from: S09.ps8; F06.ps6}
+  \pcomment{commented out in S09 - has typos and probably needs substantial revision}
+  \pcomment{Could make a very nice problem, but needs work before
+    using.  It is sketchy and hard to follow.  Also, frustrating
+    because so many facts are stipulated w/o proof---ARM 3/3/13.}
+\end{pcomments}
+
+\pkeywords{
+  modular_arithmetic
+  factor
+  RSA
+  Euler
+  Eulers_theorem
+  square_root
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+
+You've seen how the RSA encryption scheme works, but why is it hard to
+break?  In this problem, you will see that finding private keys is as
+hard as finding the prime factorizations of integers.  Since there is
+a general consensus in the crypto community (enough to persuade many
+large financial institutions, for example) that factoring numbers with
+a few hundred digits requires astronomical computing resources, we can
+therefore be sure it will take the same kind of overwhelming effort to
+find RSA private keys of a few hundred digits.  This means we can be
+confident the private RSA keys are not somehow revealed by the public
+keys\footnote{This is a very weak kind of ``security'' property, because it
+doesn't even rule out the possibility of deciphering RSA encoded messages
+by some method that did not require knowing the private key.  Nevertheless,
+over twenty years experience supports the security of RSA in practice.}.
+
+% It would calm a lot of people down if we could show that the ability to
+% compute any nontrivial piece of information about a message sent via RSA
+% implies the ability to factor, but no one has been able to do that.  (To
+% put this in perspective, some people would not even be calmed by such a
+% statement, since we are not sure that factoring is computationally
+% difficult.  Still, if someone figures out how to factoring efficiently,
+% then there would be much bigger problems in the world than whether or not
+% you can send your message securely.)  Instead, what .
+
+For this problem, assume that $n = p \cdot q$ where $p,q$ are both
+\emph{odd} primes \iffalse (this only rules out the prime 2, which would
+not be a very secure prime to choose)\fi and that $e$ is the public key
+and $d$ the private key of the RSA protocol..
+Let $c \eqdef e \cdot d - 1$.
+
+\bparts
+
+\ppart\label{phindc}  Show that $\phi(n)$ divides $c$.
+
+\begin{solution}
+$ed \equiv 1 \pmod{\phi(n)}$ by definition of $d$, so $\phi(n)$ divides $c$
+by definition of $\equiv$ mod $\phi(n)$.
+\end{solution}
+
+\ppart Conclude that 4 divides $c$.
+
+\begin{solution}
+Since $p,q$ are odd, both $p-1$ and $q-1$ are even.  Thus $4$ divides
+$(p-1)(q-1) = \phi(n)$, so by part~\eqref{phindc}, 4 also divides $c$.
+\end{solution}
+
+\ppart
+\label{squareequals1modn}
+Show that if $\gcd(r,n)=1$, then $r^c \equiv 1 \pmod{n}.$
+
+\begin{solution}
+By Euler's Theorem, $r^{\phi(n)} \equiv 1 \pmod{n}$.  By part~(a), $c =
+k\phi(n)$ for some integer $k$ so
+\[
+r^c = r^{k\phi(n)} = \paren{r^{\phi(n)}}^k \equiv 1^k \equiv 1 \pmod n.
+\]
+\end{solution}
+
+
+% \ppart\label{k} Show that if you are lucky and find a positive integer $k<n$ such
+% that $\gcd(k,n) \neq 1$, then you can factor $n$.
+
+% \begin{solution}
+%Since $0< k<n$, we know $0 < \gcd(k,n) < n$.  Also $\gcd(k,n)$
+% divides $n$.  So if $\gcd(k,n) \neq 1$, it must be $p$ or $q$.
+%\end{solution}
+
+\eparts
+
+A \emph{square root} of $m$ modulo $n$ is an integer $s \in [0.n)$
+  such that $s^2 \equiv m \pmod n$.  Here is a nice fact to know: when
+  $n$ is a product of two odd primes, then every number $m$ such that
+  $\gcd(m,n)=1$ has 4 square roots modulo $n$.
+
+In particular, the number 1 has four square roots modulo $n$.  The two
+trivial ones are 1 and $n-1$ (which is $\equiv - 1 \pmod n$).  The other
+two are called the \emph{nontrivial} square roots of 1.
+
+\bparts
+\ppart\label{y2=1}
+Since you know $c$, then for any integer $r$ you can also compute the
+remainder $y$ of $r^{c/2}$ divided by $n$.  So $y^2 \equiv r^c \pmod n$.
+Now if $r$ is relatively prime to $n$, then $y$ will be a square root of 1
+modulo $n$ by part~\eqref{squareequals1modn}.
+
+Show that if $y$ turns out to be a \emph{nontrivial} root of 1 modulo $n$,
+then you can factor $n$.  \hint From the fact that $y^2 - 1 = (y+1)(y-1)$,
+show that $y+1$ must be divisible by exactly one of $q$ and $p$.
+
+\begin{solution}
+Since $y$ is a square root of 1 modulo $n$, we know that $n$
+divides $y^2 -1 = (y+1)(y-1)$.  So $p$ must divide either $y+1$ or $y-1$,
+and likewise $q$ must divide either $y+1$ or $y-1$.
+
+But if $y$ is nontrivial, then $y+1$ and $y-1$ are positive and smaller
+than $n$, so if $y+1$ is divisible by $p$ it can't also be divisible by
+$q$, and likewise, if it is divisible by $q$ it can't also be divisible by
+$p$.  So $y+1$ must be divisible by exactly one of $p$ and $q$.  So
+$\gcd(y+1,n)$ must equal $p$ or $q$.
+\end{solution}
+
+\ppart It turns out that at least half the positive integers $r< n$ that
+are relatively prime to $n$ will yield $y$'s in part~\eqref{y2=1} that are
+nontrivial roots of 1.  Conclude that if, in addition to $n$ and the
+public key $e$ you also knew the private key $d$, then you can be sure of
+being able to factor $n$.
+
+\begin{solution}
+Keep choosing $r$'s at random.  Most $r$'s will be relatively
+prime to $n$, and at least half of these will yield nontrivial $y$'s in
+part~\eqref{y2=1}, so you can be sure to turn up the needed nontrivial $y$
+in not very many tries.  
+\end{solution}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

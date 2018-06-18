@@ -1,0 +1,155 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+   \pcomment{CP_recursive_prenex}
+   \pcomment{depends on CP_prenex} 
+   \pcomment{PS_recursive_variable_convention is a sequel}
+   \pcomment{ARM 3/4/16}
+\end{pcomments}
+
+\pkeywords{ predicate_formula recursive free_varianble structural_induction }
+
+\newcommand{\xbod}{\ensuremath{\mathop{\mathrm{bod}}}}
+\newcommand{\qnts}{\ensuremath{\mathop{\mathrm{qnt}}}}
+
+\begin{problem}
+Defining predicate formulas as a recursive data type leads to straightforward
+recursive definitions of free variables, prenex forms, and many other formula
+properties.
+
+We'll only consider the propositional connectives $\ANDsym, \NOTsym$,
+and $\IMPsym$, since these are enough to illustrate how to handle all
+the other propositional connectives.  For simplicity, the only atomic
+formulas allowed will be predicate symbols applied to variables.  So
+function symbols and the equality symbol ``$\mathbf{=}$'' will not
+appear.
+
+\begin{definition*}
+\inductioncase{Base case}: $P(u,\dots,v)$ is a predicate formula,
+where $P$ is a predicate symbol and $u,\dots,v$ are variable symbols,
+not necessarily distinct.
+
+\inductioncase{Constructor step}: 
+If $F$ and $G$ are predicate formulas, then so are
+\[
+ \NOTsym(F),
+ (F \ANDsym G),
+ (F \IMPsym G),
+ (\exists x.\, F),
+ (\forall x.\, F),
+\]
+where $x$ is a variable.
+\end{definition*}
+
+\bparts
+
+\ppart Give a recursive definition of the set $\fvrbls(F)$ of \emph{free
+  variables} in a predicate formula $F$.  (A variable $x$ is free iff it has an
+occurrence that is not inside any subformula of the form $\exists x.[\dots]$ or
+$\forall x.[\dots]$.)
+
+\begin{solution}
+\inductioncase{Base cases} 
+\[
+\fvrbls(P(u,\dots,v)) \eqdef \set{u,\dots,v}.
+\]
+
+\inductioncase{Constructor cases}
+\begin{align*}
+\fvrbls(\NOTsym(F))   & \eqdef \fvrbls(F),\\
+\fvrbls((F \ANDsym G)) & \eqdef \fvrbls(F) \union \fvrbls(G),\\
+\fvrbls((F \IMPsym G)) & \eqdef \fvrbls(F) \union \fvrbls(G),\\
+\fvrbls(\exists x.\, F) & \eqdef \fvrbls(F) - \set{x},\\
+\fvrbls(\forall x.\, F) &  \eqdef \fvrbls(F) - \set{x}.
+\end{align*}
+\end{solution}
+
+\eparts
+
+A predicate formula is in \emph{prenex form} when all its quantifiers
+appear at the beginning of the formula; some examples were given in
+Problem~\bref{CP_prenex}.  More formally, a \emph{prenex formula} is a predicate
+formula of the form
+\[
+\qnts(F).\,\xbod(F),
+\]
+where $\xbod(F)$ is a quantier-free formula, and $\qnts{F}$ is a
+(possibly empty) sequence of quantifiers
+\[
+Q_1 x_1.\, Q_2 x_2.\, \dots Q_n x_n.\, 
+\]
+where $Q_i$ is ``$\forall$'' or ``$\exists$,'' and the $x_i$'s are
+distinct variables.
+
+It is easy to convert a formula into an equivalent prenex formula if the given
+formula satisfies the \emph{unique variable convention}: for each variable $x$,
+there is at most one occurrence of either a ``$\forall x$'' or an ``$\exists
+x$,'' and that if $x$ is a free variable, there is no occurrence of a
+``$\forall x$'' or an ``$\exists x$'' anywhere else in the formula.  (A way of
+renaming variables to convert a formula into an equivalent one satisfying the
+unique variable convention was illustrated in
+Problem~\bref{CP_variable_convention}.  The general renaming procedure is given
+in Problem~\bref{PS_recursive_variable_convention}.)
+
+\bparts
+
+\ppart Let $F$ be a predicate formula satisfying the unique variable convention.
+Define a recursive procedure based on the recursive definition of predicate
+formulas that converts $F$ into an equivalent prenex formula whose body is the
+same as $F$'s with the quantifiers erased.  (That is, the propositional
+connectives of $F$ don't change, in contrast to the method suggested in
+Problem~\bref{CP_prenex}.)
+
+It will help to use the notation ``$\overline{\qnts(F)}$'' for the sequence
+\[
+\overline{Q_1} x_1.\, \overline{Q_2} x_2.\, \dots \overline{Q_n} x_n.\, 
+\]
+where $\overline{\forall} \eqdef \exists$ and $\overline{\exists}
+\eqdef \forall$.
+
+For example, the variable convention ensures that if $(Q x. F)$ is a
+subformula somewhere, then there are no free occurrences of $x$
+anywhere.  Therefore,
+\[
+(Q x. F) \ANDsym G\quad  \text{is equivalent to} \quad Q x. (F \ANDsym G),
+\]
+because we can think of $G$ as simply being \True\ or \False.  This
+explains why the following definition of $\qnts((F \ANDsym G))$ and
+$\xbod((F \ANDsym G))$ preserves equivalence:
+\begin{align*}
+\xbod((F \ANDsym G)) & \eqdef (\xbod(F) \ANDsym \xbod(G)),\\
+\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G).
+\end{align*}
+
+\begin{solution}
+\inductioncase{Base cases} 
+\begin{align*}
+\xbod(P(u,\dots,v))& \eqdef P(u,\dots,v),\\
+\qnts(P(u,\dots,v)) & \eqdef \emptystring.
+\end{align*}
+
+\inductioncase{Constructor cases}
+\begin{align*}
+\xbod(\NOTsym(F))   & \eqdef \NOTsym(\xbod(F)),\\
+\qnts(\NOTsym(F)))   & \eqdef \overline{\qnts}(F),\\
+\xbod((F \ANDsym G)) & \eqdef (\xbod(F) \ANDsym \xbod(G)),\\
+\qnts((F \ANDsym G)) & \eqdef \qnts(F),\qnts(G)
+      &\text{(concatenation of the quantifier lists)}\\
+\xbod((F \IMPsym G)) & \eqdef \xbod(F) \IMPsym \xbod(G),\\
+\qnts((F \IMPsym G)) & \eqdef \overline{\qnts(F)},\qnts(G)\\
+\xbod(\exists x.\, F) & \eqdef \xbod(F)\\
+\qnts(\exists x.\, F) & \eqdef \exists x,\qnts(F)\\
+\xbod(\forall x.\, F) &  \eqdef \xbod(F)\\
+\qnts(\forall x.\, F) & \eqdef \forall x,\qnts(F).
+\end{align*}
+\end{solution}
+
+\begin{staffnotes}
+The variable convention justifies the other cases similarly.
+\end{staffnotes}
+
+\eparts
+
+\end{problem}
+
+\endinput 

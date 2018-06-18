@@ -1,0 +1,100 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+    \pcomment{MQ_RSA_reversed}
+    \pcomment{revised ARM 3/15/15, 10/6/15}
+    \pcomment{subsumes TP_RSA_reversed}
+\end{pcomments}
+
+\pkeywords{
+  RSA
+  modulo
+  encrypt
+  decrypt
+  exponent
+}
+
+\begin{problem}
+Suppose Alice and Bob are using the RSA cryptosystem to send secure
+messages.  Each of them has a public key visible to everyone and a
+private key known only to themselves, and using RSA in the usual way,
+they are able to send secret messages to each other over public
+channels.
+
+But a concern for Bob is how he knows that a message he gets is
+actually from Alice---as opposed to some imposter claiming to be
+Alice.  This concern can be met by using RSA to add unforgeable
+``signatures'' to messages.  To send a message $m$ to Bob with an
+unforgeable signature, Alice uses RSA encryption on her message $m$,
+but instead using Bob's public key to encrypt $m$, she uses her own
+\emph{private} key to obtain a message $m_1$.  She then sends $m_1$ as
+her``signed'' message to Bob.
+
+\bparts
+
+\ppart Explain how Bob can read the original message $m$ from Alice's
+signed message $m_1$.  (Let $(n_A,e_A)$ be Alice's public key and
+$d_A$ her private key.  Assume $m \in \Zintvco{0}{n_A}$.)
+
+\examspace[3in]
+
+\begin{solution}
+By definition of RSA, the message $m_1$ will be
+\[
+m_1 \eqdef \rem{m^{d_A}}{n_A},
+\]
+where $d_A$ is Alice's private key.
+
+RSA encryption is based on the choice of a private key $d$ and a
+public key $(e,n)$ which satisfy the condition that $d \cdot e \equiv
+1 \pmod{\phi(n)}$.  But this condition is symmetric in $d$ and $e$, so
+reversing their roles allows Alice's private key $d_A$ to be used to
+``encrypt'' $m$ as the message $m_1$.  Now Bob can apply RSA to $m_1$
+using Alice's public key $e_A$ in place of his private key to
+reconstruct $m$ from $m_1$:
+\[
+m = \rem{m_1^{e_A}}{n}
+\]
+\end{solution}
+
+\ppart Briefly explain why Bob can be confident, assuming RSA is
+secure, that $m_1$ came from Alice rather than some imposter.
+
+\examspace[2in]
+
+\begin{solution}
+The message $m$ that Bob reconstructs from $m_1$ can only have been
+``encrypted'' using Alice's private key, $d_A$.  Assuming RSA is
+secure, only Alice knows her private key $d_A$, so Bob can conclude
+the message came from Alice.
+\end{solution}
+
+\ppart Notice that not only Bob, but \emph{anyone} can use Alice's
+public key to reconstruct her message $m$ from its signed version
+$m_1$.  So how can Alice send a secret signed message to Bob over
+public channels?
+
+\begin{solution}
+After signing her message with her private key to obtain $m_1$, Alice
+can use RSA in the usual way to encrypt $m_1$ using Bob's public key
+and send it to Bob.  Now only Bob can read the signed message.
+\end{solution}
+\eparts
+
+\end{problem}
+
+\endinput
+
+
+\iffalse
+\ppart
+%n = p * q = 29 * 37 = 1073 
+%phi(n) = 28 * 26 = 1008
+%e,d = 605,5 
+Given the public key (5, 1073), and the encrypted message 33, 
+what is the original message?
+
+\begin{solution}
+The original message is $\rem{33^5}{1073} = 937$
+\end{solution}
+\fi

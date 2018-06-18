@@ -1,0 +1,88 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_gcd_termination}
+  \pcomment{by ARM 2/28/11}
+  \pcomment{soln by Alexander J Smith, edited ARM 3/30/17}
+\end{pcomments}
+
+\pkeywords{
+  Euclidean
+  algorithm
+  GCD
+  Fibonacci
+  transition
+  golden_ratio
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The Euclidean state machine is defined by the rule
+\begin{equation}\label{euclid_transition_prob}
+(x,y) \movesto (y, \rem{x}{y}),
+\end{equation}
+for $y>0$.
+
+Prove that the smallest positive integers $a \ge b$ for which,
+starting in state $(a,b)$, the state machine will make $n$ transitions
+are $F(n+1)$ and $F(n)$, where $F(n)$ is the $n$th Fibonacci
+number.\footnote{Problem~\bref{CP_fibonacci_by_induction} shows that $F(n) \le
+  \varphi^n$ where $\varphi$ is the \idx{golden ratio} $(1 +
+  \sqrt{5})/2$.  This implies that the Euclidean algorithm halts after
+  at most $\log_\varphi(a)$ transitions, a somewhat smaller bound
+  than $2 \log_2 a$ derived from
+  equation~(\bref{rxylx2})\inhandout{ in the text}.}
+
+\hint Induction.
+
+\begin{solution}
+We prove this by induction.
+
+The induction hypothesis $P(n)$ will be that the algorithm on
+$(F(n+1),F(n))$ will terminate in exactly $n$ transitions, and if
+either $a<F(n+1)$ or $b<F(n)$, then the algorithm on $(a,b)$ will
+terminate in strictly fewer than $n$ transitions.
+
+\inductioncase{Base Case}: ($n=1$).  We have $F(2)=F(1)=1$, so the
+Euclidean algorithm yields
+\[
+(1,1)\movesto(1,0)
+\]
+for a total of 1 transition.  Note that any pair smaller than $(1,1)$
+is already a termination state.
+
+\inductioncase{Inductive Step}: To prove $P(n+1)$, suppose first that
+$(a,b)=(F(n+2),F(n+1))$.
+
+Since $\rem{F(n+2)}{F(n+1)} = F(n+2)-F(n+1)$, the Euclidean state
+machine transition will be
+\[
+(a,b)\movesto(b,F(n+2)-F(n+1))=(F(n+1),F(n)).
+\]
+Now the machine will terminate in exactly $n$ more transitions by
+induction hypothesis, for a total of $n+1$ transitions.
+
+Next, if $b<F(n+1)$, the first transition will be to a state whose
+first coordinate is $<F(n+1)$.  This state will terminate in at most
+$n-1$ more transitions by the inductive hypothesis, so the total
+number of transitions will be strictly less than $n+1$.
+
+Finally, if $b\geq F(n+1)$ and $a<F(n+2)$, then $a<2b$, and so
+\[
+(a,b) \movesto (b,a-b).
+\]
+Also, $a-b<F(n+2)-F(n+1)=F(n)$.  Now by the inductive hypothesis,
+state $(b,a-b)$ will also terminate in at most $n-1$ more transitions,
+completing the proof of $P(n+1)$.
+\end{solution}
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

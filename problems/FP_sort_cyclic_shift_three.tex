@@ -1,0 +1,147 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{TP_sort_cyclic_shift_three}
+  \pcomment{related to CP_fifteen_puzzle}
+  \pcomment{ARM and CH, S14}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  sorting
+  fifteen_puzzle
+  parity
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The following problem is a twist on the Fifteen-Puzzle considered earlier\inbook{
+  in Problem~\bref{CP_fifteen_puzzle}}.
+
+Let $A$ be a sequence consisting of the numbers $1,\dots,n$ in some
+order.  A pair of integers in $A$ is called an \emph{out-of-order
+  pair} when the first element of the pair both comes \emph{earlier}
+in the sequence, and \emph{is larger}, than the second element of the
+pair.  For example, the sequence $(1,2,4,5,3)$ has two out-of-order
+pairs: $(4,3)$ and $(5,3)$.  We let $t(A)$ equal the number of
+out-of-order pairs in $A$.  For example, $t((1,2,4,5,3)) = 2$.
+
+The elements in $A$ can be rearranged using the \emph{Rotate-Triple}
+operation, in which three consecutive elements of $A$ are rotated to
+move the smallest of them to be first.
+
+For example, in the sequence $(2,4,1,5,3)$, the \emph{Rotate-Triple}
+operation could rotate the consecutive numbers $4,1,5$, into $1, 5, 4$
+so that
+\[
+(2,4,1,5,3) \movesto (2, 1, 5, 4, 3).
+\]
+
+The \emph{Rotate-Triple} could also rotate the consecutive numbers
+$2,4,1$ into $1,2,4$ so that
+\[
+(2,4,1,5,3) \movesto (1, 2, 4, 5, 3).
+\]
+
+We can think of a sequence $A$ as a state of a state machine whose
+transitions correspond to possible applications of the
+\emph{Rotate-Triple} operation.
+
+\begin{problemparts}
+\iffalse
+
+\problempart Write out the set of transitions that describe the
+actions of $\emph{Rotate-Triple}$ at any time step.
+
+\hint You will need to consider six different cases.
+
+\begin{solution}
+
+Consider any consecutive triple in $A$ containing the elements $\{ a,b,c
+\}$ in some order. Without loss of generality, assume that $a < b < c$. The
+six different cases correspond to the different permutations of
+$\{a,b,c\}$. Explicitly, the set of transitions can be described as follows:
+\begin{align*}
+\emph{Rotate-Triple}(a,b,c) &\movesto (a,b,c) \\
+\emph{Rotate-Triple}(a,c,b) &\movesto (a,c,b) \\
+\emph{Rotate-Triple}(b,c,a) &\movesto (a,b,c) \\
+\emph{Rotate-Triple}(b,a,c) &\movesto (a,c,b) \\
+\emph{Rotate-Triple}(c,b,a) &\movesto (a,c,b) \\
+\emph{Rotate-Triple}(c,a,b) &\movesto (a,b,c).
+\end{align*}
+
+\end{solution}
+
+\examspace[1in]
+\fi
+
+\problempart Argue that the derived variable $t$ is \emph{weakly
+  decreasing}.
+
+\begin{solution}
+Suppose the \emph{Rotate-Triple} operation is applied to three
+consecutive elements $a,b,c$ in $A$.  This has no effect on the
+out-of-order pairs involving at most one of $a,b$ and $c$.
+
+To analyze pairs where both elements are one of $a,b$ and $c$, there
+are two cases.
+
+If $b$ is the smallest element, then $a,b,c$ get rearranged into
+$b,c,a$.  This has the effect of reversing the two pairs $(a,b),(a,c)$
+into $(b,a),(c,a)$.  If $a < c$, this causes a net change of zero in
+$t(A)$, while if $c < a$, this causes a net decrease of two in $t(A)$.
+
+If $c$ is the smallest, then $a,b,c$ get rearranged into $c,a,b$.
+This has the effect of reversing the two pairs $(a,c),(b,c)$ into
+$(c,a),(c,b)$, which similarly leaves $t(A)$ unchanged or decreased by
+two.
+
+So in each case, $t$ is either constant or decreases, showing that $t$
+is weakly decreasing.
+\end{solution}
+
+\examspace[2.0in]
+
+\problempart Prove that having an even number of out-of-order pairs is
+a preserved invariant of this machine.
+
+\begin{solution}
+This part follows directly from the argument in the previous part
+showing that $t$ changes by 0 or $-2$.  So if the number of
+out-of-order pairs is even, then it stays even.
+\end{solution}
+
+\inbook{
+\examspace[1.5in]
+
+\problempart Starting with
+\[
+S \eqdef (2014, 2013, 2012,\ldots, 2,1),
+\]
+explain why it is impossible to reach
+\[
+T \eqdef (1, 2, \dots, 2012, 2013, 2014).
+\]
+
+\begin{solution}
+Since $T$ has no out-of-order pairs, $t(T) = 0$.  On the other hand,
+all the pairs in $S$ are out-of-order, so $t(S) = (2014 \cdot 2013)/2$
+which is odd.  Since parity is preserved, $T$ cannot be reachable from
+$S$.
+\end{solution}
+
+\examspace[1.0in]
+}
+
+\end{problemparts}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

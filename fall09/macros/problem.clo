@@ -1,0 +1,107 @@
+\ProvidesFile{problem.clo}
+
+\externaldocument[B-]{mcs}[http://courses.csail.mit.edu/6.042/fall09/mcs.pdf]
+
+\def\bref#1{\ref{B-#1}}
+
+\let\idx\@firstofone
+
+\let\inbook\gobble@text
+\let\inhandout\@firstofone
+\let\inmcsprob\@firstofone
+
+\renewcommand{\theproblem}{\arabic{problem}}
+
+\let\real@problem\problem
+\let\real@endproblem\endproblem
+
+\renewenvironment{problem}[1][0]{%
+    \document
+    \par\rule{3.0in}{1pt}
+    \real@problem
+}{%
+    \real@endproblem
+    \enddocument
+}
+
+\def\mcs@thm@#1#2{%
+    \def\@tempa{#1}%
+    \ifx\@empty\@tempa
+        \def\@tempa{\@oparg{\@begintheorem{#2}{}}[]}%
+    \else
+        \@ifundefined{r@\jobname}{%
+            \refstepcounter{#1}%
+            \def\@tempb{\csname the#1\endcsname}%
+            \def\mcs@thm@type{#2}%
+        }{%
+            \edef\@tempb{%
+                \@nx\protected@edef\@nx\@tempb{%
+                    \@nx\mcs@get@label\csname r@\jobname\endcsname \@nx\@nil
+                }%
+            }%
+            \@tempb
+            \protected@edef\@currentlabel{\@tempb}%
+        }%
+    \def\@tempa{%
+        \@oparg{\@begintheorem{\mcs@thm@type}{\@tempb}}[]%
+    }%
+    \fi
+    \@tempa
+}
+
+\renewenvironment{pcomments}{
+    \AtBeginDocument{%
+        \textbf{COMMENTS:}%
+        \begin{itemize}
+    }%
+}{
+    \AtBeginDocument{\end{itemize}}%
+}
+
+\setlength{\standardproblemsep}{1cm}
+
+\newcommand{\pcomment}{%
+    \begingroup
+        \@sanitize@keywords
+        \@pcomment
+}
+
+\newcommand{\@pcomment}[1]{%
+    \endgroup
+    \AtBeginDocument{\item#1}%
+}
+
+\renewcommand{\pkeywords}{%
+    \begingroup
+        \@sanitize@keywords
+        \@pkeywords
+}
+
+\newcommand{\@pkeywords}[1]{%
+    \endgroup
+    \AtBeginDocument{\textbf{keywords} = [\emph{#1}]}%
+}
+
+\setlength{\parindent}{0in}                     
+\setlength{\parskip}{\medskipamount}            
+\hoffset        = -1.0 in
+\voffset        = -1.0 in
+\paperheight    = 11.0 in
+\paperwidth     =  8.5 in
+\topmargin      = 0.75 in
+\headheight     = \baselineskip
+\headsep        = \baselineskip
+\footskip       = 1.00 in
+\textheight     = \paperheight
+\addtolength{\textheight}{-\topmargin}
+\addtolength{\textheight}{-\headheight}
+\addtolength{\textheight}{-\headsep}
+\addtolength{\textheight}{-\footskip}
+\textwidth      = \paperwidth
+\oddsidemargin  = 1.0 in
+\evensidemargin = 1.0 in
+\addtolength{\textwidth}{-\oddsidemargin}
+\addtolength{\textwidth}{-\evensidemargin}
+\linewidth      = \textwidth
+
+\endinput

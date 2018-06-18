@@ -1,0 +1,2761 @@
+\chapter{Number Theory}\label{number_theory_chap}
+
+\emph{Number theory}\index{number theory} is the study of the
+integers.  \emph{Why} anyone would want to study the integers may not
+be obvious.  First of all, what's to know?  There's 0, there's 1, 2,
+3, and so on, and, oh yeah, -1, -2, \dots.  Which one don't you
+understand?  What practical value is there in it?
+
+\iffalse Number theory is at the core of mathematics; even Ug the
+Caveman surely had some grasp of the integers---at least the positive
+ones.  In fact, the integers are so elementary that one might ask,
+``What's to study?''  There's 0, there's 1, 2, 3 and so on, and
+there's the negatives.  Which one don't you understand?  Doesn't math
+become easy when we don't have to worry about nasty numbers like
+$\sqrt{7}$, $1 / \pi$ and $i$?  We can even forget about fractions!
+\fi
+
+The mathematician \index{Hardy, G. H.}{G. H. Hardy} delighted 
+at its impracticality.  He wrote:
+
+ \begin{quotation}
+ \noindent [Number theorists] may be justified in rejoicing that there
+ is one science, at any rate, and that their own, whose very
+ remoteness from ordinary human activities should keep it gentle and
+ clean.
+ \end{quotation}
+
+Hardy was especially concerned that number theory not be used in
+warfare; he was a pacifist.  You may applaud his sentiments, but he
+got it wrong: number theory underlies modern cryptography, which is
+what makes secure online communication possible.  Secure communication
+is of course crucial in war---leaving poor Hardy spinning in
+his grave.  It's also central to online commerce.  Every time you buy
+a book from Amazon, use a certificate to access a web page, or use a
+PayPal account, you are relying on number theoretic algorithms.
+
+Number theory also provides an excellent environment for us to
+practice and apply the proof techniques that we developed in previous
+chapters.  We'll work out properties of \idx{greatest common divisor}s
+(gcd's) and use them to prove that integers factor uniquely into
+primes.  Then we'll introduce modular arithmetic and work out enough
+of its properties to explain the \idx{RSA} public key crypto-system.
+
+%~\ref{templates_chap} and~\ref{induction_chap}.
+
+Since we'll be focusing on properties of the integers, we'll adopt the
+default convention in this chapter that \emph{variables range over
+  the set $\integers$ of integers}.
+
+\section{Divisibility}\label{divisibility_sec}
+
+The nature of number theory emerges as soon as we consider the \emph{divides}%
+\index{divisibility|textbf} 
+relation.
+\begin{definition}\label{divides_def}
+$a$ \emph{divides} $b$ (notation $a \divides b$) iff there is an integer $k$ such that
+\[
+ak = b.
+\]
+\end{definition}
+The divides relation comes up so frequently that multiple synonyms for
+it are used all the time.  The following phrases all say the same
+thing:
+\begin{itemize}
+\item $a \divides b$,
+\item $a$ divides $b$,
+\item $a$ is a \emph{divisor} of $b$,
+\item $a$ is a \emph{factor} of $b$,
+\item $b$ is \emph{divisible} by $a$,
+\item $b$ is a \emph{multiple} of $a$.
+\end{itemize}
+Some immediate consequences of Definition~\ref{divides_def} are that for
+all $n$
+\[
+n  \divides 0,\qquad\qquad
+n  \divides n, \text{ and}\qquad\qquad
+\pm1  \divides n.
+\]
+Also,
+\[
+0 \divides n\ \QIMP\ n = 0.
+\]
+
+Dividing seems simple enough, but let's play with this definition.  The Pythagoreans, an
+ancient sect of mathematical mystics, said that a number is \emph{perfect}%
+\index{perfect number}
+if it equals the sum of its positive 
+integral divisors, excluding itself.  For example, $6 = 1 + 2 + 3$ 
+and $28 = 1 + 2 + 4 + 7 + 14$ are perfect numbers.
+On the other hand, 10 is not perfect because 
+$1 + 2 + 5 = 8$, and 12 is not perfect because
+$1 + 2 + 3 + 4 + 6 = 16$.  \idx{Euclid} characterized all the 
+\emph{even} perfect numbers
+around 300 BC (Problem~\ref{CP_perfect_numbers}).  But is there an \emph{odd} perfect
+number?  More than two thousand years later, we still don't know!  
+All numbers up to about
+$10^{300}$ have been ruled out, but no one has proved that there isn't an odd perfect
+number waiting just over the horizon.
+
+So a half-page into number theory, we've strayed past the outer limits
+of human knowledge.  This is pretty typical; number theory is full of
+questions that are easy to pose, but incredibly difficult to answer.
+We'll mention a few more such questions in later
+sections.\footnote{\emph{Don't Panic}---we're going to stick to some
+  relatively benign parts of number theory.  These super-hard unsolved
+  problems rarely get put on problem sets.}
+
+\subsection{Facts about Divisibility}
+
+The following lemma collects some basic facts about divisibility.
+
+\begin{lemma}\label{lem:div}\mbox{}
+\begin{enumerate}
+%\item If $a \divides b$, then $a \divides bc$ for all $c$.
+
+\item\label{lem:divtrans} If $a \divides b$ and $b \divides c$, then $a \divides c$.
+
+\item\label{lem:divsbtc} If $a \divides b$ and $a \divides c$, then $a \divides sb + tc$
+  for all $s$ and $t$.
+
+\item\label{lem:divcancel} For all $c \neq 0$, $a \divides b$ if and only if $ca \divides
+  cb$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+These facts all follow directly from Definition~\ref{divides_def}.  To
+illustrate this, we'll prove just part~\ref{lem:divsbtc}:
+
+Given that $a \divides b$, there is some $k_1 \in \integers$ such that $a k_1 = b$.
+Likewise, $a k_2 = c$, so
+\[
+sb+tc= s(k_1a) + t(k_2a) = (sk_1+tk_2)a.
+\]
+Therefore $sb+tc = k_3a$ where $k_3 \eqdef (sk_1+tk_2)$, which means that
+\[
+a \divides sb+tc.
+\]
+\end{proof}
+
+A number of the form $sb+tc$ is called an \emph{integer linear
+  combination}%
+\index{linear combination (integers)|textbf} 
+of $b$ and $c$, or, since in this chapter we're only
+talking about integers, just a \emph{linear combination}.  So
+Lemma~\ref{lem:div}.\ref{lem:divsbtc} can be rephrased as
+\begin{quote}
+If $a$ divides $b$ and $c$, then $a$ divides every linear combination
+of $b$ and~$c$.
+\end{quote}
+We'll be making good use of linear combinations, so let's get the
+general definition on record:
+\begin{definition}\label{linear_def}
+An integer $n$ is a \emph{linear combination} of numbers $b_0,\dots,b_k$ iff
+\[
+n = s_0b_0+s_1b_1+\cdots+s_kb_k
+\]
+for some integers $s_0,\dots,s_k$.
+\end{definition}
+
+\subsection{When Divisibility Goes Bad}
+
+As you learned in elementary school, if one number does \emph{not}
+evenly divide another, you get a ``quotient'' and a ``remainder'' left
+over.  More precisely:
+\begin{theorem}\label{division_thm}[\idx{Division Theorem}]%
+\footnote{This theorem is often called the ``Division Algorithm,'' but
+  we prefer to call it a theorem since it does not actually describe
+  a division procedure for computing the quotient and remainder.}  Let
+$n$ and $d$ be integers such that $d \neq 0$.  Then there exists a unique
+pair of integers $q$ and $r$, such that
+\begin{equation}\label{nqdr}
+n = q \cdot d + r \QAND\ 0 \leq r < \abs{d}.
+\end{equation}
+\end{theorem}
+The number $q$ is called the \term{quotient} and the number $r$ is
+called the \term{remainder} of $n$ divided by $d$.  We use the
+notation $\qcnt{n}{d}$ for the quotient and $\rem{n}{d}$ for the
+remainder.
+
+The absolute value notation $\abs{d}$ used above is probably familiar
+from introductory calculus, but for the record, let's define it.
+\begin{definition}
+For any real number $r$, the \term{absolute value} $\abs{r}$ of $r$
+is:\footnote{The absolute value of $r$ could be defined as
+  $\sqrt{r^2}$, which works because of the convention that square root
+  notation always refers to the \emph{nonnegative} square root (see
+  Problem~\ref{CP_bogus_1eqminus1_proof}).  Absolute value generalizes
+  to complex numbers where it is called the \term{norm}.  For $a,b \in
+  \reals$,
+\[
+\abs{a+bi} \eqdef \sqrt{a^2+b^2}.
+\]}
+\[
+\abs{r} \eqdef \begin{cases}
+                \ r & \text{if $r \geq 0$},\\
+                -r & \text{if $r < 0$}.
+\end{cases}
+\]
+\end{definition}
+
+So by definition, the \emph{remainder $\rem{n}{d}$ is nonnegative}
+regardless of the sign of $n$ and $d$.  For example, $\rem{-11}{7} =
+3$, since $-11 = (-2) \cdot 7 + 3$.
+
+``Remainder'' operations built into many programming languages can be
+a source of confusion.  For example, the expression ``32~\%~5'' will
+be familiar to programmers in Java, C, and C++; it evaluates to
+$\rem{32}{5} =2$ in all three languages.  On the other hand, these and
+other languages are inconsistent in how they treat remainders like
+``32~\%~-5'' or ``-32~\%~5'' that involve negative numbers.  So don't
+be distracted by your familiar programming language's behavior on
+remainders, and stick to the mathematical convention that
+\emph{remainders are nonnegative}.
+
+The remainder on division by $d$ by definition is a number in the
+(integer) \emph{interval} from 0 to $\abs{d}-1$.  Such integer
+intervals come up so often that it is useful to have a simple notation
+for them.  For $k \leq n \in \integers$,
+\begin{align*}
+\Zintv{k}{n}   & \eqdef\quad \set{i \suchthat k \leq i \leq n},\\
+\Zintvoc{k}{n} & \eqdef\quad \Zintv{k}{n} - \set{k},\\
+\Zintvco{k}{n} & \eqdef\quad \Zintv{k}{n} - \set{n},\\
+\Zintvoo{k}{n} & \eqdef\quad \Zintv{k}{n} - \set{k,n}.
+\end{align*}
+
+\subsection{Die Hard}
+
+\emph{Die Hard~3} is just a B-grade action movie, but we think it has
+an inner message: everyone should learn at least a little number
+theory.  In Section~\ref{diehard_machine}, we formalized a state
+machine for the \idx{Die Hard} jug-filling problem using 3 and 5
+gallon jugs, and also with 3 and 9 gallon jugs, and came to different
+conclusions about bomb explosions.  What's going on in general?  For
+example, how about getting 4 gallons from 12- and 18-gallon jugs,
+getting 32 gallons with 899- and 1147-gallon jugs, or getting 3
+gallons into a jug using just 21- and 26-gallon jugs?
+
+\begin{editingnotes}
+Unfortunately, Hollywood never lets go of a gimmick.  Although there
+were no water jug tests in \emph{Die Hard~4: Live Free or Die Hard},
+rumor has it that the jugs will return in future sequels:
+\begin{description}
+
+\item[Die Hard~5: Die Hardest] Bruce goes on vacation and---shockingly---happens into a
+  terrorist plot.  To save the day, he must make 3~gallons using 21- and 26-gallon jugs.
+
+\item[Die Hard~6: Die of Old Age] Bruce must save his assisted living facility from a
+  criminal mastermind by forming 2 gallons with 899- and 1147-gallon jugs.
+
+\item[Die Hard~7: Die Once and For All] Bruce has to make 4 gallons using 3- and 6-gallon
+  jugs.
+
+\end{description}
+\end{editingnotes}
+
+It would be nice if we could solve all these silly water jug questions
+at once.  \iffalse In particular, how can one form $g$ gallons using
+jugs with capacities $a$ and~$b$?\fi This is where number theory comes
+in handy.
+
+\subsubsection{A Water Jug Invariant}\label{jug_invar_subsubsec}
+\index{invariant}
+
+Suppose that we have water jugs with capacities $a$ and $b$ with $b
+\geq a$.  Let's carry out some sample operations of the \idx{state machine}
+and see what happens, assuming the $b$-jug is big enough:
+\begin{align*}
+(0,0) & \rightarrow (a,0) & \text{fill first jug} \\
+& \rightarrow (0,a) & \text{pour first
+    into second} \\
+& \rightarrow (a, a) & \text{fill first jug} \\
+& \rightarrow (2a-b, b)
+  & \text{pour first into second (assuming $2a \geq b$)} \\
+& \rightarrow (2a-b, 0) &
+  \text{empty second jug} \\
+& \rightarrow (0, 2a-b) & \text{pour first into second} \\
+&
+  \rightarrow (a, 2a-b) & \text{fill first} \\
+& \rightarrow (3a-2b, b) & \text{pour first
+    into second (assuming $3a \geq 2b$)}
+\end{align*}
+What leaps out is that at every step, the amount of water in each jug
+is a linear combination of $a$ and $b$.  This is easy to prove by
+induction on the number of transitions:
+\begin{lemma}[Water Jugs]\label{lem:waterjugs}
+In the \emph{Die Hard} state machine of
+Section~\ref{diehard_machine} with jugs of sizes $a$ and $b$, the
+amount of water in each jug is always a linear combination of $a$ and
+$b$.
+\end{lemma}
+
+\begin{proof}
+The induction hypothesis $P(n)$ is the proposition that after $n$
+transitions, the amount of water in each jug is a linear combination
+of $a$ and $b$.
+
+\inductioncase{Base case} ($n = 0$): $P(0)$ is true, because both jugs
+are initially empty, and $0 \cdot a + 0 \cdot b = 0$.
+
+\inductioncase{Inductive step}: Suppose the machine is in state
+$(x,y)$ after $n$ steps, that is, the little jug contains $x$ gallons
+and the big one contains $y$ gallons.  There are two cases:
+
+\begin{itemize}
+
+\item If we fill a jug from the fountain or empty a jug into the
+  fountain, then that jug is empty or full.  The amount in the other
+  jug remains a linear combination of $a$ and $b$.  So $P(n+1)$ holds.
+
+\item Otherwise, we pour water from one jug to another until one is
+  empty or the other is full.  By our assumption, the amount $x$ and
+  $y$ in each jug is a linear combination of $a$ and $b$ before we
+  begin pouring.  After pouring, one jug is either empty (contains 0
+  gallons) or full (contains $a$ or $b$ gallons).  Thus, the other jug
+  contains either $x + y$, $x + y - a$ or $x + y - b$ gallons, all of
+  which are linear combinations of $a$ and $b$ since $x$ and $y$ are.
+  So $P(n+1)$ holds in this case as well.
+\end{itemize}
+Since $P(n+1)$ holds in any case, this proves the inductive step,
+completing the proof by induction.
+\end{proof}
+
+So we have established that the jug problem has a preserved invariant,
+namely, the amount of water in every jug is a linear combination of
+the capacities of the jugs.  Lemma~\ref{lem:waterjugs} has an
+important corollary:
+\begin{corollary*}
+In trying to get 4 gallons from 12- and 18-gallon jugs, and likewise
+to get 32 gallons from 899- and 1147-gallon jugs,
+\[
+\textbf{Bruce will die!}
+\]
+\end{corollary*}
+
+\begin{proof}
+By the Water Jugs Lemma~\ref{lem:waterjugs}, with 12- and 18-gallon
+jugs, the amount in any jug is a linear combination of 12 and 18.
+This is always a multiple of 6 by
+Lemma~\ref{lem:div}.\ref{lem:divsbtc}, so Bruce can't get 4 gallons.
+Likewise, the amount in any jug using 899- and 1147-gallon jugs is a
+multiple of 31, so he can't get 32 either.
+\end{proof}
+
+But the Water Jugs Lemma doesn't tell the complete story.  For
+example, it leaves open the question of getting 3 gallons into a jug
+using just 21- and 26-gallon jugs: the only positive factor of both 21
+and 26 is 1, and of course 1 divides 3, so the Lemma neither rules out
+nor confirms the possibility of getting 3 gallons.
+
+A bigger issue is that we've just managed to recast a pretty
+understandable question about water jugs into a technical question
+about linear combinations.  This might not seem like a lot of
+progress.  Fortunately, linear combinations are closely related to
+something more familiar, greatest common divisors, and
+will help us solve the general water jug problem.
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_linear-combs-combined}
+
+\classproblems
+\pinput{CP_perfect_numbers}
+
+\end{problems}
+
+\section{The Greatest Common Divisor}\label{sec:gcd}
+
+A \emph{common divisor} of~$a$ and~$b$ is a number that divides them
+both.  The \term{greatest common divisor} of $a$ and~$b$ is written%
+\index{gcd|see{greatest common divisor}} 
+$\gcd(a, b)$.  For example, $\gcd(18, 24) = 6$.
+
+As long as $a$ and $b$ are not both 0, they will have a gcd.  The gcd
+turns out to be very valuable for reasoning about the relationship
+between $a$ and $b$ and for reasoning about integers in general.
+We'll be making lots of use of gcd's in what follows.
+
+Some immediate consequences of the definition of gcd are that
+\begin{align*}
+\gcd(n, 1) & = 1\\
+\gcd(n, n) & = \gcd(n,0) = \abs{n} & {for } n \neq 0,
+\end{align*}
+where the last equality follows from the fact that everything is a
+divisor of 0.
+
+\subsection{Euclid's Algorithm}\label{sec: Euclid}
+The first thing to figure out is how to find gcd's.  A good way called \term{Euclid's
+  algorithm} has been known for several thousand years.  It is based on the following
+elementary observation.
+
+\begin{lemma}\label{lem:gcdrem}
+For $b \neq 0$,
+\[
+\gcd(a, b) = \gcd(b, \rem{a}{b}).
+\]
+
+\begin{proof}
+By the Division Theorem~\ref{division_thm},
+\begin{equation}\label{aqbrprf}
+a = qb + r
+\end{equation}
+where $r = \rem{a}{b}$.  So $a$ is a linear combination of $b$ and
+$r$, which implies that any divisor of $b$ and $r$ is a divisor of $a$
+by Lemma~\ref{lem:div}.\ref{lem:divsbtc}.  Likewise, $r$ is a linear
+combination $a-qb$ of $a$ and $b$, so any divisor of $a$ and $b$ is
+a divisor of $r$.  This means that $a$ and $b$ have the same common
+divisors as $b$ and $r$, and so they have the same \emph{greatest}
+common divisor.
+\end{proof}
+\end{lemma}
+
+Lemma~\ref{lem:gcdrem} is useful for quickly computing the greatest
+common divisor of two numbers.  For example, we could compute the
+greatest common divisor of 1147 and~899 by repeatedly applying it:
+\begin{align*}
+\gcd(1147, 899) &= \gcd(899, \underbrace{\rem{1147}{899}}_{{} = 248}) \\
+&= \gcd\paren{248, \rem{899}{248} = 155} \\
+&= \gcd\paren{155, \rem{248}{155} = 93} \\
+&= \gcd\paren{ 93, \rem{155}{93} = 62}\\
+&= \gcd\paren{ 62, \rem{93}{62} = 31} \\
+&= \gcd\paren{ 31, \rem{62}{31} = 0} \\
+&= 31
+\end{align*}
+This calculation that $\gcd(1147, 899) = 31$ was how we figured out
+that with water jugs of sizes 1147 and 899, Bruce dies trying to get
+32 gallons.
+
+On the other hand, applying Euclid's algorithm to 26 and 21 gives
+\[
+\gcd(26, 21) = \gcd(21, 5) = \gcd(5, 1) = 1,
+\]
+so we can't use the reasoning above to rule out Bruce getting 3
+gallons into the big jug.  As a matter of fact, because the gcd here
+is 1, Bruce \emph{will} be able to get any number of gallons into the big jug
+up to its capacity.  To explain this, we will need a little more
+number theory.
+
+\subsubsection{Euclid's Algorithm as a State Machine}
+Euclid's algorithm can easily be formalized as a \idx{state
+machine}.  The set of states is $\nngint^2$ and there is one
+transition rule:
+\begin{equation}\label{euclid_transition}
+(x,y) \movesto (y, \rem{x}{y}),
+\end{equation}
+for $y>0$.  By Lemma~\ref{lem:gcdrem}, the gcd stays the same from one
+state to the next.  That means the predicate
+\[
+\gcd(x,y) = \gcd(a,b)
+\]
+is a preserved invariant on the states $(x,y)$.  This preserved
+invariant is, of course, true in the start state $(a,b)$.  So by the
+Invariant Principle, if $y$ ever becomes $0$, the invariant will be
+true and so
+\[
+x = \gcd(x,0) = \gcd(a,b).
+\]
+Namely, the value of $x$ will be the desired gcd.
+
+What's more $x$ and therefore also $y$, gets to be 0 pretty fast.
+To see why, note that starting from $(x,y)$, two transitions leads to
+a state whose the first coordinate is $\rem{x}{y}$, which is at most
+half the size of $x$.\footnote{In other words,
+\begin{equation}\label{rxylx2}
+\rem{x}{y} \le x/2 \qquad \text{for $0 < y \le x$}.
+\end{equation}
+This is immediate if $y \le x/2$, since the remainder of $x$ divided
+by $y$ is less than $y$ by definition.  On the other hand, if $y >
+x/2$, then $\rem{x}{y} = x - y < x/2$.}  Since $x$ starts off equal to
+$a$ and gets halved or smaller every two steps, it will reach its
+minimum value---which is $\gcd(a,b)$---after at most $2 \log a$
+transitions.  After that, the algorithm takes at most one more
+transition to terminate.  In other words, Euclid's algorithm
+terminates after at most $1+2 \log a$ transitions.\footnote{A tighter
+  analysis shows that at most $\log_\varphi(a)$ transitions are
+  possible where $\varphi$ is the \idx{golden ratio} $(1 +
+  \sqrt{5})/2$, see Problem~\ref{PS_gcd_termination}.}
+
+\subsection{The Pulverizer}\label{sec:pulverizer}
+We will get a lot of mileage out of the following key fact:
+\begin{theorem}\label{gcd_is_lin_thm}
+The greatest common divisor of $a$ and $b$ is a linear combination of
+$a$ and~$b$.  That is,
+\[
+\gcd(a, b) = s a + t b,
+\]
+for some integers $s$ and $t$.\footnote{This result is often referred
+  to as \emph{\idx{Bezout's lemma}}, which is a misattribution since
+  it was first published in the West 150 years earlier by someone
+  else, and was described a thousand years before that by Indian
+  mathematicians Aryabhata and Bhaskara.}
+\end{theorem}
+
+We already know from Lemma~\ref{lem:div}.\ref{lem:divsbtc} that every
+linear combination of $a$ and $b$ is divisible by any common factor of
+$a$ and $b$, so it is certainly divisible by the greatest of these
+common divisors.  Since any constant multiple of a linear combination
+is also a linear combination, Theorem~\ref{gcd_is_lin_thm} implies
+that any multiple of the gcd is a linear combination, giving:
+\begin{corollary}\label{cor:lin-comb}
+An integer is a linear combination of $a$ and $b$ iff it is a multiple
+of $\gcd(a, b)$.
+\end{corollary}
+
+We'll prove Theorem~\ref{gcd_is_lin_thm} directly by explaining how to
+find $s$ and $t$.  This job is tackled by a mathematical tool that
+dates back to sixth-century India, where it was called \emph{kuttaka},
+which means ``the Pulverizer.''  Today, the Pulverizer%
+\index{Pulverizer|textbf} 
+is more commonly known as the ``Extended Euclidean Gcd Algorithm,'' because it
+is so close to Euclid's algorithm.
+
+For example, following Euclid's algorithm, we can compute the gcd of
+259 and~70 as follows:
+\begin{align*}
+\gcd(259, 70) & = \gcd(70, 49) & \quad & \text{since $\rem{259}{70} = 49$}\\
+ & = \gcd(49, 21) && \text{since $\rem{70}{49} = 21$} \\
+ & = \gcd(21, 7) && \text{since $\rem{49}{21} = 7$} \\
+ & = \gcd(7, 0)
+                && \text{since $\rem{21}{7} = 0$} \\
+ & = 7.
+\end{align*}
+The Pulverizer goes through the same steps, but requires some extra
+bookkeeping along the way: as we compute $\gcd(a, b)$, we keep track
+of how to write each of the remainders (49, 21, and 7, in the example)
+as a linear combination of $a$ and $b$.  This is worthwhile, because
+our objective is to write the last nonzero remainder, which is the
+$\gcd$, as such a linear combination.  For our example, here is this
+extra bookkeeping:
+\[
+\begin{array}{ccccrcl}
+x & \quad & y & \quad & (\rem{x}{y}) & = & x - q \cdot y \\
+\hline
+259 && 70 && 49 & = & a - 3 \cdot  b\\
+ 70 && 49 && 21 & = & b - 1 \cdot 49 \\
+           &&&& & = & b - 1 \cdot (a - 3 \cdot b) \\
+           &&&& & = & -1 \cdot a + 4 \cdot b \\
+ 49 && 21 && 7  & = & 49 - 2 \cdot 21\\
+           &&&& & = & (a - 3 \cdot b) - 2 \cdot (-1 \cdot a + 4 \cdot b) \\
+           &&&& & = & \fbox{$3 \cdot a - 11 \cdot b$} \\
+ 21 && 7 && 0
+\end{array}
+\]
+We began by initializing two variables, $x = a$ and $y = b$.  In the
+first two columns above, we carried out Euclid's algorithm.  At each
+step, we computed $\rem{x}{y}$ which equals $x - \qcnt{x}{y} \cdot y$.
+Then, in this linear combination of $x$ and $y$, we replaced $x$ and
+$y$ by equivalent linear combinations of $a$ and $b$, which we already
+had computed.  After simplifying, we were left with a linear
+combination of $a$ and $b$ equal to $\rem{x}{y}$, as desired.  The
+final solution is boxed.
+
+This should make it pretty clear how and why the Pulverizer works.  If
+you have doubts, you may work through
+Problem~\ref{PS_pulverizer_machine}, where the Pulverizer is
+formalized as a state machine and then verified using an invariant
+that is an extension of the one used for Euclid's algorithm.
+
+Since the Pulverizer requires only a little more computation than
+Euclid's algorithm, you can ``pulverize'' very large numbers very
+quickly by using this algorithm.  As we will soon see, its speed makes
+the Pulverizer a very useful tool in the field of cryptography.
+
+Now we can restate the Water Jugs Lemma~\ref{lem:waterjugs} in terms
+of the greatest common divisor:
+\begin{corollary}\label{cor:waterjugs}
+Suppose that we have water jugs with capacities $a$ and $b$.  Then the
+amount of water in each jug is always a multiple of $\gcd(a, b)$.
+\end{corollary}
+
+For example, there is no way to form 4 gallons using 3- and 6-gallon
+jugs, because 4 is not a multiple of $\gcd(3, 6) = 3$.
+
+\subsection{One Solution for All Water Jug Problems}\label{all_jugs_son_sec}
+
+Corollary~\ref{cor:lin-comb} says that 3 can be written as a linear
+combination of 21 and 26, since 3 is a multiple of $\gcd(21, 26) = 1$.
+So the Pulverizer will give us integers $s$ and $t$ such that
+\begin{equation}\label{3s21t26}
+3 = s \cdot 21 + t \cdot 26
+\end{equation}
+
+The coefficient $s$ could be either positive or negative.
+However, we can readily transform this linear combination into an
+equivalent linear combination
+\begin{equation}\label{3sprime21}
+3 = s' \cdot 21 + t' \cdot 26
+\end{equation}
+where the coefficient $s'$ is positive.  The trick is to notice that
+if in equation~\eqref{3s21t26} we increase $s$ by 26 and decrease $t$
+by 21, then the value of the expression $s \cdot 21 + t \cdot 26$ is
+unchanged overall.  Thus, by repeatedly increasing the value of $s$
+(by 26 at a time) and decreasing the value of $t$ (by 21 at a time),
+we get a linear combination $s' \cdot 21 + t' \cdot 26 = 3$ where the
+coefficient $s'$ is positive.  (Of course $t'$ must then be negative;
+otherwise, this expression would be much greater than 3.)
+
+Now we can form 3 gallons using jugs with capacities 21 and~26: We
+simply repeat the following steps $s'$ times:
+\begin{enumerate}
+\item Fill the 21-gallon jug.
+\item Pour all the water in the 21-gallon jug into the 26-gallon jug.
+  If at any time the 26-gallon jug becomes full, empty it out, and
+  continue pouring the 21-gallon jug into the 26-gallon jug.
+\end{enumerate}
+At the end of this process, we must have emptied the 26-gallon
+jug exactly $-t'$ times.  Here's why: we've taken $s' \cdot 21$
+gallons of water from the fountain, and we've poured out some multiple
+of 26 gallons.  If we emptied fewer than $-t'$ times, then
+by~\eqref{3sprime21}, the big jug would be left with at least $3+26$
+gallons, which is more than it can hold; if we emptied it more times,
+the big jug would be left containing at most $3-26$ gallons, which is
+nonsense.  But once we have emptied the 26-gallon jug exactly $-t'$
+times, equation~\eqref{3sprime21} implies that there are exactly 3
+gallons left.
+
+Remarkably, we don't even need to know the coefficients $s'$ and $t'$
+in order to use this strategy!  Instead of repeating the outer loop
+$s'$ times, we could just repeat \emph{until we obtain 3 gallons},
+since that must happen eventually.  Of course, we have to keep track
+of the amounts in the two jugs so we know when we're done.  Here's the
+solution using this approach starting with empty jugs, that is, at
+$(0,0)$:
+\[
+\begin{array}{cccccccc}
+\xrightarrow{\text{fill 21}} & (21,0)& \xrightarrow{\text{pour 21 into
+    26}} & & & &&(0,21)\\
+\xrightarrow{\text{fill 21}} & (21,21)&
+\xrightarrow{\text{pour 21 to 26}} & (16,26)& \xrightarrow{\text{empty
+    26}} & (16,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,16)\\
+\xrightarrow{\text{fill 21}} & (21,16)&
+\xrightarrow{\text{pour 21 to 26}} & (11,26)& \xrightarrow{\text{empty
+    26}} & (11,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,11)\\
+\xrightarrow{\text{fill 21}} & (21,11)&
+\xrightarrow{\text{pour 21 to 26}} & (6,26)& \xrightarrow{\text{empty
+    26}} & (6,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,6)\\
+\xrightarrow{\text{fill 21}} & (21,6)& \xrightarrow{\text{pour
+    21 to 26}} & (1,26)& \xrightarrow{\text{empty 26}} & (1,0)&
+\xrightarrow{\text{pour 21 to 26}} & (0,1)\\
+\xrightarrow{\text{fill
+    21}} & (21,1)& \xrightarrow{\text{pour 21 to 26}} &&&&&
+(0,22)\\
+\xrightarrow{\text{fill 21}} & (21,22)&
+\xrightarrow{\text{pour 21 to 26}} & (17,26)& \xrightarrow{\text{empty
+    26}} & (17,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,17)\\
+\xrightarrow{\text{fill 21}} & (21,17)&
+\xrightarrow{\text{pour 21 to 26}} & (12,26)& \xrightarrow{\text{empty
+    26}} & (12,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,12)\\
+\xrightarrow{\text{fill 21}} & (21,12)&
+\xrightarrow{\text{pour 21 to 26}} & (7,26)& \xrightarrow{\text{empty
+    26}} & (7,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,7)\\
+\xrightarrow{\text{fill 21}} & (21,7)& \xrightarrow{\text{pour
+    21 to 26}} & (2,26)& \xrightarrow{\text{empty 26}} & (2,0)&
+\xrightarrow{\text{pour 21 to 26}} & (0,2)\\
+\xrightarrow{\text{fill
+    21}} & (21,2)& \xrightarrow{\text{pour 21 to 26}} &
+&&&&(0,23)\\
+\xrightarrow{\text{fill 21}} & (21,23)&
+\xrightarrow{\text{pour 21 to 26}} & (18,26)& \xrightarrow{\text{empty
+    26}} & (18,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,18)\\
+\xrightarrow{\text{fill 21}} & (21,18)&
+\xrightarrow{\text{pour 21 to 26}} & (13,26)& \xrightarrow{\text{empty
+    26}} & (13,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,13)\\
+\xrightarrow{\text{fill 21}} & (21,13)&
+\xrightarrow{\text{pour 21 to 26}} & (8,26)& \xrightarrow{\text{empty
+    26}} & (8,0)& \xrightarrow{\text{pour 21 to 26}} &
+(0,8)\\
+\xrightarrow{\text{fill 21}} & (21,8)& \xrightarrow{\text{pour
+    21 to 26}} & (3,26)& \xrightarrow{\text{empty 26}} & (3,0)&
+\xrightarrow{\text{pour 21 to 26}} & (0,3)
+\end{array}
+\]
+
+The same approach works regardless of the jug capacities and even
+regardless of the amount we're trying to produce!  Simply repeat these
+two steps until the desired amount of water is obtained:
+\begin{enumerate}
+\item Fill the smaller jug.
+
+\item Pour all the water in the smaller jug into the larger jug.  If
+  at any time the larger jug becomes full, empty it out, and continue
+  pouring the smaller jug into the larger jug.
+\end{enumerate}
+By the same reasoning as before, this method eventually generates
+every multiple---up to the size of the larger jug---of the greatest
+common divisor of the jug capacities, all the quantities we
+can possibly produce.  No ingenuity is needed at all!
+
+So now we have the complete water jug story:
+\begin{theorem}\label{th:waterjugs}
+Suppose that we have water jugs with capacities $a$ and $b$.  For any
+$c \in \Zintv{0}{a}$, it is possible to get $c$ gallons in the size $a$ jug
+iff $c$ is a multiple of $\gcd(a, b)$.
+\end{theorem}
+
+\subsection{Properties of the \idx{Greatest Common Divisor}}
+
+It can help to have some basic $\gcd$ facts on hand:
+
+\begin{lemma}\label{lem:gcd-hold} \mbox{  }
+
+\begin{enumerate}[a)]
+\item\label{gcd2} $\gcd(k a, k b) = k \cdot \gcd(a, b)$ for all $k > 0$.
+\item\label{gcd1} $(d \divides a \QAND d \divides b)\ \QIFF\ d \divides \gcd(a, b)$.
+\item\label{gcd3} If $\gcd(a, b) = 1$ and $\gcd(a, c) = 1$, then $\gcd(a, bc) = 1$.
+\item\label{gcd4} If $a \divides b c$ and $\gcd(a, b) = 1$, then $a \divides c$.
+%\item\label{gcd5} $\gcd(a, b) = \gcd(b, \rem{a}{b})$. already in lem:gcdrem
+\end{enumerate}
+\end{lemma}
+
+Showing how all these facts follow from Theorem~\ref{gcd_is_lin_thm}
+that gcd is a linear combination is a good exercise
+(Problem~\ref{CP_proving_basic_gcd_properties}).
+
+These properties are also simple consequences of the fact that
+integers factor into primes in a unique way
+(Theorem~\ref{thm:unique_factor}).  But we'll need some of these facts
+to prove unique factorization in
+Section~\ref{fundamental_theorem_sec}, so proving them by appeal to
+unique factorization would be circular.
+
+\begin{problems}
+
+\practiceproblems
+\pinput{TP_GCDs_I}
+\pinput{TP_GCDs_II}
+%\pinput{TP_gcd_linear_combination_wop}
+\pinput{TP_gcd_power}  %uncover after S16 mid3
+\pinput{TP_gcd_minpos_linear}
+
+\classproblems
+\pinput{CP_GCD_algebra}
+%\pinput{CP_use_the_pulverizer}
+\pinput{MQ_use_the_pulverizer_morning}
+\pinput{MQ_pulverizer_linear_combination}
+\pinput{CP_gcd_TF}
+\pinput{CP_proving_basic_gcd_properties}
+
+\homeworkproblems
+\pinput{PS_linear_combination_game}
+\pinput{PS_pulverizer_machine}
+\pinput{PS_gcd_termination}
+\pinput{PS_filling_buckets_with_water}
+\pinput{PS_binary_gcd}
+\pinput{PS_binary_pulverizer}
+\pinput{PS_gcd_union}
+
+\examproblems
+\pinput{FP_GCD_algebra}
+%\pinput{FP_gcd_linear_combination_induction}
+\pinput{MQ_state_machine_buckets_S15}
+\pinput{FP_gcd_associative}
+\end{problems}
+
+\section{Prime Mysteries}
+
+Some of the greatest mysteries and insights in number theory concern
+properties of prime numbers:
+\begin{definition}
+A \term{prime} is a number greater than~1 that is divisible only by
+itself and~1.  A number other than 0, 1, and $-1$ that is not a prime
+is called \emph{composite}\index{composite|see{prime}}.\footnote{So 0, 1, 
+and $-1$ are the only integers that are neither prime nor composite.}
+\end{definition}
+
+Here are three famous mysteries:
+
+%\floatingtextbox{ \textboxtitle{Famous Conjectures about Primes}
+
+\begin{description}
+
+\item[\term{Twin Prime Conjecture}] There are infinitely many primes
+  $p$ such that $p + 2$ is also a prime.
+
+  In 1966, Chen showed that there are infinitely many primes $p$ such
+  that $p + 2$ is the product of at most two primes.  So the
+  conjecture is known to be \emph{almost} true!
+
+\item[\emph{Conjectured Inefficiency of Factoring}\index{factoring}] Given the
+  product of two large primes $n = pq$, there is no efficient
+  procedure to recover the primes $p$ and $q$.  That is, no
+  \emph{\idx{polynomial time}} procedure (see Section~\ref{SAT_sec})
+  is guaranteed to find $p$ and $q$ in a number of steps bounded by a
+  polynomial in the length of the binary representation of $n$ (not
+  $n$ itself).  The length of the binary representation at most
+  $1+\log_2 n$.
+
+  The best algorithm known is the ``number field sieve,'' which runs
+  in time proportional to:
+  \[
+  e^{1.9(\ln n)^{1/3} (\ln\ln n)^{2/3}}.
+  \]
+  This number grows more rapidly than any polynomial in $\log n$ and
+  is infeasible when $n$ has 300 digits or more.
+
+  Efficient factoring is a mystery of particular importance in
+  computer science, as we'll explain later in this chapter.
+
+\item[\emph{\idx{Goldbach's Conjecture}}] We've already mentioned Goldbach's
+  Conjecture~\ref{Goldbach} several times: every even integer greater
+  than two is equal to the sum of two primes.  For example, $4 = 2 +
+  2$, $6 = 3 + 3$, $8 = 3 + 5$, etc.
+
+  In 1939, Schnirelman proved that every even number can be written as
+  the sum of not more than 300,000 primes, which was a start.  Today,
+  we know that every even number is the sum of at most 6 primes.
+\end{description}
+
+Primes show up erratically in the sequence of integers.  In fact,
+their distribution seems almost random:
+\[
+2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, \dots.
+\]
+One of the great insights about primes is that their density among the
+integers has a precise limit.  Namely, let $\pi(n)$ denote the number
+of primes up to $n$:
+
+\begin{definition}\label{def:prime<x}
+\[
+  \pi(n) \eqdef \card{\set{p \in \Zintv{2}{n} \suchthat p \text{ is
+        prime}}}.
+\]
+\end{definition}
+
+For example, $\pi(1) = 0, \pi(2) = 1$ and $\pi(10) = 4$, because 2, 3,
+5, and 7 are the primes less than or equal to 10.  Step by step,
+$\pi$ grows erratically according to the erratic spacing between
+successive primes, but its overall growth rate is known to smooth out
+to be the same as the growth of the function $n/\ln n$:
+
+\begin{theorem}[Prime Number Theorem]%
+\index{prime!Prime Number Theorem}
+\[
+\lim_{n\to\infty} \frac{\pi(n)}{n/\ln n} = 1.
+\]
+\end{theorem}
+
+Thus, primes gradually taper off.  As a rule of thumb, about 1 integer
+out of every $\ln n$ in the vicinity of $n$ is a prime.
+
+%\begin{editingnotes} The accent on Vallee screwed up the hyphens in
+%the entire pdf file!!!  \end{editingnotes}
+
+The Prime Number Theorem was conjectured by Legendre in 1798 and
+proved a century later by de la Vall\'{e}e Poussin and Hadamard in 1896.
+However, after his death, a notebook of \idx{Gauss} was found to contain the
+same conjecture, which he apparently made in 1791 at age 15.  (You
+have to feel sorry for all the otherwise ``great'' mathematicians who
+had the misfortune of being contemporaries of Gauss.)
+
+A proof of the Prime Number Theorem is beyond the scope of this text,
+but there is a manageable proof (see
+Problem~\ref{PS_Chebyshev_prime_bound}) of a related result that is
+sufficient for our applications:
+\begin{theorem}[Chebyshev's Theorem on Prime Density]
+For $n >1$,
+\[
+\pi(n) > \frac{n}{3 \ln n}.
+\]
+\end{theorem}
+
+\floatingtextbox{  \textboxheader{A Prime for Google}
+
+In late 2004 a billboard appeared in various locations around the
+country:
+
+{\Large
+\[
+\left\{
+\begin{array}{c}
+\text{first 10-digit prime found}\\
+\text{in consecutive digits of
+  $e$}
+\end{array}
+\right\} \textbf{. com}
+\]
+}
+
+Substituting the correct number for the expression in curly-braces
+produced the URL for a Google employment page.  The idea was that
+Google was interested in hiring the sort of people that could and
+would solve such a problem.
+
+How hard is this problem?  Would you have to look through thousands or
+millions or billions of digits of $e$ to find a 10-digit prime?  The
+rule of thumb derived from the Prime Number Theorem says that among
+10-digit numbers, about 1 in
+\[
+\ln 10^{10} \approx 23
+\]
+is prime.  This suggests that the problem isn't really so hard!  Sure
+enough, the first 10-digit prime in consecutive digits of $e$ appears
+quite early:
+\begin{align*}
+e = & 2.718281828459045235360287471352662497757247093699959574966 \\
+& 96762772407663035354759457138217852516642\textcolor{blue}{\mathbf{7427466391}}9320030\\
+& 599218174135966290435729003342952605956307381323286279434\dots
+\end{align*}
+
+%\begin{editingnotes} Checked against
+%http://www.gutenberg.org/1/2/127/ --dmj, \end{editingnotes}
+}
+
+\begin{problems}
+\homeworkproblems
+\pinput{PS_Chebyshev_prime_bound}
+\end{problems}
+
+\section{The Fundamental Theorem of Arithmetic}\label{fundamental_theorem_sec}
+
+There is an important fact about primes that you probably already
+know: every positive integer number has a \emph{unique} prime
+factorization.  So every positive integer can be built up from primes
+in \emph{exactly one way}.  These quirky prime numbers are the
+building blocks for the integers.
+
+Since the value of a product of numbers is the same if the numbers
+appear in a different order, there usually isn't a unique way to
+express a number as a product of primes.  For example, there are three
+ways to write 12 as a product of primes:
+\[
+12 = 2 \cdot 2 \cdot 3 = 2 \cdot 3 \cdot 2 = 3 \cdot 2 \cdot 2.
+\]
+What's unique about the prime factorization of 12 is that any product
+of primes equal to 12 will have exactly one 3 and two 2's.  This means
+that if we \emph{sort} the primes by size, then the product really
+will be unique.
+
+Let's state this more carefully.  A sequence of numbers is
+\emph{\idx{weakly decreasing}} when each number in the sequence is at
+least as big as the numbers after it.  Note that a sequence of just
+one number as well as a sequence of no numbers---the empty
+sequence---is weakly decreasing by this definition.
+
+\begin{theorem}\label{thm:unique_factor}[Fundamental Theorem of Arithmetic]
+Every positive integer is a product of a \emph{unique} weakly
+decreasing sequence of primes.
+\end{theorem}
+\index{Unique Factorization Theorem|textbf}
+\index{Fundamental Theorem of Arithmetic|see{Unique Factorization Theorem}}
+
+For example, 75237393 is the product of the weakly decreasing sequence
+of primes
+\[
+23, 17, 17, 11, 7, 7, 7, 3,
+\]
+and no other weakly decreasing sequence of primes will give
+75237393.\footnote{The ``product'' of just one number is defined to be
+  that number, and the product of no numbers is by convention defined
+  to be 1.  So each prime $p$ is uniquely the product of the primes
+  in the length-one sequence consisting solely of $p$, and 1, which you will 
+  remember is not a prime, is uniquely the product of the
+  empty sequence.}
+
+Notice that the theorem would be false if 1 were considered a prime;
+for example, $15$ could be written as $5 \cdot 3$, or $5 \cdot 3 \cdot
+1$, or $5 \cdot 3 \cdot 1 \cdot 1$, \dots.
+
+There is a certain wonder in unique factorization, especially in view
+of the prime number mysteries we've already mentioned.  It's a mistake
+to take it for granted, even if you've known it since you were in a
+crib.  In fact, unique factorization actually fails for many
+integer-like sets of numbers, such as the complex numbers of the
+form $n + m\sqrt{-5}$ for $m,n \in \integers$ (see
+Problem~\ref{PS_non_unique_factoring}).
+
+The Fundamental Theorem is also called the \emph{Unique Factorization
+  Theorem}, which is a more descriptive and less pretentious,
+name---but we really want to get your attention to the importance and
+non-obviousness of unique factorization.
+
+\subsection{Proving Unique Factorization}
+
+The Fundamental Theorem is not hard to prove, but we'll need a couple
+of preliminary facts.
+
+\begin{lemma}
+\label{lem:prime-divides}
+If $p$ is a prime and $p \divides ab$, then $p \divides a$ or $p
+\divides b$.
+\end{lemma}
+
+Lemma~\ref{lem:prime-divides} follows immediately from Unique
+Factorization: the primes in the product $ab$ are exactly the primes
+from $a$ and from $b$.  But proving the lemma this way would be
+cheating: we're going to need this lemma to prove Unique
+Factorization, so it would be circular to assume it.  Instead, we'll
+use the properties of gcd's and linear combinations to give an easy,
+noncircular way to prove Lemma~\ref{lem:prime-divides}.
+
+\begin{proof}
+One case is if $\gcd(a, p) = p$.  Then the claim holds, because $a$ is
+a multiple of $p$.
+
+Otherwise, $\gcd(a, p) \neq p$.  In this case $\gcd(a, p)$ must be 1,
+since 1 and $p$ are the only positive divisors of $p$.  Now $\gcd(a,
+p)$ is a linear combination of $a$ and $p$, so we have $1=sa+tp$ for
+some $s,t$.  Then $b =s(ab)+ (tb)p$, that is, $b$ is a linear
+combination of $ab$ and $p$.  Since $p$ divides both $ab$ and $p$, it
+also divides their linear combination $b$.
+\end{proof}
+
+A routine induction argument extends this statement to:\iffalse the
+fact we assumed last time:\fi
+
+\begin{lemma}
+\label{lem:prime-divides-ind}
+Let $p$ be a prime.  If $p \divides a_1 a_2 \cdots a_n$, then $p$
+divides some $a_i$.
+\end{lemma}
+
+Now we're ready to prove the Fundamental Theorem of Arithmetic.
+\begin{proof}
+Theorem~\ref{factor_into_primes} showed, using the Well Ordering
+Principle, that every positive integer can be expressed as a product
+of primes.  So we just have to prove this expression is unique.  We
+will use Well Ordering to prove this too.
+
+The proof is by contradiction: assume, contrary to the claim, that
+there exist positive integers that can be written as products of
+primes in more than one way.  By the Well Ordering Principle, there is
+a smallest integer with this property.  Call this integer $n$, and let
+\begin{align*}
+n & = p_1 \cdot p_2 \cdots p_j, \\
+& = q_1 \cdot q_2 \cdots q_k,
+\end{align*}
+where both products are in weakly decreasing order and $p_1 \le q_1$.
+
+If $q_1 = p_1$, then $n/q_1$ would also be the product of different
+weakly decreasing sequences of primes, namely,
+\begin{align*}
+ p_2 \cdots p_j, \\
+q_2 \cdots q_k.
+\end{align*}
+Since $n/q_1 < n$, this can't be true, so we conclude that $p_1 <
+q_1$.
+
+Since the $p_i$'s are weakly decreasing, all the $p_i$'s are less than
+$q_1$.  But
+\[
+q_1\divides n= p_1 \cdot p_2 \cdots p_j,
+\]
+so Lemma~\ref{lem:prime-divides-ind} implies that $q_1$ divides one of
+the $p_i$'s, which contradicts the fact that $q_1$ is bigger than all
+them.
+\end{proof}
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_divide_product_induction}
+
+\classproblems
+\pinput{CP_gcd_lcm}
+
+\homeworkproblems
+\pinput{PS_non_unique_factoring}
+
+\end{problems}
+
+\section{Alan \idx{Turing}}\label{Turing_sec}
+
+\begin{figure}\redrawntrue
+\graphic[width=2in]{turing}
+\caption{Alan Turing}
+\label{fig:Turing}
+\end{figure}
+
+The man pictured in Figure~\ref{fig:Turing} is Alan Turing, the most
+important figure in the history of computer science.  For decades, his
+fascinating life story was shrouded by government secrecy, societal
+taboo, and even his own deceptions.
+
+At age 24, Turing wrote a paper entitled \emph{On Computable Numbers,
+  with an Application to the Entscheidungsproblem}.  The crux of the
+paper was an elegant way to model a computer in mathematical terms.
+This was a breakthrough, because it allowed the tools of mathematics
+to be brought to bear on questions of computation.  For example, with
+his model in hand, Turing immediately proved that there exist problems
+that no computer can solve---no matter how ingenious the programmer.
+Turing's paper is all the more remarkable because he wrote it in 1936,
+a full decade before any electronic computer actually existed.
+
+The word ``Entscheidungsproblem'' in the title refers to one of the 28
+mathematical problems posed by David Hilbert in 1900 as challenges to
+mathematicians of the 20th century.  Turing knocked that one off in
+the same paper.  And perhaps you've heard of the ``Church-Turing
+thesis''?  Same paper.  So Turing was a brilliant guy who generated
+lots of amazing ideas.  But this lecture is about one of Turing's
+less-amazing ideas.  It involved codes.  It involved number theory.
+And it was sort of stupid.
+
+%\subsection{Turing's Code}
+
+Let's look back to the fall of 1937.  Nazi Germany was rearming under
+Adolf Hitler, world-shattering war looked imminent, and---like us
+---Alan Turing was pondering the usefulness of number theory.  He
+foresaw that preserving military secrets would be vital in the coming
+conflict and proposed a way \emph{to encrypt communications using
+  number theory}.  This is an idea that has ricocheted up to our own
+time.  Today, number theory is the basis for numerous public-key
+cryptosystems, digital signature schemes, cryptographic hash
+functions, and electronic payment systems.  Furthermore, military
+funding agencies are among the biggest investors in cryptographic
+research.  Sorry, Hardy!
+
+Soon after devising his code, Turing disappeared from public
+view, and half a century would pass before the world learned the full
+story of where he'd gone and what he did there.  We'll come back to
+Turing's life in a little while; for now, let's investigate the code
+Turing left behind.  The details are uncertain, since he never
+formally published the idea, so we'll consider a couple of
+possibilities.
+
+\subsection{Turing's Code (Version 1.0)}\label{probable_primes}
+
+The first challenge is to translate a text message into an integer so
+we can perform mathematical operations on it.  This step is not
+intended to make a message harder to read, so the details are not too
+important.  Here is one approach: replace each letter of the message
+with two digits ($A = 01$, $B = 02$, $C = 03$, etc.) and string all
+the digits together to form one huge number.  For example, the message
+``victory'' could be translated this way:
+\begin{center}
+\begin{tabular}{ccccccccc}
+   &v & i & c & t & o & r & y \\
+$\rightarrow$ & 22 & 09 & 03 & 20 &
+  15 & 18 & 25
+\end{tabular}
+\end{center}
+Turing's code requires the message to be a prime number, so we
+may need to pad the result with some more digits to make a prime.  The
+Prime Number Theorem indicates that padding with relatively few digits
+will work.  In this case, appending the digits 13 gives the number
+2209032015182513, which is prime.
+
+Here is how the encryption process works.  In the description below,
+$m$ is the unencoded message (which we want to keep secret), $\widehat{m}$ is
+the encrypted message (which the Nazis may intercept), and $k$ is the
+key.
+
+\begin{description}
+
+\item[Beforehand] The sender and receiver agree on a \emph{secret
+  key}, which is a large prime~$k$.
+
+\item[Encryption] The sender encrypts the message $m$ by computing:
+\[
+\widehat{m} = m \cdot k
+\]
+
+\item[Decryption] The receiver decrypts $\widehat{m}$ by computing:
+\[
+\frac{\widehat{m}}{k} = m.
+\]
+
+\iffalse = \frac{m \cdot k}{k} \fi
+
+\end{description}
+
+For example, suppose that the secret key is the prime number $k =
+22801763489$ and the message $m$ is ``victory.''  Then the encrypted
+message is:
+\begin{align*}
+\widehat{m} & = m \cdot k \\
+& = 2209032015182513 \cdot 22801763489 \\
+& =
+50369825549820718594667857
+\end{align*}
+
+There are a couple of basic questions to ask about Turing's code.
+
+\begin{enumerate}
+
+\item How can the sender and receiver ensure that $m$ and $k$ are
+  prime numbers, as required?
+
+The general problem of determining whether a large number is prime or
+composite has been studied for centuries, and tests for primes that
+worked well in practice were known even in Turing's time.  In the past
+few decades, very fast primality tests have been found as
+described in the text box below.
+
+\floatingtextbox{ \textboxheader{Primality Testing}
+
+It's easy to see that an integer $n$ is prime iff it is not divisible
+by any number from 2 to $\floor{\sqrt{n}}$ (see
+Problem~\ref{TP_squareroot_size_factor}).  Of course this naive way to
+test if $n$ is prime takes more than $\sqrt{n}$ steps, which is
+exponential in the \emph{size} of $n$ measured by the number of digits
+in the decimal or binary representation of $n$.  Through the early
+1970's, no prime testing procedure was known that would never blow up
+like this.
+
+In 1974, Volker Strassen invented a simple, fast \emph{probabilistic}
+primality test.  Strassens's test gives the right answer when applied
+to any prime number, but has some probability of giving a wrong answer
+on a nonprime number.  However, the probability of a wrong answer on
+any given number is so tiny that relying on the answer is the best bet
+you'll ever make.
+
+Still, the theoretical possibility of a wrong answer was
+intellectually bothersome---even if the probability of being wrong was
+a lot less than the probability of an undetectable computer hardware
+error leading to a wrong answer.  Finally in 2002, in a breakthrough
+paper beginning with a quote from \idx{Gauss} emphasizing the
+importance and antiquity of primality testing, Manindra Agrawal,
+Neeraj Kayal, and Nitin Saxena presented an amazing, thirteen line
+description of a polynomial time primality test.
+
+This definitively places primality testing way below the exponential
+effort apparently needed for SAT and similar problems.  \iffalse In
+particular, the Agrawal \emph{et al.} test is guaranteed to give the
+correct answer about primality of any number $n$ in about $(\log
+n)^{12}$ steps, that is, a number of steps bounded by a twelfth degree
+polynomial in the length (in bits) of the input $n$.  \fi The
+polynomial bound on the Agrawal \emph{et al.} test had degree 12, and
+subsequent research has reduced the degree to 5, but this is still too
+large to be practical, and probabilistic primality tests remain the
+method used in practice today.  It's plausible that the degree bound
+can be reduced a bit more, but matching the speed of the known
+probabilistic tests remains a daunting challenge.}
+
+\item Is Turing's code secure?
+
+The Nazis see only the encrypted message $\widehat{m} = m \cdot k$, so
+recovering the original message $m$ requires factoring $\widehat{m}$.  Despite
+immense efforts, no really efficient factoring algorithm has ever been
+found.  It appears to be a fundamentally difficult problem.  So,
+although a breakthrough someday can't be ruled out, the conjecture
+that there is no efficient way to factor is widely accepted.  In
+effect, Turing's code puts to practical use his discovery that there
+are limits to the power of computation.  Thus, provided $m$ and $k$
+are sufficiently large, the Nazis seem to be out of luck!
+
+\end{enumerate}
+
+This all sounds promising, but there is a major flaw in Turing's code.
+
+\subsection{Breaking Turing's Code (Version 1.0)}
+
+Let's consider what happens when the sender transmits a \emph{second}
+message using Turing's code and the same key.  This gives the Nazis
+two encrypted messages to look at:
+\[
+\widehat{m_1} = m_1 \cdot k
+\hspace{0.75in} \text{and} \hspace{0.75in} \widehat{m_2} = m_2 \cdot k
+\]
+The greatest common divisor of the two encrypted messages, $\widehat{m_1}$ and
+$\widehat{m_2}$, is the secret key $k$.  And, as we've seen, the $\gcd$ of two
+numbers can be computed very efficiently.  So after the second message
+is sent, the Nazis can recover the secret key and read \emph{every}
+message!
+
+A mathematician as brilliant as Turing is not likely to have
+overlooked such a glaring problem, and we can guess that he had a
+slightly different system in mind, one based on \emph{modular}
+arithmetic.
+
+\section{Modular Arithmetic}\label{modular_arithmeric_sec}
+\index{modular arithmetic}
+\index{congruence|seealso{modular arithemtic}}
+
+\begin{editingnotes}
+Congruence is a weak form of equality.
+\end{editingnotes}
+
+On the first page of his masterpiece on number theory,
+\emph{Disquisitiones Arithmeticae}, \idx{Gauss} introduced the notion
+of ``\term{congruence}\index{modular arithmetic!congruence|textbf}.''  Now, 
+Gauss is another guy who managed to
+cough up a half-decent idea every now and then, so let's take a look
+at this one.  Gauss said that \emph{$a$ is congruent to $b$
+  modulo $n$}\index{modulo $n$|see{modular arithmetic}} iff $n \divides (a - b)$.
+This is written
+\[
+a \equiv b \pmod{n}.
+\]
+For example:
+\[
+29 \equiv 15 \pmod{7} \quad\text{ because } 7 \divides (29 - 15).
+\]
+
+\emph{It's not useful to allow a moduli $n \leq 0$, and so we will
+  assume from now on that moduli are positive.}
+
+There is a close connection between congruences and remainders:
+\begin{lemma}[Remainder]\label{lem:conrem}
+\[
+a \equiv b \pmod{n} \qiff \rem{a}{n} = \rem{b}{n}.
+\]
+\end{lemma}
+
+\begin{proof}
+By the Division Theorem~\ref{division_thm}, there exist unique pairs
+of integers $q_1, r_1$ and $q_2, r_2$ such that:
+\begin{align*}
+a & = q_1 n + r_1\\
+b & = q_2 n + r_2,
+\end{align*}
+where $r_1,r_2 \in \Zintvco{0}{n}$.  Subtracting the second equation from the
+  first gives:
+\begin{align*}
+a - b & = (q_1 - q_2) n + (r_1 - r_2),
+\end{align*}
+where $r_1 - r_2$ is in the interval $(-n,n)$.  Now $a \equiv b
+\pmod{n}$ if and only if $n$ divides the left-hand side of this equation.
+This is true if and only if $n$ divides the right-hand side, which holds if
+and only if $r_1 - r_2$ is a multiple of $n$.  But the only multiple
+of $n$ in $(-n,n)$ is 0, so $r_1 - r_2$ must in fact equal 0, that is,
+when $r_1 \eqdef \rem{a}{n} = r_2 \eqdef \rem{b}{n}$.
+\end{proof}
+
+So we can also see that
+\[
+29 \equiv 15 \pmod{7} \quad\text{ because } \rem{29}{7} = 1 =
+\rem{15}{7}.
+\]
+Notice that even though ``(mod 7)'' appears on the end, the $\equiv$
+symbol isn't any more strongly associated with the 15 than with the
+29.  It would probably be clearer to write $29 \equiv_{\text{mod } 7}
+15$, for example, but the notation with the modulus at the end is
+firmly entrenched, and we'll just live with it.
+
+The Remainder Lemma~\ref{lem:conrem} explains why the congruence
+relation has properties like an equality relation.  In particular, the
+following properties\footnote{Binary relations with these properties
+  are called \emph{\idx{equivalence relation}s}, see
+  Section~\ref{equiv_rel_sec}.}  follow immediately:
+\begin{lemma}\label{mod_equiv_rel_lem} \mbox{}
+\begin{align}
+                  & a \equiv a \pmod{n}\tag{reflexivity}\\
+a \equiv b\ \QIFF\ & b \equiv a \pmod{n} \tag{symmetry}\\
+(a \equiv b\ \QAND  b \equiv c)\ \QIMPLIES\
+                  & a \equiv c \pmod{n} \tag{transitivity}
+\end{align}
+\end{lemma}
+
+We'll make frequent use of another immediate corollary of the
+Remainder Lemma~\ref{lem:conrem}:
+\begin{corollary}\label{aran}
+\[
+a \equiv \rem{a}{n} \pmod{n}
+\]
+\end{corollary}
+
+Still another way to think about congruence modulo $n$ is that it
+\emph{defines a partition of the integers into $n$ sets so that
+  congruent numbers are all in the same set}.  For example, suppose
+that we're working modulo 3.  Then we can partition the integers into
+3 sets as follows:
+\[
+\begin{array}{cccccccccc}
+\{ & \dots, & -6, & -3, & 0, & 3, & 6, & 9, & \dots & \} \\
+\{ &
+\dots, & -5, & -2, & 1, & 4, & 7, & 10, & \dots & \} \\
+\{ & \dots, &
+-4, & -1, & 2, & 5, & 8, & 11, & \dots & \}
+\end{array}
+\]
+according to whether their remainders on division by 3 are 0, 1, or 2.
+The upshot is that when arithmetic is done modulo $n$, there are really
+only $n$ different kinds of numbers to worry about, because there are
+only $n$ possible remainders.  In this sense, modular arithmetic is a
+simplification of ordinary arithmetic.\iffalse and thus is a good
+reasoning tool.\fi
+
+The next most useful fact about congruences is that they are
+\emph{preserved} by addition and multiplication:
+
+\begin{lemma}[Congruence]\label{mod_congruence_lem}  If
+$a \equiv b \pmod{n}$ and $c \equiv d \pmod{n}$, then
+\begin{align}
+a + c & \equiv b + d \pmod{n},\label{mod_congruence_lem+}\\
+a c   & \equiv b d   \pmod{n}.\label{mod_congruence_lem*}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Let's start with~\ref{mod_congruence_lem+}.  Since $a \equiv b
+\pmod{n}$, we have by definition that $n \divides (b-a) =(b+c)-(a+c)$,
+so
+\[
+a+c \equiv b+c \pmod{n}.
+\]
+Since $c \equiv d \pmod{n}$, the same reasoning leads to
+\[
+b + c \equiv b + d \pmod{n}.
+\]
+Now transitivity (Lemma~\ref{mod_equiv_rel_lem}) gives
+\[
+a + c \equiv b + d \pmod{n}.
+\]
+ 
+The proof for~\ref{mod_congruence_lem*} is virtually identical, using
+the fact that if $n$ divides $(b-a)$, then it certainly also divides
+$(bc-ac)$.
+\end{proof}
+
+\begin{problems}
+\practiceproblems
+\pinput{MQ_congruent_mod_product}
+\pinput{TP_ax=b_congruence}
+
+\classproblems
+\pinput{CP_divisible_by_24}
+\pinput{CP_polynomials_produce_multiples}
+\end{problems}
+
+\section{Remainder Arithmetic}\label{remainder_arithmetic_sec}
+\index{modular arithmetic|textbf}
+\index{remainder arithmetic|see{modular arithmetic}}
+
+The Congruence Lemma~\ref{lem:conrem} says that two numbers are
+congruent iff their remainders are equal, so we can understand
+congruences by working out arithmetic with remainders.  And if all we
+want is the remainder modulo $n$ of a series of additions,
+multiplications, subtractions applied to some numbers, we can take
+remainders at every step so that the entire computation only involves
+number in the range $\Zintvco{0}{n}$.
+
+\textbox{
+
+\textboxtitle{General Principle of Remainder Arithmetic}
+
+To find the remainder on division by $n$ of the result of a series of
+additions and multiplications, applied to some integers
+\begin{itemize}
+
+\item replace each integer operand by its remainder on division by
+  $n$,
+
+\item keep each result of an addition or multiplication in the range
+  $\Zintvco{0}{n}$ by immediately replacing any result outside that range by
+  its remainder on division by $n$.
+\end{itemize}
+}
+
+For example, suppose we want to find
+\begin{equation}\label{ex44427}
+\rem{(44427^{3456789} + 15555858^{5555})403^{6666666}}{36}.
+\end{equation}
+This looks really daunting if you think about computing these large
+powers and then taking remainders.  For example, the decimal
+representation of $44427^{3456789}$ has about 20 million digits, so we
+certainly don't want to go that route.  But remembering that integer
+exponents specify a series of multiplications, we follow the General
+Principle and replace the numbers being multiplied by their
+remainders.  Since $\rem{44427}{36} = 3, \rem{15555858}{36} = 6$, and
+$\rem{403}{36} = 7$, we find that~\eqref{ex44427} equals the remainder
+on division by 36 of
+\begin{equation}\label{ex367}
+(3^{3456789} + 6^{5555})7^{6666666}.
+\end{equation}
+That's a little better, but $3^{3456789}$ has about a million digits
+in its decimal representation, so we still don't want to compute that.
+But let's look at the remainders of the first few powers of 3:
+\begin{align*}
+\rem{3}{36} & = 3\\
+\rem{3^2}{36} & = 9\\
+\rem{3^3}{36} & = 27\\
+\rem{3^4}{36} & = 9.
+\end{align*}
+
+We got a repeat of the second step, $\rem{3^2}{36}$ after just two
+more steps.  This means means that starting at $3^2$, the sequence of
+remainders of successive powers of 3 will keep repeating every 2
+steps.  So a product of an odd number of at least three 3's will have
+the same remainder on division by 36 as a product of just three 3's.
+Therefore,
+\[
+\rem{3^{3456789}}{36} = \rem{3^3}{36} = 27.
+\]
+What a win!
+
+Powers of 6 are even easier because $\rem{6^2}{36} = 0$, so 0's keep
+repeating after the second step.  Powers of 7 repeat after six
+steps, but on the fifth step you get a 1, that is $\rem{7^6}{36}
+=1$, so~\eqref{ex367} successively simplifies to be the remainders
+of the following terms:
+\begin{align*}
+\lefteqn{(3^{3456789} + 6^{5555})7^{6666666}}\\
+   & (3^3 + 6^2 \cdot 6^{5553})(7^6)^{1111111}\\
+   & (3^3 + 0 \cdot 6^{5553})1^{1111111}\\
+   & = 27.
+\end{align*}
+
+Notice that \emph{it would be a disastrous blunder to replace an
+  exponent by its remainder}.  The general principle applies to
+numbers that are \emph{operands} of plus and times, whereas the
+exponent is a number that controls how many multiplications to
+perform.  Watch out for this.
+
+\subsection{The ring $\Zmod{n}$}\label{subsec:ringZn}
+
+It's time to be more precise about the general principle and why it
+works.  To begin, let's introduce the notation $+_n$ for doing an
+addition and then immediately taking a remainder on division by $n$,
+as specified by the general principle; likewise for multiplying:
+\begin{align*}
+i +_n j & \eqdef \rem{i+j}{n},\\
+i \cdot_n j & \eqdef \rem{ij}{n}.
+\end{align*}
+
+Now the General Principle is simply the repeated application of the
+following lemma.
+\begin{lemma}\label{rem-morphism}
+\begin{align}
+\rem{i+j}{n} = \rem{i}{n} +_n \rem{j}{n},\label{+rhom}\\
+\rem{ij}{n} = \rem{i}{n} \cdot_n \rem{j}{n}.\label{.rhom}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+By Corollary~\ref{aran}, $i \equiv \rem{i}{n}$ and $j \equiv
+\rem{j}{n}$, so by the Congruence Lemma~\ref{mod_congruence_lem}
+\[
+i + j \equiv \rem{i}{n} + \rem{j}{n} \pmod{n}.
+\]
+By Corollary~\ref{aran} again, the remainders on each side of this
+congruence are equal, which immediately gives~\eqref{+rhom}.  An
+identical proof applies to~\eqref{.rhom}.
+\end{proof}
+
+The set of integers in the range $\Zintvco{0}{n}$ together with the
+operations $+_n$ and $\cdot_n$ is referred to as $\Zmod{n}$, the%
+\index{commutative ring!ring of intergers modulo $n$|textbf}%
+\index{ring|see{commutative ring}} \emph{ring of integers modulo $n$}.
+As a consequence of Lemma~\ref{rem-morphism}, the familiar rules of
+arithmetic hold in $\Zmod{n}$, for example:
+\[
+(i \cdot_n j) \cdot_n k = i \cdot_n (j \cdot_n k).
+\]
+
+These subscript-$n$'s on arithmetic operations really clog things up,
+so instead we'll just write ``($\Zmod{n}$)'' on the side to get a
+simpler looking equation:
+\[
+(i \cdot j) \cdot k = i \cdot (j \cdot k) \ \inzmod{n}.
+\]
+
+\begin{editingnotes}
+From here on, replace $+_n$ by ``$+ \dots \inzmod{n}$ where
+possible; likewise for $\cdot_n$.
+\end{editingnotes}
+
+In particular, all of the following equalities\footnote{A set with
+  addition and multiplication operations that satisfy these equalities
+  is known as a \term{commutative ring}.  In addition to $\Zmod{n}$,
+  the integers, rationals, reals, and polynomials with integer
+  coefficients are all examples of commutative rings.  On the other
+  hand, the set $\set{\true, \false}$ of truth values with $\QOR$ for
+  addition and $\QAND$ for multiplication is \emph{not} a commutative
+  ring because it fails to satisfy one of these equalities.  The $n
+  \times n$ matrices of integers are not a commutative ring because
+  they fail to satisfy another one of these equalities.} are true in
+$\Zmod{n}$:
+\begin{align*}
+(i \cdot j) \cdot k & = i \cdot (j \cdot k) 
+       & \text{(associativity of $\cdot$)},\\
+        (i + j) + k & = i + (j + k)  
+       & \text{(associativity of $+$)},\\
+           1 \cdot k  & = k  
+       & \text{(identity for $\cdot$)},\\
+              0 + k  & = k  
+       & \text{(identity for $+$)},\\
+           k + (-k)  & = 0  
+       & \text{(inverse for $+$)},\\
+                i + j & = j + i  
+       & \text{(commutativity of $+$)}\\
+    i \cdot (j + k) & = (i \cdot j) + (i \cdot k)  
+       & \text{(distributivity)},\\
+            i \cdot j & = j \cdot i  
+       & \text{(commutativity of $\cdot$)}\\
+\end{align*}
+
+\begin{editingnotes}
+Boring verification of example equation above---maybe put in a problem:
+
+Letting $i'$ abbreviate $\rem{i}{n}$, and remembering that $i = i'$
+for $i \in \Zintvco{0}{n}$, we have for $i,j,k \in \Zintvco{0}{n}$:
+\begin{align*}
+i \cdot_n (j +_n k) & = i' \cdot_n (j' +_n k')\\
+   & = i' \cdot_n (j' + k')' & \text{(def of $+_n$)}\\
+   & = i (j' + k') & \text{(by~\eqref{.rhom})}\\  %(ij)' = i' ._n j'
+   & = i j' + i k'\\
+   & = ij + ik\\
+   & = (ij)' +_n (ik)' & \text{(by~\eqref{+rhom})}\\  %(i+j)' = i' +_n j'
+   & = (i' \cdot_ n j') +_n (i' \cdot_ n k') & \text{(by~\eqref{.rhom})}\\
+   & = (i \cdot_ n j) +_n (i \cdot_ n k).
+\end{align*}
+\end{editingnotes}
+
+Associativity implies the familiar fact that it's safe to omit the
+parentheses in products:
+\[
+k_1\ \cdot\ k_2\ \cdot \cdots \cdot\ k_m
+\]
+comes out the same in $\Zmod{n}$ no matter how it is parenthesized.
+
+The overall theme is that remainder arithmetic is a lot like ordinary
+arithmetic.  But there are a couple of exceptions we're about to
+examine.
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_divisibility_and_congruence}
+\pinput{TP_3_mod_21}  %uncover after S16 mid3
+
+\homeworkproblems
+\pinput{PS_eval_cong_aexp}
+\pinput{PS_ring_theory}
+\pinput{PS_reverse_linear_recurrences}
+
+\classproblems
+\pinput{CP_remainder_computation_practice}
+\pinput{CP_proving_basic_congruence_properties}
+\pinput{CP_multiples_of_9_and_11}
+\pinput{CP_13th_roots}
+\pinput{CP_pirate_treasure}
+
+\examproblems
+\pinput{FP_remainder_arithmetic}
+\pinput{FP_check_factor_by_digits_proof}
+\pinput{FP_recurrence_strong_induction}
+
+\end{problems}
+
+\section{\index{Turing's code}Turing's Code (Version 2.0)}
+
+In 1940, France had fallen before Hitler's army, and Britain stood
+alone against the Nazis in western Europe.  British resistance
+depended on a steady flow of supplies brought across the north
+Atlantic from the United States by convoys of ships.  These convoys
+were engaged in a cat-and-mouse game with German ``U-boats''
+---submarines---which prowled the Atlantic, trying to sink supply
+ships and starve Britain into submission.  The outcome of this
+struggle pivoted on a balance of information: could the Germans locate
+convoys better than the Allies could locate U-boats, or vice versa?
+
+Germany lost.
+
+A critical reason behind Germany's loss was not made public until
+1974: Germany's naval code, \emph{Enigma}, had been broken by the Polish Cipher
+  Bureau,\footnote{See
+  \href{http://www.bletchleypark.org.uk/content/hist/history/polish.rhtm}
+       {http://en.wikipedia.org/wiki/Polish\_Cipher\_Bureau}.}  and
+the secret had been turned over to the British a few weeks before the
+Nazi invasion of Poland in 1939.  Throughout much of the war, the
+Allies were able to route convoys around German submarines by
+listening in to German communications.  The British government didn't
+explain \emph{how} Enigma was broken until 1996.  When the story was
+finally released (by the US), it revealed that Alan Turing had joined
+the secret British codebreaking effort at Bletchley Park in 1939,
+where he became the lead developer of methods for rapid, bulk
+decryption of German Enigma messages.  Turing's Enigma deciphering was
+an invaluable contribution to the Allied victory over Hitler.
+
+Governments are always tight-lipped about cryptography, but the
+half-century of official silence about Turing's role in breaking
+Enigma and saving Britain may be related to some disturbing events
+after the war---more on that later.  Let's get back to number theory
+and consider an alternative interpretation of Turing's code.  Perhaps
+we had the basic idea right (multiply the message by the key), but
+erred in using \emph{conventional} arithmetic instead of
+\emph{modular} arithmetic.  Maybe this is what Turing meant:
+\begin{description}
+
+\item[Beforehand] The sender and receiver agree on a large number $n$,
+  which may be made public.  (This will be the modulus for all our
+  arithmetic.)  As in Version 1.0, they also agree that some prime
+  number $k < n$ will be the secret key.
+
+\item[Encryption] As in Version 1.0, the message $m$ should be another
+  prime in $\Zintvco{0}{n}$.  The sender encrypts the message $m$ to produce
+    $\widehat{m}$ by computing $mk$, but this time modulo $n$:
+\begin{equation}
+\widehat{m} \eqdef m \cdot k \inzmod{n}\label{eq:turing-code} 
+\end{equation}
+
+\item[Decryption] (Uh-oh.)
+
+\end{description}
+
+The decryption step is a problem.  We might hope to decrypt in the
+same way as before by dividing the encrypted message $\widehat{m}$ by the key
+$k$.  The difficulty is that $\widehat{m}$ is the \emph{remainder} when $mk$
+is divided by $n$.  So dividing $\widehat{m}$ by $k$ might not even give us an
+integer!
+
+This decoding difficulty can be overcome with a better understanding
+of when it is ok to divide by $k$ in modular arithmetic.
+
+\begin{problems}
+\examproblems
+\pinput{FP_structural_induction_polynomial}
+%\pinput{FP_structural_ind_polynomials}  %same prob in terms of aexps
+\end{problems}
+
+\section{Multiplicative Inverses and Cancelling}\label{sec:inverse}
+\index{inverse (multiplicative)}
+
+%Arithmetic with a Prime Modulus}\label{mod_prime_sec}
+
+The \term{multiplicative inverse} of a number $x$ is another number
+$x^{-1}$ such that
+\[
+x^{-1} \cdot x  = 1.
+\]
+From now on, when we say ``inverse,'' we mean \emph{multiplicative}
+(not relational) inverse.
+
+For example, over the rational numbers, $1 / 3$ is, of course, an
+inverse of 3, since,
+\[
+\frac{1}{3} \cdot 3 = 1.
+\]
+In fact, with the sole exception of 0, every rational number $n/m$ has
+an inverse, namely, $m/n$.  On the other hand, over the integers, only
+1 and -1 have inverses.  Over the ring
+$\Zmod{n}$, things get a little more complicated.  For example, 2
+  is a multiplicative inverse of 8 in $\Zmod{15}$, since
+\[
+2 \cdot 8 = 1 \inzmod{15}.
+\]
+
+On the other hand, 3 does not have a multiplicative inverse in
+$\Zmod{15}$.  We can prove this by contradiction: suppose there was an
+inverse $j$ for 3, that is
+\[
+1 = 3 \cdot j \inzmod{15}.
+\]
+Then multiplying both sides of this equality by 5 leads directly to
+the contradiction $5 = 0$:
+\begin{align*}
+5 & = 5 \cdot (3 \cdot j)\\
+  & = (5 \cdot 3) \cdot j\\
+  & = 0 \cdot j = 0 \inzmod{15}.
+\end{align*}
+So there can't be any such inverse $j$.
+
+So some numbers have inverses modulo 15 and others don't.  This may seem
+a little unsettling at first, but there's a simple explanation of
+what's going on.
+
+\subsection{Relative Primality}
+
+Integers that have no prime factor in common are called
+\emph{relatively prime}\index{prime!relatively prime}.\footnote{Other texts call them
+  \emph{coprime}.}  This is the same as having no common divisor
+(prime or not) greater than~1.  It's also equivalent to saying
+$\gcd(a, b) = 1$.
+
+For example, 8 and 15 are relatively prime, since $\gcd(8, 15) = 1$.
+On the other hand, 3 and 15 are not relatively prime, since $\gcd(3,
+15) = 3 \neq 1$.  This turns out to explain why 8 has an inverse over
+$\Zmod{15}$ and 3 does not.
+
+\begin{lemma}\label{lem:inverse-arb} If $k \in \Zintvco{0}{n}$ is relatively prime to
+$n$, then $k$ has an inverse in $\Zmod{n}$.\footnote{This works even
+    in the extreme case that $n=1$, because $0 \equiv 1 \pmod{1}$, so
+    it is consistent to define 0 to be its own inverse in $\Zmod{1}$.}
+\end{lemma}
+
+\begin{proof}
+If $k$ is relatively prime to $n$, then $\gcd(n, k) = 1$ by definition
+of gcd.  This means we can use the Pulverizer from
+section~\ref{sec:pulverizer} to find a linear combination of $n$ and
+$k$ equal to 1:
+\[
+s n + t k = 1.
+\]
+So applying the General Principle of Remainder Arithmetic
+(Lemma~\ref{rem-morphism}), we get
+\[
+(\rem{s}{n} \cdot \rem{n}{n}) + (\rem{t}{n} \cdot \rem{k}{n}) = 1 \inzmod{n}.
+\]
+But $\rem{n}{n} = 0$, and $\rem{k}{n} = k$ since $k \in \Zintvco{0}{n}$, so we
+  get
+\[
+\rem{t}{n} \cdot k = 1 \inzmod{n}.
+\]
+Thus, $\rem{t}{n}$ is a multiplicative inverse of $k$.
+\end{proof}
+
+By the way, it's nice to know that when they exist, inverses are
+unique.  That is,
+\begin{lemma}\label{uniq-inv}
+If $i$ and $j$ are both inverses of $k$ in $\Zmod{n}$, then $i=j$.
+\end{lemma}
+
+\begin{proof}
+\[
+i = i \cdot 1 = i \cdot (k \cdot j) = (i \cdot k) \cdot j = 1 \cdot j = j \inzmod{n}.
+\]
+\end{proof}
+
+So the proof of Lemma~\ref{lem:inverse-arb} shows that for any $k$
+relatively prime to $n$, the inverse of $k$ in $\Zmod{n}$ is simply
+the remainder of a coefficient we can easily find using the
+Pulverizer.
+
+Working with a prime modulus is attractive here because, like the
+rational and real numbers, when $p$ is prime, every nonzero number has
+an inverse in $\Zmod{p}$.  But arithmetic modulo a composite is really
+only a little more painful than working modulo a prime---though you
+may think this is like the doctor saying, ``This is only going to hurt
+a little,'' before he jams a big needle in your arm.
+
+\subsection{Cancellation}
+
+Another sense in which real numbers are nice is that it's ok to cancel
+common factors.  In other words, if we know that $t r = t s$ for real
+numbers $r,s,t$, then as long as $t \neq 0$, we can cancel the $t$'s
+and conclude that $r = s$.  In general, cancellation is \emph{not}
+valid in $\Zmod{n}$.  For example,
+\begin{equation}\label{3103515}
+3 \cdot 10 = 3 \cdot 5 \inzmod{15},
+\end{equation}
+but cancelling the 3's leads to the absurd conclusion that 10 equals
+5.
+
+The fact that multiplicative terms cannot be cancelled is the most
+significant way in which $\Zmod{n}$ arithmetic differs from ordinary
+integer arithmetic.
+
+\begin{definition}
+A number $k$ is \emph{cancellable} in $\Zmod{n}$ iff
+\[
+k \cdot a = k \cdot b  \qimplies a = b  \inzmod{n}
+\]
+for all $a,b \in \Zintvco{0}{n}$.
+\end{definition}
+
+If a number is relatively prime to 15, it can be cancelled by
+multiplying by its inverse.  So cancelling works for numbers that have
+inverses:
+\begin{lemma}\label{lem:cancellation-arb}
+If $k$ has an inverse in $\Zmod{n}$, then it is cancellable.
+\end{lemma}
+
+But 3 is not relatively prime to 15, and that's why it is not
+cancellable.  More generally, if $k$ is not relatively prime to $n$,
+then we can show it isn't cancellable in $\Zmod{n}$ in the same way we
+showed that 3 is not cancellable in~\eqref{3103515}.
+
+\iffalse
+Namely, suppose $\gcd(k,n) = m > 1$.  So $k/m$ and $n/m$ are
+positive integers, and we have
+\begin{align*}
+          (n/m) \cdot k & = n \cdot (k/m),\\
+\rem{(n/m) \cdot k}{n} & = \rem{n \cdot (k/m)}{n},\\
+        (n/m) \cdot k & = 0 = 0 \cdot k \inzmod{n}.
+\end{align*}
+Now $k$ can't be cancelled or we would reach the false conclusion that
+$n/m = 0$.
+\fi
+
+To summarize, we have
+\begin{theorem}\label{thm:mod_inverses}
+The following are equivalent for $k \in \Zintvco{0}{n}$:\footnote{This
+  works even when $n=1$---see the footnote following
+  Lemma~\ref{lem:inverse-arb}.}
+\begin{align*}
+& \gcd(k, n) = 1,\\
+& k \text{ has an inverse in $\Zmod{n}$},\\
+& k \text{ is cancellable in $\Zmod{n}$}.
+\end{align*}
+\end{theorem}
+
+\subsection{Decrypting (Version 2.0)}
+
+Multiplicative inverses are the key to decryption in Turing's code.
+Specifically, we can recover the original message by multiplying the
+encoded message by the $\Zmod{n}$-inverse $j$ of the key:
+\[
+\widehat{m} \cdot j = (m \cdot k) \cdot j = m \cdot (k \cdot j) = m \cdot 1 = m \inzmod{n}.
+\]
+So all we need to decrypt the message is to find an inverse of the
+secret key $k$, which will be easy using the Pulverizer---providing
+$k$ has an inverse.  But $k$ is positive and less than the modulus
+$n$, so one simple way to ensure that $k$ is relatively prime to the
+modulus is to have $n$ be a prime number.
+
+\subsection{Breaking \index{Turing's code}Turing's Code (Version 2.0)}
+
+The Germans didn't bother to encrypt their weather reports with the
+highly-secure Enigma system.  After all, so what if the Allies learned
+that there was rain off the south coast of Iceland?  But amazingly,
+this practice provided the British with a critical edge in the
+Atlantic naval battle during 1941.
+
+The problem was that some of those weather reports had originally been
+transmitted using Enigma from U-boats out in the Atlantic.  Thus, the
+British obtained both unencrypted reports and the same reports
+encrypted with Enigma.  By comparing the two, the British were able to
+determine which key the Germans were using that day and could read all
+other Enigma-encoded traffic.  Today, this would be called a
+\emph{known-plaintext attack}.
+
+Let's see how a known-plaintext attack would work against Turing's
+code.  Suppose that the Nazis know both the plain text $m$ and its
+
+\[
+\widehat{m} = m \cdot k \inzmod{n},
+\]
+and since $m$ is positive and less than the prime $n$, the Nazis can
+use the Pulverizer to find the $\Zmod{n}$-inverse $j$ of $m$.  Now
+\[
+j \cdot \widehat{m} = j \cdot (m \cdot k) = (j \cdot m) \cdot k
+= 1 \cdot k = k \inzmod{n}.
+\]
+So by computing $j \cdot \widehat{m} = k \inzmod{n}$, the Nazis get the
+secret key and can then decrypt any message!
+
+This is a huge vulnerability, so Turing's hypothetical Version 2.0
+code has no practical value.  Fortunately, Turing got better at
+cryptography after devising this code; his subsequent deciphering of
+Enigma messages surely saved thousands of lives, if not the whole of
+Britain.
+
+%  I could insert a bit about public-key cryptography here as introduction to the
+%  recitation.
+
+\subsection{Turing Postscript}
+
+A few years after the war, \idx{Turing}'s home was robbed.  Detectives soon
+determined that a former homosexual lover of Turing's had conspired in
+the robbery.  So they arrested him---that is, they arrested Alan
+Turing---because at that time in Britain, homosexuality was a crime punishable by up
+to two years in prison.  Turing was sentenced to a
+hormonal ``treatment'' for his homosexuality: he was given estrogen
+injections.  He began to develop breasts.
+
+Three years later, Alan Turing, the founder of computer science,
+was dead.  His mother explained what happened in a biography of her
+own son.  Despite her repeated warnings, Turing carried out chemistry
+experiments in his own home.  Apparently, her worst fear was realized:
+by working with potassium cyanide while eating an apple, he poisoned
+himself.
+
+However, Turing remained a puzzle to the very end.  His mother was a
+devout woman who considered suicide a sin.  And, other biographers
+have pointed out, Turing had previously discussed committing suicide
+by eating a poisoned apple.  Evidently, Alan Turing, who founded
+computer science and saved his country, took his own life in the end,
+and in just such a way that his mother could believe it was an
+accident.
+
+Turing's last project before he disappeared from public view in 1939
+involved the construction of an elaborate mechanical device to test a
+mathematical conjecture called the Riemann Hypothesis.  This
+conjecture first appeared in a sketchy paper by Bernhard Riemann in
+1859 and is now one of the most famous unsolved problems in
+mathematics.
+
+\floatingtextbox{\textboxheader{The Riemann Hypothesis}
+
+The formula for the sum of an infinite geometric series says:
+\[
+1 + x + x^2 + x^3 + \cdots = \frac{1}{1-x}.
+\]
+Substituting $x = \frac{1}{2^s}$, $x = \frac{1}{3^s}$, $x = \frac{1}{5^s}$, and so on for
+each prime number gives a sequence of equations:
+\begin{align*}
+1 + \frac{1}{2^s} + \frac{1}{2^{2s}} + \frac{1}{2^{3s}} + \cdots & = \frac{1}{1 - 1 / 2^s}
+\\
+1 + \frac{1}{3^s} + \frac{1}{3^{2s}} + \frac{1}{3^{3s}} + \cdots & = \frac{1}{1 - 1 /
+  3^s} \\
+1 + \frac{1}{5^s} + \frac{1}{5^{2s}} + \frac{1}{5^{3s}} + \cdots & = \frac{1}{1 -
+  1 / 5^s} \\
+& \vdots
+\end{align*}
+Multiplying together all the left-hand sides and all the right-hand sides gives:
+\[
+\sum_{n=1}^{\infty} \frac{1}{n^s} = \prod_{p \in \text{primes}} \paren{\frac{1}{1 - 1 /
+    p^s}}.
+\]
+The sum on the left is obtained by multiplying out all the infinite
+series and applying the Fundamental Theorem of Arithmetic.  For
+example, the term $1 / 300^s$ in the sum is obtained by multiplying $1
+/ 2^{2s}$ from the first equation by $1 / 3^s$ in the second and $1 /
+5^{2s}$ in the third.  Riemann noted that every prime appears in the
+expression on the right.  So he proposed to learn about the primes by
+studying the equivalent, but simpler expression on the left.  In
+particular, he regarded $s$ as a complex number and the left side as a
+function $\zeta(s)$.  Riemann found that the distribution of primes
+is related to values of $s$ for which $\zeta(s) = 0$, which led to his
+famous conjecture:
+
+\begin{definition}\label{RiemannHyp}
+  The \term{Riemann Hypothesis}: Every nontrivial zero of the zeta
+  function $\zeta(s)$ lies on the line $s = 1/2 + c i$ in the complex
+  plane.
+\end{definition}
+A proof would immediately imply, among other things, a strong form of
+the Prime Number Theorem.\index{prime!Prime Number Theorem}
+
+Researchers continue to work intensely to settle this conjecture, as
+they have for over a century.  It is another of the
+\href{http://www.claymath.org/millennium/}{Millennium Problems} whose
+solver will earn \$1,000,000 from the Clay Institute.}
+
+\begin{problems}
+\practiceproblems
+\pinput{MQ_explain_pulverizer}
+\pinput{TP_multiplicative_inverses}
+\pinput{TP_Inverse_with_Linear_Combinations}
+\pinput{MQ_inverse_by_pulverizer}
+
+\classproblems
+\pinput{CP_nonparallel_lines}
+
+\end{problems}
+
+\section{Euler's Theorem}\label{Euler_sec}
+
+The RSA cryptosystem examined in the next section, and other current
+schemes for encoding secret messages, involve computing remainders of
+numbers raised to large powers.  A basic fact about remainders of
+powers follows from a theorem due to Euler about congruences.
+
+\begin{definition}
+For $n>0$, define
+\[
+\phi(n) \eqdef \text{the number of integers in $\Zintvco{0}{n}$, that are relatively prime
+  to~$n$.}
+\]
+This function $\phi$ is known as \idx{Euler's $\phi$
+  function}.\footnote{Some texts call it Euler's \term{totient
+    function}.}
+\end{definition}
+
+For example, $\phi(7) = 6$ because all 6 positive numbers in
+$\Zintvco{0}{7}$ are relatively prime to the prime number 7.  Only 0
+is not relatively prime to 7.  Also, $\phi(12) = 4$ since 1, 5, 7,
+and~11 are the only numbers in~$\Zintvco{0}{12}$ that are relatively
+prime to~12.\footnote{Also, $\phi(1)=1$, but since we make no use of
+  this fact, it only merits a footnote.}
+
+More generally, if $p$ is prime, then $\phi(p) = p - 1$ since every
+positive number in $\Zintvco{0}{p}$ is relatively prime to $p$.  When
+$n$ is composite, however, the $\phi$ function gets a little
+complicated.  We'll get back to it in the next section.
+
+Euler's Theorem is traditionally stated in terms of congruence:
+\begin{theorem*}[\term{Euler's Theorem}]
+If $n$ and $k$ are relatively prime, then
+\begin{equation}\label{cong:euler}
+k^{\phi(n)} \equiv 1 \pmod{n}.
+\end{equation}
+\end{theorem*}
+
+Things get simpler when we rephrase Euler's Theorem in terms of
+$\Zmod{n}$.
+
+\begin{definition}
+Let $\relpr{n}$  be the integers in $\Zintvco{0}{n}$, that are relatively
+  prime to~$n$:\footnote{Some other texts use the notation $n^*$ for
+  $\relpr{n}$.}
+\begin{equation}\label{def:relpr}
+\relpr{n} \eqdef \set{k \in \Zintvco{0}{n}\ \suchthat\ \gcd(k,n) = 1}.
+\end{equation}
+\end{definition}
+Consequently,
+\[
+\phi(n) = \Card{\relpr{n}}.
+\]
+
+\begin{theorem}[Euler's Theorem for $\Zmod{n}$\index{Euler's Theorem!for $\Zmod{n}$}]\label{thmZn:euler}
+For all $k \in \relpr{n}$,
+\begin{equation}\label{eqZn:euler}
+    k^{\phi(n)} = 1 \inzmod{n}.
+\end{equation}
+\end{theorem}
+
+Theorem~\ref{thmZn:euler} will follow from two very easy lemmas.
+
+Let's start by observing that $\relpr{n}$ is closed under
+multiplication in $\Zmod{n}$:
+\begin{lemma}\label{relprimgroup}
+If $j,k \in \relpr{n}$, then $j \cdot_n k \in \relpr{n}$.
+\end{lemma}
+There are lots of easy ways to prove this (see
+Problem~\ref{MQ_relprime_closed}).
+
+\begin{editingnotes}
+\begin{definition}
+Define the \index{order over $\Zmod{n}$}{\term{order} of $k$
+    over $\Zmod{n}$} to be
+\[
+\ordmod{k}{n} \eqdef \min \set{m \geq 0 \suchthat k^m = 1}.
+\]
+If no power of $k$ equals 1 in $\Zmod{n}$, then $\ordmod{k}{n} \eqdef
+\infty$.
+\end{definition}
+
+\begin{lemma}\label{relprime_order}
+Every element of $\relpr{n}$ has finite order.
+
+\begin{proof}
+Suppose $k \in \relpr{n}$.  We need to show is that some power of $k$
+equals 1.
+
+But since $\relpr{n}$ has fewer than $n$ elements, some number must
+occur twice in the list
+\[
+k^1,\ k^2,\ \dots,\ k^n \inzmod{n}.
+\] 
+That is,
+\begin{equation}\label{kni+m}
+k^{i+m} = k^{i} \inzmod{n}
+\end{equation}
+for some $m >0$ and $i \in \Zintvco{0}{n}$.  But $k$ is cancellable over
+  $\Zmod{n}$, so we can cancel the first $i$ of the $k$'s on both
+  sides of~\eqref{kni+m} to get
+\[
+k^m =1 \inzmod{n}.
+\]
+\end{proof}
+\end{lemma}
+\end{editingnotes}
+
+\begin{definition}\label{def:kS}
+For any element $k$ and subset $S$ of $\Zmod{n}$, let
+\[
+kS \eqdef \set{k \cdot_n s\suchthat s \in S}.
+\]
+\end{definition}
+
+\begin{lemma}\label{lem:cardks} %\label{lem:permutes-arb}
+If $k \in \relpr{n}$ and $S \subseteq \Zmod{n}$, then
+\[
+\card{kS} = \card{S}.
+\]
+\end{lemma}
+
+\begin{proof}
+Since $k \in \relpr{n}$, by Theorem~\ref{thm:mod_inverses} it is
+cancellable.  Therefore,
+\[
+[ks=kt \inzmod{n}] \qimplies s=t.
+\]
+So multiplying by $k$ in $\Zmod{n}$ maps all the elements of $S$ to
+distinct elements of $kS$, which implies $S$ and $kS$ are the same
+size.
+\end{proof}
+
+\begin{corollary}\label{cor:krelprn}
+If $k \in \relpr{n}$, then
+\[
+k\relpr{n} = \relpr{n}.
+\]
+\end{corollary}
+
+\begin{proof}
+A product of elements in $\relpr{n}$ remains in $\relpr{n}$ by
+Lemma~\ref{relprimgroup}.  So if $k \in \relpr{n}$, then $k\relpr{n}
+\subseteq \relpr{n}$.  But by Lemma~\ref{lem:cardks}, $k\relpr{n}$ and
+$\relpr{n}$ are the same size, so they must be equal.
+\end{proof}
+
+Now we can complete the proof of Euler's Theorem~\ref{thmZn:euler} for $\Zmod{n}$:
+\begin{proof}
+Let
+\[
+P \eqdef k_1 \cdot k_2 \cdots k_{\phi(n)} \inzmod{n}
+\]
+be the product in $\Zmod{n}$ of all the numbers in $\relpr{n}$.  Let
+\[
+Q \eqdef (k\cdot k_1) \cdot (k\cdot k_2) \cdots (k\cdot k_{\phi(n)}) \inzmod{n}
+\]
+for some $k \in \relpr{n}$.  Factoring out $k$'s immediately gives
+\[
+Q= k^{\phi(n)}P \inzmod{n}.
+\]
+But $Q$ is the same as the product of the numbers in $k\relpr{n}$, and
+$k\relpr{n} = \relpr{n}$, so we realize
+\iffalse by Corollary\ref{cor:krelprn} \fi
+that $Q$ is the product of the same numbers as $P$, just in a different
+order.  Altogether, we have
+\[
+P = Q = k^{\phi(n)}P \inzmod{n}.
+\]
+Furthermore, $P \in \relpr{n}$ by Lemma~\ref{relprimgroup},
+and so it can be cancelled from both sides of this equality, giving
+\[
+1 = k^{\phi(n)} \inzmod{n}.
+\]
+\end{proof}
+
+
+\iffalse
+Suppose $n>1$ and $k$ is relatively prime to $n$.
+Let $k_1, \dots, k_r$ be all the integers in the interval
+$\Zintvco{0}{n}$ that are relatively prime to $n$.  Then the sequence of
+  remainders on division by $n$ of:
+\[
+k_1 \cdot k,\quad
+k_2 \cdot k,\quad
+k_3 \cdot k, \dots,\quad
+k_r \cdot k
+\]
+is a permutation of the sequence:
+\[
+k_1,\quad k_2, \dots,\quad k_r.
+\]
+\end{lemma}
+
+\begin{proof}
+We will show that the remainders of the numbers in the first sequence
+are all distinct and are equal to some member of the sequence of
+$k_j$'s.  Since the two sequences have the same length, the first must
+be a permutation of the second.
+
+First, we show that the remainders in the first sequence are all
+distinct.  Suppose that $\rem{k_i k}{n} = \rem{k_j k}{n}$.  This is
+equivalent to $k_i k \equiv k_j k \pmod{n}$, which implies $k_i \equiv
+k_j \pmod{n}$ by Lemma~\ref{lem:cancellation-arb}.  This, in turn,
+means that $k_i = k_j$ since both are in $\Zintvco{0}{n}$.  Thus, none
+of the remainder terms in the first sequence is equal to any other
+remainder term.
+
+Next, we show that each remainder in the first sequence equals one of
+the $k_i$.  By assumption, $k_i$ and $k$ are relatively prime to $n$,
+and therefore so is $k_ik$ by Unique Factorization.  Hence,
+\begin{align*}
+\gcd(n, \rem{k_i k}{n}) & = \gcd(k_i k, n)
+            & \text{(Lemma~\ref{lem:gcdrem})}\\
+      & = 1.
+\end{align*}
+Since $\rem{k_i k}{n}$ is in $\Zintvco{0}{n}$ by the definition of remainder,
+  and since it is relatively prime to $n$, it must be equal to one of
+  the~$k_i$'s.
+\end{proof}
+
+Let $k_1, \dots, k_r$ denote all integers relatively prime to $n$
+where $k_i \in \Zintvco{0}{n}$.  Then $r = \phi(n)$, by the definition of
+  $phi$.  Now
+\begin{align*}
+\lefteqn{k_1 \cdot k_2 \cdots k_r} \hspace{0.25in} \\
+  & = \rem{k_1 \cdot k}{n} \cdot \rem{k_2 \cdot k}{n} \cdots \rem{k_r \cdot k}{n}
+      & \text{(by Lemma~\ref{lem:permutes-arb})}\\
+  & \equiv (k_1 \cdot k) \cdot (k_2 \cdot k) \cdot \cdots (k_r \cdot k) \pmod{n}
+      & \text{(by Cor~\ref{aran})}\\
+  & \equiv (k_1 \cdot k_2 \cdots k_r) \cdot k^r \pmod{n}
+      & \text{(rearranging terms)}
+\end{align*}
+
+By Lemma~\ref{lem:cancellation-arb}, each of the terms $k_i$ can be
+cancelled, proving the claim.
+\fi
+
+\medskip
+Euler's theorem offers another way to find inverses modulo
+$n$: if~$k$ is relatively prime to~$n$, then~$k^{\phi(n)-1}$ is a
+$\Zmod{n}$-inverse of~$k$, and we can compute this power of $k$
+efficiently using fast exponentiation.  However, this approach
+requires computing $\phi(n)$.  In the next section, we'll show that
+computing $\phi(n)$ is easy \emph{if} we know the prime factorization
+of~$n$.  But we know that finding the factors of~$n$ is generally hard
+to do when $n$~is large, and so the Pulverizer remains the best
+approach to computing inverses modulo~$n$.
+
+\subsubsection{Fermat's Little Theorem}
+
+For the record, we mention a famous special case of Euler's Theorem
+that was known to Fermat a century
+earlier.
+
+\begin{corollary}[\term{Fermat's Little Theorem}]\label{fermat_little}
+Suppose $p$ is a prime and $k$ is not a multiple of $p$.  Then
+\[
+k^{p-1} \equiv 1 \pmod{p}.
+\]
+\end{corollary}
+
+\subsection{Computing Euler's $\phi$ Function}
+
+RSA works using arithmetic modulo the product of two large primes, so we begin with an
+elementary explanation of how to compute $\phi(pq)$ for primes $p$ and $q$:
+
+\begin{lemma}\label{phi_pq}    %{cor:H7}
+\[
+\phi(pq) = (p-1) (q-1)
+\]
+for primes $p\neq q$.
+\end{lemma}
+
+\begin{proof}
+Since $p$ and $q$ are prime, any number that is not relatively prime
+to $pq$ must be a multiple of~$p$ or a multiple of~$q$.  Among the
+$pq$ numbers in $\Zintvco{0}{pq}$, there are precisely $q$ multiples
+of~$p$ and $p$ multiples of~$q$.  Since $p$ and~$q$ are relatively
+prime, the only number in~$\Zintvco{0}{pq}$ that is a multiple of both
+$p$ and~$q$ is 0.  Hence, there are $p + q - 1$ numbers
+in~$\Zintvco{0}{pq}$ that are \emph{not} relatively prime to~$pq$.  This
+means that
+\begin{align*}
+    \phi(pq) & = pq - (p + q - 1) \\
+& = (p - 1) (q - 1),
+\end{align*}
+as claimed.\footnote{This proof previews a kind of counting argument that we will explore
+  more fully in Part~\ref{part:counting}.}
+\end{proof}
+
+The following theorem provides a way to calculate $\phi(n)$ for arbitrary $n$.
+\begin{theorem}\label{th:phi}\mbox{}
+\begin{enumerate}
+\item[(a)] If $p$ is a prime, then $\phi(p^k) = p^k - p^{k-1}$ for $k \geq 1$.
+\item[(b)] If $a$ and $b$ are relatively prime, then $\phi(ab) = \phi(a)\phi(b)$.
+\end{enumerate}
+\end{theorem}
+
+Here's an example of using Theorem~\ref{th:phi} to compute $\phi(300)$:
+\begin{align*}
+\phi(300) & = \phi(2^2 \cdot 3 \cdot 5^2)\\
+& = \phi(2^2) \cdot \phi(3) \cdot \phi(5^2) &
+\text{(by Theorem~\ref{th:phi}.(b))}\\
+& = (2^2 - 2^1) (3^1 - 3^0) (5^2 - 5^1) & \text{(by
+  Theorem~\ref{th:phi}.(a))}\\
+& = 80.
+\end{align*}
+
+Note that Lemma~\ref{phi_pq} also follows as a special case of
+Theorem~\ref{th:phi}.(b), since we know that $\phi(p) = p-1$ for any
+prime $p$.
+
+To prove Theorem~\ref{th:phi}.(a), notice that every $p$th number among the $p^k$ numbers
+in $\Zintvco{0}{p^{k}}$ is divisible by $p$, and only these are divisible by $p$.  So $1/p$ of
+  these numbers are divisible by $p$ and the remaining ones are not.  That is,
+\[
+\phi(p^{k}) = p^k - (1/p)p^k = p^k -p^{k-1}.
+\]
+We'll leave a proof of Theorem~\ref{th:phi}.(b) to
+Problem~\ref{PS_Euler_function_multiplicativity}.
+
+As a consequence of Theorem~\ref{th:phi}, we have
+\begin{corollary}\label{cor:phi}
+For any number~$n$, if $p_1$, $p_2$, \dots, $p_j$ are the (distinct)
+prime factors of~$n$, then
+\begin{equation*}
+    \phi(n) = n \paren{1 - \frac{1}{p_1}} \paren{1 - \frac{1}{p_2}} \cdots \paren{1 -
+      \frac{1}{p_j}}.
+ \end{equation*}
+\end{corollary}
+We'll give another proof of Corollary~\ref{cor:phi} based on rules for
+counting in Section~\ref{computephi_sec}.
+
+\iffalse are all those of the form $mp$.  For $mp$ to be in the interval, $m$ can take any
+value from 0 to $p^{k-1}-1$ and no others, so there are exactly $p^{k-1}$ numbers in the
+interval that are divisible by $p$.  Now $\phi(p^{k})$ equals the number of remaining
+elements in the interval, namely, $p^k -p^{k-1}$.  \fi
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_relprime_inverse}
+\pinput{TP_Fermats_Little_Theorem_S13}
+\pinput{MQ_modular_arithmetic}
+\pinput{TP_relative_primality_6042}
+\pinput{TP_relative_primality_3780}
+\pinput{FP_modular_exponential}
+
+\classproblems
+\pinput{CP_Euler_theorem_calculation}
+\pinput{CP_7777}
+\pinput{CP_n5_last_digit}
+\pinput{CP_calculating_inverses_fermat}
+\pinput{FP_Euler_function}
+\pinput{CP_chinese_remainder}
+\pinput{FP_Fermat_primes}
+
+\homeworkproblems
+\pinput{PS_squares_modp}
+\pinput{PS_Euler_function_multiplicativity}
+\pinput{PS_order_divides_phi}
+\pinput{CP_chinese_remainder_general}
+\pinput{PS_Euler_theorem_not_rel_prime}
+%draft: CP_fermat_probable_prime
+\pinput{PS_generalized_stamps}
+ 
+\examproblems
+\pinput{FP_Euler_theorem_calculation}
+\pinput{MQ_relprime_closed}
+\pinput{FP_numbers_short_answer}
+\pinput{FP_numbers_short_answer_F15}
+\pinput{FP_number_short}
+\pinput{PS_congruent_modulo_1000}
+\pinput{FP_modular_powerful}
+\pinput{FP_bogus_Fermat_theorem}
+
+\pinput{MQ_phi_even}
+\pinput{MQ_Euler_function_of_6042}
+\pinput{MQ_Sk_equiv_-1_mod_p}
+\end{problems}
+
+\section{RSA Public Key Encryption}\label{RSA_sec}
+
+Turing's code did not work as he hoped.  However, his essential
+idea---using number theory as the basis for cryptography---succeeded
+spectacularly in the decades after his death.
+
+In 1977, \index{Rivest, Ronald}{Ronald Rivest}, \index{Shamir,
+  Adi}{Adi Shamir}, and \index{Adleman, Leonard}{Leonard Adleman} at
+MIT proposed a highly secure cryptosystem, called \textbf{\idx{RSA}},
+based on number theory.  The purpose of the RSA scheme is to transmit
+secret messages over public communication channels.  As with Turing's
+codes, the messages transmitted are nonnegative integers
+of some fixed size.
+
+Moreover, RSA has a major advantage over traditional codes:
+the sender and receiver of an encrypted message need not meet beforehand
+to agree on a secret key.  Rather, the receiver has both a
+\emph{private key}, which they guard closely, and a \emph{public key},
+which they distribute as widely as possible.  A sender wishing to
+transmit a secret message to the receiver encrypts their message using
+the receiver's widely-distributed public key.  The receiver can then
+decrypt the received message using their closely held private key.
+The use of such a \term{public key cryptography} system allows you and
+Amazon, for example, to engage in a secure transaction without meeting
+up beforehand in a dark alley to exchange a key.
+
+Interestingly, RSA does not operate modulo a prime, as Turing's
+hypothetical Version 2.0 may have, but rather modulo the product of
+\emph{two} large primes---typically primes that are hundreds of
+digits long.  Also, instead of encrypting by multiplication with a
+secret key, RSA exponentiates to a secret power---which is why Euler's
+Theorem is central to understanding RSA.
+
+The scheme for RSA public key encryption appears in the box.
+
+\begin{figure}[p]\redrawntrue
+\textbox{
+\begin{minipage}{\textwidth}
+\textboxtitle{The RSA Cryptosystem}
+
+A \textbf{Receiver} who wants to be able to receive secret numerical
+messages creates a \emph{private key}, which they keep secret, and a
+\emph{public key}, which they make publicly available.  Anyone with the
+public key can then be a \textbf{Sender} who can publicly send secret
+messages to the \textbf{Receiver}---even if they have never
+communicated or shared any information besides the public key.
+
+Here is how they do it:
+\begin{description}
+
+\item[Beforehand] The \textbf{Receiver} creates a public key and a private key as follows.
+
+\begin{enumerate}
+
+\item Generate two distinct primes, $p$ and $q$.  These are used to generate the private
+  key, and they must be kept hidden.  (In current practice, $p$ and $q$ are chosen to be
+  hundreds of digits long.)
+
+\item Let $n \eqdef pq$.
+
+\item Select an integer $e \in \Zintvco{0}{n}$ such that $\gcd(e, (p-1)(q-1)) = 1$.\\
+The \emph{public key} is the pair $(e, n)$.  This should be distributed widely.
+
+\item Let the \emph{private key} $d \in \Zintvco{0}{n}$ be the inverse of $e$
+  in the ring $\Zmod{(p-1)(q-1)}$.  This private key can be found using
+  the Pulverizer.  The private key $d$ should be kept hidden!
+
+\end{enumerate}
+
+\item[Encoding]
+
+\iffalse
+
+Given a message~$m$, the sender first checks that $\gcd(m, n) =
+1$.\footnote{It would be very bad if $\gcd(m, n)$ equals $p$ or $q$
+  since then it would be easy for someone to use the encoded message
+  to compute the private key If $\gcd(m, n) = n$, then the encoded
+  message would be~0, which is fairly useless.  For very large values
+  of~$n$, it is extremely unlikely that $\gcd(m, n) \ne 1$.  If this
+  does happen, you should get a new set of keys or, at the very least,
+  add some bits to~$m$ so that the resulting message is relatively
+  prime to~$n$.}
+\fi
+
+To transmit a message $m \in \Zintvco{0}{n}$ to \textbf{Receiver}, a
+  \textbf{Sender} uses the public key to encrypt $m$ into a numerical
+  message
+\[
+\widehat{m} \eqdef m^e \inzmod{n}. %\powermod{m}{e}{n}.
+\]
+The \textbf{Sender} can then publicly transmit $\widehat{m}$ to the \textbf{Receiver}.
+
+\item[Decoding] The \textbf{Receiver} decrypts message $\widehat{m}$ back to message $m$ using the
+  private key:
+\[
+m = \widehat{m}^d \inzmod{n}. %\powermod{\widehat{m}}{d}{n}.
+\]
+\end{description}
+
+\end{minipage}
+}
+\end{figure}
+
+If the message $m$ is relatively prime to $n$, then a simple
+application of Euler's Theorem implies that this way of decoding the
+encrypted message indeed reproduces the original unencrypted message.
+In fact, the decoding always works---even in (the highly unlikely)
+case that $m$ is not relatively prime to $n$.  The details are worked
+out in Problem~\ref{CP_RSA_proving_correctness}.
+
+Why is RSA thought to be secure?  It would be easy to figure out the
+private key~$d$ if you knew $p$ and~$q$---you could do it the same
+way the \textbf{Receiver} does using the Pulverizer.  But assuming the
+conjecture that it is hopelessly hard to factor a number that is the
+product of two primes with hundreds of digits, an effort to factor $n$
+is not going to break RSA.
+
+Could there be another approach to reverse engineer the private key
+$d$ from the public key that did not involve factoring $n$?  Not
+really.  It turns out that given just the private and the public keys,
+it is easy to factor $n$\footnote{In practice, for this reason, the
+  public and private keys should be randomly chosen so that neither is
+  ``too small.''}  (a proof of this is sketched in
+Problem~\ref{PS_RSA_key_implies_factoring}).  So if we are confident
+that factoring is hopelessly hard, then we can be equally confident
+that finding the private key just from the public key will be
+hopeless.
+
+But even if we are confident that an RSA private key won't be found,
+this doesn't rule out the possibility of decoding RSA messages in a
+way that sidesteps the private key.  It is an important unproven
+conjecture in cryptography that \emph{any} way of cracking RSA---not
+just by finding the secret key---would imply the ability to factor.
+This would be a much stronger theoretical assurance of RSA security
+than is presently known.
+
+But the real reason for confidence is that RSA has withstood all
+attacks by the world's most sophisticated cryptographers for nearly 40
+years.  Despite decades of these attacks, no significant weakness has
+been found.  That's why the mathematical, financial, and intelligence
+communities are betting the family jewels on the security of RSA
+encryption.
+
+You can hope that with more studying of number theory, you will be the
+first to figure out how to do factoring quickly and, among other
+things, break RSA.  But be further warned that even Gauss worked on
+factoring for years without a lot to show for his efforts---and if you
+do figure it out, you might wind up meeting some humorless fellows
+working for a Federal agency in charge of security\dots.
+
+\begin{problems}
+\practiceproblems
+\pinput{MQ_factoring_cracks_RSA}
+\pinput{MQ_RSA_collision_probability_200}
+\pinput{TP_RSA_lost_private_key}
+
+\classproblems
+\pinput{CP_RSA_between_tables}
+\pinput{CP_findphi}
+\pinput{CP_RSA_proving_correctness}
+
+\homeworkproblems
+\pinput{PS_Rabin_cryptosystem}
+\pinput{PS_RSA_key_implies_factoring}
+
+\examproblems
+\pinput{MQ_RSA_reversed}
+
+\end{problems}
+
+\section{What has SAT got to do with it?}\label{SAT_RSA_sec}
+So why does society, or at least everybody's secret codes, fall apart
+if there is an efficient test for satisfiability%
+\index{satisfiability!SAT} 
+(SAT), as we claimed
+in Section~\ref{SAT_sec}?  To explain this, remember that RSA can be
+managed computationally because multiplication of two primes is fast,
+but factoring a product of two primes seems to be overwhelmingly
+demanding.
+
+Let's begin with the observation from
+Section~\ref{propositions_in_programs_sec} that a digital circuit can
+be described by a bunch of propositional formulas of about the same
+total size as the circuit.  So testing circuits for satisfiability is
+equivalent to the SAT problem for propositional formulas (see
+Problem~\ref{CP_sat_formulas_vs_circuits}).
+
+Now designing digital multiplication circuits is completely routine.
+We can easily build a digital ``product checker'' circuit out of
+\QAND, \QOR, and \QNOT\ gates with 1 output wire and $4n$ digital
+input wires.  The first $n$ inputs are for the binary representation
+of an integer $i$, the next $n$ inputs for the binary representation
+of an integer $j$, and the remaining $2n$ inputs for the binary
+representation of an integer $k$.  The output of the circuit is 1 iff
+$ij=k$ and $i,j>1$.  A straightforward design for such a product
+checker uses proportional to $n^2$ gates.
+
+Now here's how to factor any number $m$ with a length $2n$ binary
+representation using a SAT solver.  First, fix the last $2n$ digital
+inputs---the ones for the binary representation of $k$---so that $k$
+equals $m$.
+
+Next, set the first of the $n$ digital inputs for the representation
+of $i$ to be 1.  Do a SAT test to see if there is a satisfying
+assignment of values for the remaining $2n-1$ inputs used for the $i$
+and $j$ representations.  That is, see if the remaining inputs for $i$
+and $j$ can be filled in to cause the circuit to give output 1.  If
+there is such an assignment, fix the first $i$-input to be 1,
+otherwise fix it to be 0.  So now we have set the first $i$-input
+equal to the first digit of the binary representations of an $i$ such
+that $ij=m$.
+
+Now do the same thing to fix the second of the $n$ digital inputs for
+the representation of $i$, and then third, proceeding in this way
+through all the $n$ inputs for the number $i$.  At this point, we have
+the complete $n$-bit binary representation of an $i>1$ such $ij=m$ for
+some $j>1$.  In other words, we have found an integer $i$ that is a
+factor of $m$.  We can now find $j$ by dividing $m$ by $i$.
+
+So after $n$ SAT tests, we have factored $m$.  This means that if SAT
+for digital circuits with $4n$ inputs and about $n^2$ gates could be
+determined by a procedure taking a number of steps bounded above by a
+degree $d$ polynomial in $n$, then $2n$ digit numbers can be factored
+in $n$ times this many steps, that is, with a number of steps bounded
+by a polynomial of degree $d+1$ in $n$.  So if SAT could be solved
+in polynomial time, then so could factoring, and consequently RSA
+would be ``easy'' to break.
+
+\begin{editingnotes}
+\TBA{Add some problems}
+\end{editingnotes}
+
+\iffalse
+
+So multiplication is, or at least seems to be, an example of a
+``one-way function.''  A function $f$ mapping length-$n$ bit-strings
+to length-$n$ bit-strings for $n > 0$ is a \term{one-way function}
+when $f(x)$ is easy to compute (polynomial in $n$ number of steps) for
+length-$n$ strings $u$ but going the other way, that is, finding any
+element in $f^{-1}(y)$ is infeasible (exponential in $n$ number of
+steps) for length-$n$ strings $v$.
+
+Password security is also usually managed with one-way functions.
+Keeping a file around with people's actual passwords is a bad risk, so
+instead of keeping, say Alice's password $x$ in a file next to
+Alice's name, we just store $f(x)$.  When Alice logs in with password
+$x$, it's easy to look up and compute $f(x)$ to verify her password.
+But if someone steals the password file, all they have is Alice's
+$f(x)$, and that doesn't let them find $x$.  So they can't pretend to
+have Alice's password.
+
+\fi
+
+\begin{editingnotes}
+NOTES FOR FURTHER REVISIONS:
+Add summary of what's easy: exponentiating, gcd's, inverses, finding
+primes (density argument plus probabilistic prime testing)
+
+What assumed hard: factoring
+
+Work out Prob~\ref{PS_RSA_key_implies_factoring} that explains RSA security claim: finding
+key implies factoring.
+
+Complete the chebychev bound on prime density problem.
+
+Explain simple probabilistic fermat test (assume Carmichael nums are sparse).
+\end{editingnotes}
+
+
+\section{References}
+
+ \cite{BachS96},
+ \cite{Shoup05}
+
+\endinput
+
+
+\iffalse
+\begin{editingnotes}
+\subsection{\idx{Linear Combinations} and the \idx{GCD}}
+
+The theorem below relates the greatest common divisor to linear
+combinations.  This theorem is \emph{very} useful; take the time to
+understand it and then remember it!
+
+\begin{theorem} \label{th:gcd} The greatest common divisor of $a$ and $b$ is equal to
+the smallest positive linear combination of $a$ and $b$.
+\end{theorem}
+
+For example, the greatest common divisor of 52 and 44 is 4.  And, sure
+enough, 4 is a linear combination of 52 and 44:
+\[
+6 \cdot 52 + (-7) \cdot 44 = 4
+\]
+Furthermore, no linear combination of 52 and 44 is equal to a smaller
+positive integer.
+
+\begin{proof}[Proof of Theorem~\ref{th:gcd}]
+By the Well Ordering Principle, there is a smallest positive linear
+combination of $a$ and $b$; call it $m$.  We'll prove that $m =
+\gcd(a, b)$ by showing both $\gcd(a, b) \leq m$ and $m \leq \gcd(a,
+b)$.
+
+First, we show that $\gcd(a, b) \leq m$.  Now any common divisor of
+$a$ and $b$---that is, any $c$ such that $c \divides a$ and $c
+\divides b$---will divide both $sa$ and $tb$, and therefore also
+$sa+tb$ for any $s$ and~$t$.  The $\gcd(a, b)$ is by definition a
+common divisor of $a$ and $b$, so
+\begin{equation}\label{gcdabdivlin} \gcd(a, b)
+\divides s a + t b
+\end{equation}
+for every $s$ and $t$.  In particular, $\gcd(a, b) \divides m$, which
+implies that $\gcd(a, b) \leq m$.
+
+Now, we show that $m \leq \gcd(a, b)$.  We do this by showing that $m
+\divides a$.  A symmetric argument shows that $m \divides b$, which
+means that $m$ is a common divisor of $a$ and $b$.  Thus, $m$ must be
+less than or equal to the \emph{greatest} common divisor of $a$ and
+$b$.
+
+All that remains is to show that $m \divides a$.  By the Division
+Theorem, there exists a quotient $q$ and remainder $r$ such that:
+\[
+a = q \cdot m + r \hspace{1in} \text{(where $0 \leq r < m$)} \] Recall
+that $m = s a + t b$ for some integers $s$ and $t$.  Substituting in
+for $m$ gives:
+\begin{align*} a & = q \cdot (s a + t b) + r,
+\qquad \text{so} \\
+r & = (1 - qs) a + (-qt) b.
+\end{align*}
+We've just expressed $r$ as a linear combination of $a$ and $b$.
+However, $m$ is the \emph{smallest positive} linear combination and $0
+\leq r < m$.  The only possibility is that the remainder $r$ is not
+positive; that is, $r = 0$.  This implies $m \divides a$.  \end{proof}
+
+\begin{corollary}\label{cor:lin-comb-edit}
+An integer is linear combination of $a$ and $b$ iff it is a multiple
+of $\gcd(a, b)$.
+\end{corollary}
+
+\begin{proof} By~\eqref{gcdabdivlin}, every linear combination of $a$ and $b$ is a
+multiple of $\gcd(a, b)$.  Conversely, since $\gcd(a, b)$ is a linear
+combination of $a$ and $b$, every multiple of $\gcd(a, b)$ is as
+well.  \end{proof}
+
+Now we can restate the water jugs lemma in terms of the greatest
+common divisor:
+
+\begin{corollary} \label{cor:waterjugs_note} Suppose that we have water jugs with
+capacities $a$ and $b$.  Then the amount of water in each jug is
+always a multiple of $\gcd(a, b)$.
+\end{corollary}
+
+For example, there is no way to form 4 gallons using 3- and 6-gallon
+jugs, because 4 is not a multiple of $\gcd(3, 6) = 3$.
+
+\end{editingnotes}
+\fi

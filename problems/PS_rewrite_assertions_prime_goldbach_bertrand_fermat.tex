@@ -1,0 +1,177 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_rewrite_assertions_prime_goldbach_bertrand_fermat}
+  \pcomment{from: S03.ps4, f03.ps1, f09.ps2}
+  \pcomment{subsumed PS_translate_to_predicate_logic}
+\end{pcomments}
+
+\pkeywords{
+  predicate
+  quantifier
+  Goldbach
+  Bertrand
+  Fermat
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+In this problem we'll examine predicate logic formulas where the domain
+of discourse is $\nngint$.  In addition to the logical symbols, the
+formulas may contain ternary predicate symbols $A,M$ and $X$, where
+\begin{align*}
+A(k,m,n) &\ \text{means}\ k = m + n,\\
+M(k,m,n) &\ \text{means}\ k = m \cdot n,\\
+A(k,m,n) &\ \text{means}\ k = m^n.
+\end{align*}
+For example, a formula ``$\text{Zero}(n)$'' meaning that $n$ is zero
+could be defined as
+\[
+\text{Zero}(n) \eqdef A(n,n,n).
+\]
+Having defined ``Zero,'' it is now OK to use it in subsequent
+formulas.  So a formula ``$\text{Greater}(m,n)$'' meaning $m > n$
+could be defined as
+\[
+\text{Greater}(m,n) \eqdef \exists k. \QNOT(\text{Zero}(k)) \QAND A(m,n,k).
+\]
+This makes it OK to use ``Greater'' in subsequent formulas.
+
+Write logic formulas using only the allowed predicates that define the following predicates:
+
+\begin{problemparts}
+\ppart\label{defone} $\text{One}(n)$ meaning that $n=1$.
+
+\begin{solution}
+\[
+\text{One}(n) \eqdef M(n,n,n) \QAND \QNOT(\text{Zero}(n))
+\]
+clearly works.  So does
+\[
+\text{One}(n) \eqdef \forall m. M(m,m,n).
+\]
+Another approach uses Greater:
+\[
+\text{One}(n) \eqdef \forall m.\,  \text{Greater}(n,m) \QIMP \text{Zero}(m).
+\]
+\end{solution}
+
+\problempart $\text{Prime}(p)$ meaning $p$ is a prime number.
+
+\begin{solution}
+\begin{align*}
+\text{Prime}(p) & \eqdef\\
+      & \exists w. \text{One}(w) \QAND \text{Greater}(p,w) \QAND\\
+      & \quad \QNOT(\exists m.\, \exists n.\, 
+          (\text{Greater}(m,w) \QAND \text{Greater}(n,w) \QAND M(p,m,n))
+\end{align*}
+\end{solution}
+
+\ppart\label{deftwo} $\text{Two}(n)$ meaning that $n=2$.
+\begin{solution}
+\[
+\text{Two}(n) \eqdef \forall m.\, \text{Greater}(n,m) \QIMP (\text{Zero}(m) \QOR \text{One}(m)).
+\]
+Another approach is
+\[
+\text{Two}(n) \eqdef \exists w. \text{One}(w) \QAND A(n, w, w).
+\]
+\end{solution}
+
+\eparts
+
+The results of part~\eqref{deftwo} will entend to formulas
+$\text{Three}(n), \text{Four}(n), \text{Five}(n), \dots$ which are
+allowed from now on.
+
+\bparts
+
+\iffalse
+\problempart There is no largest prime number.
+
+\begin{solution}
+\[
+\QNOT(\exists p.\, (\text{Prime}(p) \QAND (\forall q.\, (\text{Prime}(q) \QIMPLIES p \geq q))))
+\]
+\end{solution}
+\fi
+
+\ppart $\text{Even}(n)$  meaning $n$ is even.
+
+\begin{solution}
+A standard definition would be:
+\[
+\text{Even}(n)\eqdef \exists t.\, (\text{Two}(t) \QAND  \exists k.\, M(n,t,k))
+\]
+A simpler alternative is:
+\[
+\text{Even}(n)\eqdef \exists k. M(n,k,k)]
+\]
+\end{solution}
+
+
+\problempart (\idx{Goldbach Conjecture}) Every even
+integer $n \geq 4$ can be expressed as the sum of two primes.
+
+\begin{solution}
+\begin{align*}
+\exists r.\\
+  & \text{Three}(r) \QAND\\
+  & \forall n. (\text{Greater}(n,r) \QAND \text{Even}(n))\\
+  & \qquad \QIMPLIES \exists p \exists q. \text{Prime}(p) \QAND \text{Prime}(q) \QAND A(n, p, q).
+\end{align*}
+\end{solution}
+
+\iffalse
+\problempart (\idx{Bertrand's Postulate}) If $n > 1$, then there is always
+at least one prime $p$ such that $n < p < 2n$.
+
+\begin{solution}
+\[
+\forall n.\,
+\( (n > 1) \QIMPLIES (\exists p ( \text{Prime}(p)  \QAND (n < p) \QAND (p < 2n))) 
+)
+\]
+\end{solution}
+
+\problempart (\idx{Fermat's Last Theorem}) There are no solutions to the
+equation:
+
+\begin{equation*}
+    x^n + y^n = z^n
+\end{equation*}
+
+where $n > 2$ and $x$, $y$ and $z$ are positive.
+
+\begin{solution}
+\[
+\forall x, y, z, n.\,
+    (
+    (x > 0 \QAND y > 0 \QAND z > 0 \QAND n > 2)
+    \QIMPLIES
+    \QNOT(x^n + y^n = z^n)
+    )
+\]
+\end{solution}
+\fi
+
+\ppart (Twin Prime Conjecture) There are infinitely primes that differ by two.
+
+\begin{solution}
+\begin{align*}
+\exists t.\, \text{Two}(t)
+   & \QAND \forall n \exists p. \exists q\\
+   & \text{Greater}(p,n) \QAND A(q,p,t) \QAND \text{Prime}(q) \QAND \text{Prime}(q).
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,216 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_binary_gcd}
+  \pcomment{extended version in FP_binary_gcd}
+  \pcomment{By ARM 4/24/11 based on Shoup}
+  \pcomment{revised ARM 3/17/14; 5/10/14; soln to part(c) edited 12/6/17}
+\end{pcomments}
+
+\pkeywords{
+  preserved_invariant
+  GCD
+  binary_GCD
+  state_machine
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  The \term{Binary GCD} state machine computes the GCD of integers $a,
+  b > 0$ using only division by 2 and subtraction, which makes it run
+  very efficiently on hardware that uses binary representation of
+  numbers.  In practice, it runs more quickly than the more famous
+  Euclidean algorithm described in Section~\bref{sec: Euclid}.
+
+\begin{align}
+\text{states}  \eqdef     &\nngint^3\notag\\
+\text{start state} \eqdef & (a, b, 1)\notag\\
+\text{transitions} \eqdef & \text{ if } \min(x,y) > 0, \text{ then } (x,  y, e) \movesto\notag\\
+     &  (x/2, y/2, 2e) & \text{(if $2 \divides x$ and $2 \divides y$)}\tag{i1}\\
+     &  (x/2, y, e)    & \text{(else if $2 \divides x$)}\tag{i2}\\
+     &  (x, y/2, e)    & \text{(else if $2 \divides y$)}\tag{i3}\\
+     &  (x-y, y, e)    & \text{(else if $x > y$)}\tag{i4}\\
+     &  (x, y-x, e)    & \text{(else if $y > x$)}\tag{i5}\\
+     &  (1,   0, ex)   & \text{(otherwise ($x=y$))}.\tag{i6}
+\end{align}
+
+\bparts
+
+\ppart Use the Invariant Principle \iffalse
+(Section~\bref{subsec:invariant})\fi to prove that if this machine
+stops, that is, reaches a state $(x,y,e)$ in which no transition is
+possible, then $e = \gcd(a,b)$.
+
+\begin{solution}
+We claim that a preserved invariant of this machine is
+\[
+\gcd(a,b) = e\gcd(x,y).
+\]
+To show this, we assume the invariant holds for state $(x,y,e)$ and
+show that if $(x,y,e) \movesto (x',y',e')$, then $\gcd(a,b) =
+e'\gcd(x',y')$.
+
+The proof is by cases according to which kind of transition occurs.
+
+\inductioncase{Case}~(i1): ($2 \divides x$ and $2 \divides y$).  
+In this case, $(x',y',e') = (x/2, y/2, 2e)$.
+
+We use the the gcd property from Lemma~\bref{lem:gcd-hold}
+\begin{equation}\tag{agcd}
+\gcd(au,av) = a\gcd(u,v).
+\end{equation}
+
+Now
+\begin{align*}
+\gcd(a,b)
+  & =  e\gcd(x,y)
+        & \text{(by the invariant for $(x,y,e)$)}\\
+  & = e 2\gcd(x/2,y/2)
+        & \text{(by~(agcd))}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+\inductioncase{Case}~(i2): ($2 \divides x$ and 2 does not divide $y$).
+In this case, $(x',y',e') = (x/2,y, e)$.
+
+We use the easily verified fact
+\begin{equation}\tag{acancel}
+\gcd(au,v) = \gcd(u,v)
+\end{equation}
+for $a$ relatively prime to $v$.
+
+Now
+\begin{align*}
+\gcd(a,b)
+  & = e\gcd(x,y)
+      & \text{(invariant for $(x,y,e)$)}\\
+  & = e\gcd(x/2,y)
+      & \text{(by~(acancel))}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+\inductioncase{Case}~(i4): (neither $x$ nor $y$ is even).
+
+In this case $(x',y',e') = (x-y,y,e)$.
+
+We use the easily verified fact that
+\begin{equation}\tag{gcdu-v}
+\gcd(u-v,v) = \gcd(u,v).
+\end{equation}
+
+Now,
+\begin{align*}
+\gcd(a,b)
+  & = e\gcd(x,y) & \text{(invariant for $(x,y,e)$)}\\
+  & = e\gcd(x-y,y) & \text{(by~(gcdu-v))}\\
+  & = e'\gcd(x',y'),
+\end{align*}
+proving that the invariant holds for $(x',y',e')$.
+
+\inductioncase{Case}~(i6): ($x=y$).  In this case, $(x',y',e') = (1,0,ex)$.
+Now we have
+\begin{align*}
+\gcd(a,b) 
+    & = e\gcd(x,x) 
+          & \text{(by the invariant for $(x,x,e)$)}\\
+    & = ex\\
+    & = ex\gcd(1,0)
+          & \text{(since $\gcd(1,0) = 1$)}\\
+    & =  e'\gcd(x',y'),
+\end{align*}
+which shows that the invariant holds for $(x',y',e')$.
+
+Verification of the remaining cases follows similarly.
+
+To apply the Invariant Principle, we now first observe that the
+preserved invariant holds trivially in the start state $(a,b,1)$
+because $\gcd(a,b) = 1\cdot\gcd(a,b)$.  We conclude that the preserved
+invariant holds in every reachable state.
+
+We claim that only rule~(i6) can lead to a stopped state,
+which must be of the form $(1,0,e')$.  If such a state is reachable,
+then the invariant implies
+\[
+\gcd(a,b) = e'\gcd(1,0) = e',
+\]
+as required.
+
+To see why this is the only stopped state, note that a transition is
+always possible from the start state, and transitions~(i1)--(i5) do
+not lead to stopped states since the minimum of the new $x$ and $y$
+values remains positive.
+\end{solution}
+
+\ppart Prove that rule~(i1)
+\[
+(x, y, e) \to (x/2, y/2, 2e)
+\]
+is never executed after any of the other rules is executed.
+
+\begin{staffnotes}
+\hint An invariant about the parity of $x$ and $y$.
+\end{staffnotes}
+
+\begin{solution}
+We claim that another preserved invariant is
+\begin{equation}\tag{noteven}
+\QNOT(2 \divides x\ \QAND\ 2 \divides y),
+\end{equation}
+which is to say, ``at least one of $x$ and $y$ is odd.''  To verify
+this, suppose a state $(x,y,e)$ satisfies~(noteven).  Then rule~(i1)
+will not be executed in that state.
+
+Suppose the second rule~(i2) gets executed leading to state $(x/2, y
+,e)$.  Then $x$ must have been even, and $y$ must be odd, and so this
+new state satisfies~(noteven), since $y$ is odd.  A symmetric argument
+applies to the third rule~(i3).
+
+If rule~(i4) gets executed leading to state $(x-y,y,e)$.  Then if $y$
+is odd this new state satisfies~(noteven), and if $y$ is even, then
+$x$ must be odd, $x-y$ must be odd, which confirms that this new state
+satisfies~(noteven).  A symmetric argument applies to rule~(i5).
+
+Finally, the state $(1,0,ex)$ that results from applying rule~(i6)
+trivially satisfies~(noteven), since 1 is odd.
+
+Now if rule~(i1) is not executed in some state $(x,y,e)$,
+then~(noteven) must hold, and since~(noteven) is
+preserved, we can conclude that rule~(i1) will never be
+executed in any subsequent state.
+
+REMARK: This is a nice example of a useful preserved invariant that
+will typically be \emph{false for the start state}, remain false for a
+while, and then become true.
+\end{solution}
+
+\ppart Prove that the machine reaches a final state in at most
+$1+3(\log a +\log b)$ transitions.  \inhandout{(This is a coarse
+  bound; you may be able to get a better one.)}
+
+%\hint Strong induction on $\max(a,b)$.
+
+\begin{solution}
+Either $x$ or $y$ gets halved after at most two transitions, and
+neither one increases.  For example, if $x$ and $y$ are both odd and
+$x>y>0$, then the state $(x,y,e)$ transitions to $(x-y, y, e)$.  Then,
+since $x-y$ is even, the next transition will be to $((x-y)/2, y, e)$.
+So after at most $2(\log a + \log b)$ transitions, one of $x$ and $y$
+must have been reduced to 1, after which there can be at most one more
+transition.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+

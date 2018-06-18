@@ -1,0 +1,154 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_divide_using_3}
+  \pcomment{from: F07.ps4}
+\end{pcomments}
+
+\pkeywords{
+  state_machines
+  termination
+  partial_correctness
+  invariant
+  division
+  algorithm
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+In the late 1960s, the military junta that ousted the government of the
+small republic of Nerdia completely outlawed built-in multiplication
+operations, and also forbade division by any number other than $3$.
+Fortunately, a young dissident found a way to help the population multiply
+any two nonnegative integers without risking persecution by the junta.  The
+procedure he taught people is:
+
+\examspace
+
+\begin{tabbing}
+XXX\=XXX\=XXX\=XXX\kill
+\CMD{procedure} {\it multiply}$(x, y$: nonnegative integers$)$ \\
+$r:=x$; \\
+$s:=y$; \\
+$a:=0$;\\
+\CMD{while} $s \neq 0$ \CMD{do} \\
+   \>\CMD{if} $3 \divides s$ \CMD{then} \\
+   \>\>   $r := r+r+r$; \\
+   \>\>   $s := s / 3$;\\
+   \>\CMD{else if} $3 \divides (s-1)$ \CMD{then} \\
+   \>\>   $a := a + r$; \\
+   \>\>   $r := r+r+r$; \\
+   \>\>   $s := (s - 1) / 3$; \\
+   \>\CMD{else} \\
+   \>\>   $a := a + r+ r$; \\
+   \>\>   $r := r+r+r$; \\
+   \>\>   $s := (s - 2) / 3$; \\
+\CMD{return} $a$; \\
+\end{tabbing}
+
+We can model the algorithm as a state machine whose states are triples of
+nonnegative integers $(r,s,a)$.  The initial state is $(x,y,0)$.  The
+transitions are given by the rule that for $s>0$:
+\[
+(r,s,a)\rightarrow\begin{cases}
+        (3r,s/3,a) &\text{ if } 3 \divides s\\
+        (3r,(s-1)/3,a+r) &\text{ if } 3 \divides (s-1)\\
+        (3r,(s-2)/3,a+2r) &\text{otherwise}.
+       \end{cases}
+\]
+
+\bparts
+
+\ppart
+List the sequence of steps that appears in the execution of the
+algorithm for inputs $x = 5$ and $y = 10$.
+
+\begin{solution}
+$(5, 10, 0) \movesto
+(15, 3, 5) \movesto
+(45 ,1, 5) \movesto
+(135, 0, 50)$
+\end{solution}
+
+\ppart Use the Invariant Method to prove that the algorithm is partially
+correct---that is, if $s = 0$, then $a = xy$.
+
+\begin{solution}
+Let
+\[
+P((r,s,a)) \eqdef\quad [rs+a = xy].
+\]
+
+Clearly, $P$ holds for the start state because
+\[
+P((x,y,0)) \qiff [xy+0 = xy].
+\]
+
+Now, we show that $P$ is indeed a preserved invariant, namely, assuming
+$P((r,s,a))$,
+\begin{equation}\label{inv}
+rs+a = xy,
+\end{equation}
+holds and $(r,s,a) \to (r',s',a')$ is a transition, then $P((a',b',p'))$,
+\begin{equation}\label{inv'}
+r's'+a' = xy,
+\end{equation}
+holds.
+
+We consider three cases:
+
+If $3 \divides s$, then we have that $r' = 3r, s' = s/3, a'=a$.
+Therefore,
+\begin{align*}
+  r's' + a' & = 3r \cdot \frac{s}{3} + a\\
+            & = rs+a\\
+            & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+If $3 \divides s-1$, then $r' = 3r, s' = (s-1)/3,a = a+r$.  So:
+\begin{align*}
+  r's' + a'  & = 3r \cdot \frac{s-1}{3} + a+r\\
+   & = r\cdot(s-1) + a + r\\
+   & = rs+a\\
+   & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+Otherwise, we have $r' = 3r, s' = (s-2)/3,a = a+2r$.  So:
+\begin{align*}
+  r's' + a'  & = 3r \cdot \frac{s-2}{3} + a+2r\\
+   & = r\cdot(s-2) + a + 2r\\
+   & = rs+a\\
+   & = xy & \text{(by~\eqref{inv})}.
+\end{align*}
+
+So in all three cases,~\eqref{inv'} holds, proving that $P$ is indeed a
+preserved invariant.
+
+Since the procedure's only termination condition is that $s=0$,
+partial correctness will follow if we can show that if $s=0$, then $a=xy$.
+But this follows immediately from~\eqref{inv}.
+\end{solution}
+
+\ppart
+Prove that the algorithm terminates after at most $1+ \log_3 y$ executions
+of the body of the \CMD{do} statement.
+
+\begin{solution}
+We first notice that $s \in \nngint$ is a preserved invariant.
+Also, each transition corresponds to an execution of the \CMD{do}
+statement body, and each transition reduces $s$ to at most $s/3$.
+Hence, after at most $1+ \log_3 y$ executions of the body, the value
+of $s$ is at most its initial value $y$ times $\paren{1/3}^{1+
+  \log_3 y} = 1/3y$.  That is, the value of $s$ is at most 1/3.  Since
+$s \in \nngint$, it follows that $s$ will be 0 after this many
+executions of the body, if it wasn't 0 earlier.  But with $s=0$, the
+procedure terminates.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput

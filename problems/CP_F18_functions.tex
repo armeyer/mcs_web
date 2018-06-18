@@ -1,0 +1,166 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_F18_functions}
+  \pcomment{from: S09.cp5m}
+\end{pcomments}
+
+\pkeywords{
+  recursive_data
+  structural_induction
+  functions
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+%
+ The Elementary 18.01 Functions ($\EF$'s) are the set of functions of
+one real variable defined recursively as follows:
+
+\inductioncase{Base cases:}
+\begin{itemize}
+\item The identity function $\ide(x) \eqdef x$ is an $\EF$,
+\item any constant function is an $\EF$,
+\item the sine function is an $\EF$,
+\end{itemize}
+
+\inductioncase{Constructor cases:}
+
+If $f,g$ are $\EF$'s, then so are
+\begin{enumerate}
+\item $f + g$, $fg$, $2^g$,\label{+-}
+\item the inverse function $\inv{f}$,\label{inversefunc}
+\item the composition $f \compose g$.\label{cmp}
+
+\end{enumerate}
+
+\bparts
+
+\ppart\label{1over} Prove that the function $1/x$ is an $\EF$.
+
+\textbf{Warning:} Don't confuse $1/x = x^{-1}$ with the inverse
+$\inv{\ide}$ of the identity function $\ide(x)$.  The inverse
+$\inv{\ide}$ is equal to $\ide$.
+
+\begin{solution}
+$\log_2$ is the inverse of $2^x$ so $\log_2 x \in \EF$.  Therefore so
+  is $c\cdot \log_2 x$ for any constant $c$, and hence $2^{c \log_2 x}
+  = x^c \in \EF$.  Now let $c = -1$ to get $x^{-1} = 1/x \in
+  \EF$.\footnote{There's a little problem here: since $\log_2 x$ is
+    not real-valued for $x \leq 0$, the function $f(x) \eqdef 1/x$
+    constructed in this way is only defined for $x >0$.  To get an
+    $\EF$ equal to $1/x$ defined for all $x \neq 0$, use
+    $x f(x^2)$.}
+\end{solution}
+
+\ppart Prove by Structural Induction on this definition that the
+Elementary 18.01 Functions are \emph{closed under taking derivatives}.
+That is, show that if $f(x)$ is an $\EF$, then so is $f^{\prime} \eqdef
+df/dx$.  (Just work out 2 or 3 of the most interesting constructor cases;
+you may skip the less interesting ones.)
+
+\begin{solution}
+
+\begin{proof}
+By Structural Induction on def of $f \in \EF$.  The induction hypothesis
+is
+\[
+P(f) \eqdef f' \in \EF.
+\]
+
+\inductioncase[Base Cases]: We want to show that the derivatives of all the
+  base case functions are in $\EF$.
+
+  This is easy: for example, $d\, \ide(x)/dx = 1$ is a constant function,
+  and so is in $\EF$. Similarly, $d\, \sin(x)/dx = \cos(x)$ which is
+  also in $\EF$ since $\cos(x) = \sin(x+\pi/2) \in \EF$ by rules for
+  constant functions, the identity function, sum, and composition with
+  sine.
+
+This proves that $P(f)$ holds for each function $f$ in the Base cases.
+
+\inductioncase{Constructor Cases}: We may assume by induction that $f,
+g \in \EF$ and $P(f)$ and $P(g)$ holds, that is, $df/dx, dg/dx \in
+\EF$.
+
+\inductioncase{Constructor Case}: ($\inv{f}$). we need to prove that
+$d\, \inv{f}(x)/dx \in \EF$.  Letting $y = f(x)$, so $x=\inv{f}(y)$,
+we know from Leibniz's rule in calculus that
+\begin{equation}\label{Leib}
+d\inv{f}(y)/dy = dx/dy = \frac{1}{dy/dx}.
+\end{equation}
+For example,
+\[
+d \inv{\sin}(y)/dy = 1/(d \sin(x)/dx) = 1/\cos(x) = 1/\cos(\inv{\sin}(y)).
+\]
+Stated as in~\eqref{Leib}, this rule is easy to remember, but can easily
+be misleading because of the variable switching between $x$ and $y$.  It's
+more clearly stated using variable-free notation:
+\begin{equation}\label{Leib2}
+(\inv{f})' = \frac{1}{f'\compose \inv{f}}.
+\end{equation}
+Now, since $f' \in \EF$ by hypothesis, so is $\inv{f}$ (by constructor
+rule~\ref{inversefunc}), and therefore so is their composition (by
+rule~\ref{cmp}), as well as the composition of $1/x$ with $f'\compose
+\inv{f}$ (by part~\eqref{1over}).  Hence the right-hand side of
+equation~(\ref{Leib2}) defines a function in $\EF$.
+
+\inductioncase{Constructor Case}: ($f \compose g$).
+The Chain Rule states that
+\[
+\frac{d(f(g(x)))}{dx} = \frac{d f(g)}{dg}\cdot\frac{dg}{dx}.
+\]
+Stated more clearly in variable-free notation, this is
+\[
+(f \compose g)' = (f' \compose g) \cdot g'.
+\]
+The right-hand side of this equation defines a function in $\EF$ by
+constructor rules~\ref{cmp}.\ and~\ref{+-}.
+
+\inductioncase{Constructor Case}: ($f\cdot g$).
+The product rule for derivatives gives
+\[
+(f\cdot g)' = f' \cdot g+ f\cdot g'.
+\]
+Since products and sums of functions in $\EF$ are also in $\EF$, we
+conclude that the right-hand side of the equation describes aa
+function in $\EF$.
+
+The remaining cases for Constructor rule~\ref{+-}.\ are
+straightforward.  So we conclude that the induction hypothesis holds in
+all Constructor cases.
+
+This completes the proof by structural induction that the $P(f)$ holds
+for all $f \in \EF$.
+\end{proof}
+
+\end{solution}
+\begin{staffnotes}
+It is worth pointing out that this example illustrates the usefulness
+of structural induction.  There is no way to do a proof by regular
+induction on the ``size'' of functions---what should the size of $x^3$
+or $2^{2^x}$ be?
+
+Well, ``no way'' may be overstating things.  There is no intrinsic
+size measure for functions, but in the context of the recursive
+definition of $\EF$, you could define the size of an $\EF$ function to
+be the length of the shortest recursive derivation of it as a function
+in $\EF$.  Doing an ordinary induction on derivation length would wind
+up looking just like a structural induction, except it would be
+unnecessarily complicated by references to the sizes of things.
+\end{staffnotes}
+
+\eparts
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+

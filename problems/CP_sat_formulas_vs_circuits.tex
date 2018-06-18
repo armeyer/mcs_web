@@ -1,0 +1,103 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+    \pcomment{CP_sat_formulas_vs_circuits}
+    \pcomment{similar idea to PS_equisatisfiable_3CNF}
+    \pcomment{by ARM 2/17/13, revised 2/7/16, 3/17/16}
+\end{pcomments}
+
+\pkeywords{
+  satisfiable
+  circuit
+  digital_circuit
+  proposition
+  formula
+}
+
+\begin{problem}
+The circuit-SAT problem is the problem of determining, for any given
+digital circuit with one output wire, whether there are truth values
+that can be fed into the circuit input wires which will lead the
+circuit to give output \true.
+
+It's easy to see that any efficient way of solving the circuit-SAT
+problem would yield an efficient way to solve the usual SAT problem
+for propositional formulas (Section~\bref{SAT_sec}).  Namely, for any
+formula $F$, just construct a circuit $C_F$ using that computes the
+values of the formula.  Then there are inputs for which $C_F$ gives
+output true iff $F$ is satisfiable.  Constructing $C_F$ from $F$ is
+easy, using a binary gate in $C_F$ for each propositional connective
+in $F$.  So an efficient circuit-SAT procedure leads to an efficient
+SAT procedure.
+
+Conversely, there is a simple recursive procedure that will construct,
+given $C$, a formula $E_C$ that is equivalent to $C$ in the sense that
+the truth value $E_C$ and the output of $C$ are the same for every
+truth assignment of the variables.  The difficulty is that, in general,
+the ``equivalent'' formula $E_C$, will be \emph{exponentially larger}
+than $C$.  For the purposes of showing that satifiability of circuits
+and satisfiability of formulas take roughly the same effort to solve,
+spending an exponential time translating one problem to the other
+swamps any benefit in switching from one problem to the other.
+
+So instead of a formula $E_C$ that is equivalent to $C$, we aim
+instead for a formula $F_C$ that is ``equisatisfiable'' with $C$.
+That is, there will be input values that make $C$ output
+\True\ \textbf{iff} there is a truth assignment that satisfies
+$F_C$. (In fact, $F_C$ and $C$ need not even use the same variables.)
+But now we make sure that the amount of computation needed to
+construct $F_C$ is not much larger than the size of the circuit $C$.
+In particular, the size of $F_C$ will also not be much larger than
+$C$.
+
+The idea behind the construction of $F_C$ is that, given any digital
+circuit $C$ with binary gates and one output, we can assign a distinct
+variable to each wire of $C$.  Then for each gate of $C$, we can set
+up a propositional formula that represents the constraints that the
+gate places on the values of its input and output wires.  For example,
+for an \QAND\ gate with input wire variables $P$ and $Q$ and output
+wire variable $R$, the constraint proposition would be
+\begin{equation}\label{AQBIC}
+(P \QAND\ Q) \QIFF R.
+\end{equation}
+
+\bparts
+
+\ppart Given a circuit $C$, explain how to easily find a formula $F_C$
+of size proportional to the number of wires in $C$ such that $F_C$ is
+satisfiable iff $C$ gives output \true\ for some set of input values.
+
+\begin{solution}
+The product $P$ of all the gate constraints will have the property
+that, for any assignment of truth values to the input variables of the
+circuit, $P$ will be \true\ iff each wire variable has the value that
+the circuit would compute for that wire.
+
+Suppose $Q$ is the variable corresponding to the output wire of the
+circuit.  Let $F_C$ be
+\[
+F_C \eqdef P \QAND Q.
+\]
+Now for any truth assignment for the input wire variables, $F_C$ will
+be \true\ iff $C$ would output \true\ for those inputs, and moreover
+each wire variable in $F_C$ is assigned the value that $C$ would
+compute for that wire.
+
+That is, there are inputs for which $C$ gives output \true\ iff $F_C$
+is satisfiable.
+\end{solution}
+
+\ppart Conclude that any efficient way of solving SAT would yield an
+efficient way to solve circuit-SAT.
+
+\begin{solution}
+The formula $F_C$ can be read off a diagram for the circuit $C$, and
+the size of $F_C$ will be proportional to the number of wires in $C$.
+So an efficient SAT procedure leads to an efficient circuit-SAT
+procedure: given $C$ construct $F_C$ and use the efficient SAT
+procedure on $F_C$
+\end{solution}
+\eparts
+\end{problem}
+
+\endinput

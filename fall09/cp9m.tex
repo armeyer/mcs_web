@@ -1,0 +1,124 @@
+\documentclass[handout]{mcs}
+
+\begin{document}
+
+\inclassproblems{9, Mon.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems start here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pinput{CP_RSA_between_tables}
+\pinput{CP_RSA_proving_correctness}
+
+
+\instatements{\newpage}
+
+\section*{Appendix}
+
+\subsection*{Inverses, Fermat, Euler}
+
+\begin{lemma*}[Inverses mod $n$]
+If $k$ and $n$ are relatively prime, then there is integer
+$k'$ called the \emph{modulo $n$ inverse} of $k$, such that
+\[
+k \cdot k' \equiv 1 \pmod n.
+\]
+\end{lemma*}
+
+\textbf{Remark:} If $\gcd(k,n) =1$, then $sk+tn = 1$ for some $s,t$, so we
+can choose $k' \eqdef s$ in the previous Lemma.  So given $k$ and $n$, an
+inverse $k'$ can be found efficiently using the Pulverizer.
+
+\begin{theorem*}[Fermat's (Little) Theorem]
+If $p$ is prime and $k$ is not a multiple of $p$, then
+\[
+k^{p-1} \equiv 1 \pmod{p}
+\]
+\end{theorem*}
+
+\begin{definition*}
+The value of \emph{Euler's totient function}, $\phi(n)$, is defined to be
+the number of positive integers less than $n$ that are relatively prime to
+$n$.
+\end{definition*}
+
+\begin{lemma*}[Euler Totient Function Equations]
+\begin{align*}
+\phi(p^k)& = p^k - p^{k-1} & \text{for prime, $p$, and $k>0$},\\
+\phi(mn) & = \phi(m)\cdot \phi(n) &\text{ when } \gcd(m,n)=1.
+\end{align*}
+\end{lemma*}
+
+\begin{theorem*}[Euler's Theorem]
+If $k$ and $n$ are relatively prime, then
+\[
+k^{\phi(n)} \equiv 1 \pmod{n}
+\]
+\end{theorem*}
+
+\begin{corollary*}
+If $k$ and $n$ are relatively prime, then $k^{\phi(n)-1}$ is an inverse
+modulo $n$ of $k$.
+\end{corollary*}
+
+\textbf{Remark:} Using fast exponentiation to compute $k^{\phi(n)-1}$ is
+another efficient way to compute an inverse modulo $n$ of $k$.
+
+\subsection*{The Pulverizer}
+
+Euclid's algorithm for finding the GCD of two numbers relies on
+repeated application of the equation: 
+\[
+\gcd(a, b) = \gcd(b, \rem{a}{b})
+\]
+For example, we can compute the GCD of 259 and 70 as follows:
+\[
+\begin{array}{rclcl}
+\gcd(259, 70)
+    & = & \gcd(70, 49) & \quad & \text{since $\rem{259}{70} = 49$}\\
+    & = & \gcd(49, 21) && \text{since $\rem{70}{49} = 21$} \\
+    & = & \gcd(21, 7) && \text{since $\rem{49}{21} = 7$} \\
+    & = & \gcd(7, 0) && \text{since $\rem{21}{7} = 0$} \\
+    & = & 7.
+\end{array}
+\]
+The Pulverizer goes through the same steps, but requires some extra
+bookkeeping along the way: as we compute $\gcd(a, b)$, we keep track
+of how to write each of the remainders (49, 21, and 7, in the example)
+as a linear combination of $a$ and $b$ (this is worthwhile, because
+our objective is to write the last nonzero remainder, which is the
+GCD, as such a linear combination).  For our example, here is this
+extra bookkeeping:
+\[
+\begin{array}{ccccrcl}
+x & \quad & y & \quad & \rem{x}{y} & = & x - q \cdot y \\ \hline
+259 && 70 && 49 & = &   259 - 3 \cdot 70 \\
+70 && 49 && 21  & = &   70 - 1 \cdot 49 \\
+&&&&            & = &   70 - 1 \cdot (259 - 3 \cdot 70) \\
+&&&&            & = &   -1 \cdot 259 + 4 \cdot 70 \\
+49 && 21 && 7   & = &   49 - 2 \cdot 21 \\
+&&&&            & = &   (259 - 3 \cdot 70) -
+                                2 \cdot (-1 \cdot 259 + 4 \cdot 70) \\
+&&&&            & = &   \fbox{$3 \cdot 259 - 11 \cdot 70$} \\
+21 && 7 && 0
+\end{array}
+\]
+We began by initializing two variables, $x = a$ and $y = b$.  In the
+first two columns above, we carried out Euclid's algorithm.  At each
+step, we computed $\rem{x}{y}$, which can be written in the form $x - q
+\cdot y$.  (Remember that the Division Algorithm says $x = q \cdot y +
+r$, where $r$ is the remainder.  We get $r = x - q \cdot y$ by
+rearranging terms.)  Then we replaced $x$ and $y$ in this equation
+with equivalent linear combinations of $a$ and $b$, which we already
+had computed.  After simplifying, we were left with a linear
+combination of $a$ and $b$ that was equal to the remainder as desired.
+The final solution is boxed.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problems end here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

@@ -1,0 +1,114 @@
+\documentclass[problem]{mcs}
+
+\newcommand{\eqsat}[1]{\mathcal{C}(#1)}
+
+\begin{pcomments}
+    \pcomment{PS_equisatisfiable_3CNF}
+    \pcomment{similar idea to CP_sat_formulas_vs_circuits}
+    \pcomment{by ARM 2/5/11}
+\end{pcomments}
+
+\pkeywords{
+  satisfiable
+  3CNF
+  propositional_variable
+  conjunctive
+}
+
+\begin{problem}
+A 3-conjunctive normal form (3CNF) formula is a conjunctive normal
+form (CNF) formula in which each \QOR-term is an \QOR\ of at most 3
+\emph{literals} (variables or negations of variables).  Although it
+may be hard to tell if a propositional formula $F$ is satisfiable, it
+is always easy to construct a formula $\eqsat{F}$ that is
+\begin{itemize}
+\item a 3CNF,
+\item has at most 24 times as many occurrences of variables as $F$, and
+\item is satisfiable iff $F$ is satisfiable.
+\end{itemize}
+
+Note that we do \emph{not} expect $\eqsat{F}$ to be \emph{equivalent}
+to $F$.  We do know how to convert any $F$ into an equivalent CNF
+formula, and this equivalent CNF formula will certainly be satisfiable
+iff $F$ is.  But in many cases, the smallest CNF formula equivalent to
+$F$ may be \emph{exponentially larger} than $F$ instead of only 24
+times larger.  Even worse, there may not be any \textbf{3}CNF
+equivalent to $F$.
+
+\begin{staffnotes}
+For your information---not to show to students necessarily, an example
+of this exponential blowup would be formulas of the form
+\[
+(P_1 \QAND Q_1) \QOR (P_2 \QAND Q_2) \QOR \cdots \QOR (P_n \QAND Q_n)
+\]
+whose CNF equivalents have more than $2^n$ occurrences of variables.
+\end{staffnotes}
+
+To construct $\eqsat{F}$, the idea is to introduce a different new
+variable for each operator that occurs in $F$.  For example, if $F$
+was
+\begin{equation}\label{PXQXROPS}
+((P \QXOR Q) \QXOR R) \QOR (\bar{P} \QAND S)
+\end{equation}
+we might use new variables $X_1$, $X_2$, $O$ and $A$ corresponding to
+the operator occurrences as follows:
+\[
+((P \underbrace{\QXOR}_{X_1} Q) \underbrace{\QXOR}_{X_2} R) \underbrace{\QOR}_{O}
+ (\bar{P} \underbrace{\QAND}_{A} S).
+\]
+Next we write a formula that constrains each new variable to have the
+same truth value as the subformula determined by its corresponding
+operator.  For the example above, these constraining formulas would be
+\begin{align*}
+X_1 &\QIFF (P \QXOR Q),\\
+X_2 &\QIFF (X_1 \QXOR R),\\
+A   &\QIFF (\bar{P} \QAND S),\\
+O   & \QIFF (X_2 \QOR A)
+\end{align*}
+
+\bparts
+
+\ppart\label{Q4forms} Explain why the \QAND\ of the four constraining
+formulas above along with a fifth formula consisting of just the
+variable $O$ will be satisfiable iff~\eqref{PXQXROPS} is satisfiable.
+
+\begin{solution}
+All the propositions, if true, ensure that the value of the two sides
+of the \QIFF\ are the same.  This means that we could substitute any
+of the two sides for the other in another proposition and obtain the
+same result.  This way, we can use the four constraining formulas to
+build~\eqref{PXQXROPS} again, showing that the satisfiability
+of~\eqref{PXQXROPS} implies the satisfiability of the four formulas
+and $O$ and vice versa.
+\end{solution}
+
+\ppart\label{3cf24} Explain why each constraining formula will be
+equivalent to a 3CNF formula with at most 24 occurrences of variables.
+
+\begin{solution}
+Each constraining formula has only three occurrences of variables, so
+its CNF will be the \QAND\ of at most 8 \QOR-terms, where each
+\QOR-term is an \QOR\ of the 3 variables or their negations.
+\end{solution}
+
+\ppart Using the ideas illustrated in the previous parts, briefly
+explain how to construct $\eqsat{F}$ for an arbitrary propositional
+formula $F$. (No need to fill in all the details for this
+part---a high-level description is fine.)
+
+\begin{solution}
+We start by using the technique shown to make a proposition for each
+boolean operator.  As in part~\ref{Q4forms}, we can turn any of the
+propositions we obtain into 3CNF formulas with at most 24 occurrences
+of variables. Then, $C(F)$ is the AND of all these 3CNF propositions.
+So, it is satisfiable whenever the original proposition is (see
+part~\ref{Q4forms}), it is also of form 3CNF because it is an \QAND\ of
+multiple 3CNF and it has, by part~\ref{3cf24}, at most 24 times as many
+variable occurrences.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput

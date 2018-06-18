@@ -1,0 +1,1378 @@
+\chapter{Infinite Sets}\label{infinite_chap}\label{set_theory_chap}
+
+This chapter is about infinite sets%
+\index{set!infinite set}%
+\index{infinity|see{countable, Mapping Rules, set, set theory}}  
+and some challenges in proving things about them.
+
+Wait a minute!  Why bring up infinity in a Mathematics for
+\emph{Computer Science} text?  After all, any data set in a computer
+is limited by the size of the computer's memory, and there is a bound
+on the possible size of computer memory, for the simple reason that
+the universe is (or at least appears to be) bounded.  So why not stick
+with \emph{finite} sets of some large, but bounded, size?  This
+is a good question, but let's see if we can persuade you that dealing
+with infinite sets is inevitable.
+
+\iffalse We've run into a lot of computer science students who wonder
+why they should care about infinite sets.  They point out that
+\fi
+
+You may not have noticed, but up to now you've already accepted the
+routine use of the integers, the rationals and irrationals, and
+sequences of them.  These are all infinite sets.  Further, do you
+really want Physics or the other sciences to give up the real numbers
+on the grounds that only a bounded number of bounded measurements can
+be made in a bounded universe?  It's pretty convincing---and a lot
+simpler---to ignore such big and uncertain bounds (the universe seems
+to be getting bigger all the time) and accept theories using real
+numbers.
+
+Likewise in computer science, it's implausible to think that writing a
+program to add nonnegative integers with up to as many digits as, say,
+the stars in the sky---trillions of galaxies each with billions of
+stars---would be different from writing a program that would add
+\emph{any} two integers, no matter how many digits they had.  The same
+is true in designing a compiler: it's neither useful nor sensible to
+make use of the fact that in a bounded universe, only a bounded number
+of programs will ever be compiled.
+
+\begin{editingnotes}
+That's why basic programming data types like integers or
+strings, for example, are defined without imposing any bound on the
+sizes of data items.  For example, each datum of type
+\idx{\texttt{string}} consists of characters from a finite alphabet
+and has a finite length, but the data type definition does not require
+that there be bound on the sizes of these finite numbers.  So we
+accept the fact that conceptually there are an infinite number of item
+of data type \texttt{string}---even though in any given
+implementation, storage limits would impose overflow bounds.
+
+When we then consider string procedures of type
+\idx{\texttt{string-->string}}, not only are there an infinite number
+of such procedures, but each procedure generally behaves differently
+on different inputs, so that a single \texttt{string-->string}
+procedure may embody an infinite number of behaviors.  In short, an
+educated computer scientist can't get around having to cope with
+infinite sets.
+\end{editingnotes}
+
+Infinite sets also provide a nice setting to practice proof methods,
+because it's harder to sneak in unjustified steps under the guise of
+intuition.  And there has been a truly astonishing outcome of studying
+infinite sets.  Their study led to the discovery of fundamental, logical
+limits on what computers can possibly do.  For example, in
+Section~\ref{halting_sec}, we'll use reasoning developed for infinite
+sets to prove that it's impossible to have a perfect type-checker for
+a programming language.
+
+So in this chapter, we ask you to bite the bullet and start learning to
+cope with infinity.
+
+\iffalse 
+But as a warmup, we'll first examine some basic properties of
+\emph{finite} sets.
+\fi
+
+\section{Infinite Cardinality}\label{infinite_sec}
+
+In the late nineteenth century, the mathematician Georg Cantor%
+\index{Cantor, Georg} 
+was studying the convergence of Fourier series and found some series that
+he wanted to say converged ``most of the time,'' even though there
+were an infinite number of points where they didn't converge.  As a
+result, Cantor needed a way to compare the size of infinite sets.  To
+get a grip on this, he got the idea of extending the Mapping Rule
+Theorem~\ref{maprul_thm}%
+\index{Mapping Rules!for infinite sets}
+to infinite sets: he regarded two infinite
+sets as having the ``same size'' when there was a bijection%
+\index{binary relation!bijection} 
+between them.  Likewise, an infinite set $A$ should be considered ``as big
+as'' a set $B$ when%
+\index{binary relation!surjection} 
+$A \surj B$.  So we could consider $A$ to be
+``strictly smaller'' than $B$, which we abbreviate as $A \strict B$,%
+\index{strict@$\strict$|textbf}
+when $A$ is \emph{not} ``as big as'' $B$:
+\begin{definition}\label{def:strict}
+$\qquad A \strict B  \qiff \QNOT(A \surj B)$.
+\end{definition}
+On finite sets, this $\strict$ relation really does mean ``strictly
+smaller.''  This follows immediately from the Mapping Rule Theorem~\ref{maprul_thm}.
+\begin{corollary}\label{cor:strict}
+For finite sets $A,B$,
+\[
+A \strict B  \qiff \card{A} < \card{B}. 
+\]
+\end{corollary}
+
+\begin{proof}
+\begin{align*}
+A \strict B
+  & \qiff \QNOT(A \surj B)
+    & \text{(Def~\ref{def:strict})}\\
+  & \qiff \QNOT(\card{A} \geq \card{B})
+    & \text{(Theorem~\ref{maprul_thm}.\eqref{sur_ge_fincard})}\\
+  & \qiff \card{A} < \card{B}.
+\end{align*}
+\end{proof}
+Cantor got diverted from his study of Fourier series by his effort to
+develop a theory of infinite sizes based on these ideas.  His theory
+ultimately had profound consequences for the foundations of
+mathematics and computer science.  But Cantor made a lot of enemies in
+his own time because of his work: the general mathematical community
+doubted the relevance of what they called ``Cantor's paradise''
+of unheard-of infinite sizes.
+
+A nice technical feature of Cantor's idea is that it avoids the need
+for a definition of what the ``size'' of an infinite set might
+be---all it does is compare ``sizes.''
+
+\textbf{\textcolor{red}{Warning}}: We haven't, and won't, define what
+the ``size'' of an infinite set is.  The definition of infinite
+``sizes'' requires the definition of some infinite sets called
+\emph{ordinals} with special well-ordering properties.  The theory of
+ordinals requires getting deeper into technical set theory than we
+need to go, and we can get by just fine without defining infinite
+sizes.  All we need are the relations $\surj$ and $\bij$ which reflect
+``as big as'' and ``same size'' relations between sets.
+
+But there's something else to watch out for: $\surj$ is
+\emph{metaphorically} an ``as big as'' relation, and likewise $\bij$
+is \emph{metaphorically} the ``same size'' relation on sets.  As you
+would expect, most of the ``as big as'' and ``same size'' properties
+of $\surj$ and $\bij$ on finite sets do carry over to infinite sets,
+but \emph{some important ones don't}---as we're about to show.  So you
+have to be careful: don't assume that $\surj$, for example, has any
+particular ``as big as'' property on \emph{infinite} sets until it's
+been proven.
+
+Let's begin with some familiar properties of the ``as big as'' and
+``same size'' relations on finite sets that do carry over exactly to
+infinite sets:
+\begin{lemma}\label{surjinjbij_properties}
+For any sets $A,B,C$,
+\begin{enumerate}
+
+\item \label{surjvsinj} $A \surj B$ iff $B \inj A$.
+
+\item \label{bigtrans} If $A \surj B$ and $B \surj C$, then $A \surj
+  C$.
+
+\item \label{sametrans} If $A \bij B$ and $B \bij C$, then $A \bij C$.
+
+\item\label{sameABA} $A \bij B$ iff $B \bij A$.
+\end{enumerate}
+\end{lemma}
+
+Part~\ref{surjvsinj}.\ follows from the fact that $R$ has the $[\le
+  1\ \text{out}, \ge 1\ \text{in}]$ surjective function property iff
+$\inv{R}$ has the $[\ge 1\ \text{out}, \le 1\ \text{in}]$ total,
+injective property.  Part~\ref{bigtrans}.\ follows from the fact that
+compositions of surjections are surjections.
+Parts~\ref{sametrans}.\ and~\ref{sameABA}.\ follow from the first two
+parts because $R$ is a bijection iff $R$ and $\inv{R}$ are surjective
+functions.  We'll leave verification of these facts to
+Problem~\ref{CP_surj_relation}.
+
+Another familiar property of finite sets carries over to infinite
+sets, but this time some real ingenuity is needed to prove it:
+\begin{theorem}\label{S-B_thm} \mbox{}
+ [\idx{Schr\"oder-Bernstein}] For any sets $A,B$, if $A \surj B$ and
+ $B \surj A$, then $A \bij B$.
+\end{theorem}
+
+That is, the Schr\"oder-Bernstein Theorem says that if $A$ is ``at least
+as big as'' $B$ and conversely, $B$ is ``at least as big as'' $A$, then $A$
+``is the same size as'' $B$.  Phrased this way, you might be tempted to
+take this theorem for granted, but that would be a mistake.  For
+infinite sets $A$ and $B$, the Schr\"oder-Bernstein Theorem is
+actually pretty technical.  Just because there is a surjective
+function $f:A\to B$---which need not be a bijection---and a surjective
+function $g:B \to A$---which also need not be a bijection---it's not
+at all clear that there must be a bijection $e:A \to B$.  The idea is
+to construct $e$ from parts of both $f$ and $g$.  We'll leave the
+actual construction to Problem~\ref{CP_Schroeder_Bernstein_theorem}.
+
+Another familiar set property is that for any two sets, either the
+first is at least as big as the second, or vice-versa.  For finite
+sets this follows trivially from the Mapping Rule.  It's actually
+still true for infinite sets, but assuming it is obvious would be
+mistaken again.
+  \begin{theorem}\label{surj-comparable}
+    For \emph{all} sets $A,B$,
+    \[
+    A \surj B\quad \QOR\quad  B \surj A.
+    \]
+  \end{theorem}
+
+Theorem~\ref{surj-comparable} lets us prove that another basic
+property of finite sets carries over to infinite ones:
+\begin{lemma}\label{strict-transitive}
+\begin{equation}\label{AstrBstrC}
+A \strict B\ \QAND\ B \strict C
+\end{equation}
+implies
+\[
+A \strict C
+\]
+for all sets $A,B,C$.
+\end{lemma}
+
+\begin{proof} (of Lemma~\ref{strict-transitive})
+
+Suppose~\ref{AstrBstrC} holds, and assume for the sake of
+contradiction that $\QNOT(A \strict C)$, which means that $A \surj C$.
+Now since $B \strict C$, Theorem~\ref{surj-comparable} lets us
+conclude that $C \surj B$.  So we have
+\[
+A \surj C\ \QAND\ C \surj B,
+\]
+and Lemma~\ref{surjinjbij_properties}.\ref{bigtrans} lets us conclude
+that $A \surj B$, contradicting the fact that $A \strict B$.
+\end{proof}
+
+We're omitting a proof of Theorem~\ref{surj-comparable} because
+proving it involves technical set theory---typically the theory of
+\idx{ordinals} again---that we're not going to get into.  But since
+proving Lemma~\ref{strict-transitive} is the only use we'll make of
+Theorem~\ref{surj-comparable}, we hope you won't feel cheated not
+seeing a proof.
+
+\subsection{Infinity is different}
+
+A basic property of finite sets that does \emph{not} carry over to
+infinite sets is that adding something new makes a set bigger.  That
+is, if $A$ is a finite set and $b \notin A$, then $\card{A \union
+  \set{b}} = \card{A}+1$, and so $A$ and $A \union \set{b}$ are not
+the same size.  But if $A$ is infinite, then these two sets \emph{are}
+``the same size!''
+
+\begin{lemma}\label{AUb}
+  Let $A$ be a set and $b \notin A$.  Then $A$ is infinite iff $A \bij
+  A \union \set{b}$.
+\end{lemma}
+\begin{proof}
+Since $A$ is \emph{not} the same size as $A \union \set{b}$ when $A$
+is finite, we only have to show that $A \union \set{b}$ \emph{is} the
+same size as $A$ when $A$ is infinite.  That is, we have to find a
+bijection between $A \union \set{b}$ and $A$ when $A$ is infinite.
+
+Here's how: since $A$ is infinite, it certainly has at least one
+element; call it $a_0$.  But since $A$ is infinite, it has at least
+two elements, and one of them must not equal to $a_0$; call this new
+element $a_1$.  But since $A$ is infinite, it has at least three
+elements, one of which must be different from both $a_0$ and $a_1$; call this
+new element $a_2$.  Continuing in this way, we conclude that there is
+an infinite sequence $a_0,a_1,a_2,\dots,a_n,\dots$ of different
+elements of $A$.  Now it's easy to define a bijection $e: A \union
+\set{b} \to A$:
+\begin{align*}
+e(b) & \eqdef a_0,\\
+e(a_n) & \eqdef a_{n+1}
+          & \text{ for } n \in \nngint,\\
+e(a) & \eqdef a
+          & \text{ for } a \in A - \set{b,a_0,a_1,\dots}.
+\end{align*}
+\end{proof}
+
+\subsection{Countable Sets}\label{countable_subsec}
+A set $C$ is \term{countable} iff its elements can be listed in
+order, that is, the elements in $C$ are precisely the elements in the
+sequence
+\[
+c_0, c_1, \dots, c_n, \dots.
+\]
+Assuming no repeats in the list, saying that $C$ can be listed in this
+way is formally the same as saying that the function, $f:\nngint \to
+C$ defined by the rule that $f(i) \eqdef c_i$, is a bijection.
+
+\begin{definition}\label{def_countable}
+A set $C$ is \emph{countably infinite}%
+\index{countable!countably infinite} iff\  $\nngint \bij C$.  A
+set is \emph{countable} iff it is finite or countably infinite.
+A set is \term{uncountable} iff it is not countable.
+\end{definition}
+
+We can also make an infinite list using just a finite set of elements
+if we allow repeats.  For example, we can list the elements in the
+three-element set $\set{2, 4, 6}$ as
+\[
+2,4,6,6,6,\dots.
+\]
+This simple observation leads to an alternative characterization of
+countable sets that does not make separate cases of finite and
+infinite sets.  Namely, a set $C$ is countable iff there is a list
+\[
+c_0, c_1, \dots, c_n, \dots
+\]
+of the elements of $C$, possibly with repeats.
+
+\begin{lemma}\label{NsurjC}
+A set $C$ is countable iff $\nngint \surj C$.  In fact, a nonempty
+set $C$ is countable iff there is a \emph{total} surjective function
+$g:\nngint \to C$.
+\end{lemma}
+The proof is left to Problem~\ref{CP_countable_from_surj}.
+
+The most fundamental countably infinite set is the set $\nngint$
+itself.  But the set $\integers$ of \emph{all} integers is also
+countably infinite, because the integers can be listed in the order:
+\begin{equation}\label{intlist}
+0,-1,1,-2,2,-3,3,\dots.
+\end{equation}
+In this case, there is a simple formula for the $n$th element of the
+list~\eqref{intlist}.  That is, the bijection $f:\nngint \to
+\integers$ such that $f(n)$ is the $n$th element of the list can be
+defined as:
+\[
+f(n) \eqdef \begin{cases} n/2 & \text{if $n$ is even},\\ -(n+1)/2 &
+  \text{if $n$ is odd}.
+           \end{cases} 
+\]    
+There is also a simple way to list all \emph{pairs} of nonnegative
+integers, which shows that $(\nngint \cross \nngint)$ is also
+countably infinite (Problem~\ref{MQ_product_of_countables}).  From
+this, it's a small step to reach the conclusion that the set
+$\rationals^{\ge 0}$ of nonnegative rational numbers is countable.
+This may be a surprise---after all, the rationals densely fill up the
+space between integers, and for any two, there's another in between.
+So it might seem that you couldn't write out all the rationals in
+a list, but Problem~\ref{CP_rationals_are_countable} illustrates how
+to do it.  More generally, it is easy to show that countable sets are
+closed under unions and products
+(Problems~\ref{MQ_countable_union}
+and~\ref{MQ_product_of_countables}) which implies the countability of
+a bunch of familiar sets:
+\begin{corollary}\label{countable_examples}
+The following sets are countably infinite:
+\[\integers^+, 
+ \integers, \nngint \cross \nngint, \rationals^+, \integers \cross
+ \integers, \rationals.
+\]
+\end{corollary}
+
+A small modification of the proof of Lemma~\ref{AUb} shows that
+countably infinite sets are the ``smallest'' infinite sets.  Namely,
+
+\begin{lemma}\label{smallestinf}
+If $A$ is an infinite set, and $B$ is countable, then $A \surj B$.
+\end{lemma}
+We leave the proof to Problem~\ref{CP_smallest_infinite_set}.
+
+Also, since adding one new element to an infinite set doesn't change
+its size, you can add any \emph{finite} number of elements without
+changing the size by simply adding one element after another.
+Something even stronger is true: you can add a \emph{countably}
+infinite number of new elements to an infinite set and still wind up
+with just a set of the same size
+(Problem~\ref{PS_add_countable_elements}).
+
+By the way, it's a common mistake to think that, because you can add
+any finite number of elements to an infinite set and have a bijection
+with the original set, that you can also throw in infinitely many new
+elements.  In general it isn't true that just because it's OK to do
+something any finite number of times, it's also OK to do it an infinite
+number of times.  For example, starting from 3, you can increment by 1
+any finite number of times, and the result will be some integer
+greater than or equal to 3.  But if you increment an infinite number
+of times, you don't get an integer at all.
+
+\subsection{Power sets are strictly bigger}
+\index{set!power set}
+
+Cantor's astonishing discovery was that \emph{not all infinite sets
+  are the same size}.  In particular, he proved that for any set $A$
+the power set $\power(A)$ is ``strictly bigger'' than
+$A$.  That is,
+\begin{theorem}\label{powbig}[Cantor]\mbox{}
+For any set $A$,
+\[
+A \strict \power(A).
+\]
+\end{theorem}
+\begin{proof}
+\iffalse
+  First of all, $\power(A)$ is as big as $A$: for example, the partial
+  function $f:\power(A) \to A$, where $f(\set{a}) \eqdef a$ for $a \in
+  A$ and $f$ is only defined on one-element sets, is a surjection.
+\fi
+ 
+To show that $A$ is strictly smaller than $\power(A)$, we have to show
+that if $g$ is a function from $A$ to $\power(A)$, then $g$ is
+\emph{not} a surjection.  Since any partial function with nonempty
+codomain can be extended to a total function with the same range (ask
+yourself how), we can safely assume that $g$ is total.
+
+To show that $g$ is not a surjection, we'll simply find a subset $A_g
+\subseteq A$ that is not in the range of $g$.  The idea is, for each
+element $a \in A$, to look at the set $g(a) \subseteq A$ and ask
+whether or not $a$ happens to be in $g(a)$.  First, define \iffalse
+mimicking Russell's Paradox,\fi
+  \[
+  A_g \eqdef \set{a \in A \suchthat a \notin g(a)}.
+  \]
+  $A_g$ is a well-defined subset of $A$, which means it is a
+  member of $\power(A)$.  But $A_g$ can't be in the range of $g$,
+  because it differs at $a$ from each set $g(a)$ in the range of $g$.
+
+  To spell this out more, suppose to the contrary that $A_g$ was in
+  the range of $g$, that is,
+\[
+A_g = g(a_0)
+\]
+for some $a_0 \in A$.  Now by definition of $A_g$,
+\[
+a \in g(a_0) \qiff a \in A_g \qiff a \notin g(a)
+\]
+for all $a \in A$.  Now letting $a = a_0$ yields the contradiction
+\[
+a_0 \in g(a_0) \qiff a_0 \notin g(a_0).
+\]
+So $g$ is not a surjection, because there is an element in the power
+set of $A$, specifically the set $A_g$, that is not in the range of $g$.
+\end{proof}
+
+Cantor's Theorem immediately implies:
+\begin{corollary}
+$\power(\nngint)$ is uncountable.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{NsurjC}, $U$ is uncountable iff $\nngint \strict U$.
+\end{proof}
+
+The bijection between subsets of an $n$-element set and the length $n$
+bit-strings $\set{0,1}^n$ used to prove
+Theorem~\ref{powset_fincard}, carries over to a bijection between
+subsets of a countably infinite set and the infinite bit-strings,
+$\binw$.  That is,
+\begin{lemma}\label{pownnegbijbinw}
+\power(\nngint) \bij \binw.
+\end{lemma}
+This immediately implies
+\begin{corollary}
+$\binw$ is uncountable.
+\end{corollary}
+
+\subsubsection{More Countable and Uncountable Sets}
+
+Once we have a few sets we know are countable or uncountable, we can
+get lots more examples using Lemma~\ref{surjinjbij_properties}.  In particular, 
+we can appeal to the following immediate corollary of the Lemma:
+\noindent \begin{corollary}\label{UinjAu}
+\mbox{}
+\begin{enumerate}[(a)]
+
+\item\label{AsurjUA}
+If $U$ is an uncountable set and $A \surj U$, then $A$ is uncountable.
+
+\item\label{CsurjAc}
+If $C$ is a countable set and $C \surj A$, then $A$ is countable.
+\end{enumerate}
+\end{corollary}
+
+For example, now that we know that the set $\binw$ of infinite bit
+strings is uncountable, it's a small step to conclude that
+\begin{corollary}\label{uncountR}
+The set $\reals$ of real numbers is uncountable.
+\end{corollary}
+
+To prove this, think about the infinite decimal expansion of a real
+number:
+\begin{align*}
+\sqrt{2} & = 1.4142\dots,\\
+5 & = 5.000\dots,\\
+1/10 & = 0.1000\dots,\\
+1/3 & = 0.333\dots,\\
+%0 & = 0.000\dots,\\
+1/9 & = 0.111\dots,\\
+4\, \frac{1}{99} & = 4.010101\dots.
+\end{align*}
+Let's map any real number $r$ to the infinite bit string $b(r)$ equal
+to the sequence of bits in the decimal expansion of $r$, starting at the decimal
+point.  If the decimal expansion of $r$ happens to contain a digit
+other than 0 or 1, leave $b(r)$ undefined.  For example, 
+\begin{align*}
+b(5) & = 000\dots,\\
+b(1/10) & = 1000\dots,\\
+b(1/9) & = 111\dots,\\
+b(4\, \frac{1}{99}) & = 010101\dots\\
+b(\sqrt{2}), b(1/3) &\text{ are undefined}.
+\end{align*}
+Now $b$ is a function from real numbers to infinite bit
+strings.\footnote{Some rational numbers can be expanded in two
+  ways---as an infinite sequence ending in all 0's or as an infinite
+  sequence ending in all 9's.  For example,
+\begin{align*}
+5 & = 5.000\dots = 4.999\dots,\\
+\frac{1}{10} & = 0.1000\dots = 0.0999\dots.
+\end{align*}
+In such cases, define $b(r)$ to be the sequence that ends with all
+0's.}  It is not a total function, but it clearly is a surjection.
+This shows that
+\[
+\reals \surj \binw,
+\]
+and the uncountability of the reals now follows by
+Corollary~\ref{UinjAu}.\eqref{AsurjUA}.
+
+For another example, let's prove
+\begin{corollary}\label{countN*}
+The set $\strings{(\integers^+)}$ of all finite sequences of positive
+integers is countable.
+\end{corollary}
+
+To prove this, think about the prime factorization of a nonnegative
+integer:
+\begin{align*}
+20 & = 2^2 \cdot 3^0 \cdot 5^1 \cdot 7^0 \cdot 11^0\cdot 13^0 \cdots,\\
+6615 & = 2^0 \cdot 3^3 \cdot 5^1 \cdot 7^2 \cdot 11^0\cdot 13^0 \cdots.
+\end{align*}
+Let's map any nonnegative integer $n$ to the finite sequence $e(n)$ of
+nonzero exponents in its prime factorization.  For example,
+\begin{align*}
+e(20) & = (2,1),\\
+e(6615) & = (3,1,2),\\
+e(5^{13} \cdot 11^{9} \cdot 47^{817} \cdot 103^{44}) & = (13, 9, 817, 44),\\
+e(1) & = \emptystring, & \text{(the empty string)}\\
+e(0) & \text{ is undefined}.
+\end{align*}
+Now $e$ is a function from $\nngint$ to $\strings{(\integers^{+})}$.  It
+is defined on all positive integers, and it clearly is a surjection.  This
+shows that
+\[
+\nngint \surj \strings{(\integers^{+})},
+\]
+and the countability of the finite strings of positive integers now
+follows by Corollary~\ref{UinjAu}.\eqref{CsurjAc}.
+
+\iffalse
+To prove this, think about putting a decimal point in front of an
+infinite bit string to get the decimal expansion of some real number.
+That is, putting a decimal point at the beginning of a bit string
+defines a function $p:\binw \to \reals$.  For example,
+\[
+p(000\dots) = .000\dots = 0, \qquad p(1000\dots) = .1000\dots = 1/10,\qquad
+p(010101\dots) = .010101\dots = 1/99, \qquad p(11111\dots) = .1111\dots = 1/9\, .
+\]
+In fact, $p$ is a total function ranging from 0 to 1/9.  Moreover, $p$
+is an injection: if two bit strings $s,t \binw$ differ anywhere in
+their first $n$ bits, then $p(s)$ and $p(t)$ differ by at least
+$8/(9\cdot 10^{n+1})$---a fact which it may amuse you to verify.  This
+shows that
+\[
+\binw \inj \reals.
+\]
+\fi
+
+\subsubsection{Larger Infinities}
+
+There are lots of different sizes of infinite sets.  For example,
+starting with the infinite set $\nngint$ of nonnegative integers,
+we can build the infinite sequence of sets
+\[
+\nngint \strict \power(\nngint) \strict \power(\power(\nngint))
+\strict \power(\power(\power(\nngint))) \strict \dots.
+\]
+By Cantor's Theorem~\ref{powbig}, each of these sets is strictly
+bigger than all the preceding ones.  But that's not all: the union of
+all the sets in the sequence is strictly bigger than each set in the
+sequence (see Problem~\ref{CP_power_set_tower}).  In this way you can
+keep going indefinitely, building ``bigger'' infinities all the way.
+
+\subsection{Diagonal Argument}
+Theorem~\ref{powbig} and similar proofs are collectively known as
+``\index{diagonal argument|textbf}{diagonal arguments}'' because of a
+more intuitive version of the proof described in terms of on an
+infinite square array.  Namely, suppose there was a bijection between
+$\nngint$ and $\binw$.  If such a relation existed, we would be able
+to display it as a list of the infinite bit strings in some countable
+order or another.  Once we'd found a viable way to organize this list,
+any given string in $\binw$ would appear in a finite number of steps,
+just as any integer you can name will show up a finite number of steps
+from 0.  This hypothetical list would look something like the one
+below, extending to infinity both vertically and horizontally:
+\[\begin{array}{|rc c c c c c c l|}
+\hline
+A_0 &=  & 1 & 0 & 0 & 0 & 1 & 1 & \cdots\\
+A_1 &=  & 0 & 1 & 1 & 1 & 0 & 1 & \cdots\\
+A_2 &=  & 1 & 1 & 1 & 1 & 1 & 1 & \cdots\\
+A_3 &=  & 0 & 1 & 0 & 0 & 1 & 0 & \cdots\\
+A_4 &=  & 0 & 0 & 1 & 0 & 0 & 0 & \cdots\\
+A_5 &=  & 1 & 0 & 0 & 1 & 1 & 1 & \cdots\\
+\vdots & & \vdots & \vdots & \vdots & \vdots & \vdots &
+         \vdots & \ddots\\
+\hline
+\end{array}\]
+But now we can exhibit a sequence that's missing from our allegedly
+complete list of all the sequences.  Look at the diagonal in our
+sample list:
+\[\begin{array}{|rc c c c c c c l|}
+\hline
+A_0 &=  & \textcolor{blue}{\mathbf{1}} & 0 & 0 & 0 & 1 & 1 & \cdots \\
+A_1 &=  & 0 & \textcolor{blue}{\mathbf{1}} & 1 & 1 & 0 & 1 & \cdots \\
+A_2 &=  & 1 & 1 & \textcolor{blue}{\mathbf{1}} & 1 & 1 & 1 & \cdots \\
+A_3 &=  & 0 & 1 & 0 & \textcolor{blue}{\mathbf{0}} & 1 & 0 & \cdots \\
+A_4 &=  & 0 & 0 & 1 & 0 & \textcolor{blue}{\mathbf{0}} & 0 & \cdots \\
+A_5 &=  & 1 & 0 & 0 & 1 & 1 & \textcolor{blue}{\mathbf{1}} & \cdots \\
+\vdots & & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \ddots\\
+\hline
+\end{array}\]
+Here is why the diagonal argument has its name: we can form a sequence
+$\textcolor{blue}{D}$ consisting of the bits on the diagonal.
+\[\begin{array}{l c c c c c c l}
+\textcolor{blue}{D} = & \textcolor{blue}{1} & \textcolor{blue}{1} &
+  \textcolor{blue}{1} & \textcolor{blue}{0} & \textcolor{blue}{0} &
+  \textcolor{blue}{1} & \textcolor{blue}{\cdots},
+\end{array}\]
+Then, we can form another sequence by switching the
+$\textcolor{blue}{\mathbf{1}}$'s and $\textcolor{blue}{\mathbf{0}}$'s
+along the diagonal.  Call this sequence $\textcolor{red}{C}$:
+\[\begin{array}{l c c c c c c l}
+\textcolor{red}{C} = & \textcolor{red}{0} & \textcolor{red}{0} &
+  \textcolor{red}{0} & \textcolor{red}{1} & \textcolor{red}{1} &
+  \textcolor{red}{0} & \textcolor{red}{\cdots}.
+\end{array}\]
+Now if the $n$th term of $A_n$ is $\textcolor{blue}{\mathbf{1}}$ then the
+$n$th term of $\textcolor{red}{C}$ is $\textcolor{red}{\mathbf{0}}$,
+and \emph{vice versa}, which guarantees that $\textcolor{red}{C}$
+differs from $A_n$.  In other words, $\textcolor{red}{C}$ has at least
+one bit different from \emph{every} sequence on our list.  So
+$\textcolor{red}{C}$ is an element of $\binw$ that does
+not appear in our list---our list can't be complete!
+
+This diagonal sequence $\textcolor{red}{C}$ corresponds to the set
+$\set{a \in A \suchthat a \notin g(a)}$ in the proof of
+Theorem~\ref{powbig}.  Both are defined in terms of a countable subset
+of the uncountable infinity in a way that excludes them from that
+subset, thereby proving that no countable subset can be as big as the
+uncountable set.
+
+\iffalse It shows that any function arranging the elements of~$\binw$
+into a countable list will necessarily generate a list that is
+incomplete.  Elements of the codomain will be omitted from the range
+of the function, so~$\QNOT (\nngint \surj \binw$ which means
+$\nngint \strict \binw$.\fi
+
+\begin{problems}
+\practiceproblems
+%\pinput{TP_Inclusion_Exclusion}  used in counting chapter
+%\pinput{TP_union_two_countable}
+\pinput{TP_countable_strings}
+\pinput{TP_diff_uncountable_example} %TP_uncountable_example
+%\pinput{TP_cardinality_examples}
+%\pinput{TP_cardinality_class}
+\pinput{TP_countable_strict}
+\pinput{TP_countable_injection}
+\pinput{TP_uncountable_powerset}
+\pinput{TP_majorizing}
+\pinput{TP_majorizing_short}
+\pinput{TP_finitely_discontinuous}
+\pinput{TP_countable_subsets_integers}
+\pinput{TP_countable_chain}
+
+\classproblems
+\pinput{CP_finite_strings_of_nonneg}
+\pinput{CP_smallest_infinite_set}
+\pinput{CP_rationals_are_countable}
+\pinput{CP_Schroeder_Bernstein_theorem}
+\pinput{CP_countable_from_surj}  %subsumes CP_countable_surjection
+%TP_cardinality_examples
+\pinput{CP_power_set_tower}
+\pinput{FP_diagonalization_lonely_sequences}
+
+\homeworkproblems
+\pinput{PS_add_countable_elements}
+\pinput{PS_unit_interval}
+\pinput{PS_off_diagonal_arguments}
+\pinput{PS_bogus_Cantor}
+\pinput{PS_immune}
+%\pinput{PS_immuneset} is an alternative, but needs more motivation
+
+\examproblems
+\pinput{MQ_set_cardinality}
+\pinput{MQ_countable_union}
+\pinput{MQ_product_of_countables}
+\pinput{FP_uncountable_infinite_sequences_2ways}
+%\pinput{MQ_uncountable_infinite_sequences}
+%\pinput{FP_countable_sets}
+%\pinput{FP_infinite_binary_sequences_S14}
+%\pinput{FP_uncountable_ones}
+\pinput{FP_uncountable_sparse1s}
+\pinput{FP_diagonalization_lonely_subsets}
+\pinput{FP_rapid_increasing_diag}
+\pinput{FP_countable_quadratics}
+\pinput{FP_card_bij}
+\pinput{FP_countable_Nseqs}
+\end{problems}
+
+\section{The Halting Problem}\label{halting_sec}
+
+Although towers of larger and larger infinite sets are at best a
+romantic concern for a computer scientist, the \emph{reasoning} that
+leads to these conclusions plays a critical role in the theory of
+computation.  Diagonal arguments are used to show that lots of
+problems can't be solved by computation, and there is no getting
+around it.
+
+This story begins with a reminder that having procedures operate on
+programs is a basic part of computer science technology.  For example,
+\emph{compilation} refers to taking any given program text
+written in some ``high level'' programming language like Java, C++,
+Python, \dots, and then generating a program of low-level instructions
+that does the same thing but is targeted to run well on available
+hardware.  Similarly, \emph{interpreters} or \emph{virtual
+    machines} are procedures that take a program text designed to be
+run on one kind of computer and simulate it on another kind of
+computer.  Routine features of compilers involve
+``type-checking''%
+\index{type-checking|see{Halting Problem}} 
+programs to ensure that certain kinds of
+run-time errors won't happen, and ``optimizing'' the generated
+programs so they run faster or use less memory.
+
+The fundamental thing that just can't be done by computation is a
+\emph{perfect} job of type-checking, optimizing, or any kind of
+analysis of the overall run time behavior of programs.  In this
+section, we'll illustrate this with a basic example known as the
+\term{Halting Problem}.  Pick your favorite programming
+language---Python, Java, C++,\dots---and assume that ``program''
+refers to a program written in your language. 
+
+Once a program is started, if its initial computation stops for some
+reason---such as producing a final value, waiting for an input,
+suffering an error interrupt, or simply freezing---the program is said
+to \term{halt}.  So a program that does \emph{not} halt would run
+forever using up cycles and energy (unless it was interrupted by an
+external operating system command).  The Halting Problem is the
+general problem of determining, given an arbitrary program, whether or
+not the program halts.
+
+There is a simple way to determine when an arbitrary program does
+halt, at least in theory: just run it until it stops.  Well not quite.
+Just running the program in the usual way would not detect when it
+freezes without warning.  What really needs to be done is to simulate
+the program using an interpreter or a virtual machine that will
+recognize any kind of halting, including a freeze.  But interpreters
+and virtual machines capable of simulating any program are familiar
+technology.  So there is a general way to detect when a program halts.
+
+The hard part is determining when a program does \emph{not} halt.  At
+any point in simulating it, you generally won't know whether to
+continue the simulation because the program will halt later, or to
+abort the simulation because it wouldn't stop otherwise.
+
+So is there some way besides simulation to detect when a program does
+\emph{not} halt?  Could there be some program analysis tool that could
+inspect any program and correctly report when the program does not
+halt?  The answer is ``No.''  Using a standard diagonal argument, we
+will prove that it is impossible to have such a non-halting analysis
+tool.  Any method for detecting non-halting is bound to go wrong.  It
+will falsely report that some halting program does not halt, or it
+will fail to report anything about some program.  That is, there will
+be a program on which the analyzer runs forever without halting.
+
+To set up the diagonal argument, we will focus on \emph{string
+  procedures}.  A string procedure is a procedure that takes a single
+argument that is supposed to be a string over the 256 character
+\asciibet\ alphabet.
+As a simple example, you might think about how to write a string
+procedure that halts precisely when it is applied to a \emph{double
+  letter} string in \asciistr, namely, a string in which every
+character occurs twice in a row.  For example, \texttt{aaCC33}, and
+\texttt{zz++ccBB} are double letter strings, but \texttt{aa;bb},
+\texttt{b33}, and \texttt{AAAAA} are not.
+
+When the computation of a procedure applied to a string halts, the
+procedure will be said to \emph{recognize} the string.  In this
+context, a set of strings a commonly called a (formal)
+\emph{language}.  We let $\rcg{P}$ to be the language recognized by
+procedure $P$:
+\[
+\rcg{P} \eqdef \set{s \in \asciistr \suchthat P \text{ applied to $s$
+  halts}}.
+\]
+A language is called \emph{recognizable} when it equals $\rcg{P}$ for
+some string procedure $P$.  For example, we've just agreed that the
+set of double letter strings is recognizable.
+
+There is no harm in assuming that every program can be written as a
+string in \asciistr---that's typically how we would enter them into a
+computer in the first place.  When a string $s \in \asciistr$ is
+actually the \asciibet\ description of some string procedure, we'll
+refer to that string procedure as $P_s$.  You can think of $P_s$ as
+the result of compiling $s$ into something executable.\footnote{The
+  string $s \in \asciistr$ and the procedure $P_s$ have to be
+  distinguished to avoid a type error: you can't apply a string to
+  string.  For example, let $s$ be the string that you wrote as your
+  program to recognize the double letter strings.  Applying $s$ to a
+  string argument, say \texttt{aabbccdd}, should throw a type
+  exception; what you need to do is compile $s$ to the procedure $P_s$
+  and then apply $P_s$ to \texttt{aabbccdd}.} It's technically helpful
+to treat \emph{every} string in \asciistr\ as a program for a string
+procedure.  So when a string $s \in \asciistr$ doesn't parse as a
+proper string procedure, we'll define $P_s$ to be some default string
+procedure---say one that never halts on anything it is applied to.
+
+Focusing just on string procedures, the general Halting Problem is to
+decide, given strings $s$ and $t$, whether or not the procedure $P_s$
+recognizes $t$.  Following the usual diagonal approach, we define the language \nohalt:
+\begin{definition}\label{nohalt_def}
+\begin{equation}\label{nohalt_eqdef}
+\nohalt \eqdef \set{s \suchthat P_s\ \text{applied to $s$ does not halt}} = \set{s \notin \rcg{P_s}}.
+\end{equation}
+\end{definition}
+So if $P_s$ is the recognizer for some language, then \nohalt\ differs
+from that language on the string $s$.  This shows that \nohalt\ cannot
+have a recognizer:
+\begin{theorem}\label{nohalt_thm}
+\nohalt\ is not recognizable.
+\end{theorem}
+
+Let's spell out the reasoning behind this theorem more fully.  By
+definition, we have
+\begin{equation}\label{snohaltsnfs}
+s \in \nohalt \QIFF\ s \notin \rcg{P_s},
+\end{equation}
+for all strings $s \in \asciistr$.
+
+Now suppose to the contrary that \nohalt\ was recognizable.  This
+means there is some procedure $P_{s_0}$ that recognizes \nohalt, that is,
+\[
+\nohalt = \rcg{P_{s_0}}.
+\]
+Combined with~\eqref{snohaltsnfs}, we have
+\begin{equation}\label{sfs0iff}
+s \in \rcg{P_{s_0}} \qiff s \notin \rcg{P_s}
+\end{equation}
+for all $s \in \asciistr$.  Now letting $s = s_0$ in~\eqref{sfs0iff}
+yields the immediate contradiction
+\[
+s_0 \in \rcg{P_{s_0}} \qiff s_0 \notin \rcg{P_{s_0}}.
+\]
+
+So that does it: the reasoning above applied to whatever favorite
+programming language you picked.  It is \emph{logically impossible}
+for a Java program to be a recognizer for non-halting Java programs,
+or for a Python program to be a recognizer for non-halting Python
+programs, and so forth for other favorite programming languages.
+
+Now you might wonder if there was a loophole around this logical
+limitation by having a recognizer the non-halting programs in one
+language that was written in another language.  In other words, could
+there be a C++ procedure that recognizes all the non-halting Java
+programs?  After all, C++ does allow more intimate manipulation of
+computer memory than Java does.  But there is no loophole here.  If
+you've learned about programming language implementation, you will
+realize that it's possible to write a simulator in Java for C++
+programs.  This means that if there were a C++ procedure that
+recognized non-halting Java programs, then a Java procedure could also
+do it by simulating the C++ program, and that's impossible.  This
+reasoning finally leads to a transcendent insight.  No procedure can
+be written in \emph{any} programming language that recognizes
+\nohalt\ for your favorite language.  Recognizing \nohalt\ is simply
+beyond the capacity of computation.
+
+But it's not just \nohalt.  If there was a perfect recognizer for
+\emph{any} property that depends on the complete run time behavior
+programs,\footnote{ The weasel words ``complete run time behavior''
+  creep in here to rule out some run time properties that are easy to
+  recognize because they depend only on part of the run time behavior.
+  For example, the set of programs that halt after executing at most
+  100 instructions is recognizable.} it could be altered slightly to
+become a recognizer for \nohalt.  We'll take this claim for granted
+now, giving its full justification in an assigned problem.
+
+For example, most compilers do ``static'' type-checking at compile
+time to ensure that programs won't make run-time type errors.  A
+program that type-checks is guaranteed not to cause a run-time
+type-error.  But given that it's impossible to recognize when the
+complete run time behavior of a program does not lead to a type-error,
+it follows that the type-checker must be rejecting programs that
+really wouldn't cause a type-error.  The conclusion is that no
+type-checker is perfect---you can always do better!
+
+It's a different story if we think about the \emph{practical}
+possibility of writing program analyzers.  The fact that it's
+logically impossible to analyze utterly arbitrary programs does not
+mean that you can't do a very good job analyzing interesting programs
+that come up in practice.  In fact, these ``interesting'' programs are
+commonly \emph{intended} to be analyzable in order to confirm that
+they do what they're supposed to do.
+
+In the end, it's not clear how much of a hurdle this theoretical
+limitation implies in practice.  But the theory does provide some
+perspective on claims about general analysis methods for programs.
+The theory tells us that people who make such claims either
+\begin{itemize}
+\item are exaggerating the power (if any) of their methods, perhaps to make a
+  sale or get a grant, or
+
+\item are trying to keep things simple by not going into technical
+  limitations they're aware of, or
+
+\item perhaps most commonly, are so excited about some useful practical
+    successes of their methods that they haven't bothered to think about
+    the limitations which must be there.
+\end{itemize}
+So from now on, if you hear people making claims about having general
+program analysis/verification/optimization methods, you'll know they
+can't be telling the whole story.
+
+\begin{editingnotes}
+Highlight CS insight that lots of problems from other fields turn out
+to be programming probs, and hence undecidable: integer
+multi-var polys can be viewed as programs ala Hilbert's 10th; likewise
+group theory equivalence; provability even in limited systems of pred
+calc; Petri Net containment, ....
+\end{editingnotes}
+
+\begin{problems}
+
+\classproblems
+\pinput{CP_N_to_N_diagonal_argument}
+
+\homeworkproblems
+\pinput{PS_A_to_B_diagonal_argument}
+\pinput{CP_computable_reducibility}
+%\pinput{CP_indescribable_language}
+
+\begin{editingnotes}
+Add problem that the $4^n$ time-bounded halting problem requires time
+$2^n$?
+\end{editingnotes}
+
+\end{problems}
+
+\section{The Logic of Sets}\label{set_logic_sec}%\hyperdef{logic}{sets}
+
+\subsection{\idx{Russell's Paradox}}
+
+Reasoning naively about sets turns out to be risky.  In fact, one of the
+earliest attempts to come up with precise axioms for sets in the late
+nineteenth century by the logician \index{Frege, Gotlob} Gotlob Frege, was
+shot down by a three line argument known as \emph{Russell's
+  Paradox}\footnote{Bertrand Russell%
+\index{Russel, Bertrand} 
+was a mathematician/logician at Cambridge University at the turn of the Twentieth
+ Century.  He reported that when he felt too old to do mathematics, he began to study
+  and write about philosophy, and when he was no longer smart enough to do
+  philosophy, he began writing about politics.  He was jailed as a
+  conscientious objector during World War I.  For his extensive
+  philosophical and political writing, he won a Nobel Prize for
+  Literature.} which reasons in nearly the same way as the proof of
+Cantor's Theorem~\ref{powbig}.  This was an astonishing blow to efforts to
+provide an axiomatic foundation for mathematics:
+
+\textbox{
+\begin{center}
+\large Russell's Paradox
+\end{center}
+
+\begin{quote}
+Let $S$ be a variable ranging over all sets, and define
+\[
+W \eqdef \set{S \suchthat S \not\in S}.
+\]
+So by definition,
+\[
+S \in W  \mbox{  iff  } S \not\in S,
+\] 
+for every set $S$.  In particular, we can let $S$ be $W$, and obtain
+the contradictory result that
+\[
+W \in W  \mbox{  iff  } W \not\in W.
+\]
+\end{quote}}
+
+The simplest reasoning about sets crashes mathematics!  Russell and his
+colleague Whitehead spent years trying to develop a set theory that was
+not contradictory, but would still do the job of serving as a solid
+logical foundation for all of mathematics.
+
+Actually, a way out of the paradox was clear to Russell and others at
+the time: \emph{it's unjustified to assume that $W$ is a set}.  The
+step in the proof where we let $S$ be $W$ has no justification,
+because $S$ ranges over sets, and $W$ might not be a set.  In fact, the
+paradox implies that $W$ had better not be a set!
+
+But denying that $W$ is a set means we must \emph{reject} the very
+natural axiom that every mathematically well-defined collection of
+sets is actually a set.  The problem faced by Frege, Russell and their
+fellow logicians was how to specify \emph{which} well-defined
+collections are sets.  Russell and his Cambridge University colleague
+Whitehead immediately went to work on this problem.  They spent a
+dozen years developing a huge new axiom system in an even huger
+monograph called \emph{Principia Mathematica}, but for all intents and
+purposes, their approach failed.  It was so cumbersome no one ever
+used it, and it was subsumed by a much simpler, and now widely
+accepted, axiomatization of set theory by the logicians Zermelo
+and Fraenkel.
+
+\subsection{The ZFC Axioms for Sets}\label{ZFC_sec}
+
+It's generally agreed that essentially \emph{all of mathematics} can
+be derived from a few formulas of set theory, called the Axioms of
+\term{Zermelo-Fraenkel Set Theory} with Choice (ZFC), using a few
+simple logical deduction rules.\index{ZFC|see{Zermello-Fraenkel Set
+    Theory}}
+
+These axioms are about ``pure'' sets that are literally built up from
+nothing.  For example, we can start with the set $\emptyset$ with
+nothing in it, and then build new sets from stuff we already have.  So
+from $\emptyset$ we can build the set $\set{\emptyset}$ whose sole
+member is the set we started with.  But now we have built two things,
+so we can build two new sets
+\[
+\set{\set{\emptyset}},\quad \set{\emptyset, \set{\emptyset}}.
+\]
+Continuing like this, we could build up a simple sequence of sets
+\[
+\emptyset,\quad \set{\emptyset},\quad \set{\set{\emptyset}},\quad \set{\set{\set{\emptyset}}},\dots
+\]
+where each element is simply the set whose sole element is the
+previous element.  This means we can now build an infinite set $N$
+consisting of all the elements in the sequence.
+
+Of course there are lots of types of mathematical objects---sets of
+numbers like \nngint\ or \reals, sets of functions on numbers, sets of
+sequences like \finbin\ or \binw, or sets of graphs, for example---that
+we don't normally regard as pure sets.  But in fact pure sets are
+enough to model all these other types of objects.
+
+For example, the infinite set $N$ is like a copy of the nonnegative
+integers \nngint, where we define the result of ``adding one'' to an
+element $s \in N$ to be $\set{x}$.  If we go on and take all the
+pairs\footnote{Doing this requires a way to represent an ordered pair
+  $(a,b)$ of things in terms of sets built up from just $a$ and $b$.
+  See Problem~\ref{CP_set_pairing} for a slightly ingenious, but still
+  simple, way to represent the pair as a set.}  of elements $(a,b) \in
+N \times (N-\set{\emptyset})$, we get a set that is like the
+numerator/denominator pairs of all the fractions with nonnegative
+numerators and positive denominators.  With a little fiddling of these
+``fractions,'' we can get a set that acts like a copy of the rational
+numbers $\rationals$.  Next from the rationals we can get a set that
+acts like the real numbers by modelling a real number $r \in \reals$
+by the set of rationals greater than $r$.  And so on.  The point is
+that if we can reason correctly about pure sets, we get a solid basis
+for reasoning about all mathematical objects.
+
+So the domain of discourse of ZFC is the pure sets, and ZFC involves
+using a few logical inference rules to prove properties of pure sets
+starting from a few axioms.  The axioms themselves are written as
+\emph{pure first-order formulas}\index{pure set theory} of set theory.
+These are predicate formulas that only talk about membership in sets.
+That is, a first-order formula of set theory is built using logical
+connectives and quantifiers starting \emph{solely} from expressions of
+the form ``$x\in y$'' which is interpreted to mean that $x$ and $y$
+are pure sets, and $x$ is one of the elements in $y$.
+
+Formulas of set theory are not even allowed to have the equality
+symbol ``$=$.''  However, sets are equal iff they have the same
+elements, so there is an easy way to express equality of sets purely
+in terms of membership:
+\begin{equation}\label{xsetequaly}
+(x = y) \eqdef\  \forall z.\; (z \in x \QIFF z \in y).
+\end{equation}
+
+Similarly, the subset symbol ``$\subseteq$'' is not allowed in
+formulas of set theory, but we can also express subset purely in terms
+of membership:
+\begin{equation}\label{xsubeqy}
+(x \subseteq y) \eqdef\ \forall z.\; (z \in x\ \QIMPLIES\ z \in y).
+\end{equation}
+
+So formulas using symbols ``$=$,'' ``$\subseteq$,'' in addition to
+``$\in$'' can be understood as \emph{abbreviations} for pure formulas
+only using ``$\in$.''  We won't worry about this distinction between
+formulas and abbreviations for formulas---we'll now just call them all
+``formulas of set theory.''  For example,
+\[
+x= y\ \QIFF\ [x \subseteq y \QAND y \subseteq x]
+\]
+is a formula of set theory that explains a basic connection between
+set equality and set containment.
+
+%\index{Zermello-Fraenkel Set Theory|seealso{axiom}}
+
+We're \emph{not} going to develop much of set theory in this text, but
+we thought you might like to see the actual axioms of ZFC---and while
+you're at it, get some more practice reading and writing quantified
+formulas: \index{axiom!ZFC axioms|textbf}
+
+\subsubsection{The Axioms}
+
+\begin{description}
+
+\item[\index{axiom!ZFC axioms!axiom of
+    extensionality}\emph{Extensionality}.]  Two sets are equal iff
+  they are members of the same sets:
+\[
+x = y\ \QIFF\ (\forall z.\; x \in z \QIFF y \in z).
+\]
+
+\item[\index{axiom!ZFC axioms!axiom of pairing}\emph{Pairing}.] For
+  any two sets $x$ and $y$, there is a set $\set{x,y}$ with $x$ and
+  $y$ as its only elements:
+\[
+\forall x,y \exists u \forall z.\;
+[z \in u \QIFF (z = x \QOR z = y)]
+\]
+
+\item[\index{axiom!ZFC axioms!union axiom}\emph{Union}.]  The union
+  $u$ of a collection $z$ of sets is also a set:
+\[
+\forall z \exists u \forall x.\;
+  (x \in u)\ \QIFF\ (\exists y.\; x \in y \QAND y \in z) 
+\]
+
+\item[\index{axiom!ZFC axioms!infinity axiom}\emph{Infinity}.]  There
+  is an infinite set.  Specifically, there is a nonempty set $x$
+  such that for any set $y \in x$, the set $\set{y}$ is also a member
+  of $x$.
+
+\item[\index{axiom!ZFC axioms!subset
+    axiom}\emph{Subset}.] Given any set~$x$ and any
+  definable property of sets, there is a set~$y$ containing precisely
+  those elements in~$x$ that have the property.
+\[
+\forall x \exists y \forall z.\; z \in y \QIFF [z \in x \QAND \phi(z)]
+\]
+where $\phi(z)$ is a formula of set theory.\footnote{This axiom is more commonly called
+    the \term{Comprehension Axiom}.}
+
+\item[\index{axiom!ZFC axioms!power set axiom}\emph{Power Set}.]  All the
+  subsets of a set form another set:
+\[
+\forall x \exists p \forall u.\; u \subseteq x \QIFF u \in p.
+\]
+
+\item[\index{axiom!ZFC axioms!replacement axiom}\emph{Replacement}.]
+  Suppose a formula $\phi$ of set theory defines the graph of a
+  function on a set $s$, that is,
+\iffalse
+\[
+\forall x \in s\, \exists y.\; \phi(x,y),
+\]
+and
+\fi
+
+\[
+\forall x \in s\, \forall y, z.\; [\phi(x,y) \QAND \phi(x,z)] \QIMPLIES y = z.
+\]
+Then the image of $s$ under that function is also a set $t$.  Namely,
+\[
+\exists t \forall y.\; y \in t \QIFF [\exists x\in s.\; \phi(x,y)].
+\]
+
+\item[\index{axiom!ZFC axioms!foundation
+    axiom}\emph{Foundation}.]  The aim is to forbid any infinite
+  sequence of sets of the form
+\[
+\cdots \in x_n \in \cdots \in x_1 \in x_0
+\]
+in which each set is a member of the next one.  This can be
+captured by saying every nonempty set has a ``member-minimal''
+element.  Namely, define
+\[
+\text{member-minimal}(m, x) \eqdef [m \in x \QAND \forall y \in x.\; y \notin m].
+\]
+Then the Foundation Axiom\footnote{This axiom is also called the
+  \term{Regularity Axiom}.} is
+\[
+\forall x.\ x \neq \emptyset\ \QIMPLIES\ \exists m.\; \text{member-minimal}(m, x).
+\]
+
+\item[\index{axiom!ZFC axioms!axiom of choice}\emph{Choice}.]  Let $s$
+  be a set of nonempty, disjoint sets.  Then there is a set $c$
+  consisting of exactly one element from each set in $s$.  The formula
+  is given in Problem~\ref{CP_axiom_of_choice_formula}.
+
+\end{description}
+
+\subsection{Avoiding \idx{Russell's Paradox}}\label{avoidingrussellsparadox}
+
+These modern ZFC axioms for set theory are much simpler than the
+system Russell and Whitehead first came up with to avoid paradox.  In
+fact, the ZFC axioms are as simple and intuitive as Frege's original
+axioms, with one technical addition: the Foundation axiom.  Foundation
+captures the intuitive idea that sets must be built up from
+``simpler'' sets in certain standard ways.  And in particular,
+Foundation avoids the ``paradox'' of Russell's set collection $W
+\eqdef \set{S \suchthat S\notin S}$ because it implies that $W$ is not
+a set.  Namely Foundation implies that $S \not \in S$ for \emph{every}
+set $S$, so $W$ is the collection of \emph{all} sets.  Now if $W$ was
+a set, we would have $W \in W$, violating Foundation.
+
+The Foundation axiom also justifies proofs about sets using structural
+induction.  We'll begin with a recursive definition of a class of sets
+called \recset.  
+\begin{definition}\label{recset_def}
+The class of \emph{recursive sets} \recset\ is defined as follows:
+
+\inductioncase{Base case}: The empty set $\emptyset$ is a \recset.
+
+\inductioncase{Constructor step}: If $S$ is a nonempty set of
+\recset's, then $S$ is a \recset.
+\end{definition}
+
+Since \recset\ is defined recursively, we know that we can use
+structural induction to prove things about it.  This means that
+we can actually use structural induction to prove things about all
+sets, because the Foundation axiom implies that \emph{all} sets are
+recursive sets:
+
+\begin{theorem}\label{thm_recursive_sets}
+The class \recset\ of recursive sets is the same as the class of all
+sets.
+\end{theorem}
+
+\begin{proof}
+Everything in \recset\ is a set by definition, so we need only show
+that every set is in \recset.
+
+Suppose to the contrary that a set $S$ is not in \recset.  So $S$ must
+have an element $N_0$ that is \emph{not} in \recset, since otherwise
+$S$ would by definition be in \recset.  Likewise, $N_0$ must have an
+element $N_1$ that is \emph{not} in \recset, and $N_1$ must have an
+element $N_2$ that is \emph{not} in \recset, and so on.  So we have an
+infinite sequence
+\[
+S \ni N_0 \ni N_1 \ni N_2 \ni \dots.
+\]
+Therefore the set\footnote{A rigorous proof, which we are skipping,
+  requires careful use of the Choice axiom to prove that $T$ is a
+  set.}
+\[
+T \eqdef \set{S,N_0, N_1, N_2, \dots}
+\]
+has no member-minimal element, in violation of Foundation.
+\end{proof}
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_not_member_of_self}
+\pinput{TP_recset_circular}
+
+\classproblems
+\pinput{CP_set_pairing}
+\pinput{CP_axiom_of_choice_formula}
+\pinput{CP_foundation_axiom}
+
+\homeworkproblems
+\pinput{PS_size_n_set_formula}
+\pinput{PS_recursive_set_data_type_alt}
+
+%\pinput{PS_equality_axioms}  %DRAFT
+
+\examproblems
+\pinput{MQ_pair_predicate}
+\end{problems}
+
+\section{Does All This Really Work?}\label{setsreallywork}
+
+So this is where mainstream mathematics stands today: there is a
+handful of ZFC axioms from which virtually everything else in
+mathematics can be derived logically.  This sounds like a rosy
+situation, but there are several dark clouds, suggesting that the
+essence of truth in mathematics is not completely resolved.
+
+%
+\begin{itemize}
+
+\item The ZFC axioms weren't etched in stone by God.  Instead,
+  they were mostly made up by Zermelo, who may have been a brilliant
+  logician, but was also a fallible human being---probably some days
+  he forgot his house keys.  So maybe Zermelo, just like Frege, didn't
+  get his axioms right and will be shot down by some successor to
+  Russell%
+\index{Russell, Bertrand} 
+who will use his axioms to prove a proposition $P$ and
+  its negation $\bar{P}$.  Then math as we understand it would be
+  broken---this may sound crazy, but it has happened before.
+
+  In fact, while there is broad agreement that the ZFC axioms are
+  capable of proving all of standard mathematics, the axioms have some
+  further consequences that sound paradoxical.  For example, the
+  \idx{Banach-Tarski Theorem} says that, as a consequence of the
+  \index{axiom!ZFC axioms!axiom of choice}\emph{axiom of choice}, a solid
+  ball can be divided into six pieces and then the pieces can be
+  rigidly rearranged to give \emph{two} solid balls of the same size
+  as the original!
+
+\item Some basic questions about the nature of sets remain unresolved.
+  For example, Cantor raised the question whether there is a set whose
+  size is strictly between the smallest infinite set $\nngint$ (see
+  Problem~\ref{CP_smallest_infinite_set}) and the strictly larger
+  set $\power(\nngint)$?  Cantor guessed not:
+
+  \textbf{Cantor's \index{Continuum Hypothesis}\emph{Contiuum
+      Hypothesis}}: There is no set $A$ such that
+  \[
+  \nngint \strict A \strict \power(\nngint).
+  \]
+
+  The Continuum Hypothesis remains an open problem a century later.
+  Its difficulty arises from one of the deepest results in modern Set
+  Theory---discovered in part by G\"odel in the 1930's and Paul
+  Cohen in the 1960's---namely, the ZFC axioms are not
+  sufficient to settle the Continuum Hypothesis: there are two
+  collections of sets, each obeying the laws of
+  \index{Zermelo-Fraenkel Set Theory}ZFC, and in one collection the
+  Continuum Hypothesis is true, and in the other it is false.  Until a
+  mathematician with a deep understanding of sets can extend ZFC with
+  persuasive new axioms, the Continuum Hypothesis will remain
+  undecided.  \iffalse So settling the Continuum Hypothesis some new
+  understanding of what Sets should be to arrive at persuasive new
+  axioms that extend ZFC and are strong enough to determine the truth
+  of the Continuum Hypothesis one way or the other.  \fi
+\item But even if we use more or different axioms about sets, there
+  are some unavoidable problems.  In the 1930's, G\"odel%
+  \index{Godel@G\"odel, Kurt} proved that, assuming that an axiom
+  system like ZFC is consistent---meaning you can't prove both $P$ and
+  $\bar{P}$ for any proposition, $P$---then the very proposition that
+  the system is consistent (which is not too hard to express as a
+  logical formula) cannot be proved in the system.  In other words, no
+  consistent system is strong enough to verify itself In particular,
+  every axiom system is \term{incomplete}: it cannot prove all the
+  truths of mathematics.\index{incompleteness theorem}
+  
+\end{itemize}
+
+\subsection{Large Infinities in Computer Science}
+
+If the romance of different-size infinities and continuum hypotheses
+doesn't appeal to you, not knowing about them is not going to limit
+you as a computer scientist.  These abstract issues about infinite
+sets rarely come up in mainstream mathematics, and they don't come up
+at all in computer science, where the focus is generally on
+``\idx{countable},'' and often just finite, sets.  In practice, only
+logicians and set theorists have to worry about collections that are
+``too big'' to be sets.  That's part of the reason that the 19th
+century mathematical community made jokes about ``Cantor's
+  paradise'' of obscure infinities.  But the challenge of
+reasoning correctly about this far-out stuff led directly to the
+profound discoveries about the logical limits of computation described
+in Section~\ref{halting_sec}, and that really is something every
+computer scientist should understand.
+
+\iffalse
+\begin{problems}
+\homeworkproblems
+\pinput{PS_infinite_ordinals}
+\end{problems}
+\fi
+
+\endinput
+
+\iffalse When a string procedure applied to an ASCII string halts,
+we'll say the procedure halts on the string.  If it runs forever, then
+we'll say it does not halt on the string.\fi
+
+\iffalse This application should result in a halting computation,
+since \texttt{aabbccdd} is a double letter string.\fi
+
+  \iffalse So if $s$ is an ill-formed string, $P_S$
+will be a recognizer for the empty set of strings.  \fi

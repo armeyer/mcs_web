@@ -1,0 +1,200 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_faster_adder_logic}
+  \pcomment{substantial revision 9/16/15 ARM}
+  \pcomment{from: S09.cp2m but skipped in S09 (maybe commented out
+    because it doesn't appear in .pdf)}
+  \pcomment{subsumes PS_parallel-half-adder}
+  \pcomment{S15.ps1}
+\end{pcomments}
+
+\pkeywords{
+ half-adder
+ circuit
+ parallel
+ ripple_carry
+ look_ahead
+ boolean
+ binary
+ carry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+  As in Problem~\bref{CP_binary_adder_logic}, a digital circuit is
+  called an $(n+1)$-bit \emph{half-adder} when it has with $n+2$
+  inputs
+  \[
+  a_n,\dots, a_1, a_0,b
+  \]
+and $n+2$ outputs
+\[
+c, s_n, \dots, s_1, s_0.
+\]
+
+The input-output specification of the half-adder is that, if the 0-1
+values of inputs $a_n,\dots, a_1, a_0$ are taken to be the $(n+1)$-bit
+binary representation of an integer $k$ then the 0-1 values of the
+outputs $c, s_n, \dots, s_1, s_0$ are supposed to be the $(n+2)$-bit
+binary representation of $k+b$.
+
+For example suppose $n=2$ and the values of $a_2a_1a_0$ were
+$\STR{101}$.  This is the binary representation of $k = 5$.  Now if
+the value of $b$ was $\mtt{1}$, then the output should be the 4-bit
+representation of $5+1=6$.  Namely, the values of $cs_2s_1s_0$ would
+be $\STR{0110}$.
+
+There are many different circuit designs for half adders.  The most
+straighforward one is the ``ripple carry'' design described in
+Problem~\bref{CP_binary_adder_logic}.  We will now develop a different
+design for a half-adder circuit called a \emph{parallel-design} or
+``look-ahead carry'' half-adder.  This design works by computing the
+values of higher-order digits for both a carry of 0 and a carry of 1,
+\emph{in parallel}.  Then, when the carry from the low-order digits
+finally arrives, the pre-computed answer can be quickly selected.
+
+We'll illustrate this idea by working out a parallel design for an
+$(n+1)$-bit half-adder.
+
+Parallel-design half-adders are built out of parallel-design circuits
+called \emph{add1}-modules.  The input-output behavior of an
+add1-module is just a special case of a half-adder, where instead of
+an adding an input $b$ to the input, the add1-module \emph{always}
+adds 1.  That is, an $(n+1)$-bit add1-module has $(n+1)$ binary inputs
+\[
+a_n, \dots, a_1, a_0,
+\]
+and $n+2$ binary outputs
+\[
+c\,p_n,\dots, p_1,p_0.
+\]
+If $a_n \dots a_1 a_0$ are taken to be the $(n+1)$-bit representation of
+an integer $k$ then $cp_n\dots p_1p_0$ is supposed to be the
+$(n+2)$-bit binary representation of $k+1$.
+
+So a 1-bit add1-module just has input $a_0$ and outputs $c,p_0$ where
+  \begin{align*}
+    p_0 & \eqdef a_0\ \QXOR\ 1, (\text{or more simply, } p_0 \eqdef \QNOT(a_0)),\\
+    c & \eqdef a_0.
+  \end{align*}
+
+In the ripple-carry design, a double-size half-adder with $2(n+1)$
+inputs takes twice as long to produce its output values as an
+$(n+1)$-input ripple-carry circuit.  With parallel-design
+add1-modules, a double-size add1-module produces its output values
+nearly as fast as a single-size add1-modules.  To see how this works,
+suppose the inputs of the double-size module are
+\[
+a_{2n+1},\dots, a_1, a_0
+\]
+
+and the outputs are
+\[
+c, p_{2n+1}, \dots, p_1, p_0.
+\]
+We will build the double-size add1-module by having two single-size
+add1-modules work in parallel.  The setup is illustrated in
+Figure~\ref{fig:add1}.
+
+Namely, the first single-size add1-module handles the first $n+1$
+inputs.  The inputs to this module are the low-order $n+1$ input bits
+$a_n,\dots, a_1, a_0$, and its outputs will serve as the first $n+1$
+outputs $p_n, \dots, p_1, p_0$ of the double-size module.  Let
+$c_{(1)}$ be the remaining carry output from this module.
+
+The inputs to the second single-size module are the higher-order $n+1$
+input bits $a_{2n+1}, \dots, a_{n+2}, a_{n+1}$.  Call its first $n+1$
+outputs $r_n, \dots, r_1, r_0$ and let $c_{(2)}$ be its carry.
+
+\bparts
+
+\ppart Write a formula for the carry $c$ of the double-size
+add1-module \emph{solely} in terms of carries $c_{(1)}$ and $c_{(2)}$
+of the single-size add1-modules.
+
+\begin{solution}
+\[
+c = c_{(1)}\ \QAND\ c_{(2)}.
+\]
+\end{solution}
+
+\ppart Complete the specification of the double-size add1-module by
+writing propositional formulas for the remaining outputs $p_{n+i}$
+for $1 \leq i \leq n+1$.  The formula for $p_{n+i}$ should only
+involve the variables $a_{n+i}$, $r_{i-1}$ and $c_{(1)}$.
+
+\begin{solution}
+  The $n+1$ high-order outputs of the double-size module are the
+  same as the inputs if there is no carry from the low-order $n+1$
+  outputs, and otherwise is the same as the outputs of the second
+  single-size \emph{add1} module.  So
+\begin{equation}\label{parallel-pi}
+p_{n+i} \eqdef (\QNOT(c_{(1)})\ \QAND\ a_{n+i})\ \QOR\ (c_{(1)}\ \QAND\ r_{i-1}).
+\end{equation}
+for $1 \leq i \leq n+1$.
+\end{solution}
+
+  \ppart Explain how to build an $(n+1)$-bit parallel-design
+  half-adder from an $(n+1)$-bit add1-module by writing a
+  propositional formula for the half-adder output $s_i$ using only
+  the variables $a_i$, $p_i$ and $b$.
+
+\begin{solution}
+\[
+s_i  \eqdef (b\ \QAND\ p_i)\ \QOR\ (\QNOT(b)\ \QAND\ a_i)
+\]
+\end{solution}
+
+\ppart The speed or \emph{latency} of a circuit is determined by the
+largest number of gates on any path from an input to an output.  In
+an $n$-bit ripple carry
+circuit\inbook{(Problem~\bref{CP_binary_adder_logic})}, there is a
+path from an input to the final carry output that goes through about
+$2n$ gates.  In contrast, parallel half-adders are exponentially
+faster than ripple-carry half-adders.  Confirm this by determining the
+largest number of propositional operations, that is, gates, on any
+path from an input to an output of an $n$-bit add1-module.  (You may
+assume $n$ is a power of 2.)
+
+\begin{solution}
+In a look-ahead carry circuit, no path from an input to an output has
+more than $4\log_2 n$ gates.
+
+The most operations for an output are those specified in
+formula~\eqref{parallel-pi}.  This shows that it takes at most 4
+additional operations to get from the outputs of a single-size
+look-ahead carry circuit to the outputs of the double-size next level.
+It takes $\log_2 n$ doublings to get from 1-bit to $n$-bit modules, so
+the number of levels of nested half-adder circuits is $\log_2 n$.
+Hence, the largest number of operations on a path from any one input
+bit to output bit is $4 \log_2 n$.
+
+Also, since each level has a total of at most $4n$ gates, it follows
+that the \emph{total} number of operations used in the parallel
+half-adder to calculate \emph{all} the output digits is at most $4 n
+\log_2 n$.  This is larger than the total for a ripple-carry adder by
+a factor proportional to $\log_2 n$.  So we get an exponential
+speed-up---from proportional $n$ to $\log n$---if we increase the size
+of the circuit by a factor which grows very slowly---proportional to
+$\log_2 n$.
+
+\end{solution}
+
+\eparts
+
+\begin{figure}[htbp]
+\graphic{add1-circuit-diagram}
+\caption{Structure of a Double-size \emph{add1} Module.}
+\label{fig:add1}
+\end{figure}
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

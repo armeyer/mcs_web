@@ -1,0 +1,147 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_labeled_binary_trees}
+  \pcomment{revised from S07.ps3.prob2 by ARM 3/20/11}
+  \pcomment{subsumed by simpler FP_binary_tree_induction}
+  \pcomment{S15.ps4}
+\end{pcomments}
+
+\pkeywords{
+  structural_induction
+  tree
+  leaf
+  binary_tree
+}
+
+\newcommand{\lbt}{\text{LBT}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+  Let $L$ be some convenient set whose elements will be called
+  \emph{labels}.  The labeled binary trees, $\lbt$'s, are defined
+  recursively as follows:
+\begin{definition*}
+
+\inductioncase{Base case}: if $l$ is a label, then $\ang{l, \STR{leaf}}$ is an $\lbt$, and
+
+\inductioncase{Constructor case}: if $B$ and $C$ are $\lbt$'s, then
+$\ang{l,B,C}$ is an $\lbt$.
+
+\end{definition*}
+The \emph{leaf-labels} and \emph{internal-labels} of an $\lbt$ are defined
+recursively in the obvious way:
+
+\begin{definition*}
+
+  \inductioncase{Base case}: The set of leaf-labels of the $\lbt \ang{l,
+    \STR{leaf}}$ is $\set{l}$, and its set of internal-labels is the
+  empty set.
+
+  \inductioncase{Constructor case}: The set of leaf labels of the $\lbt$
+  $\ang{l, B, C}$ is the union of the leaf-labels of $B$ and of $C$; the
+  set of internal-labels is the union of $\set{l}$ and the sets of
+  internal-labels of $B$ and of $C$.
+
+\end{definition*}
+
+The set of \emph{labels} of an $\lbt$ is the union of its leaf- and
+internal-labels.
+
+The $\lbt$'s with \emph{unique} labels are also defined recursively:
+\begin{definition*}
+
+  \inductioncase{Base case}: The $\lbt \ang{l,\STR{leaf}}$ has \emph{unique
+    labels}.
+
+  \inductioncase{Constructor case}: If $B$ and $C$ are $\lbt$'s with
+  unique labels, no label of $B$ is a label $C$ and vice versa, and $l$ is
+  not a label of $B$ or $C$, then $\ang{l, B, C}$ has \emph{unique labels}.
+\end{definition*}
+
+If $B$ is an $\lbt$, let $n_B$ be the number of distinct i\textbf{n}ternal-labels
+appearing in $B$ and $f_B$ be the number of distinct lea\textbf{f} labels of $B$.
+Prove by structural induction that
+\begin{equation}\label{fbnb1}
+f_B = n_B+1
+\end{equation}
+for all $\lbt$'s $B$ with unique labels.  This equation can obviously fail if
+labels are not unique, so your proof had better use uniqueness of labels
+at some point; be sure to indicate where.
+
+\begin{solution}
+\inductioncase{Base case}: If $B = \ang{l,\STR{leaf}}$, then $f_B=1$
+and $n_B = 0$ so~\eqref{fbnb1} holds.
+
+\inductioncase{Constructor case}: If $A \eqdef \ang{l, B,C}$ has unique labels, then by definition no label appears in both $B$ and $C$, and $l$ and the internal labels of $B$ and $C$ are disjoint, so:
+
+\begin{align*}
+f_A & =  \card{\text{leaf-labels}(B) \union \text{leaf-labels}(C)}
+         & \text{(by def. of leaf labels)}\\
+ & = f_{B} + f_{C} & \text{(no label appears in both $B$ and $C$)}\\
+ & = (n_{B}+1) + (n_{C}+1)
+          & \text{(by structural induction hypothesis)}\\
+ &= (n_{B} + n_{C} +1) +1\\
+ & = \card{\set{l} \union \text{internal-labels}(B) \union \text{internal
+     labels}(C)} + 1
+         &  \text{(uniqueness of labels)}\\
+ & = n_A +1 & \text{(by def. of $n_A$)}.
+\end{align*}
+
+This proves~\eqref{fbnb1} holds for $A$, completing the proof of the
+Constructor case.  It follows by structural induction that ~\eqref{fbnb1}
+holds for all $\lbt$'s with unique labels.
+\end{solution}
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+\iffalse Labeled binary trees (\lbt's) are a familiar data type in
+computer science.  An \lbt\ tree has internal nodes that are each
+connected by an edge to exactly two nodes below it, and it has leaf
+nodes with no nodes below them.  For example,
+Figure~\ref{PS_labeled_binary_tree}, pictures an \lbt\ with four
+internal nodes labeled STR{root},\texttt{0},\texttt{1},\texttt{10} and five leaf nodes
+labeled STR{00}, \texttt{01}, \texttt{100}, \texttt{101}, \texttt{11}.
+
+\begin{figure}[htbp]
+\graphic[height=3in]{cp5m-bintree}
+\caption{A picture of a labeled binary tree with 4 internal nodes and 5 leaves.}
+\label{PS_labeled_binary_tree}
+\end{figure}
+
+Formally, we can define a leaf to be a pair like $\ang{\STR{00},
+  \STR{leaf}}$ consisting a label like \STR{00} and the tag
+\STR{leaf}.  An internal node can be defined as a triple like
+$\ang{\texttt{0}, B, C}$ consisting of its label \STR{0} and the triples or
+pairs for two nodes $B$ and $C$ below it.  (By this definition, an
+internal node is formally the same as the whole tree below it.)
+
+\bparts
+\ppart Write out (using angle brackets and labels \STR{bintree},
+\STR{leaf}, etc.) the $\lbt$, pictured in
+Figure~\ref{PS_labeled_binary_tree}.
+
+\begin{solution}
+\begin{equation}
+\begin{split}
+\langle\STR{bintree}, & \langle\STR{bintree}, \ang{\STR{leaf, win}},\\
+  & \hspace{5em} \ang{\STR{bintree}, \ang{\STR{leaf, lose}},
+       \ang{\STR{leaf, win}}}\rangle,\\
+  & \ang{\STR{leaf, win}}\rangle
+\end{split}
+\end{equation}
+
+\end{solution}
+
+\fi

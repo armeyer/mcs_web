@@ -1,0 +1,195 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_gcd_union}
+  \pcomment{subsumes mistaken FP/TP_gcd_linear_combination_induction/wop, 3/16/16}
+  \pcomment{ARM 3/16/16}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  gcd
+  linear_combination
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+For any set $A$ of integers,
+\[
+\gcd(A) \eqdef \text{the greatest common divisor of the elements of $A$.}
+\]
+
+The following useful property of gcd's of sets is easy to take for
+granted:
+\begin{theorem*}
+\begin{equation}\tag{AuB}
+\gcd(A \union B) = \gcd(\gcd(A),\gcd(B)),
+\end{equation}
+for all finite sets $A,B \subset \integers$.
+\end{theorem*}
+
+Theorem~(AuB) has an easy proof as a Corollary of the Unique
+Factorization Theorem.  In this problem we develop a proof by
+induction just making repeated use of
+\inbook{Lemma~\bref{lem:gcd-hold}.\bref{gcd1}} \inhandout{the fact
+  that}:
+\begin{equation}\tag{gcddiv}
+(d \divides a \QAND d \divides b)\ \QIFF\ d \divides \gcd(a,b). 
+\end{equation}
+
+The key to proving~(AuB) will be generalizing~(gcddiv) to finite sets.
+\begin{definition*}
+For any subset $A\subseteq \integers$,
+\begin{equation}\tag{divdef}
+d \divides A \eqdef\ \forall a \in A.\ d \divides a.
+\end{equation}
+\end{definition*}
+
+\begin{lemma*}
+\begin{equation}\tag{A-iff-gcdA}
+d \divides A \QIFF\ d \divides \gcd(A).  %dAdgA
+\end{equation}
+for all $d \in \integers$ and finite sets $A \subset \integers$.
+\end{lemma*}
+
+\bparts
+
+\ppart\label{gcdassocpart} Prove that
+
+\begin{equation}\tag{gcd-assoc}
+\gcd(a,\gcd(b,c)) = \gcd(\gcd(a,b),c)
+\end{equation}
+for all integers $a,b,c$.
+
+\begin{solution}
+It is sufficient to prove fact that both sides of the equality have
+the same divisors.  This follows by repeated use of~(gcddiv):
+\begin{align*}
+d \divides \gcd(a, \gcd(b,c))
+  & \QIFF\ d \divides a  \QAND d \divides \gcd(b,c)\\
+  & \QIFF  d \divides a  \QAND (d \divides b \QAND d \divides c)\\
+  & \QIFF (d \divides a \QAND d \divides b)  \QAND d \divides c\\
+  & \QIFF d \divides \gcd(a,b) \QAND d \divides c\\
+  & \QIFF d \divides \gcd(\gcd(a,b), c).\\
+\end{align*} 
+\end{solution}
+\eparts
+
+\medskip
+From here on we write ``$a \union A$'' as an abbreviation for
+``$\set{a} \union A$.''  
+
+\bparts
+\ppart\label{abCpart}  Prove that
+\begin{equation}\tag{abCgcd}
+d \divides (a \union b \union C) \QIFF\ d \divides (\gcd(a,b) \union C)
+\end{equation}
+for all $a,b,d \in \integers$, and $C\subseteq \integers$.
+
+\begin{proof}
+\begin{align*}
+d \divides (a \union b \union C)
+  & \QIFF (d \divides a) \QAND (d \divides b) \QAND (d \divides C)
+        & \text{(def~(divdef) of divides)}\\
+  & \QIFF (d \divides \gcd(a,b)) \QAND (d \divides C)
+        & \text{by~(gcddiv)}\\
+  & \QIFF d \divides (\gcd(a,b) \union C)
+        & \text{(def~(divdef) of divides)}.
+\end{align*}
+\end{proof}
+
+\ppart Using parts~\eqref{gcdassocpart} and~\eqref{abCpart}, prove by
+induction on the size of $A$, that
+\begin{equation}\tag{divauA}
+d \divides (a \union A)\quad  \QIFF\quad d \divides \gcd(a,\gcd(A)),
+\end{equation}
+for all integers $a,d$ and finite sets $A \subset \integers$.
+Explain why this proves~(A-iff-gcdA).    % Lemma~(dAdgA).
+
+\begin{solution}
+\begin{proof}
+
+The induction hypothesis will be
+\[
+P(n) \eqdef \card{A} = n \QIMPLIES [d \divides (a \union A) \QIFF d \divides \gcd(a,\gcd(A))],
+\]
+for all integers $n,a,d$ with $n>0$ and all finite sets $A \subset \integers$.
+
+\inductioncase{Base cases}: ($n = 1,2$).  The case ($n=1$) follows
+from the fact that $\gcd(a,b) = \gcd(\set{a,b})$.  The case ($n=2$)
+follows from~(gcd-assoc).
+
+\inductioncase{Induction step}: Suppose $\card{A} = n+1$ and $A = b
+\union B$ where $\card{B} = n$.  Then
+\begin{align*}
+d \divides (a \union A)
+   & \QIFF (d \divides a) \QAND (d \divides b) \QAND (d \divides B)
+        & \text{(by def~(divdef)}\\
+   & \QIFF ((d \divides a) \QAND (d \divides b)) \QAND (d \divides B)\\
+   & \QIFF (d \divides \gcd(a,b)) \QAND (d \divides B)
+            & \text{(by~(gcddiv))}\\
+   & \QIFF d \divides (\gcd(a,b) \union B)
+        & \text{(by def~(divdef)}\\
+   & \QIFF d \divides \gcd(\gcd(a,b),\gcd(B))
+        & \text{(by $P(n)\ \text{for}\ B$)}\\
+   & \QIFF (d \divides \gcd(a,\gcd(b,\gcd(B)))
+           & \text{(by~(gcd-assoc))}\\
+   & \QIFF (d \divides a) \QAND (d \divides \gcd(b,\gcd(B)))
+           & \text{(by~(gcddiv))}\\
+   & \QIFF (d \divides a) \QAND (d \divides \gcd(b \union B))
+        & \text{(by $P(n)\ \text{for}\ B$)}\\
+   & \QIFF (d \divides a) \QAND (d \divides \gcd(A))\\
+   & \QIFF d \divides \gcd(a,\gcd(A))
+           & \text{(by~(gcddiv))}.
+\end{align*}
+Equation~(A-iff-gcdA)  %Lemma~(dAdgA)
+follows from~(divauA) by choosing $a \in A$.
+\end{proof}
+
+\end{solution}
+
+\ppart Prove Theorem~(AuB).
+
+\begin{solution}
+We prove~(AuB) by showing that
+\[
+d \divides (A \union B) \QIFF\ d \divides \set{\gcd(A),\gcd(B)}.
+\]
+\begin{proof}
+\begin{align*}
+d \divides (A \union B)
+  & \QIFF d \divides A \QAND d \divides B
+       & \text{(by def~(divdef))}\\
+  & \QIFF d \divides \gcd(A) \QAND d \divides \gcd(B)
+        & \text{(by Theorem~(AuB))}\\
+  & \QIFF d \divides \set{\gcd(A),\gcd(B)}
+       & \text{(by def~(divdef))}.
+\end{align*}
+\end{proof}
+
+\end{solution}
+
+\ppart Conclude that $\gcd(A)$ is an integer linear combination of the
+elements in $A$.
+
+\begin{solution}
+Proof sketch: by induction on the size of $A$.  The one-element case
+is immediate.  Otherwise $A = b \union B$ with $\card{B} < \card{A}$.
+Now $\gcd(A) = \gcd(b,\gcd(B))$ by~(divauA), and by induction
+$\gcd(B)$ is a linear combination of $B$ so $\gcd(A)$ is a linear
+combination of $b$ and a linear combination of $B$, which is a linear
+combination of $A$.
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

@@ -1,0 +1,148 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_fair_martingale}
+  \pcomment{subsumed by discussion in random_variables. A Gambling Paradox}
+  \pcomment{close to FP_martingale}
+\end{pcomments}
+
+\pkeywords{
+  martingale
+  paradox
+  roulette
+  mean_time_to_failure
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A gambler bets on the toss of a fair coin: if the toss is Heads, the
+gambler gets back the amount he bet along with an additional the
+amount equal to his bet.  Otherwise he loses the amount bet.  For
+example, the gambler bets \$10 and wins, he gets back \$20 for a net
+profit of \$10.  If he loses, he gets back nothing for a net profit of
+$-\$10$---that is, a net loss of \$10.
+
+Gamblers often try to develop betting strategies to beat the odds is
+such a game.  A well known strategy of this kind is \emph{bet
+  doubling}, namely, bet $\$10$ on red, and keep doubling the bet until
+a red comes up.  So if the gambler wins his first \$10 bet, he stops
+playing and leaves with his \$10 profit.  If he loses the first bet,
+he bets \$20 on the second toss.  Now if the second toss is Heads, he
+gets his \$20 bet plus \$20 back and again walks away with a net
+profit of $20-10 = \$10$.  If he loses the second toss, he bets \$40
+on the third toss, and so on.
+
+You would think that any such strategy will be doomed: in a fair game
+your expected win by definition is zero, so no strategy should have
+nonzero expectation.  We can make this reasoning more precise as
+follows:
+
+\begin{quote}
+Let $W_n$ be a random variable equal to the amount won in the
+$n$th coin toss.  So with the bet doubling strategy starting with a
+\$10 bet, $W_1 = \pm 10$ with equal probability.  If the betting ends
+before the $n$th bet, define $W_n=0$.  So $W_2$ is zero with
+probability 1/2, is 10 with probability 1/4, and is $-10$ with
+probability 1/4.  Now letting $W$ be the amount won when the gambler
+stops betting, we have
+\[
+W = W_1 + W_2 +\cdots+ W_n +\cdots.
+\]
+Furthermore, since each toss is fair,
+\[
+\expect{W_n} = 0
+\]
+for all $n>0$.  Now by linearity of expectation, we have
+\begin{equation}\label{zeroexpectsum}
+\expect{W} = \expect{W_1} + \expect{W_2} +\cdots+\expect{W_n} +\cdots
+= 0 + 0 + \cdots + 0 + \cdots = 0,
+\end{equation}
+confirming that with fair tosses, the expected win is zero.
+\end{quote}
+
+But wait a minute!
+\bparts
+
+\ppart Explain why the gambler is certain to win eventually if he
+keeps betting.
+
+\begin{solution}
+The probability that he will never win is less than the probability
+that he will have to bet more than $n$ times, which equals $(1/2)^n$.
+Since this quantity approaches zero as $n$ grows, the probability of
+never winning must be zero, and therefore the probability that he does
+eventually win is one.
+\end{solution}
+
+\ppart Prove that when the gambler finally wins a bet, his net profit
+is \$10.
+
+\begin{solution}
+On the $n$th bet before winning, the gambler bets $10\cdot 2^{n-1}$.
+So prior to his $n$th bet, he has bet and lost
+\[
+\sum_{k=1}^{n-1} 10 \cdot 2^{k-1} = 10 \sum_{k=0}^{n-2} 2^k = 10 \cdot 2^{n-1} - 10,
+\]
+which is \$10 less than his $n$th bet.  So if he wins on the $n$th bet,
+his net profit is \$10.
+\end{solution}
+
+\ppart Since the gambler's profit is always \$10 when he wins, and he
+is certain to win, his expected profit is also \$10.  That is
+\[
+\expect{W} = 10,
+\]
+contradicting~\eqref{zeroexpectsum}.  So what's wrong with the
+reasoning that led to the false conclusion~\eqref{zeroexpectsum}?
+
+\begin{solution}
+Equation~\eqref{zeroexpectsum} assumes that linearity holds for the
+expected value of the sum of the \emph{infinite} sequence of random
+variables $W_1,W_2,\cdots$, but this is a case where infinite
+linearity fails.  The infinite linearity Theorem~(\bref{linexp})
+requires that the sum of expectations of \emph{\idx{absolute value}s}
+converges.  That is, infinite linearity would follow if the sum
+\begin{equation}\label{sumabsC}
+\sum_{n=1}^\infty \expect{\, \abs{W_n}\, }
+\end{equation}
+converged.  But
+\begin{align*}
+\expect{\, \abs{W_n}\, }
+  & = (\abs{10 \cdot 2^{n-1}}) \cdot \prob{\text{1st Head on the $n$th toss}}\\
+  &\quad  + (\abs{-10 \cdot 2^{n-1}}) \cdot \prob{\text{1st Head after the $n$th toss}}\\
+  &\quad  + 0 \cdot \prob{\text{1st Head before the $n$th toss}}\\
+  & = (10 \cdot 2^{n-1}) \cdot 2^{-n}
+       + (10 \cdot 2^{n-1}) \cdot 2^{-n}
+       + 0 = 10,
+\end{align*}
+so the sum~\eqref{sumabsC} equals $10+10+\cdots 10 + \cdots$ which
+diverges---rapidly.
+
+It would be 0 if the number of bets had a fixed bound.  If the gambler
+only had enough money to make $b$ bets, then his expectation in the
+fair game would be the sum of his expected wins on at most $b$ bets.
+This is $\expect{\sum_{n=1}1^b W_b}$.  By linearity of expectation for
+finite sums, the expectation is $b \cdot 0 = 0$.  But there is no such
+fixed bound, and that changes things.
+
+Probability theory truly leads to this absurd conclusion: a game
+allowing an unbounded number of fair bets may not be fair in the end.
+In fact, even against an \emph{unfair} wheel, as long as there is some
+fixed positive probability of red on each spin, you are certain to win
+$\$10$ playing the Martingale strategy!  \iffalse
+(See Problem~\ref{FP_martingale}.)\fi
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

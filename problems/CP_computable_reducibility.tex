@@ -1,0 +1,314 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_computable_reducibility}
+  \pcomment{ARM 3/7/16}
+\end{pcomments}
+
+\pkeywords{
+  halting_problem
+  recognizable
+  unrecognizable
+}
+
+%\asciibet}{\text{ASCII}}
+%\asciistr}{\strings{\asciibet}}
+
+%\newcommand{\strtyp}{\ensuremath{\textbf{string}}}
+
+%\newcommand{\rcg}{\text{lang}} % \def\all0s{\textbf{all-0s}}
+%\newcommand{\lsub}[1]{\ensuremath{L_{#1}}}
+%\newcommand{\notself}{\text{\small{Not-self}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+\emph{String procedures} are one-argument procedures that apply to
+strings over the \asciibet\ alphabet.  If application of procedure
+$P$ to string $s$ results in a computation that eventually halts, we
+say that $P$ \term{recognizes} $s$.  We define $\rcg{P}$ to be the set
+of strings or \emph{language} recognized by $P$:
+\[
+\rcg{P} \eqdef \set{s \in \asciistr \suchthat P\ \text{recognizes}\ s}.
+\]
+A language is \emph{unrecognizable} when it is not equal to $\rcg{P}$
+for any procedure $P$.
+
+A string procedure declaration is a text $s \in \asciistr$ that
+conforms to the grammatical rules for programs.  The declaration
+defines a procedure $P_s$, which we can think of as the result of
+compiling $s$ into an executable object.  If $s \in \asciistr$ is not
+a grammatically well-formed procedure declaration, we arbitrarily
+define $P_s$ to be the string procedure that fails to halt when
+applied to any string.  Now every string defines a string procedure,
+and every string procedure is $P_s$ for some $s \in \asciistr$.
+
+An easy diagonal argument in \inbook{Section~\bref{halting_sec}}
+\inhandout{the text} showed that
+\[
+\nohalt \eqdef \set{s \suchthat P_s\ \text{applied to $s$ does not halt}}
+    = \set{s \suchthat s \notin \rcg{P_s}}
+\]
+is not recognizable.
+
+It may seem pretty weird to apply a procedure to its own declaration.
+Are there any less weird examples of unrecognizable set?  The answer
+is ``many more.''  In this problem, we'll show three more:
+\begin{align*}
+\nohaltlam
+         & \eqdef \set{s \suchthat P_s\
+             \text{applied to $\emptystring$ does not halt}}
+         = \set{s \suchthat \emptystring \notin \rcg{P_s}},\\
+\finhalt & \eqdef \set{s \suchthat \rcg{P_s}\ \text{is finite}},\\
+\allhalt & \eqdef \set{s \suchthat \rcg{P_s} = \asciistr}.
+\end{align*}
+
+Let's begin by showing how we could use a recognizer for
+\nohaltlam\ to define a recognizer for \nohalt.  That is, we will
+``reduce'' the weird problem of recognizing \nohalt\ to the more
+understandable problem of recognizing \nohaltlam.  Since there is no
+recognizer for \nohalt, it follows that there can't be one for
+\nohaltlam\ either.
+
+Here's how this reduction would work: suppose we want to recognize
+when a given string $s$ is in \nohalt.  Revise $s$ to be the
+declaration of a slightly modified procedure $P_{s'}$ which behaves as
+follows:
+\begin{quote}
+ $P_{s'}$ applied to argument $t\in \asciistr$, ignores $t$, and
+ simulates $P_s$ applied to $s$.
+\end{quote}
+So, if $P_s$ applied to $s$ halts, then $P_{s'}$ halts on every string
+it is applied to, and if $P_s$ applied to $s$ does not halt, then
+$P_{s'}$ does not halt on any string it is applied to.  That is,
+\begin{align*}
+s \in \nohalt
+    & \QIMPLIES\ \rcg{P_{s'}} = \emptyset\\
+    & \QIMPLIES \emptystring \notin \rcg{P_{s'}}\\
+    & \QIMPLIES s' \in \nohaltlam,\\
+s \notin \nohalt
+    & \QIMPLIES\ \rcg{P_{s'}} = \asciistr\\
+    & \QIMPLIES\ \emptystring \in \rcg{P_{s'}}\\
+    & \QIMPLIES s' \notin \nohaltlam.
+\end{align*}
+In short,
+\[
+s \in \nohalt \QIFF\ s' \in \nohaltlam.
+\]
+So to recognize when $s \in \nohalt$ all you need to do is recognize
+when $s' \in \nohaltlam$.  As already noted above (but we know that
+remark got by several students, so we're repeating the explanation),
+this means that if \nohaltlam\ was recognizable, then \nohalt\ would
+be as well.  Since we know that \nohalt\ is unrecognizable, then
+\nohaltlam\ must also be unrecognizable, as claimed.
+
+\bparts
+
+\ppart Conclude that \finhalt\ is unrecognizable.
+
+\hint Same $s'$.
+
+\begin{solution}
+For $s'$ as above, we know
+\begin{align*}
+s \in \nohalt
+    & \QIMPLIES\ \rcg{P_{s'}} = \emptyset\\
+    & \QIMPLIES s' \in \finhalt,\\
+s \notin \nohalt
+    & \QIMPLIES\ \rcg{P_{s'}} = \asciistr\\
+    & \QIMPLIES s' \notin \finhalt.
+\end{align*}
+So to recognize when $s \in \nohalt$ all you need to do is recognize
+when $s' \in \finhalt$.
+\end{solution}
+
+\eparts
+Next, let's see how a reduction of \nohalt\ to \allhalt\ would work.
+Suppose we want to recognize when a given string $s$ is in \nohalt.
+Revise $s$ to be the declaration of a slightly modified procedure
+$P_{s''}$ which behaves as follows:
+\begin{quote}
+  When $P_{s''}$ is applied to argument $t\in \asciistr$, it simulates
+  $P_s$ applied to $s$ for up to $\lnth{t}$ ``steps'' (executions of
+  individual machine instructions).  If $P_s$ applied to $s$ has
+  \emph{not} halted in $\lnth{t}$ steps, then the application of
+  $P_{s''}$ to $t$ halts.  If $P_s$ applied to $s$ \emph{has} halted
+  within $\lnth{t}$ steps, then the application of $P_{s''}$ to $t$
+  runs forever.
+\end{quote}
+
+\bparts
+\ppart\label{allhaltunrec} Conclude that \allhalt\ is unrecognizable.
+
+\hint Explain why
+\[
+s \in \nohalt \QIFF s'' \in \allhalt.
+\]
+
+\begin{solution}
+\begin{align*}
+s \notin \nohalt
+  & \QIMPLIES\ \rcg{P_{s''}} = \set{t \suchthat
+                         \lnth{t} \leq \#\text{steps until $P_s$ halts on}\ s}\\
+  & \QIMPLIES\ \rcg{P_{s''}}\ \text{is finite}\\
+  & \QIMPLIES s'' \notin \allhalt,\\
+s \in \nohalt 
+   & \QIMPLIES\ \rcg{P_{s''}} = \asciistr\\
+   & \QIFF\ s'' \in \allhalt.
+\end{align*}
+In short,
+\[
+s \in \nohalt \QIFF\  s'' \in \allhalt.
+\]
+So to recognize when $s \in \nohalt$ all you need to do is recognize
+when $s'' \in \allhalt$.  But since there is no recognizer \nohalt,
+there can't one for \allhalt.
+\end{solution}
+
+\ppart Explain why $\overline{\finhalt}$ is unrecognizable.
+
+\hint Same $s''$.
+
+\begin{solution}
+We have from the solution to part~\eqref{allhaltunrec} that
+\begin{align*}
+s \notin \nohalt
+  & \QIMPLIES\ \rcg{P_{s''}}
+       = \set{t \suchthat
+               \lnth{t} \leq \#\text{steps until $P_s$ halts on $s$}}\\
+  & \QIMPLIES\ \rcg{P_{s''}}\ \text{is finite}\\
+  & \QIMPLIES s'' \in \finhalt\\
+  & \QIFF s'' \notin \overline{\finhalt},\\
+s \in \nohalt
+   & \QIMPLIES\ \rcg{P_{s''}} = \asciistr\\
+   & \QIMPLIES\ s'' \in \overline{\finhalt}.
+\end{align*}
+In short,
+\[
+s \in \nohalt \QIFF\ s'' \in \overline{\finhalt},
+\]
+which implies that $\overline{\finhalt}$ is unrecognizable.
+\end{solution}
+
+\eparts
+
+Note that it's easy to recognize when $P_s$ does halt on $s$: just
+simulate the application of $P_s$ to $s$ until it halts.  This shows
+that $\overline{\nohalt}$ \emph{is} recognizable.  We've just
+concluded that $\finhalt$ is nastier: neither it nor its complement is
+recognizable.
+\end{problem}
+
+\endinput
+
+
+\iffalse
+\begin{definition}
+A procedure that takes string inputs and returns string outputs is
+called a \emph{string I/O-procedure}.  The function $\phi: \asciistr
+\to \asciistr$ where $\phi(s)$ is the output, if any, when the
+procedure is applied to $s$, is called a \emph{partial computable
+  function}.  An I/O-procedure that always returns an output---it
+never runs forever or aborts no matter what string it is applied
+to---defines a total function called a \emph{total computable
+  function} $f:\asciistr \to \asciistr$.
+
+If $L,M \subseteq \asciistr$ are languages, $L$ is defined to
+\emph{reducible} to $M$,\footnote{There are many different notions of
+  how one langauge can be reduced to another.  The particular one we 
+  use is known in the literature as ``many-one'' reducibility.}
+in symbols,
+\[
+L \preceq M
+\]
+iff there is a total computable procedure $f$ such that
+\[
+s \in L\ \QIFF\ f(s) \in M.
+\]
+for all $s \in \asciistr$.
+\end{definition}
+
+
+\begin{enumerate}[i]
+\item $P_s \subseteq \set{ \emptystring}$    %type-error
+\item $P_s \text{ recognizes } \emptystring$ %OK
+\item $\emptystring \in P_s$                 %type-error
+\item $\emptystring \in \rcg{P_s}$           %OK
+\item $P_s \text{halts when applied to the}\ \emptystring$ %OK
+\item $\mathcal{P}_0(\rcg{P_s})$              %OK
+\item $\mathcal{P}_0(\set{\emptystring})$     %OK
+\item $\mathcal{P}_0(\overline{\rcg{P_s}})$  %probably OK
+\item $\rcg{P_s} = \set{ \emptystring}$      %NO
+\item $\rcg{P_s} = \set{ \emptystring}$      %NO
+
+\end{enumerate}
+
+More generally, for any language property $\mathcal{P}$, let
+\[
+L_{\mathcal{P}} \eqdef \set{s \in \asciistr \suchthat \mathcal{P}(\rcg{P_s})}
+\]
+Now analyzing string procedures to see if they halt on the emptystring
+means recognizing the language $L_{\mathcal{P}_0}$.
+
+Analyzing a string procedure to determine if it recognizes a language
+with property.  This means we are asking whether the language
+\[
+L_{\mathcal{P}} \eqdef \set{s \in \asciistr \suchthat \mathcal{P}(\rcg{P_s})}
+\]
+is recognizable.
+\fi
+
+\iffalse
+
+This means we are simply asking is the following
+language recognizable:
+\[
+\set{s \in \asciistr \suchthat \emptystring \in \rcg{P_s}}.
+\]
+
+
+
+Now we are asking for a recognizer for the strings $s$ such that $P_s$
+applied to $\emptystring$ halts.  This is the same as asking whether
+$P_s$ recognizes $\emptystring$, which can further rephrased as
+asking: is
+\[
+\set{s \in \asciistr \suchthat \mathcal{P_0}(\rcg{P_s})}
+\]
+
+
+Anyway, recognizing when a procedure applied to the
+empty string halts means recognizing
+
+
+That is, given the procedure declaration $s \asciistr$, does
+$\rcg{P_s}$
+
+ procedures  to find a procedure analyzer that recognizes
+given any procedure declaration, whether the declared procedure halts
+k  
+
+That is, can we recognize
+
+
+when a string procedure recognizes a language with property
+$\mathcal{P}$.  This means we are asking whether the language
+\[
+L_{\mathcal{P}} \eqdef \set{s \in \asciistr \suchthat \mathcal{P}(\rcg{P_s})}
+\]
+is recognizable.
+
+  We can rephrase
+this question in the following simple way: is there a recognizer for
+\[
+\set{s \in \asciistr \suchthat P_s\ \text{does not halt when applied to the}\ \emptystring}\ ?
+\]
+A more concise way to phrase this would be: is the language
+\[
+s \in \asciistr \suchthat 
+\]
+So we're asking
+if we can find a recognizer for
+\fi

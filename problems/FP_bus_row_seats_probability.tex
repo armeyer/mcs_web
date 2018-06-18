@@ -1,0 +1,181 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_bus_row_seats_probability}
+  \pcomment{ZDz 12/08/15}
+  \pcomment{unused}
+\end{pcomments}
+
+\pkeywords{
+  counting
+  probability
+  expectation
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+You and two friends are getting on a bus. The bus has a total of $3n$
+seats: $n$ rows with $3$ seats in each row. $k$ people have entered
+the bus already and occupied $k$ seats at random. \iffalse
+(i.e., the probability
+of any subset of $k$ seats being occupied is the same).\fi
+
+\bparts
+ 
+\ppart
+What is the probability that the first row is empty (all three seats)?
+
+\examspace[2in]
+
+\begin{solution}
+\[
+\frac{\binom{3n-3}{k}}{\binom{3n}{k}}
+\]
+There are $\binom{3n}{k}$ possible seating assignments for $k$
+people who already entered, out of which $\binom{3n-3}{k}$
+result in the first row being empty (by choosing $k$ seats among
+the remaining $3n-3$ seats).
+\end{solution}
+
+\ppart What is the expected number of empty rows?  You may express
+your answer in terms of a number $a$ which is the answer to the
+previous part of this problem.  Justify your answer.
+
+\examspace[1in]
+
+\begin{solution}
+$\mathbf{n a}$.
+
+Let $R_i$ be an indicator random variable that takes value 1 if row
+$i$ is empty, and 0 otherwise. Then,
+\[
+\expect{R_i} = \pr{R_i = 1} = a \, .
+\]
+By linearity of expectation,
+\[
+\expect{\sum_{i=1}^{N} R_i} = \sum_{i=1}^{N} \expect{R_i = 1} = n a \, ,
+\]
+which is the expected number of empty rows.
+\end{solution}
+
+\ppart
+If you know that there were $n$ people who have already entered the bus
+(so $k = n$), what is the probability that none of the rows is empty?
+
+\examspace[2in]
+
+\begin{solution}
+\[
+\frac{3^n}{\binom{3n}{n}}
+\]
+The only way that all rows are nonempty is if there is a single person
+in each row. A single person can take any of the 3 seats in a row, so,
+by product rule, there are $3^n$ ways $n$ people can ``occupy'' all
+rows. Therefore, the probability that all rows are nonempty is equal to
+$3^n / \binom{3n}{n}$.
+\end{solution}
+
+\begin{staffnotes}
+The following parts are more suitable for a class or pset problem.
+\end{staffnotes}
+
+\ppart
+
+Before entering the bus, someone tells you that the last row is empty.
+How does that change the probability that first row is empty?
+Prove your answer.
+
+\examspace[3in]
+
+\begin{solution}
+Intuitively, that information should decrease the probability that the
+first row is empty because all of the people must occupy seats
+in the first $n-1$ rows.
+
+That can be proved algebraically in the following way.
+Let $R_i$ be an indicator random variable that takes value 1 if
+row $i$ is empty, and 0 otherwise. From previous parts, we have
+\[
+\pr{R_1 = 1} = \frac{\binom{3n-3}{k}}{\binom{3n}{k}} \, .
+\]
+Also,
+\[
+\prcond{R_1 = 1}{R_n = 1} = \frac{R_1 = 1 \QAND R_n = 1}{R_n = 1} = \frac{\binom{3n-6}{k}}{\binom{3n-3}{k}} \, ,
+\]
+which is the ratio of the number of seat assignments in which
+the first and the last row are empty and the number of assignments
+in which the last row is empty.
+These two probabilities can be further written as
+\begin{align*}
+\pr{R_1 = 1}
+   & = \frac{\binom{3n-3}{k}}{\binom{3n}{k}} \\
+   & = \frac{\dfrac{(3n-3)!}{(3n-3-k)! \cdot k!}}{\dfrac{(3n)!}{(3n-k)! \cdot k!}} \\
+   & = \frac{(3n-k)(3n-k-1)(3n-k-2)}{(3n)(3n-1)(3n-2)} \\		    
+   & = \paren{1 - \frac{k}{3n}}\paren{1-\frac{k}{3n-1}}\paren{1-\frac{k}{3n-2}}
+\end{align*}
+and
+\begin{align*}
+\prcond{R_1 = 1}{R_n = 1}
+    & = \frac{\binom{3n-6}{k}}{\binom{3n-3}{k}} \\
+    & = \frac{\dfrac{(3n-6)!}{(3n-6-k)! \cdot k!}}{\dfrac{(3n-3)!}{(3n-3-k)! \cdot k!}} \\
+    & = \frac{(3n-3-k)(3n-4-k)(3n-5-k)}{(3n-3)(3n-4)(3n-5)} \\		    
+    & = \left(1 - \frac{k}{3n-3}\right)\left(1-\frac{k}{3n-4}\right)\left(1-\frac{k}{3n-5}\right)
+\end{align*}
+Since $1 - \frac{k}{3n} > 1 - \frac{k}{3n-3}$, $1 - \frac{k}{3n-1} > 1 - \frac{k}{3n-4}$
+and $1 - \frac{k}{3n-2} > 1 - \frac{k}{3n-5}$,
+$\prcond{R_1 = 1}{R_n = 1} < \pr{R_1 = 1}$ follows.
+
+Here is an alternative solutions. Let $C_i$ be a random variable that is
+equal to the number of people sitting in row $i$. Therefore $C_i \in \set{0, 1, 2, 3}$.
+Note that $\pr{C_1 = 0}$ is the probability that the first row is empty, while
+$\prcond{C_1 = 0}{C_n = 0}$ is the probability that the first row is empty given
+that the last row is empty. By the law of total probability,
+\begin{align*}
+\pr{C_1 = 0} & = \pr{C_n = 0} \prcond{C_1 = 0}{C_n = 0} \\
+	    & + \pr{C_n = 1} \prcond{C_1 = 0}{C_n = 1} \\
+	    & + \pr{C_n = 2} \prcond{C_1 = 0}{C_n = 2} \\
+	    & + \pr{C_n = 3} \prcond{C_1 = 0}{C_n = 3} \\
+	    & > \left(\pr{C_n = 0} + \pr{C_n = 1} + \pr{C_n = 2} + \pr{C_n = 3}\right) \prcond{C_1 = 0}{C_n = 0} \\
+	    & = \prcond{C_1 = 0}{C_n = 0} \, .
+\end{align*}
+The inequality above follows from the fact that
+\[
+\prcond{C_1 = 0}{C_n = 0} < \prcond{C_1 = 0}{C_n = 1} < \prcond{C_1 = 0}{C_n = 2} < \prcond{C_1 = 0}{C_n = 3} \, ,
+\]
+which is true because increasing the number of people in the first $n-1$ rows decreases
+the chances that the first row is empty.
+\end{solution}
+
+
+\iffalse UNCLEAR:
+
+\ppart
+Now you go into the bus.  It is difficult to count the number of
+people, which would allow you to use your result from part a.\ to find
+the exact probability that any row is empty.  Instead, you look at the
+first $m$ rows and find that $e$ of them are empty.  You want to
+conclude that the probability that any row is empty is around
+$\frac{e}{m}$ and find a confidence level at which it deviates from
+this number by not more than 0.05.  Can you apply the pairwise
+independent sampling theorem to do that? Explain.
+
+\examspace[1in]
+
+\begin{solution}
+No, the event that row $i$ is empty is not independent of the event that
+row $j$ is empty.
+\end{solution}
+\fi
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

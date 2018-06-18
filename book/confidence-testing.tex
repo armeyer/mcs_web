@@ -1,0 +1,258 @@
+\chapter{Testing and Confidence}\label{sec: Confidence_v_Prob}
+
+\section{Probability versus Confidence}\label{sec: Confidence_v_Prob}
+
+\newcommand{\BF}[2]{\operatorname{Bayes-factor}(#1,#2)}
+\newcommand{\testplus}{\ensuremath{\mathbf{test+}}}
+\newcommand{\testminus}{\ensuremath{\mathbf{test-}}}
+\newcommand{\TB}{\emph{TB}}
+
+Let's look at another Medical diagnosis problem like the breast cancer
+test of Section~\bref{med_test-subsection}, but this time we'll use
+more extreme numbers to highlight some key issues.
+
+\subsection{Testing for Tuberculosis}
+
+Let's suppose we have a really terrific diagnostic test for
+tuberculosis (TB): if you have TB, the test is \emph{guaranteed} to
+detect it, and if you don't have TB, then the test will report that
+correctly 99\% of the time!
+
+In other words, let ``\TB'' be the event that a person
+has TB, ``\testplus'' be the event that the person tests
+positive for TB, and ``$\testminus$ the event that they test negative,
+that is, $\testminus \eqdef \bar{\testplus}$.  So we have,
+\begin{align}
+\prcond{\testplus}{\TB} & = 1,\label{pr+TB}\\
+\prcond{\testminus}{\bar{\TB}} & = 0.99.\label{pr-barTB}
+\end{align}
+
+This means that the test produces the correct result at least 99\% of
+the time, regardless of whether or not the person has TB.  A careful
+statistician would assert:\footnote{Confidence is usually used to describe
+  the probability that a statistical estimations of some quantity is
+  correct.  To keep a lid on new vocabulary, we use confidence here to
+  specify the probability of correct test of the hypothesis that
+  someone has TB.  In the context of hypothesis testing,
+  statisticians would normally distinguish the ``false positive''
+  probability, in this case the probability 0.01 that a healthy person
+  is incorrectly diagnosed as having TB, and call this the
+  \term{significance} of the test.  The ``false negative'' probability
+  would be the probability that person with TB is incorrectly
+  diagnosed as healthy; it is zero.  The \term{power} of the test is
+  one minus the false negative probability, so in this case the power
+  is the highest possible, namely, one.}
+\begin{lemma*}\label{99conf}
+You can be 99\% \emph{confident} that the test result is correct.
+\end{lemma*}
+\begin{corollary}\label{or-unlikely}
+If you test positive, then
+\begin{quote}
+\textbf{either} you have TB \textbf{or} something very unlikely
+(probability 1/100) happened.
+\end{quote}
+\end{corollary}
+Lemma~\ref{99conf} and Corollary~\ref{or-unlikely} may \emph{seem} to
+be saying that
+\begin{falseclm*}
+If you test positive, then the probability that you have TB is $0.99$.
+\end{falseclm*}
+But this would be a mistake, as we will now show.
+
+Let's calculate the actual probability that someone who tests positive
+has TB.  That is, we want to know $\prcond{\TB}{\testplus}$.
+
+A standard way to convert the given test probabilities into TB
+probabilities is to use \idx{Bayes Theorem}.  It's helpful to rephrase
+Bayes Theorem in terms of ``odds'' instead of probabilities.
+
+\subsection{Updating the Odds}
+If $H$ is an event, we define the \term{odds} of $H$ to be
+\[
+\odds{H} \eqdef \frac{\pr{H}}{\pr{\bar{H}}} = \frac{\pr{H}}{1-\pr{H}}.
+\]
+For example, if $H$ is the event of rolling a four using a fair,
+six-sided die, then
+\begin{align*}
+\pr{\text{roll four}} & = 1/6,\text{ so}\\
+\odds{\text{roll four}} & = \frac{1/6}{5/6} = \frac{1}{5}.
+\end{align*}
+A gambler would say the odds of rolling a four were ``five to one.''
+
+Odds are just another way to talk about probabilities.  For example,
+saying the odds that a horse will win a race are ``three to one''
+means that the horse will win with probability $1/4$.  In general,
+\[
+\pr{H} = \frac{\odds{H}}{1 + \odds{H}}.
+\]
+
+Now suppose an event $E$ offers some evidence about $H$.  We now want
+to find the conditional probability of $H$ given $E$.  We can just as
+well find the odds of $H$ given $E$,
+\begin{align*}
+\oddscond{H}{E}
+  & \eqdef \frac{\prcond{H}{E}}{\prcond{\bar{H}}{E}}\\
+%  & = \frac{\pr{H \intersect E}/\pr{E}}{\pr{\bar{H} \intersect E}/\pr{E}}\\
+%  & = \frac{\pr{H \intersect E}}{\pr{\bar{H} \intersect E}}\\
+  & = \frac{\prcond{E}{H}\pr{H}/\pr{E}}{\prcond{E}{\bar{H}}\pr{\bar{H}}/\pr{E}}
+          & \text{(Bayes Theorem)}\\
+  & = \frac{\prcond{E}{H}}{\prcond{E}{\bar{H}}} \cdot \frac{\pr{H}}{\pr{\bar{H}}}\\
+  & = \BF{E}{H} \cdot \odds{H},
+\end{align*}
+where
+\[
+\BF{E}{H} \eqdef \frac{\prcond{E}{H}}{\prcond{E}{\bar{H}}}.
+\]
+So to update the odds of $H$ given the evidence $E$, we just multiply
+by Bayes Factor:
+\begin{lemma}\label{BFlemma}
+\[
+\oddscond{H}{E} = \BF{E}{H} \cdot \odds{H}.
+\]
+\end{lemma}
+
+\subsection{Odds for the TB test}
+The probabilities of test outcomes given in~\eqref{pr+TB}
+and~\eqref{pr-barTB} are exactly what we need to find Bayes factor for
+the TB test:
+\begin{align*}
+\BF{\TB}{\testplus}
+ & =\frac{\prcond{\testplus}{\TB}}{\prcond{\testplus}{\bar{\TB}}}\\
+ &  =\frac{1}{1-\prcond{\testminus}{\bar{\TB}}} = \frac{1}{1 - 0.99} = 100.
+\end{align*}
+So testing positive for TB increases the odds you have TB by a factor
+of 100, which means a positive test is significant evidence supporting
+a diagnosis of TB.  That seems good to know.  But Lemma~\ref{BFlemma}
+also makes it clear that when a random person tests positive, we still
+can't determine the odds they have TB unless we know what are the
+\emph{odds of their having TB in the first place}.
+
+Now in 2011, the United States Center for Disease Control got reports
+of 11,000 cases of TB in US.  We can estimate that there were actually
+about 30,000 cases of TB that year, since it seems that only about one
+third of actual cases of TB get reported.  The US population is a
+little over 300 million, which means
+\[
+\pr{\TB} \approx \frac{30,000}{300,000,000} = \frac{1}{10,000}.
+\]
+So the odds of TB are $1/9999$.  Therefore,
+\[
+\oddscond{\TB}{\text+} = 100 \cdot \frac{1}{9,999} \approx \frac{1}{100}.
+\]
+In other words, even if someone tests positive for TB at the 99\%
+confidence level, the odds remain about 100 to one against their
+having TB.  The 99\% confidence level is not high enough to overcome
+the relatively tiny probability of having TB.
+
+\subsection{Facts that are Probably True}
+We have figured out that if a random person tests positive for TB, the
+probability they have TB is about 1/100.  Now if you personally happened
+to test positive for TB, your doctor typically would tell you that the
+probability that you have TB has risen from 1/10,000 to 1/100.  But
+has it?  Not really.
+
+Your doctor should have just have said that he was 99\%
+\emph{confident} you have TB because for randomly chosen people, the
+positive test would be right 99\% of the time.
+
+ \iffalse So either you have TB or something unlikely
+(probability 1/100) happened, namely, the test gave a false positive.
+But outcomes that are unlikely for a random person may not be unlikely
+for you.  \fi
+
+But you are not a random person, and whether or not you have TB is a
+fact about reality.  The truth about your TB may be \emph{unknown},
+but that does not mean it has some probability.  It is either true or
+false, we just don't know which.
+
+In fact, if you were worried about a 1/100 probability of having this
+serious disease, you could use additional information about yourself
+to change this probability.  For example, suppose it turned out that
+the test gives false positives for green-eyed people.  So if you are
+green-eyed, it is certain that the test will diagnose you as having TB
+whether you do or not.  This makes the test worthless for green-eyed
+people; the probability that a random green-eyed person has TB remains
+the same as for the general population.
+
+The larger point is that the probability assigned to your having TB
+depends on the probability that a random person \emph{like you} has
+TB.  There are many plausible probabilistic models of what it means to
+be like you, and each model could be expected to assign a different
+probability to your having TB.  Which model to use would require some
+judgment based on intended application.  There is no ``true'' model of
+who you are, and there is no true probability of your having TB.
+
+\subsection{Extreme events}
+
+The definition of a \emph{fair} coin is one where the probability of
+flipping a Head is 1/2 and likewise for flipping a Tail.  Now suppose
+you flip the coin 100 times and get a Head every time.  What do you
+think the odds are that the next flip will also be a Head?
+
+The official answer is that the probability of Heads on the next flip
+is still 1/2, by definition of ``fair coin.''  But this reasoning
+violentally contradicts what any sensible person would do, which is to
+bet heavily on the next flip being another Head.
+
+How to make sense of this?  Well first of all, let's recognize how
+absurd it is to wonder about what happens after 100 heads, because the
+probability that a hundred flips of a fair coin will have Heads come
+up on every flip is unimaginably tiny.  For example, the probability
+that just the first 50 fair flips come up Heads is $2^{-50}$.  We can
+try to make some sense of how small this number is with the
+observation that, using a reasonable estimation of the number of
+people worldwide who are killed by lightning in a given year,
+$2^{-50}$ is about equal to the probability that a random person
+chosen to read this page would be struck by lightning while they were
+reading.  Ain't gonna happen.
+
+Recognizing the negligible probability of flipping 100 consecutive
+Heads with a fair coin, the given fact that the coin is fair is simply
+not credible.  Let's agree that despite being told the coin is fair,
+we should allow some tiny possibility of picking an unfair coin.  So
+let's assume that there are two coins, a fair one and one that always
+comes up heads.  One of these coins is chosen and flipped 100 times,
+with the unfair coin chosen only with probability $2^{-50}$, which is
+certainly extremely small.  Let $E$ be the event of flipping 100 heads
+and $H$ be the event that the unfair coin was chosen.
+
+Now
+\begin{align*}
+\odds{H} & = \frac{2^{-50}}{1-2^{-50}} \approx 2^{-50},\\
+\BF{E}{H} & = \frac{\prcond{E}{H}}{\prcond{E}{\bar{H}}} = \frac{1}{2^{-100}} = 2^{100},\\
+\oddscond{H}{E} & = \BF{E}{H} \cdot \odds{H} = 2^{100} \cdot 2^{-50} = 2^{50}.
+\end{align*}
+So the odds that the unfair coin was chosen are overwhelming, and the
+probability that the next flip is a Head is very, very close to one.
+
+To justify our intuition that the next flip after 100 Heads is
+virtually certain to be a Head, we had to assume some \term{prior
+  probability} of choosing the fair coin was less than one.  Picking
+some prior probability to assume, is known as the \emph{Bayesian}
+approach to the problem.
+
+The assumption we made seems reasonable and the Bayesian approach
+provides a good explanation of our betting the next flip will be a
+Head.  But it remains an asssumption.
+
+\subsection{Confidence in the Next Flip}
+
+Another approach to the 100 Heads problem can be based on confidence.
+Allowing for the possibility that the coin was biased to always flip
+heads, we find that
+\begin{align*}
+\prcond{\text{100 Heads flips}}{\text{bias coin}} & = 1,\\
+\prcond{\text{100 Heads flips}}{\text{fair coin}} & = 2^{-100},
+\end{align*}
+so the decision to reject the hypothesis that the coin is fair when
+100 Heads are flipped will be correct at the $1-2^{-100}$ confidence
+level.  That is, we can be virtually 100\% confident that the 100
+Heads came from the biased coin.
+
+Again, this decision based on confidence is unrelated to any
+probability that the coin is biased.  In fact, even if the coin was
+\emph{guaranteed} to be fair, we can be 100\% confident in our
+decision to mistakenly reject that guarantee.
+
+\endinput
+

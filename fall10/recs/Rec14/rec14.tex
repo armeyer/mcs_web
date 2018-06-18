@@ -1,0 +1,487 @@
+\documentclass[12pt]{article}
+\usepackage{light}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+
+%\hidesolutions
+\showsolutions
+
+\begin{document}
+
+\recitation{14}{October 24, 2006}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\insolutions{
+\section{The Akra-Bazzi Theorem}
+
+\begin{theorem}[Akra-Bazzi, strong form]
+Suppose that:
+\[
+T(x) =
+\left\{
+\begin{aligned}
+& \text{is defined} && \text{for $0 \leq x \leq x_0$} \\
+& {\displaystyle \sum_{i=1}^k a_i T(b_i x + h_i(x)) + g(x)} && \text{for $x > x_0$}
+\end{aligned}
+\right.
+\]
+%
+where:
+%
+\begin{itemize}
+\item $a_1, \dots, a_k$ are positive constants
+\item $b_1, \dots, b_k$ are constants between 0 and 1
+\item $x_0$ is ``large enough'' in a technical sense we leave unspecified
+\item $\abs{g'(x)} = O(x^c)$ for some $c \in \mathbb{N}$
+\item $\abs{h_i(x)} = O(x / \log^2 x)$
+\end{itemize}
+%
+Then:
+%
+\[
+T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} \ du\right)\right)
+\]
+%
+where $p$ satisfies the equation $\sum_{i=1}^k a_i b_i^p = 1$.
+\end{theorem}
+
+The only difference between the strong and weak forms of Akra-Bazzi is the appearance of this $h_i(x)$ term in the recurrence, where $h_i(x)$ represents a small change in the size of the subproblems ($O(x / \log^2 x)$). Notice that, despite the change in the recurrence, the solution $T(x)$ remains the same in both the strong and weak forms, with no dependence on $h_i(x)$! In algorithmic terms, this means that \textit{small} changes in the size of subproblems have no
+impact on the asymptotic running time.
+
+\vspace{0.2in}
+
+\noindent \textbf{Example:} Let's compare the $\Theta$ bounds for the following divide-and-conquer recurrences.
+\begin{align*}
+T_a(n) = 3T\left(\frac{n}{3}\right) + n && T_b(n) = 3T\left(\floor{\frac{n}{3}}\right) + n
+\end{align*}
+
+\noindent For $T_a(n)$ we have $a_1 = 3$, $b_1 = 1/3$, $g(n) = n$, $p = 1$.
+
+\noindent For $T_b(n)$ we have the same parameters as for $T_a(n)$, plus $h_1(n) = \lfloor n/3 \rfloor - n/3$. 
+
+Using the strong Akra-Bazzi form, the $h_1(n)$ falls out of the equation:
+$$T_a(n) = T_b(n) = \Theta(n(1+ \int_1^n \frac{u}{u^2} du)) = \Theta(n \log n).$$
+
+The addition of the ceiling operator changes the value
+of $n/3$ by at most 1, which is easily $O(n / \log^2 n)$.  So floor and
+ceiling operators have no impact on the asymptotic solution to a recurrence.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{TriMergeSort}
+
+We noted in lecture that reducing the size of subproblems is much more important to the speed of an algorithm than reducing the number of additional steps per call. Let's see if we can improve the $\Theta(n \log n)$ bound on {\tt MergeSort} from lecture.
+
+Let's consider a new version of {\tt MergeSort} called {\tt TriMergeSort}, where the size $n$ list is now broken into \textit{three} sublists of size $n/3$, which are sorted recursively and then merged. Since we know that floors and ceilings do not affect the asymptotic solution to a recurrence, let's assume that $n$ is a power of 3.
+
+\begin{enumerate}
+
+\item How many comparisons are needed to merge three lists of 1 item each?
+\solution[\vspace{.75in}]{3. For example, a merge of lists $\set{4}$,$\set{5}$, and $\set{2}$ compares 4 with 5 and 4 with 2, adding 2 to the final list. Then it compares 4 with 5 and adds 4 to the final list. Finally, it appends the remaining 5. (This could be made more efficient, but let's not worry about that here.) }
+
+\item In the worst case, how many comparisons are needed to merge three lists of $n/3$ items, where $n$ is a power of 3?
+\solution[\vspace{.75in}]{$2(n-2)+1$. The worst case occurs if the first list empties when there is exactly 1 item in each of the other two. Prior to this, each of the other $n-2$ numbers requires 2 comparisons before going into the big list. After this, we only need 1 more comparison between the 2 leftover items.}
+
+\item Define a divide-and-conquer recurrence for this algorithm. Let $T(n)$ be the number of comparisons to sort a list of $n$ items.
+\solution[\vspace{.75in}]{$T(n) = 3T(n/3) + 2n -3$.}
+
+\item We could analyze the running time of this using plug-and-chug, but let's try Akra-Bazzi. First, what is $p$?
+\solution[\vspace{.75in}]{$p=1$. Using $\sum_{i=1}^k a_i b_i^p = 1$ with $a_1=3$ and $b_1=1/3$, we get the constraint that $3(1/3)^p = 1$.}
+
+\item Does the condition $|g'(x)|=O(x^c)$ hold for some $c \in N$?
+\solution[\vspace{.75in}]{Yes. $g(n) = 2n-3$, so $|g'(n)|=2 = O(n^c)$ for $c=0$.}
+
+\item Determine the theta bound on T(n) by integration.
+\solution[\vspace{3in}]{
+\begin{align*}
+T(n) = & \Theta \left(n^p \left(1 + \int_1^n \frac{g(u)}{u^{p+1}} \ du\right)\right) \\
+= & \Theta\left(n \left(1 + \int_1^n \frac{2u-3}{u^2} \ du\right)\right) \\
+= & \Theta\left(n \left(1 + \int_1^n \frac{2}{u} - \int_1^n \frac{3}{u^2} \ du\right)\right) \\
+= & \Theta\left(n \left(1 + 2\log u \Big |_1^n + \frac{3}{u} \Big |_1^n \right)\right) \\
+= & \Theta\left(n \left(1 + 2\log n + \frac{3}{n} - 3 \right)\right) \\
+= & \Theta\left(2n\log n - 2n + 3\right) \\
+= & \Theta\left(n\log n\right) \\
+\end{align*}
+}
+
+\item Turns out that any equal partition of the list into a constant number of sublists $c>1$ will yield the same theta bound. Can you see why?
+\solution{Given a constant size partition, the recurrence will always be in the form:
+\[
+T(n) = cT(n/c) + \left[(c-1)(n-(c-1)) + \displaystyle\sum_{i=1}^{c-2}i\right]
+\]
+The first term creates the constraint that $c(1/c)^p = 1$, which always gives $p=1$. The second term will always be $\Theta(n)$, which dominates the final bound after integration. Therefore, no matter what $c>1$ we choose, $T(n) = \Theta(n \log n)$. }
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\instatements{
+\newpage
+\section*{Appendix}
+
+\begin{theorem}[Akra-Bazzi, strong form]
+Suppose that:
+\[
+T(x) =
+\left\{
+\begin{aligned}
+& \text{is defined} && \text{for $0 \leq x \leq x_0$} \\
+& {\displaystyle \sum_{i=1}^k a_i T(b_i x + h_i(x)) + g(x)} && \text{for $x > x_0$}
+\end{aligned}
+\right.
+\]
+%
+where:
+%
+\begin{itemize}
+\item $a_1, \dots, a_k$ are positive constants
+\item $b_1, \dots, b_k$ are constants between 0 and 1
+\item $x_0$ is ``large enough'' in a technical sense we leave unspecified
+\item $\abs{g'(x)} = O(x^c)$ for some $c \in \mathbb{N}$
+\item $\abs{h_i(x)} = O(x / \log^2 x)$
+\end{itemize}
+%
+Then:
+%
+\[
+T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} \ du\right)\right)
+\]
+%
+where $p$ satisfies the equation $\sum_{i=1}^k a_i b_i^p = 1$.
+\end{theorem}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\iffalse
+\section{Divide \& Conquer}
+
+We have devised an error-tolerant version of {\tt MergeSort}.  We call
+our exciting new algorithm {\tt OverSort}.
+
+Here is how the new algorithm works.  The input is a list of $n$
+distinct numbers.  If the list contains a single number, then there is
+nothing to do.  If the list contains two numbers, then we sort them
+with a single comparison.  If the list contains more than two numbers,
+then we perform the following sequence of steps.
+
+\begin{itemize}
+\item We make a list containing the first $\frac{2}{3}n$
+numbers and sort it recursively.
+
+\item We make a list containing the last $\frac{2}{3}n$ numbers
+and sort it recursively.
+
+\item We make a list containing the first $\frac{1}{3}n$ numbers and
+the last $\frac{1}{3}n$ numbers and sort it recursively.
+
+\item We merge the first and second lists, throwing out duplicates.
+
+\item We merge this combined list with the third list, again throwing out
+duplicates.
+\end{itemize}
+
+The final, merged list is the output.  What's great is that even if
+the sorter occasionally forgets about a number, the {\tt OverSort}
+algorithm still outputs a complete, sorted list!
+
+\begin{enumerate}
+
+\item Let $T(n)$ be the maximum number of comparisons that {\tt OverSort}
+could use to sort a list of $n$ distinct numbers, assuming the sorter
+never forgets a number and $n$ is a power of 3.  What is $T(3)$?  Write a
+recurrence relation for $T(n)$.  (\emph{Hint:} Merging a list of $j$
+distinct numbers and a list of $k$ distinct numbers, and throwing out
+duplicates of numbers that appear in both lists, requires at most $j+k-d$
+comparisons, when $d>0$ is the number of duplicates.)
+
+\solution[\newpage]{When $n=3$, we begin with a list $(a,b,c)$ of 3
+distinct numbers.  \texttt{OverSort} starts by forming the lists $(a,b)$,
+$(b,c)$, and sorts each of them.  Sorting a list of length two takes 1
+comparison, so the total number of comparisons required to sort both lists
+is 2.  Next it merges these two lists.  There must be exactly one
+duplicate in the two lists, so, using the Hint, we conclude that this
+takes $2+2-1= 3$ more comparisons and yields a sorted length three list of
+all the elements.
+
+\texttt{OverSort} then forms the list $(a,c)$, uses 1 comparison to sort
+it, and merges this sorted list of length two with the previous length
+three list.  However, merging these two lists takes only $2+3-2= 3$
+comparisons, because there are two duplicates.  So $T(3)$, the worst case
+number of comparisons, is $2+3+1+3=9$.
+
+Now for $n>3$, \texttt{OverSort} will form and then sort three different
+lists of length $(2/3)n$.  The first two overlap by $(1/3)n$, so merging
+them takes $(2/3)n+(2/3)n -(1/3)n = n$ comparisons and yields a list of
+length $n$.  This list and the remaining list of length $(2/3)n$ overlap
+by $(2/3)n$, so merging them requires only another $n$ comparisons.  So
+\[
+T(n) = 3 T\left( \lceil \frac{2}{3}n \rceil \right) + 2n.
+\]
+}
+
+\item Now we're going to apply the Akra-Bazzi Theorem to find a
+$\Theta$ bound on $T(n)$.  Begin by identifying the following
+constants and functions:
+
+\begin{itemize}
+
+\item The constant $k$.
+
+\solution[\vspace{0.25in}]{$k = 1$}
+
+\item The constants $a_i$.
+
+\solution[\vspace{0.25in}]{$a_1 = 3$}
+
+\item The constants $b_i$.
+
+\solution[\vspace{0.25in}]{$b_1 = 2/3$}
+
+\item The functions $h_i$.
+
+\solution[\vspace{0.25in}]{$h_1(x) = 0$}
+
+\item The function $g$.
+
+\solution[\vspace{0.25in}]{$g(x) = 2x$}
+
+\item The constant $p$.  You can leave $p$ in terms of logarithms, but
+you'll need a rough estimate of its value later on.
+
+\solution[\vspace{1.5in}]{
+\begin{align*}
+3 \cdot \left(\frac{2}{3}\right)^p & = 1 \\
+\ln 3 + p (\ln 2 - \ln 3) & = 0 \\
+p & = \frac{\ln 3}{\ln 3 - \ln 2} = 2.7095\dots
+\end{align*}
+}
+
+\end{itemize}
+
+\item Does the condition $\abs{g'(x)} = O(x^c)$ for some $c \in
+\mathbb{N}$ hold?
+
+\solution[\vspace{0.5in}]{
+Yes.  $g'(x) = 2 = O(x^0)$.
+}
+
+\item Does the condition $\abs{h_i(x)} = O(x / \log^2 x)$ hold?
+
+\solution[\vspace{0.5in}]{
+Yes.  $0 = O(x / \log^2 x)$.}
+
+\item Determine a $\Theta$ bound on $T(n)$ by integration.
+
+\solution{
+\begin{align*}
+T(n)	& = \Theta\left(n^p \cdot \left(1 +
+		\int_1^n \frac{2u}{u^{1+p}} \ du \right)\right) \\
+        & = \Theta\left(n^p \cdot \left(1 +
+		2 \int_1^n \frac{1}{u^p} \ du \right)\right) \\
+	& = \Theta(n^p) \\
+	& = \Theta\left(n^{2.7095\dots}\right)
+\end{align*}
+%
+Note that since $p > 1$, the integral nonnegative and bounded above by a
+constant, no matter how large $n$ grows.  Thus, everything except $n^p$ is
+absorbed by the $\Theta$.}
+
+\end{enumerate}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\iffalse
+\instatements{\newpage}
+
+\section{}
+Find $\Theta$ bounds for the following divide-and-conquer recurrences.
+Assume $T(1) = 1$ in all cases.
+
+\begin{itemize}
+\item
+\[
+T(n) = 3T\left(\floor{\frac{n}{3}}\right) + n
+\]
+
+\solution[\vspace{2in}]{
+$a_1 = 3$, $b_1 = 1/3$, $h_1(n) = \lfloor n/3 \rfloor - n/3$, $g(n) =
+n$, $p = 1$,
+%
+$$T(n) = \Theta(n(1+ \int_1^n \frac{u}{u^2} du)) = \Theta(n \log n).$$
+}
+
+\item
+\[
+T(n) = 4T\left(\floor{\frac{n}{3}}\right) + n^2
+\]
+
+\solution[\vspace{2in}]{
+$a_1 = 4$, $b_1 = 1/3$, $h_1(n) = \lfloor n/3 \rfloor - n/3$, $g(n) =
+n^2$, $p = \log_3 4$,
+%
+$$T(n) = \Theta(n^{\log_3 4}(1+ \int_1^n \frac{u^2}{u^{\log_3 4 + 1}} du)) =
+\Theta(n^{\log_3 4}(1+ \int_1^n u^{1 - \log_3 4} du)) = \Theta(n^2).$$
+}
+
+\item
+\[
+T(n) = T\left(\ceil{\frac{n}{4}}\right) +
+               T\left(\floor{\frac{3n}{4}}\right)+n
+\]
+
+\solution[\vspace{2in}]{
+$a_1 = 1$, $a_2 = 1$, $b_1 = 1/4$, $b_2 = 3/4$, $h_1(n) = \lceil n/4
+\rceil - n/4$, $h_2(n) = \lfloor 3n/4 \rfloor - 3n/4$, $g(n) = n$, $p
+= 1$,
+%
+$$T(n) = \Theta(n(1+ \int_1^n \frac{u}{u^2} du)) =
+\Theta(n \log n).$$
+}
+
+\end{itemize}
+\fi
+
+
+
+
+\insolutions{
+\section*{Guessing a Particular Solution}
+
+A general linear recurrence has the form:
+%
+\[
+f(n) = b_1 f(n - 1) + b_2 f(n - 2) + \ldots + b_d f(n - d) + g(n)
+\]
+%
+One step in solving this recurrence is finding a \textit{particular
+solution}.  This is a function $f(n)$ that satisfies the recurrence
+equation, but may not be consistent with the boundary conditions.
+Here's a recipe to help you guess a particular solution:
+
+\begin{itemize}
+
+\item If $g(n)$ is a constant, guess that $f(n)$ is some constant $c$.
+Plug this into the recurrence equation and see if any constant
+actually works.  If not, try $f(n) = b n + c$, then $f(n) = a n^2 + b
+n + c$, etc.
+
+\item More generally, if $g(n)$ is a polynomial, try a polynomial of
+the same degree.  If that fails, try a polynomial of degree one
+higher, then two higher, etc.  For example, if $g(n) = n$, then try
+$f(n) = b n + c$ and then $f(n) = a n^2 + b n + c$.
+
+\item If $g(n)$ is an exponential, such as $3^n$, then first guess
+that $f(n) = c3^n$.  Failing that, try $f(n) = b n 3^n + c 3^n$ and
+then $a n^2 3^n + b n 3^n + c 3^n$, etc.
+
+\end{itemize}
+
+\noindent In practice, your first or second guess will almost always
+work.
+
+\newpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\instatements{\newpage}
+
+\section*{Linear Recurrences} Find closed-form solutions to the following linear
+recurrences.
+
+\begin{enumerate}
+\item  \hspace{0.5in} $T_0 = 0$
+
+\hspace{0.5in} $T_1 = 1$
+
+\hspace{0.5in} $T_{n} = T_{n-1} + T_{n-2} + 1$
+
+\solution[\vspace{3in}]{Following the guide to solving linear recurrences:
+
+\begin{enumerate} 
+\item First, we find the general solution to the homogeneous
+recurrence.  The characteristic equation is $r^2 - r - 1 = 0$.  The
+roots of this equation are:
+\begin{eqnarray*}
+r_1	& = &	\frac{1 + \sqrt{5}}{2} \\
+r_2	& = &	\frac{1 - \sqrt{5}}{2}
+\end{eqnarray*}
+
+\item Using the roots, we write down the homogeneous solution in the form
+\[
+T_n = A \left( \frac{1 + \sqrt{5}}{2} \right)^n +
+		B \left( \frac{1 - \sqrt{5}}{2} \right)^n.
+\]
+
+\item Next, we need a particular solution to the inhomogenous recurrence.
+Since the inhomogenous term is constant, we guess a constant solution, $c$.
+So replacing the $T(n)$ terms in $T_{n} = T_{n-1} + T_{n-2} + 1$ by $c$, we require
+\[
+c = c + c + 1,
+\]
+namely, $c=-1$.  That is, $T_n = -1$ is a particular solution to the equation.
+
+\item Putting it together, the complete solution to the recurrence is the homogenous solution
+plus the particular solution:
+
+\begin{eqnarray*}
+T_n	& = &	A \left( \frac{1 + \sqrt{5}}{2} \right)^n +
+		B \left( \frac{1 - \sqrt{5}}{2} \right)^n - 1
+\end{eqnarray*}
+
+\item All that remains is to find the constants $A$ and $B$.  Substituting
+the initial conditions gives a system of linear equations.
+
+\begin{eqnarray*}
+0	& = &	A + B - 1 \\
+1	& = &	A \left( \frac{1 + \sqrt{5}}{2} \right) +
+		B \left( \frac{1 - \sqrt{5}}{2} \right) - 1
+\end{eqnarray*}
+
+The solution to this linear system is:
+
+\begin{eqnarray*}
+A	& = &	\frac{5 + 3 \sqrt{5}}{10} \\
+B	& = &	\frac{5 - 3 \sqrt{5}}{10}
+\end{eqnarray*}
+
+Therefore, the complete solution to the recurrence is
+\[
+T_n  = 	\left( \frac{5 + 3 \sqrt{5}}{10} \right) \cdot
+        \left( \frac{1 + \sqrt{5}}{2} \right)^n +
+        \left( \frac{5 - 3 \sqrt{5}}{10} \right) \cdot
+        \left( \frac{1 - \sqrt{5}}{2} \right)^n - 1.
+\]
+\end{enumerate}
+}
+
+\item  \hspace{0.5in} $S_0 = 0$
+
+\hspace{0.5in} $S_1 = 1$
+
+\hspace{0.5in} $S_n = 6 S_{n-1} - 9 S_{n-2}$
+
+\solution{
+The characteristic polynomial is $r^2-6r+9 = (r-3)^2$, so the solution is
+of the form $A3^n + Bn3^n$ for some constants $A$ and $B$. Setting
+$n=0$, we have $0 = S_0 = A3^0 +B\cdot 0\cdot 3^0=A$.  Setting $n=1$, we have
+$1 = S_1 = A3^1+B\cdot 1\cdot 3^1 = 3B$, so $B=1/3$.  That is,
+\[
+S_n = 0\cdot 3^n + \frac13 \cdot n3^n= n3^{n-1}.
+\]
+}
+
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

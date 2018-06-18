@@ -1,0 +1,166 @@
+documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_expected_number_of_keys_deviation_no_replace}
+  \pcomment{overlaps CP_expected_number_of_keys, PS_n_keys}
+  \pcomment{ARM 12/19/15}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  failure
+  deviation
+  variance
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A man has a set of $n$ keys, one of which fits the door to his
+apartment.  He tries the keys randomly throwing away each ill-fitting
+key that he tries until he finds the key that fits.  That is, he
+chooses keys randomly from \emph{among those he has not yet tried}.
+This way he is sure to find the right key within $n$ tries.
+
+\bparts
+
+\ppart\label{mkleftnr} If he hasn't found the right key yet and there
+are $m$ keys left, what is the probability that he will find the right
+key on the next try?
+\begin{solution}
+\[
+\frac{1}{m}.
+\]
+\end{solution}
+
+\ppart\label{prT>kT>k1nr} Given that he did not find the right key on
+his first $k-1$ tries, verify that the probability that he does not
+find it on the $k$th trial is given by
+\[
+\prcond{T > k}{T > k-1} = \frac{n-k}{n-(k-1)}.
+\]
+
+\examspace[1.0in]
+
+\begin{solution}
+Given that the right key has not been picked in the first $k-1$
+trials, there are $n-(k-1)$ keys left, so by part~\eqref{mkleftnr}, the
+probability that the $k$th trial is also not the right key is
+\[
+1- \frac{1}{n-(k-1)} = \frac{n-k}{n-(k-1)}.
+\]
+\end{solution}
+
+\ppart Prove that 
+\begin{equation}\label{T>kn-knnr}
+\pr{T > k} =  \frac{n-k}{n}.
+\end{equation}
+
+\hint This can be argued directly, but if you don't see how, induction
+using part~\eqref{prT>kT>k1nr} will work.
+
+\examspace[2.0in]
+
+\begin{solution}
+Suppose the man keeps going until he has tried all $n$ keys.  In this
+case, it's clear that the right key is equally likely to come up on
+each try, that is
+\begin{equation}\label{prT=k1nnr}
+\pr{T=k} = 1/n
+\end{equation}
+for $k \in \Zintv{1}{n}$, and hence the probability that it comes up
+after the $k$th try is
+\[
+(n-k)\cdot \frac{1}{n} = \frac{n-k}{n}.
+\]
+
+Alternatively, we can prove~\eqref{T>kn-knnr} by induction on $k$,
+using~\eqref{T>kn-knnr} as the induction hypothesis.
+
+\inductioncase{Base case} {$k=0$}: He has to try at least one key,
+which means $\pr{T>0} = 1 = (n-0)/n$, so~\eqref{T>kn-knnr} holds in
+this case.
+
+\inductioncase{Inductive step}:
+We must show that for $k\geq 0$,
+\[
+\pr{T > k+1} =  \frac{n-(k+1)}{n}.
+\]
+
+Now we have
+\begin{align*}
+\pr{T > k+1}
+ & = \prcond{T > k+1}{T > k} \cdot \pr{T > k}
+        & \text{(Conditional Product Rule)} \\
+ & = \frac{n-(k+1)}{n-k} \cdot \pr{T > k}
+        & \text{(part~\eqref{prT>kT>k1nr})}\\
+ & = \frac{n-(k+1)}{n-k}\frac{n-k}{n}
+        & \text{(induction hypothesis)}\\
+ & = \frac{n-(k+1)}{n}.
+\end{align*}
+\end{solution}
+
+\ppart Conclude that in this case
+\[
+\expect{T} = \frac{n+1}{2}.
+\]
+
+\examspace[1.5in]
+
+\begin{solution}
+We have from~\eqref{prT=k1nnr} that $\pr{T = k} = \frac{1}{n}$.
+
+This can also be proved using~\eqref{T>kn-knnr}:
+\begin{align*}
+\pr{T = k} 
+  & = \pr{T > k-1} - \pr{T > k}\\
+  & = \frac{n-(k-1)}{n} - \frac{n-k}{n}\\
+  & = \frac{1}{n}.
+\end{align*}
+Therefore,
+\[
+\expect{T} = \sum_{k=1}^n k \cdot \pr{T=k}  = \frac{1}{n}\sum_{k=1}^n{k} = \frac{n+1}{2}.
+\]
+\end{solution}
+
+\ppart Write a closed formula for $\variance{T}$.
+
+\begin{solution}
+\begin{align*}
+\variance{T} & = \expectsq{T} - \expect{T}^2,\\
+\expectsq{T}
+   & \eqdef \sum_{k=1}^n k^2\pr{T=k}\\
+   & = \sum_{k=1}^n k^2\frac{1}{n} & \text{(part~\eqref{prT=k1nnr})}\\
+   & = \frac{\sum_{k=1}^n k^2}{n}\\
+   & = \frac{n(n+1)(2n+1)}{6n}
+           & \text{(Problem~\bref{CP_sum_of_squares} or \bref{CP_gen_func_sum_of_squares})}\\
+   & = \frac{(n+1)(2n+1)}{6}.
+\variance{T}
+    & = \frac{(n+1)(2n+1)}{6} - \paren{\frac{n+1}{2}}^2\\
+    & = n(n+1)\frac{n - 1}{12n}
+%\frac{\binom{n}{3}}{2n}
+         & \text{(algebra)}.
+\end{align*}
+\end{solution}
+
+\begin{staffnotes}
+\begin{align*}
+\lefteqn{\frac{n(n+1)(2n+1)}{6n} - \paren{\frac{n+1}{2}}^2}\\
+& = n(n+1)\frac{2(2n+1)}{12n} - \frac{3n(n+1)^2}{12n}\\
+& = n(n+1)\paren{\frac{4n+2}{12n} - \frac{3(n+1)}{12n}}\\
+& = n(n+1)\frac{4n+2 - 3n-3}{12n}\\
+& = n(n+1)\frac{n - 1}{12n}\\
+& = \frac{\binom{n}{3}}{2n}
+\end{align*}
+
+\end{staffnotes}
+
+\eparts
+
+\end{problem}
+
+\endinput

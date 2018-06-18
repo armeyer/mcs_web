@@ -1,0 +1,200 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use File::Basename;
+use File::Copy;
+use File::Spec::Functions qw(catfile);
+
+use Getopt::Long;
+
+######################################################################
+##                                                                  ##
+##                             OPTIONS                              ##
+##                                                                  ##
+######################################################################
+
+my %OPT = (deleted   => 'green',
+           added     => 'blue',
+           changed   => 'red',
+           revision  => undef,
+           origdir   => undef
+    );
+
+######################################################################
+##                                                                  ##
+##                           SUBROUTINES                            ##
+##                                                                  ##
+######################################################################
+
+sub usage() {
+    print STDERR <<"EOF";
+color-diffs [-d deleted-color] [-a added-color]
+    [-c changed-color] -d original-dir file
+EOF
+
+    exit(1);
+}
+
+sub empty( $ ) {
+    my $string = shift;
+
+    return ! defined $string || $string !~ /\S/;
+}
+
+sub get_diffs( $ ) {
+    my $file = shift;
+
+    my $basename = basename($file, ".tex");
+
+    my $ed_script = "/tmp/$basename.ed";
+
+    open(my $script, ">", $ed_script) or die "Can't open $ed_script: $!\n";
+
+    my $orig_file = catfile($OPT{origdir}, "$basename.tex");
+
+    return unless -e $orig_file;
+
+    open(my $diffs, "diff -e $orig_file $file |") or do {
+        die "Can't exec diff: $!\n";
+    };
+
+    local $_;
+
+    while (<$diffs>) {
+        m{ (\d+)(?:,(\d+))? ([adc]) }smx and do {
+            my $first_line = $1;
+            my $last_line = $2;
+            my $command = $3;
+
+            if (! defined $last_line) {
+                $last_line = $first_line;
+            }
+
+            if ($command eq 'd') {
+                my $end = $last_line + 1;
+
+                print { $script } "${end}a\n";
+                print { $script } "\\restoresomecounters\n";
+                print { $script } "\\endhighlighteddiffs\n";
+                print { $script } ".\n";
+
+                # print { $script } $_;
+
+                print { $script } "${first_line}a\n";
+                print { $script } "\\beginhighlighteddiffs{$OPT{deleted}}\n";
+                print { $script } "\\savesomecounters\n";
+                print { $script } ".\n";
+
+                next;
+            }
+
+            if ($command eq 'a') {
+                print { $script } $_;
+
+                print { $script } "\\beginhighlighteddiffs{$OPT{added}}\n";
+
+                while (<$diffs>) {
+                    if ($_ eq ".\n") {
+                        print { $script } "\\endhighlighteddiffs\n";
+                        print { $script } $_;
+
+                        last;                        
+                    }
+
+                    print { $script } $_;
+                }
+
+                next;
+            }
+
+            if ($command eq 'c') {
+                print { $script } $_;
+
+                print { $script } "\\beginhighlighteddiffs{$OPT{changed}}\n";
+
+                while (<$diffs>) {
+                    if ($_ eq ".\n") {
+                        print { $script } "\\endhighlighteddiffs\n";
+                        print { $script } $_;
+
+                        last;
+                    }
+
+                    print { $script } $_;
+                }
+
+                next;
+            }
+
+            die "Unknown command: $command";
+        };
+    }
+
+    print { $script } "wq\n";
+
+    close($diffs);
+
+    close($script);
+
+    return $ed_script;
+}
+
+sub apply_diffs( $$ ) {
+    my $file = shift;
+    my $script = shift;
+
+    my $orig_file = catfile($OPT{origdir}, basename($file));
+
+    copy($file, "$file.orig") or die "Can't copy $file to $file.orig: $!\n";
+
+    copy($orig_file, $file) or die "Can't copy $orig_file to $file: $!\n";
+
+    my $status = system "ed $file < $script";
+
+    if ($status != 0) {
+        die "Something went wrong: \$status = $status\n";
+    }
+
+    return;
+}
+
+sub process_file( $ ) {
+    my $file = shift;
+
+    my $ed_script = get_diffs($file);
+
+    if (! empty($ed_script)) {
+        apply_diffs($file, $ed_script);
+    }
+
+    return;
+}
+
+######################################################################
+##                                                                  ##
+##                               MAIN                               ##
+##                                                                  ##
+######################################################################
+
+GetOptions("deleted=s"       => \$OPT{deleted},
+           "added=s"         => \$OPT{added},
+           "changed=s"       => \$OPT{changed},
+           "revision=s"      => \$OPT{revision},
+           "origdir=s"       => \$OPT{origdir},
+           ) or usage();
+
+usage unless @ARGV;
+
+if (empty($OPT{origdir})) {
+    print STDERR "\nNo original directory given\n\n";
+
+    usage();
+}
+
+while (my $file = shift) {
+    process_file($file);
+}
+
+__END__

@@ -1,0 +1,70 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_nonhalts011}
+  \pcomment{ARM 3/12/16}
+\end{pcomments}
+
+\pkeywords{
+  halting_problem
+  recognizable
+  unrecognizable
+}
+
+\newcommand{\nohaltohoh}{\small{\text{NoHalt00-11}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+If applying a one-argument procedure $P$ to string a $s$
+results in a computation that eventually halts, we say that $P$
+\emph{recognizes} $s$.  The \emph{language} recognized by $P$ is:
+\[
+\rcg{P} \eqdef \set{s \in \asciistr \suchthat P\ \text{recognizes}\ s}.
+\]
+Let
+\[
+\nohaltohoh \eqdef \set{s \in \asciistr \suchthat P_s\ \text{recognizes neither 00 nor 11}}.
+\]
+Prove that \nohaltohoh is not recognizable.
+
+\begin{staffnotes}
+needs hint: maybe describe $s'$.
+\end{staffnotes}
+
+\begin{solution}
+We show this by making a "reduction argument": that is, we show that
+if there was one recognizer for \nohaltohoh\ then we could use such
+recognizer to define another recognizer for \nohalt, which we know is
+not recognizable.
+
+Give a declaration $s \in \asciistr$ of one-argument procedure, modify
+the declaration so it specifies a new procedure that does the
+following: when applied to any argument, ignore the argument, and
+simulate $P_s$ on $s$.  Let $s' \in \asciistr$ be this modified
+declaration.
+
+This means that $P_{s'}$ behaves the same no matter what it is applied
+to.  So if $P_s$ recognizes $s$, then $P_{s'}$ recognizes all strings,
+and in particular recognizes both 00 and 11.  And if $P_s$ does not
+recognize $s$, then $P_{s'}$ does not recognize anything, and in
+particular recognizes neither 00 nor 11.  Therefore,
+\[
+s \in \nohalt
+    \QIFF P_s\ \text{does not recognize}\ s
+     \QIFF P_{s'} \text{recognizes neither}\ 00\ \text{nor}\ 11
+     \QIFF s' \in \nohaltohoh.
+\]
+This means that if we had a recognizer for \nohaltohoh, we could use
+it to define a recognizer for \nohalt: on input $s$, construct $s'$
+and apply the \nohaltohoh\ recognizer to $s'$.
+
+But we know that \nohalt\ is unrecognizable, so we conclude that
+\nohaltohoh\ must also be unrecognizable.
+\end{solution}
+
+\end{problem}
+
+\endinput

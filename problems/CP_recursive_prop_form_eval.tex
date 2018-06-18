@@ -1,0 +1,225 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_recursive_prop_form_eval}
+  \pcomment{ARM 3/4/16}
+\end{pcomments}
+
+\pkeywords{
+  propositional_formula
+  propositional_variable
+  recursive
+  environment
+  structural_induction
+  induction
+  evaluate
+}
+
+\newcommand{\pvrbls}[1]{\mopt{pvar}(#1)}
+%\newcommand{\ANDsym}{\ensuremath{\mathbin{\mathrm{\textbf{And}}}}}
+%\newcommand{\NOTsym}{\ensuremath{\mathop{\mathrm{\textbf{Not}}}}}
+
+\begin{problem}
+In this problem we'll need to be careful about the propositional
+\emph{operations} that apply to truth values and the corresponding
+\emph{symbols} that appear in formulas.  We'll restrict ourselves to
+formulas with \emph{symbols} \ANDsym\ and \NOTsym\ that correspond to
+the operations \QAND, \QNOT.  We will also allow the constant symbols
+\True\ and \False.
+
+\bparts
+
+\ppart Give a simple recursive definition of \emph{propositional
+  formula} $F$ and the set $\pvrbls{F}$ of propositional
+\emph{variables that appear} in it.
+
+\begin{solution}
+
+\inductioncase{Base cases:}
+\begin{itemize}
+
+\item A propositional \emph{variable} $P$ is a propositional formula
+  and the set $\pvrbls{P}$ of variables that appear in it is $\set{P}$.
+
+\item A propositional \emph{constants} \True, \False\ are propositional
+  formulas, and
+\[
+\pvrbls{\True} = \pvrbls{\False} \eqdef \emptyset.
+\]
+
+\end{itemize}
+
+\inductioncase{Constructor cases:} If $F,G$ are propositional
+formulas, then so are
+\begin{itemize}
+
+\item $(F \ANDsym\ G)$, and $\pvrbls{(F \ANDsym G)} \eqdef \pvrbls{F} \union
+  \pvrbls{G}$.
+
+\item $\NOTsym(F)$, and $\pvrbls{\NOTsym(F)} \eqdef \pvrbls{F}$.
+\end{itemize}
+\end{solution}
+
+\eparts
+
+Let $V$ be a set of propositional variables.  A \emph{truth
+  environment} $e$ over $V$ assigns truth values to all these
+variables.  In other words, $e$ is a total function,
+\[
+e: V \to \set{\true,\false}.
+\]
+
+\bparts
+
+\ppart Give a recursive definition of the \emph{truth value},
+$\meval{F}{e}$, of propositional formula $F$ in an environment $e$
+over a set of variables $V \supseteq \pvrbls{F}$.
+
+\begin{solution}
+
+\inductioncase{Base cases:}
+\begin{align*}
+\meval{P}{e} & \eqdef e(P),\\
+\meval{\True}{e} & \eqdef \true,\\
+\meval{\False}{e} & \eqdef \false.\\
+\end{align*}
+
+\inductioncase{Constructor cases:} If $F,G$ are propositional
+formulas, then
+\begin{align*}
+ \meval{(F \ANDsym G)}{e} & \eqdef  \meval{F}{e} \QAND\ \meval{G}{e},\\
+ \meval{\NOTsym(F)}{e} & \eqdef  \QNOT(\meval{F}{e}).
+\end{align*}
+\end{solution}
+\eparts
+
+Clearly the truth value of a propositional formula only depends on the
+truth values of the variables in it.  How could it be otherwise?  But
+it's good practice to work out a rigorous definition and proof of this
+assumption.
+
+\bparts
+
+\ppart Give an example of a propositional formula containing the
+variable $P$ but whose truth value does not depend on $P$.  Now give a
+rigorous definition of the assertion that ``the truth value of 
+propositional formula $F$ does not depend on propositional variable $P$.''
+
+\hint Let $e_1,e_2$ be two environments whose values agree on all
+variables other than $P$.
+
+\begin{solution}
+A simple example is the formula $P \ANDsym \NOTsym(P)$ whose truth
+value is $\false$ in all environments.
+
+Not ``depending on $P$'' means that whether $P$ is \true\ or \false,
+the truth value of $F$ comes out the same.  More precisely this means
+that if two environments agree on the truth values of all variables
+other than $P$, then the value of $F$ is the same in both
+environments:
+\begin{definition*}
+The truth value of a propositional formula \emph{$F$ does not depend
+  on propositional variable $P$} iff whenever $e_1, e_2$ are
+environments over $V_0 \supseteq \pvrbls{F} \union \set{P}$ and $e_1(Q)
+= e_2(Q)$ for all variables $Q \in V_0$ other than $P$, then
+\[
+ \meval{F}{e_1} = \meval{F}{e_2}.
+\]
+\end{definition*}
+\end{solution}
+
+\ppart Give a rigorous definition of the assertion that ``the truth
+value of a propositional formula only depends on the truth values of
+the variables that appear in it,'' and then prove it by structural
+induction on the definition of propositional formula.
+
+\begin{solution}
+\begin{definition*}
+The truth value of a propositional formula $F$ \emph{depends only on
+  the truth values of $\pvrbls{F}$} iff for all $P \notin \pvrbls{F}$,
+$F$ does not depend on $P$.
+\end{definition*}
+
+To prove that all formulas $F$ have this property, suppose $P \notin
+\pvrbls{F}$, and $e_1, e_2$ are environments over $V_0 \supseteq
+\pvrbls{F} \union \set{P}$ and $e_1(Q) = e_2(Q)$ for all variables $Q
+\in V_0$ other than $P$.  Then we will prove by structural induction on
+$F$ that
+\begin{equation}\label{Fe1Fe2}
+ \meval{F}{e_1} = \meval{F}{e_2}.
+\end{equation}
+
+\inductioncase{Base case} $F$ can't be the variable $P$, so the only
+cases are when $F$ is a truth constant. Now if $F$ is \True, then
+\[
+ \meval{F}{e_1} \eqdef \true =  \meval{F}{e_2}, 
+\]
+by definition of eval.  The same reasoning applies if $F$ is \False,
+proving that~\eqref{Fe1Fe2} holds on the base case.
+
+\inductioncase{Constructor case} ($F$ is $(G \ANDsym H)$).  Then by
+structural induction hypothesis,
+\begin{align*}
+\meval{G}{e_1} & = \meval{G}{e_2}\\
+\meval{H}{e_1} & = \meval{H}{e_2}, 
+\end{align*}
+so
+\begin{align*}
+\meval{F}{e_1}
+  & = \meval{G}{e_1} \QAND\ \meval{H}{e_1}
+     & \text{(def of eval)}\\
+  & = \meval{G}{e_2} \QAND\ \meval{H}{e_2}
+     & \text{(ind. hypothesis)}\\
+  & = \meval{(G \ANDsym H)}{e_2}
+     & \text{(def of eval)}\\
+  & = \meval{F}{e_2}.
+\end{align*}
+proving~\eqref{Fe1Fe2} in this case.
+
+\begin{staffnotes}
+We've made implicit use of the fact  that
+\[
+\pvrbls{G} \subseteq \pvrbls{G \ANDsym H}
+\]
+by definition of $\pvrbls{F}$.
+\end{staffnotes}
+
+\inductioncase{Constructor case} ($F$ is $\NOTsym(G)$).  Similar,
+easier proof.
+\end{solution}
+
+\ppart Now we can formally define $F$ being \emph{valid}.  Namely, $F$
+is valid iff
+\[
+\forall e.\, \meval{F}{e} = \true.
+\]
+Give a similar formal definition of formula $G$ being
+\emph{unsatisfiable}.  Then use the definition of eval to prove that a
+formula $F$ is valid iff $\NOTsym(F)$ is unsatisfiable.
+
+\begin{solution}
+Let $e$ range over environments on $\pvrbls{G}$.  Then $G$ is
+unsatisfiable iff
+\[
+\QNOT(\exists e.\,\meval{G}{e} = \true)
+\]
+
+\begin{align*}
+F \text{is valid} 
+   &  \qiff \forall e.\, \meval{F}{e} = \true\\
+   &  \qiff \forall e.\, \QNOT(\meval{F}{e}) = \false
+       & \text{(by def of operation $\QNOT$)}\\
+   & \qiff  \forall e.\, \meval{\NOTsym(F)}{e} = \false
+       & \text{(by def of $\meval{\NOTsym(F)}{e}$)}\\
+   & \qiff  \QNOT(\exists e.\,\meval{\NOTsym(F)}{e} = \true)
+       & \text{(De Morgan)}\\
+   & \qiff \NOTsym(F) \text{ is unsatisfiable}
+       & \text{(def of unsatisfiable)}.
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+\endinput

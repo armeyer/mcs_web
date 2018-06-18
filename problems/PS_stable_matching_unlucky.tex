@@ -1,0 +1,121 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_stable_matching_unlucky}
+  \pcomment{subsumes FP_stable_matching_unlucky}
+  \pcomment{complete, elegant rewrite by ARM 12/6/15}
+  \pcomment{soln for the < n/2 boy rejections suggested by Albert Soh, 3/24/17}
+  \pcomment{from: F08.ps4; F03.ps4; F00.ps5, F09, S10}
+\end{pcomments}
+
+\pkeywords{
+  stable_matching
+  state_machines
+  termination
+  partial_correctness
+  invariant
+}
+
+\providecommand{\boys}{\text{Boys}}
+\providecommand{\girls}{\text{Girls}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+  In a stable matching between an equal number of boys and girls
+  produced by the Mating Ritual, call a person \term*{lucky} if they
+  are matched up with someone in the top half of their preference
+  list.  Prove that there must be at least one lucky person.
+
+\hint The average number of times a boy gets rejected by girls.
+
+\begin{solution}
+Let $a$ be the average number of times a boy gets rejected by girls.
+It's not possible for all the boys to be rejected an above average
+number of times, so some boy gets rejected $\leq a$ times.
+
+Since the total of number rejections is the same for the boys and the
+girls, $a$ is also the average number of times a girl rejects boys.
+It's not possible for all the girls to reject boys a below average
+number of times, so some girl rejects $\geq a$ boys.
+
+Let $n$ be the number of boys.  If $a < n/2$, then some boy gets
+rejected by at most the largest integer less than $n/2$
+girls,\footnote{This is $ceil(n/2) - 1$ if you want a pithy
+  expression.} and therefore he is lucky.
+
+Likewise, if $a \geq n/2$, then some girl rejects at least $n/2$ boys.
+By the basic preserved invariant of the Mating Ritual, her preference
+for her current suitor does not decrease.  Since she has rejected at
+least $\ceil{n/2}$ boys, the final suitor whom she marries must be
+among her top $\ceil{n/2}$ choices, which makes her lucky.
+\end{solution}
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+\iffalse
+To prove this, define the following derived variables for the Mating Ritual:
+\begin{description}
+\item $q(B) = j$, where j is the rank of the girl that boy $B$ is courting. That is to say, boy $B$ is always courting the $j$th girl on his list.
+
+\item $r(G)$ is the number of boys that girl $G$ has rejected.
+\end{description}
+
+\begin{problemparts}
+
+\ppart\label{Ssame}
+Let
+\begin{equation}\label{Seqsumb}
+S \eqdef \sum_{B \in \boys} q(B) - \sum_{G \in \girls} r(G).
+\end{equation}
+Show that $S$ remains the same from one day to the next in the Mating
+Ritual.
+
+\begin{solution}
+  Suppose the Mating Ritual is under way.  For each rejection of a
+  boy $B$ by a girl $G$ the values of both $r(G)$ and $q(B)$
+  increase by 1, so their difference remains unchanged.  Hence the
+  right-hand side of~\eqref{Seqsumb} will be the same tomorrow.
+\end{solution}
+
+\ppart Prove the Theorem above.                        %~\ref{luckyperson}
+(You may assume for simplicity that $n$ is even.)
+
+\hint A girl is sure to be lucky if she has rejected half the boys.
+
+\begin{solution}
+Note that on the first morning, the $n$ boys are courting their first
+choice girl and the girls haven't rejected anyone yet.  So $S=n$.
+By part~\eqref{Ssame}, $S$ remains equal to $n$ every day.
+
+Now suppose to the contrary that no person is lucky.  Since boy $B$ is, by
+definition, lucky iff $q(B) \leq \ceil{n/2}$, we have
+\[
+q(B) \geq \ceil{\frac{n}{2}} + 1
+\]
+for all boys $B$.
+
+Now the rank of a girl's suitor will be higher than the ranks of any she
+has rejected, so she will certainly be lucky if she has rejected at least
+$\ceil{n/2}$ suitors, so
+\[
+r(G)  \leq \ceil{\frac{n}{2}} - 1,
+\]
+for all girls $G$.
+
+It follows that $2n \leq \sum_{B \in \boys} q(B) - \sum_{G \in \girls}
+r(G) = S$, contradicting the fact that $S=n$.
+\end{solution}
+
+\end{problemparts}
+\fi

@@ -1,0 +1,168 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_nim_strategy}
+  \pcomment{F14.ps2}
+  \pcomment{edited ARM 9/24/14}
+\end{pcomments}
+
+\pkeywords{
+  Nim
+  xor
+  binary
+  strategy
+  state_machines
+  invariant
+  binary
+  representation
+  game
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Nim is a two-person game that starts with some piles of stones.  A
+player's move consists of removing one or more stones from a single
+pile.  \inbook{The players alternate making moves, and whoever takes
+  the last stone wins.}\inhandout{Player-1 and player-2 alternate
+  making moves, and whoever takes the last stone wins.
+
+So if there is only one pile, then the first player to move wins by
+taking the whole pile.  On the hand, if the game starts with just two
+piles, each with the same number of stones, then the player who moves
+second can guarantee a win simply by mimicking the first player.  This
+means, for example, that if the first player removes three stones from
+one pile, then the second player removes three stones from the other
+pile.  At this point, it's worth thinking for a moment about
+\textbf{why the mimicking strategy guarantees a win} for the second
+player.}
+
+It turns out there is a winning strategy for one of the players that
+is easy to carry out but is not so obvious.
+
+\iffalse If you are positioned to be the winning player, it's going to
+be a while before your opponent figures out why you keep winning.\fi
+
+To explain the winning strategy, we need to think of a number in two
+ways: as a nonnegative integer and as the bit string equal to the
+binary representation of the number---possibly with leading zeroes.
+
+For example, the $\QXOR$ of \emph{numbers} $r,s,...$ is defined in
+terms of their binary representations: combine the corresponding bits
+of the binary representations of $r, s,...$ using $\QXOR$, and then
+interpret the resulting bit-string as a number.  For example,
+\[
+2 \QXOR 7 \QXOR 9 = 12
+\]
+because, taking $\QXOR$'s down the columns, we have
+\[\begin{array}{ccccl}
+ 0 & 0 & 1 & 0 & \text{(binary rep of 2)}\\
+ 0 & 1 & 1 & 1 & \text{(binary rep of 7)}\\
+ 1 & 0 & 0 & 1 & \text{(binary rep of 9)}\\
+\hline
+ 1 & 1 & 0 & 0 & \text{(binary rep of 12)}
+\end{array}\]
+
+This is the same as doing binary addition of the numbers, but throwing
+away the carries (see Problem~\bref{CP_binary_adder_logic}).
+
+The $\QXOR$ of the numbers of stones in the piles is called their
+\emph{Nim sum}.  In this problem we will verify that if the Nim sum is
+not zero on a player's turn, then the player has a winning strategy.
+For example, if the game starts with five piles of equal size, then
+the first player has a winning strategy, but if the game starts with
+four equal-size piles, then the second player can force a win.
+
+\bparts
+
+\ppart\label{zS-nzS} Prove that if the Nim sum of the piles is zero,
+then any one move will leave a nonzero Nim sum.
+
+\begin{solution}
+When a player removes stones from a pile, the binary representation of
+the number of stones in the pile changes.  Since the other piles stay
+the same, the bits in the Nim sum change at the positions where bits
+changed in the binary representation.  Since all the bits in the Nim
+sum were initially equal to zero, the changed bits must have become
+ones.  That makes the Nim sum nonzero.
+\end{solution}
+
+\ppart\label{if-r>sxt} Prove that if there is a pile with more stones
+than the Nim sum of all the other piles, then there is a move that
+makes the Nim sum equal to zero.
+
+\begin{solution}
+  If there is a size $r$ greater than the the Nim sum $n$ of the
+  other piles, then remove stones from this pile until it is of size
+  $n$.  Now the Nim sum of all the piles becomes $n \QXOR n = 0$.
+\end{solution}
+
+\ppart\label{nz-r>sxt} Prove that if the Nim sum is not zero, then one
+of the piles is bigger than the Nim sum of the all the other piles.
+
+\hint Notice that the largest pile may not be the one that is bigger
+than the Nim sum of the others; three piles of sizes 2,2,1 is an
+example.
+
+\begin{solution}
+ Suppose the Nim sum of all the piles is $s$, and the high order digit
+ of the Nim sum, that is, the leftmost 1 in the binary representation
+ of $s$, occurs at the $n$th position.  Since this bit of the Nim sum
+ equals 1, there must be at least one pile of $r$ stones such that the
+ $n$th bit of $r$ is also 1.  This is the pile to choose.
+
+ Notice that, since $r \QXOR r = 0$, we have $r \QXOR (r \QXOR s) = s$.
+ This means that $r \QXOR s$ is the Nim sum of all the piles besides
+ the pile of $r$.  Now $r \QXOR s$ has $n$th bit 0, since both $r$ and
+ $s$ have $n$th bit 1.  Also, since each bit of $s$ above the $n$th is
+ zero, each bit of $r$ above the $n$th must equal the corresponding
+ bit of $r \QXOR s$.
+
+ So $r$ and $r \QXOR s$ are the same above the $n$th bit, and $r$ is
+ bigger at the $n$th bit.  This implies that $r > r \QXOR s$.  That
+ is, $r$ is bigger than the Nim sum of all the other piles, as
+ claimed.
+\end{solution}
+
+\ppart Conclude that if the game begins with a nonzero Nim sum, then
+the first player has a winning strategy.
+
+\hint Describe a preserved invariant that the first player can
+maintain.
+
+\begin{solution}
+By part~\eqref{zS-nzS}, whenever it is the second player's turn to
+move, and the Nim sum is zero, the second player will leave a Nim sum
+that is not zero.
+
+By parts~\eqref{if-r>sxt} and~\eqref{nz-r>sxt}, whenever it is the
+first player's turn to move, and the Nim sum is not zero, the first
+player can leave the Nim sum equal to zero.
+
+If the first player always moves to set a nonzero Nim sum to zero,
+then the Nim sum being nonzero on the first player's turn and zero on
+the second player's turn is a preserved invariant of the game.
+
+Since the total number of stones decreases at every move, the game
+must eventually end with no stones are left.  But the Nim sum of no
+stones is zero, so by the preserved invariant, it must happen on the
+second player's turn.  That is, the second player must lose.
+\end{solution}
+
+\ppart (Extra credit) Nim is sometimes played with winners and losers
+reversed, that is, the person who takes the last stone \emph{loses}.
+This is called the \emph{mis\`ere} version of the game.  Use ideas
+from the winning strategy above for regular play to find one for
+\emph{mis\`ere} play.
+
+\begin{solution}
+\TBA{DRAFT} Follow the same strategy until just 2 piles remain, or
+there are only piles of size 1, and adapt for \emph{mis\`ere}.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput

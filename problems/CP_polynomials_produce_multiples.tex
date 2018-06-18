@@ -1,0 +1,175 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_polynomials_produce_multiples}
+  \pcomment{strengthens CP_congruence_no_prime_polynomial and naive
+    proof of PS_prime_polynomial_41}
+  \pcomment{from: F07 Rec8Th P5}
+  \pcomment{revised by ARM 3/12/13, minor edit 3/9/15}
+\end{pcomments}
+
+\pkeywords{
+  structural_induction
+  polynomial
+  multiple
+  congruence 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+The values of polynomial $p(n) \eqdef n^2 + n + 41$ are prime for all
+the integers from 0 to 39 \inhandout{as we noted earlier}\inbook{(see
+  Section~\bref{prop_sec})}.  Well, $p$ didn't work, but are there any
+other polynomials whose values are always prime?  No way!  In fact,
+we'll prove a much stronger claim.
+
+\begin{definition*}
+The set $P$ of integer polynomial functions can be defined
+recursively:
+
+\inductioncase{Base cases}:
+  \begin{itemize}
+
+   \item the identity function $\ident{\integers}(x) \eqdef x$ is in $P$.
+
+   \item for any integer $m$ the constant function $c_m(x) \eqdef m$ is in $P$.
+  \end{itemize}
+
+\inductioncase{Constructor cases}.  If $r,s \in P$, then $r+s$
+  and $r \cdot s \in P$.
+
+\end{definition*}
+
+  \bparts
+
+  \ppart\label{jk} Using the recursive definition of integer
+  polynomial functions given above, prove by structural induction that
+  for all $q \in P$,
+\[
+j \equiv k \pmod{n}\quad \QIMPLIES\quad q(j) \equiv q(k) \pmod n,
+\]
+for all integers $j,k,n$ where $n>1$.
+
+Be sure to clearly state and label your Induction Hypothesis, Base
+case(s), and Constructor step.
+
+\examspace[3.0in]
+
+\begin{solution}
+The proof is by structural induction on the definition of $P$.  The
+hypothesis $H(q)$ is:
+\begin{align*}
+H(q) & \eqdef\  [j\equiv k \pmod{n}\quad \QIMPLIES\quad q(j) \equiv q(k) \pmod{n},\\
+     & \qquad \text{for all } j,k,n \in \integers,\text{ where } n>1].
+\end{align*}
+
+\inductioncase{Base cases}:
+
+\inductioncase{Case}: ($q = \ident{\integers}$).
+
+$H(q)$ holds because if $j\equiv k \pmod{n}$, then
+\begin{align*}
+q(j) & \eqdef \ident{\integers}(j)\\
+    & = j\\
+    & \equiv k \pmod{n}\\
+    & = \ident{\integers}(k)\\
+    & = q(k),
+\end{align*}
+so $q(j) \equiv q(k) \pmod{n}$, as required.
+
+\inductioncase{Case}: ($q = c_m$).
+$H(c_m)$ holds because $c_m(j) = c_m(k)$, and therefore certainly
+$c_m(j) \equiv c_m(k) \pmod{n}$.
+
+\inductioncase{Constructor cases}:
+
+We may assume by structural induction that $H(r)$ and $H(s)$ both hold.
+
+\inductioncase{Case}: ($q = r+s$).  To show $H(q)$, suppose $j \equiv k \pmod n$.  Since
+  $H(r)$ holds, we have that $r(j) \equiv r(k) \pmod n$.  Likewise, $s(j)
+  \equiv s(k) \pmod n$.  So
+\[
+r(j) + s(k) \equiv r(j) + s(k) \pmod n,
+\]
+by additivity of congruences
+Lemma~\bref{mod_congruence_lem}(\bref{mod_congruence_lem+}), that is,
+$q(j) \equiv q(k) \pmod n$, as required.
+
+\inductioncase{Case}: ($q = r \cdot s$).  The proof in this case is
+the same as the previous with ``$\cdot$'' replacing ``$+$.''
+
+\end{solution}
+
+\ppart\label{qconmult} We'll say that $q$ \emph{produces multiples}
+if, for every integer greater than one in the range of $q$, there are
+infinitely many different multiples of that integer in the range.  For
+example, if $q(4) = 7$ and $q$ produces multiples, then there are
+infinitely many different multiples of 7 in the range of $q$, and of
+course, except for 7 itself, none of these multiples is prime.
+
+Prove that if $q$ has positive degree and positive leading
+coefficient, then $q$ produces multiples.  You may assume that every
+such polynomial is strictly increasing for large arguments.
+
+\inhandout{\hint Observe that all the elements in the sequence
+\[
+q(k), q(k + v), q(k+2v), q(k+3v),\dots,
+\]
+are congruent modulo $v$.  Then let $v=q(k)$.}
+
+\begin{solution}
+For any $k\in \integers$ and $v>1$
+\[
+k \equiv k+v \equiv k+2v \equiv k+3v \cdots \pmod v,
+\]
+by definition of $\equiv$ (mod $v$).  Now part~\eqref{jk} implies that
+each of the elements in the sequence
+\begin{equation}\label{qkqkv}
+q(k), q(k + v), q(k+2v), q(k+3v),\dots
+\end{equation}
+is $\equiv q(k)\pmod v$.
+
+If $1 < v \in \range{q}$, then $v = q(k)$ for some integer $k$ and
+\[
+q(k) \equiv 0 \pmod v.
+\]
+So all the elements in the sequence~\eqref{qkqkv} are multiples of $v$.
+
+Since $q(k)$ is strictly increasing\inbook{\footnote{We'll prove this
+    and similar ``growth rate'' facts about polynomials and other
+    functions in Chapter~\bref{chap:asymptotics}.}} for $k\geq b$ for
+some bound, $b>0$, all the elements in the sequence are different
+after a certain point (no later than after $(b/2)$ elements).  So
+there are arbitrarily large multiples of $v$ in the range of $q$.
+Since $v>1$ was an arbitrary element, we conclude there are infinitely
+many multiples of every element $v>1$ in the range of $q$.  That is,
+$q$ produces multiples.
+\end{solution}
+
+\eparts
+
+\medskip
+Part~\eqref{qconmult} implies that an integer polynomial with positive
+leading coefficient and degree has infinitely many nonprimes in its
+range.  This fact no longer holds true for multivariate polynomials.
+An amazing consequence of Matiyasevich's~\cite{Matiyasevich93} solution
+to Hilbert's Tenth Problem is that multivariate polynomials can be
+understood as \emph{general purpose} programs for generating sets of
+integers.  If a set of nonnegative integers can be generated by
+\emph{any} program, then it equals the set of nonnegative integers in
+the range of a multivariate integer polynomial!  In particular, there
+is an integer polynomial $p(x_1,\dots,x_7)$ whose nonnegative values
+as $x_1,\dots,x_7$ range over $\nngint$ are precisely the set of all
+prime numbers!
+
+\end{problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

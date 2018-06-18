@@ -1,0 +1,187 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{PS_token_state_machine}
+  \pcomment{Mild rewording of FP_token_state_machine by zabel, 9/29/17}
+  \pcomment{Original problem: author: Zoran Dzunic, edited ARM 10/15/15}
+\end{pcomments}
+
+\pkeywords{
+  state_machine
+  invariant
+  preserved_invariant
+  induction
+  congruence
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+\emph{Token replacing-1-2} is a single player game using a set of
+tokens, each colored black or white.  Except for color, the tokens are
+indistinguishable. \iffalse The game starts with one black token.\fi
+In each move, a player can replace one black token with two white
+tokens, or replace one white token with two black tokens.
+
+We can model this game as a state machine whose states are pairs
+$(n_b,n_w)$ where $n_b \geq 0$ equals the number of black tokens, and
+$n_w \geq 0$ equals the number of white tokens.
+
+\bparts
+  
+\ppart Which of the following predicates are preserved invariants? Why or why not?
+\begin{align}
+\rem{n_b + n_w}{3} &\neq 2\\
+\rem{n_w - n_b}{3} &= 2\\
+\rem{n_b - n_w}{3} &= 2\\
+n_b+n_w & > 5 \\
+n_b+n_w & < 5
+\end{align}
+
+\begin{solution}
+Predicates 2, 3, and 4 are preserved invariants.
+
+Detailed explanation:
+\begin{enumerate}
+\item \false.  True for $(1, 0)$, but not for the state $(0, 2)$
+  that it transitions to.
+
+\item \true.
+Let $(n_b, n_w)$ be an arbitrary state for which $\rem{n_w - n_b}{3} = 2$.
+The only two possible transitions are into state $(n'_b, n'_w) = (n_b - 1, n_w + 2)$
+or state $(n'_b, n'_w) = (n_b + 2, n_w - 1)$.  Note that
+$\rem{n'_w - n'_b}{3} = \rem{n_w - n_b \pm 3}{3} = \rem{n_w - n_b}{3} = 2$,
+and thus the property is preserved.
+
+\item \true.
+Same reasoning as for predicate~(2).
+
+\item \true.  Note that $n_b + n_w$ increases by 1 at each move.
+  Thus, if $n_b + n_w > 5$, the same must hold for any state it can
+  move to.
+
+\item \false.  Predicate is true for state $(2, 2)$, but not for
+  state $(1, 4)$ that it can move to.
+\end{enumerate}
+\end{solution}
+
+\medskip Now assume the game starts with a single black token, that
+is, the start state is $(1,0)$.
+
+\ppart Which of the above predicates are true for all reachable states? Why or why not?
+
+\begin{solution}
+Predicate 2 is true for all reachable states.
+
+Detailed explanation:
+\begin{enumerate}
+
+\item \false.
+Not true for state $(0, 2)$ that is reachable:
+$(1, 0) \rightarrow (0, 2)$.
+
+\item \true.
+True in the start state and is also a preserved invariant,
+and is therefore true for all reachable states by the invariant principle.
+
+\item \false.
+Not true in the start state.
+
+\item \false.
+Not true in the start state.
+
+\item \false.  Note that $n_b + n_w$ increases by 1 at each move,
+so it is always false after the fourth move of any kind.
+\end{enumerate}
+
+\end{solution}
+
+\ppart
+Define the predicate $T(n_b,n_w)$ by the rule:
+\[
+T(n_b,n_w) \eqdef\ \rem{n_w - n_b}{3} = 2.
+\]
+We will now prove the following:
+
+\begin{claim*}
+If $T(n_b, n_w)$, then state $(n_b, n_w)$ is reachable.
+\end{claim*}
+
+Note that this claim is different from the claim that $T$ is a
+preserved invariant.
+
+Prove the claim by induction in $n$ using induction
+hypothesis $P(n) \eqdef$
+\[
+  \forall (n_b, n_w).\,
+  [(n_b + n_w = n) \QAND  T(n_b,n_w)]
+  \QIMPLIES (n_b,n_w) \text{ is reachable}.
+\]
+%Use the states with $n \leq 2$ as base cases.
+
+\begin{solution}
+  \begin{proof} We follow the suggested induction, with the $n\le 2$ states as our base cases.
+
+    \textbf{Base cases:} $n \le 2$. There are only six states with $n \leq 2$:
+    \[
+      (0,0), (1,0), (0,1), (1,1), (0,2), (2,0).
+    \]
+    Of these, only $T(1,0)$ and $T(0,2)$ hold. $(1,0)$ is reachable
+    since it is the start state, and $(0,2)$ is reachable in one step from
+    the start state.  So all the states with $n \leq 2$ and satisfying
+    property $T$ are reachable.
+
+    \textbf{Inductive Step:} 
+    Assume that the induction hypothesis holds for some $n \ge 2$.
+    Suppose $n_b + n_w = n+1$ and $T(n_b,n_w)$ holds.  We want to show
+    that $(n_b, n_w)$ is reachable.
+
+    Since $n+1 \geq 3$, either $n_b \geq 2$ or $n_w \geq 2$.
+
+    In the case that $n_b \geq 2$, we have $n_b-2 \geq 0$, so
+    $(n_b-2,n_w+1)$ is a state. Also, $T(n_b-2,n_w+1)$ holds because
+    \[
+      \rem{(n_b-2)-(n_w+1)}{3} = \rem{n_b-n_w -3}{3} = \rem{n_b-n_w}{3} = 2.
+    \]
+    Since
+    \[
+      (n_b-2)+(n_w+1) = n_b+n_w - 1 = n,
+    \]
+    we conclude by induction hypothesis $P(n)$ that $(n_b-2,n_w+1)$ is
+    reachable.  But $(n_b-2,n_w+1)$ transitions in one step to
+    $(n_b,n_w)$, which proves that $(n_b,n_w)$ is reachable.
+
+    The same argument applies in the case that $n_w \geq 2$.
+
+    We conclude that in any case $(n_b,n_w)$ is reachable, which completes
+    the induction step.
+  \end{proof}
+
+  To understand the difference between this problem and proving that $T$
+  is a preserved invariant, it may be helpful to think about the problem
+  of making different postage amounts, for example using 6 and 15 cent
+  stamps\inbook{ (Problem~\bref{FP_6_and_15_cent_stamps_by_WOP})}.  An
+  easy invariant proof confirms the fact that every makeable postage
+  amount is divisible by three.  This preserved invariant for postage
+  corresponds to invariance of $T$ for reachable token machine states.
+
+  A very different fact is that \emph{every} (large enough) amount of
+  postage that is divisible by three is actually makeable from 6 and 15
+  cent stamps.  Postage \emph{makeability} for amounts divisible by
+  three corresponds to \emph{reachability} of token machine states
+  satisfying $T$.
+\end{solution}
+
+
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\endinput

@@ -1,0 +1,118 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_mean_time_variance_given}
+  \pcomment{based on CP_mean_time_variance_gen_func by ARM 5/1/11}
+  \pcomment{was called TP_mean_time_variance_given}
+  \pcomment{from: F07.rec14h, S07.cp14w}
+\end{pcomments}
+
+\pkeywords{
+  random_variable
+  expectation
+  indicator_variable
+  variance
+  additivity
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+A computer program crashes at the end of each hour of use with
+probability $1/p$, if it has not crashed already.  Let $H$ be the
+number of hours until the first crash.
+
+%% , we know 
+%% \begin{align*}
+%% \expect{H}   & = \frac{1}{p},\\% & \text{(Equation~(\bref{exp_time_to_fail}))}\\
+%% \variance{H} & = \frac{q}{p^2},% & \text{(Equation~(\bref{var_time_to_fail}))}
+%% \end{align*}
+%% where $q \eqdef 1-p$.
+
+\bparts
+
+\ppart\label{Cheb} What is the \idx{Chebyshev bound} on
+\[
+\pr{\abs{H - (1/p)}> x/p}
+\]
+where $x > 0$?
+
+\begin{solution}
+\[
+\frac{1-p}{x^2}.
+\]
+
+We know 
+\begin{align*}
+\expect{H}   & = \frac{1}{p} & \text{(by~(\bref{exp_time_to_fail}))}\\
+\variance{H} & = \frac{1-p}{p^2}, & \text{(by~(\bref{var_time_to_fail}))}.
+\end{align*}
+
+So by Chebyshev's Theorem~\bref{chebthm}, the bound on the above probability is
+\[
+\frac{\variance{H}}{\paren{x/p}^2} = \frac{1-p}{p^2\paren{x/p}^2} = 
+    \frac{1-p}{x^2}.
+\]
+\end{solution}
+
+\ppart\label{Hap} Conclude from part~\eqref{Cheb} that for $a \geq 2$,
+\[
+\pr{H > a/p} \leq \frac{1-p}{(a-1)^2}
+\]
+
+\hint Check that $\abs{H - (1/p)} > (a-1)/p$ iff  $H > a/p$.
+
+\begin{solution}
+Note that if $H \leq 1/p$, then $\abs{H - (1/p)} = (1/p) - H$,
+and since $H > 0$, we have $ (1/p) - H < 1/p \leq (a-1)/p$.  It follows
+that $\abs{H - (1/p)} > (a-1)/p$ iff $H - (1/p)> (a-1)/p$ iff $H > a/p$.
+So
+\begin{align*}
+\pr{H > a/p} & = \pr{\abs{H - (1/p)} > (a-1)/p}\\
+             & \leq (1-p)/(a-1)^2 & \text{(by part~\eqref{Cheb})}.
+\end{align*}
+\end{solution}
+
+\ppart What actually is
+\[
+\pr{H > a/p}?
+\]
+
+Conclude that for any fixed $p>0$, the probability that $H > a/p$ is an
+asymptotically smaller function of $a$ than the Chebyshev bound of 
+part~\eqref{Hap}.
+
+\begin{solution}
+\begin{align*}
+\pr{H > a/p} & = \sum_{k >a/p} (1-p)^{k-1}p\\
+  & = p(1-p)^{\floor{a/p}} \sum_0^{\infty} (1-p)^j\\
+  & = p(1-p)^{\floor{a/p}}\cdot\frac{1}{1-(1-p)}\\
+  & = (1-p)^{\floor{a/p}}.
+\end{align*}
+So
+\begin{align*}
+\pr{H > a/p}
+   & \leq (1-p)^{(a-p)/p}\\
+   & = \paren{(1-p)^{1/p}}^{a-p}\\
+   & < \paren{\paren{e^{-p}}^{1/p}}^{a-p}\\
+   & = e^{p-a}.
+\end{align*}
+
+But as shown in part~\eqref{Hap}, Chebyshev gives
+\[
+\pr{H > a/p} \leq (1-p)/(a-1)^2 = \Theta(1/a^2).
+\]
+Since
+\[
+e^{p-a} = \frac{p}{e^a} = o(1/a^2),
+\]
+we conclude that the actual probability is much smaller than we got
+from the Chebyshev Bound.
+\end{solution}
+
+\eparts
+\end{problem}
+
+\endinput

@@ -1,0 +1,271 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_graph_logic_probability_S16}
+  \pcomment{subsumes CP_graph_logic_probability, FP_graph_logic_probability}
+  \pcomment{ARM 5/10/16}
+  \pcomment{soln to last part by ARM 11/8/17}
+\end{pcomments}
+
+\pkeywords{
+  graph
+  logic
+  probability
+  independence
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Let $G$ be a simple graph with $n$ vertices.  Let ``$A(u,v)$'' mean
+that vertices $u$ and $v$ are adjacent, and let ``$W(u,v)$'' mean that
+there is a length-two walk between $u$ and $v$.
+
+\bparts
+
+\ppart Explain why $W(u,u)$ holds iff $\exists v.\ A(u,v)$.
+
+\examspace[0.5in]
+
+\begin{solution}
+A length two path from $u$ to $u$ must be a path that goes back and
+forth on some edge incident to~$u$.
+\end{solution}
+
+\ppart Write a predicate-logic formula defining $W(u,v)$ in terms of
+the predicate $A(.,.)$ when $u \neq v$.
+
+\examspace[0.6in]
+
+\begin{solution}
+\[
+W(u,v) \eqdef \exists t.\, A(u,t) \QAND\ A(t,v).
+\]
+
+This formula actually works even if $u=v$.
+\end{solution}
+
+\eparts
+
+There are $e \eqdef \binom{n}{2}$ possible edges between the $n$
+vertices of $G$.  Suppose the actual edges of $\edges{G}$ are chosen
+with randomly from this set of $e$ possible edges.  Each edge is
+chosen with probability $p$, and the choices are mutually independent.
+
+\bparts
+
+\ppart Write a simple formula in terms of $p, e$ and $k$ for
+$\pr{\card{\edges{G}} = k}$.
+
+\exambox{0.8in}{0.5in}{0in}
+
+\examspace[0.3in]
+
+\begin{solution}
+\[
+\binom{e}{k} p^k(1-p)^{e-k}.
+\]
+
+The number of chosen edges has a binomial distribution.
+\end{solution}
+
+\ppart Write a simple formula in terms of $p$ and $n$ for $\pr{W(u,u)}$.
+
+\exambox{0.6in}{0.5in}{0in}
+
+
+\examspace[0.3in]
+
+\begin{solution}
+\[
+1- (1-p)^{n-1}.
+\]
+
+$\QNOT(W(u,u))$ iff none of the possible $n-1$ incident edges are
+edges of $G$.  Since edges of $G$ are chosen independently and the
+probability is $1-p$ that any given edge is in $\edges{G}$,
+\[
+\pr{\QNOT(W(u,u))} = (1-p)^{n-1}.
+\]
+\end{solution}
+
+\eparts
+
+Let $w$, $x$, $y$ and $z$ be four distinct vertices.
+
+Because edges are chosen mutually independently, if the edges that one
+event depends on are disjoint from the edges that another event
+depends on, then the two events will be mutually independent.  For
+example, the events
+\[
+A(w,y) \QAND A(y,x)
+\]
+and
+\[
+A(w,z) \QAND A(z,x)
+\]
+are independent since the first event dependes on $\set{\edge{w}{y},
+  \edge{y}{x}}$, while the second event depends on $\set{\edge{w}{z},
+  \edge{z}{x}}$.
+
+%\examspace
+
+\bparts
+
+\ppart  Let
+\begin{equation}\label{nottwopath}
+r \eqdef \pr{\QNOT(W(w,x))},
+\end{equation}
+where $w$ and $x$ are distinct vertices.  Write a simple formula for
+$r$ in terms of $n$ and $p$.
+
+\hint Different length-two paths between $x$ and $y$ don't share any
+edges.
+
+\exambox{1.5in}{0.5in}{0in}
+
+\examspace[0.5in]
+
+\begin{solution}
+\[
+r = (1-p^2)^{n-2}.
+\]
+
+Let $Z \eqdef \vertices{G} - \set{w,x}$ be the set of $n-2$ vertices
+other than $w$ and $x$.
+\begin{align*}
+\lefteqn{\pr{\QNOT(W(w,x))}}\\
+  & = \pr{\forall z \in Z.\, \QNOT(A(w,z) \QAND\ A(z,x))}\\
+  & = \prod_{z \in Z} \pr{\QNOT(A(w,z) \QAND\ A(z,x))}
+          & \text{(length-two paths are independent)}\\
+  & = \prod_{z \in Z} (1 - \pr{A(w,z) \QAND\ A(z,x)})\\
+  & = \prod_{z \in Z} (1-\pr{A(w,z)}\cdot \pr{A(z,x)})
+          & \text{(edges are independent)}\\
+  & = \prod_{z \in Z} (1-p^2) \\
+  & = (1-p^2)^{n-2}.
+\end{align*}
+\end{solution}
+
+\ppart \label{3cycle} Vertices $x$ and $y$ being on a three-cycle can
+be expressed simply as
+\[
+A(x,y) \QAND\ W(x,y).
+\]
+Write a simple expression in terms of $p$ and $r$ for the probability
+that $x$ and $y$ lie on a three-cycle in $G$.
+
+\exambox{0.6in}{0.5in}{0in}
+
+\examspace[0.5in]
+
+\begin{solution}
+\[
+p(1-r).
+\]
+
+$A(x,y)$ and $W(x,y)$ are independent since $W(x,y)$ does not depend
+on whether $\edge{x}{y}$ is an actual edge of $G$.  Therefore,
+\begin{align*} 
+\pr{A(x,y) \QAND\ W(x,y)}
+   & = \pr{A(x,y)} \cdot \pr{W(x,y)} \\
+   & = p (1-r) .
+\end{align*}
+\end{solution}
+
+\ppart\label{Wwxyz} Show that $W(w,x)$ and $W(y,z)$ may not be independent events.
+\hint Just consider the case that $\vertices{G} = \set{w,x,y,z}$ and $p=1/2$.
+
+\examspace[0.75in]
+
+\begin{solution}
+Following the hint, assume $\vertices{G} = \set{w,x,y,z}$.  Now we
+observe that $W(w,x)$ depends only on the four edges $\edge{w}{y},
+\edge{w}{z}, \edge{x}{y}, \edge{x}{z}$:
+\[
+W(w,x)\quad \QIFF\quad (A(w,y) \QAND A(x,y)) \QOR  (A(w,z) \QAND A(x,z))
+\]
+so by Inclusion-Exclusion,
+\begin{align*}
+\lefteqn{\pr{W(w,x)}}\\
+& = \pr{A(w,y) \QAND A(x,y)} + \pr{A(w,z) \QAND A(x,z)}\\
+& \qquad   - \pr{A(w,y) \QAND A(x,y) \QAND A(w,z) \QAND A(x,z)}\\
+& = \paren{\frac{1}{2}}^2 + \paren{\frac{1}{2}}^2 - \paren{\frac{1}{2}}^4\\
+& = \frac{7}{16}.
+\end{align*}
+By symmetry, likewise
+\[
+\pr{W(y,z)} = \frac{7}{16}.
+\]
+
+However,
+\begin{align*}
+\lefteqn{[W(w,x)  \QAND W(y,z)]}\\
+   & \QIFF\ \text{at most one of the edges}\ \edge{w}{y}, \edge{w}{z}, \edge{x}{y}, \edge{x}{z}\ \text{is missing from}\ \vertices{G}.
+\end{align*}
+Now the probabilility that some particular edge are among these four
+is the only one missing is $(1/2)^4$ and the probability that none of
+missing is also equal to $(1/2)^4$, so by Inclusion-Exclusion,
+\[
+\pr{W(w,x) \QAND W(y,z)} = \binom{4}{3}\paren{\frac{1}{2}}^4 - \paren{\frac{1}{2}}^4 = \frac{5}{16}.
+\]
+In particular,
+\[
+\pr{W(w,x) \QAND W(y,z)} = \frac{5}{16} \neq \paren{\frac{7}{16}}^2 =  \pr{W(w,x)}\cdot \pr{W(y,z)},
+\]
+proving that $W(w,x)$ and $W(y,z)$ are not independent.
+\end{solution}
+
+\begin{staffnotes}
+Attempted general solution by Sibo 11/5/17:
+
+\begin{align*}
+\lefteqn{\prcond{\QNOT(W(w,x))}{W(y,z)}} \\
+	&= \prcond{\QNOT(W(w,x))}{\exists u \in \vertices{G} - \set{y,z}.\, A(y,u) \QAND\ A(u,z)}\\
+	&= \pr{u \in \vertices{G}-\set{y,z,w,x}} \cdot \prcond{\QNOT(W(w,x))}{A(y,u) \QAND\ A(u,z)} \\
+	&\quad + 
+           \pr{u \in \set{w,x}} \cdot \prcond{\QNOT(W(w,x))}{A(y,u) \QAND\ A(u,z)}\\
+	&= \frac{n-4}{n-2} \cdot (1-p^2)^{n-2} + \frac{2}{n-2} \cdot (1-p^2)^{n-4} \cdot (1-p)^2\\
+	& \leq r.
+\end{align*}
+
+\end{staffnotes}
+
+\eparts
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput
+
+
+% Exam version commented out for use as a class problem.
+\iffalse
+\ppart \inbook{Indicate}\inhandout{Circle} the mathematical formula that best expresses the
+definition of $W(x,y)$.
+
+\begin{itemize}
+\item $W(x,y) \eqdef \exists z.\ A(x,z) \QAND\ A(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef x \neq y \QAND\ \exists z.\ A(x,z) \QAND\ A(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef \forall z.\ A(x,z) \QOR\ A(y,z)$
+\examspace[0.15in]
+\item $W(x,y) \eqdef \forall z.\ x \neq y \QIMPLIES\ [A(x,z) \QOR\ A(y,z)]$
+\end{itemize}
+\fi
+
+
+\begin{staffnotes}
+The more randomly chosen edges there are in $G$, the more likely
+length two walks become.  Now $W(w,x)$ implies the existence of two
+edges---which might be incident to $y$ or $z$---and this makes
+$W(y,z)$ more likely given $W(w,x)$.
+
+This intuitive argument implicitly relies on assumptions about
+independent choice of the ``more'' edges and is accordingly not really
+convincing.
+\end{staffnotes}

@@ -1,0 +1,148 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_sat_count_genfunc}
+  \pcomment{FP_sat_count_induction is same but requires induction}
+  \pcomment{edited ARM 12/20/15}
+  \pcomment{F15.final}
+\end{pcomments}
+
+\pkeywords{
+  induction
+  satisfiability
+  predicate
+  proposition
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+Consider the following sequence of predicates:
+%
+\[\begin{array}{ll}
+Q_1(x_1)& \eqdef\quad   x_1 \\
+Q_2(x_1, x_2)& \eqdef\quad   x_1 \QIMP x_2 \\
+Q_3(x_1, x_2, x_3)& \eqdef\quad   (x_1 \QIMP x_2) \QIMP x_3 \\
+Q_4(x_1, x_2, x_3, x_4)& \eqdef\quad   ((x_1 \QIMP x_2) \QIMP x_3) \QIMP x_4 \\
+Q_5(x_1, x_2, x_3, x_4, x_5)& \eqdef\quad   (((x_1 \QIMP x_2) \QIMP x_3) \QIMP x_4) \QIMP x_5 \\
+\qquad \vdots & \qquad \qquad \vdots
+\end{array}\]
+%
+Let $T_n$ be the number of different true/false settings of the
+variables $x_1, x_2, \dots, x_n$ for which $Q_n(x_1, x_2, \dots,
+x_n)$ is true.  For example, $T_2 = 3$ since $Q_2(x_1, x_2)$ is true
+for 3 different settings of the variables $x_1$ and $x_2$:
+%
+\[
+\begin{array}{cc|c}
+x_1 & x_2 & Q_2(x_1, x_2) \\ \hline
+T & T & T \\
+T & F & F \\
+F & T & T \\
+F & F & T
+\end{array}
+\]
+We let $T_0 =1$ by convention.
+
+\bparts
+
+\ppart Express $T_{n+1}$ in terms of $T_n$ and $n$, assuming $n \geq 0$.
+
+\examspace[0.7in]
+
+\begin{solution}
+We have:
+%
+\[
+Q_{n+1}(x_1, x_2, \dots, x_{n+1})
+    = Q_n(x_1, x_2, \dots, x_n) \QIMP x_{n+1}
+\]
+%
+If $x_{n+1}$ is true, then $Q_{n+1}$ is true for all $2^n$ settings of
+the variables $x_1, x_2, \dots, x_n$.  If $x_{n+1}$ is false, then
+$Q_{n+1}$ is true for all $2^n$ settings of $x_1, x_2, \dots, x_n$
+\textit{except} for the $T_n$ settings that make $Q_n$ true.  Thus,
+altogether we have:
+\begin{equation}\label{Tn+12n2ngf}
+T_{n+1} = 2^n + (2^n - T_n) = 2^{n+1} - T_n
+\end{equation}
+
+\end{solution}
+
+\ppart \inbook{Use a generating function to prove that}
+\inhandout{Prove that}
+\[
+T_n = \frac{2^{n+1} + (-1)^n}{3}
+\]
+for $n \geq 1$.
+
+\begin{solution}
+\begin{proof}
+Using a generating function approach, we have
+\[\begin{array}{rclcrrr}
+T(x)       & \eqdef & T_0 & + &T_1 x + &T_2 x^2 +  &T_3 x^3 + \cdots\\
+xT(x)      & =      &     &  &T_0x  + &T_1x^2  +  &T_2x^3 + \cdots\\
+-1/(1-2x)  & =      &  -1 & - &2x    - &2^2x^2  - &2^3x^3 + \cdots\\
+\hline
+          & =       & 0   & + &0    + &0 +       &0       +  \cdots
+\end{array}\]
+
+So
+\[
+T(x) = \frac{1}{(1-2x)(1+x)}.
+\]
+Expanding into partial fractions, we have
+\[
+T(x) = \frac{2/3}{1-2x} + \frac{3}{1+x}.
+\]
+That means
+\[
+[x^n]T(x) = (2/3) (2^n) + 3 (-1)^n = \frac{2^{n+1} + (-1)^n}{3},
+\]
+as claimed.
+
+\inhandout{An alternative is proof by induction.  Let $P(n)$ be the proposition
+that
+\[
+T_n = \frac{2^{n+1} + (-1)^n}{3}.
+\]
+
+\inductioncase{Base case:} $(n=0)$.  
+\[
+(2^{0+1} + (-1)^0)/ 3 = (2+1)/3 = 1 = T_0.
+\]
+Therefore, $P(0)$ is true.
+
+\iffalse
+\inductioncase{Base case:} $(n=1)$.  There is a single setting of
+$x_1$ that makes $Q_1(x_1) = x_1$ true, and $T_1 = (2^{1+1} + (-1)^1)
+/ 3 = 1$.  Therefore, $P(1)$ is true.
+\fi
+
+\inductioncase{Inductive step:} For $n \geq 1$, we assume $P(n)$ and
+reason as follows:
+\begin{align*}
+T_{n+1}
+    & = 2^{n+1} - T_n
+         & \text{(by~\eqref{Tn+12n2ngf})}\\
+    & = 2^{n+1} - \frac{2^{n+1} + (-1)^n}{3}
+         & \text{(by ind. hyp.)}\\
+    & = \frac{3\cdot 2^{n+1} - 2^{n+1} + (-1)(-1)^{n}}{3}\\
+    & = \frac{2^{n+2} + (-1)^{n+1}}{3}.
+\end{align*}
+That is, $P(n+1)$ holds.}
+\end{proof}
+
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endinput

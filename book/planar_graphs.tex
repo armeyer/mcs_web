@@ -1,0 +1,1090 @@
+\chapter{Planar Graphs}\label{planar_graphs_chap}
+
+\section{Drawing Graphs in the Plane}
+
+Suppose there are three dog houses and three human houses, as shown in
+Figure~\ref{fig:5DP}.  Can you find a route from each dog house to
+each human house such that no route crosses any other route?
+
+\begin{figure}
+
+\graphic{dog-houses}
+
+\caption{Three dog houses and and three human houses.  Is there a
+  route from each dog house to each human house so that no pair of
+  routes cross each other?}
+\label{fig:5DP}
+\end{figure}
+
+A similar question comes up about a little-known animal called a
+\emph{quadrapus} that looks like an octopus with four stretchy arms
+instead of eight.  If five quadrapi are resting on the sea floor, as shown
+in Figure~\ref{fig:5DA}, can each quadrapus simultaneously shake hands
+with every other in such a way that no arms cross?
+
+\begin{figure}
+
+\graphic{quadrapi}
+
+\caption{Five quadrapi (4-armed creatures).}
+
+\label{fig:5DA}
+
+\end{figure}
+
+
+\begin{editingnotes}
+\textcolor{red}{rephrased by ARM 7/3/10:}
+\end{editingnotes}
+
+Both these puzzles can be understood as asking about drawing graphs in the
+plane.  Replacing dogs and houses by nodes, the dog house puzzle can be
+rephrased as asking whether there is a planar drawing of the graph with
+six nodes and edges between each of the first three nodes and each of the
+second three nodes.  This graph is called the \term{complete bipartite
+  graph} \idx{$K_{3,3}$} and is shown in Figure~\ref{fig:nonplanar}.(a).
+\begin{editingnotes}
+Insert graphic and fix figure refs.
+\end{editingnotes}
+The quadrapi puzzle asks whether there is a planar drawing of the
+\idx{complete graph} \idx{$K_5$} shown in
+Figure~\ref{fig:nonplanar}.(b).
+
+\begin{figure}
+
+\subfloat[]{%
+    \graphic{Fig_5_36a}
+}
+\qquad\qquad
+\subfloat[]{%
+    \graphic{Fig_5_36b}
+}
+
+\caption{$K_{3, 3}$ (a) and $K_5$ (b).  Can you redraw these graphs so
+that no pairs of edges cross?}
+
+\label{fig:nonplanar}
+
+\end{figure}
+
+In each case, the answer is, ``No---but almost!''  In fact, if you
+remove an edge from either of these graphs, then the resulting graph
+\emph{can} be redrawn in the plane so that no edges cross, as shown in
+Figure~\ref{fig:5DC}.
+
+
+\begin{figure}
+
+\subfloat[]{
+    \graphic{Fig_5DC_a}
+}
+\qquad
+\subfloat[]{
+    \graphic{Fig_5DC_b}
+}
+
+\caption{Planar drawings of (a) $K_{3, 3}$ without $\edge{u}{v}$, and
+  (b) $K_5$ without $\edge{u}{v}$.}
+\label{fig:5DC}
+\end{figure}
+
+Planar drawings have applications in circuit layout and are helpful in
+displaying graphical data such as program flow charts, organizational
+charts and scheduling conflicts.  For these applications, the goal is
+to draw the graph in the plane with as few edge crossings as possible.
+(See the box on the following page for one such example.)
+
+\begin{figure}[p]\redrawntrue
+\textbox{\textboxheader{Steve Wozniak and a Planar Circuit Design}
+
+\noindent
+When wires are arranged on a surface, like a circuit board or
+microchip, crossings require troublesome three-dimensional structures.
+When Steve Wozniak designed the disk drive for the early Apple II
+computer, he struggled mightily to achieve a nearly planar design
+according to the following excerpt from \texttt{apple2history.org}
+which in turn quotes \emph{Fire in the Valley} by Freiberger and
+Swaine:
+
+\begin{quotation}
+\noindent For two weeks, he worked late each night to make a satisfactory
+design.  When he was finished, he found that if he moved a connector he
+could cut down on feedthroughs, making the board more reliable.  To make
+that move, however, he had to start over in his design.  This time it only
+took twenty hours. He then saw another feedthrough that could be
+eliminated, and again started over on his design.  ``The final design was
+generally recognized by computer engineers as brilliant and was by
+engineering aesthetics beautiful.  Woz later said, 'It's something you can
+only do if you're the engineer and the PC board layout person yourself.
+That was an artistic layout.  The board has virtually no
+feedthroughs.'
+\end{quotation}
+}
+\end{figure}
+
+\section{Definitions of Planar Graphs}\label{sec:recdef_planar}
+
+We took the idea of a planar drawing for granted in the previous
+section, but if we're going to \emph{prove} things about planar graphs, we
+better have precise definitions.
+
+\begin{definition}\label{def:planar_drawing}
+A \term{drawing} of a graph assigns to each node a distinct point in
+the plane and assigns to each edge a smooth curve in the plane whose
+endpoints correspond to the nodes incident to the edge.  The drawing
+is \index{planar drawing}\emph{planar} if none of the curves
+cross themselves or other curves, namely, the only points that
+appear more than once on any of the curves are the node points.  A
+graph is \index{planar graph}\emph{planar} when it has a planar
+drawing.
+\end{definition}
+
+Definition~\ref{def:planar_drawing} is precise but depends on
+further concepts: ``smooth planar curves'' and ``points appearing more
+than once'' on them.  We haven't defined these concepts---we just
+showed the simple picture in Figure~\ref{fig:5DC} and hoped you would
+get the idea.
+
+Pictures can be a great way to get a new idea across, but it is generally
+not a good idea to use a picture to replace precise mathematics.  Relying
+solely on pictures can sometimes lead to disaster---or to bogus proofs,
+anyway.  There is a long history of bogus proofs about planar graphs based
+on misleading pictures.\iffalse
+\footnote{The bogus proof of the
+  4-Color Theorem for planar graphs is not the only example.  Mistakes
+  creep in with statements like,
+\begin{quote}
+    As you can see from Figure~ABC, it must be that property~XYZ holds
+    for all planar graphs.
+\end{quote}}\fi
+
+The bad news is that to prove things about planar graphs using the
+planar drawings of Definition~\ref{def:planar_drawing}, we'd have to
+take a chapter-long excursion into continuous mathematics just to
+develop the needed concepts from plane geometry and point-set topology.
+\begin{editingnotes} and this makes
+  Definition~\ref{def:planar_drawing} troublesome.
+\end{editingnotes}
+The good news is that there is another way to define planar graphs that
+uses only discrete mathematics.  In particular, we can define planar
+graphs as a recursive data type.  In order to understand how it works, we
+first need to understand the concept of a \emph{face} in a planar drawing.
+
+\subsection{Faces}
+
+The curves in a planar drawing divide up the plane into connected
+regions called the \term{continuous faces}\footnote{Most texts drop
+  the adjective \emph{continuous} from the definition of a face as a
+  connected region.  We need the adjective to distinguish continuous
+  faces from the \emph{discrete} faces we're about to define.} of the
+drawing.  For example, the drawing in
+Figure~\ref{fig:continuous-faces} has four continuous faces.  Face IV,
+which extends off to infinity in all directions, is called the
+\term{outside face}.
+
+\begin{figure}
+
+\graphic{continuous-faces}
+
+\caption{A planar drawing with four continuous faces.}
+\label{fig:continuous-faces}
+\end{figure}
+
+The vertices along the boundary of each continuous face in
+Figure~\ref{fig:continuous-faces} form a cycle.  For example, labeling the
+vertices as in Figure~\ref{fig:continuous-cycles}, the cycles for each of the face
+boundaries can be described by the vertex sequences
+\begin{equation}\label{eq:5DA}
+abca \qquad abda \qquad bcdb \qquad acda.
+\end{equation}
+These four cycles correspond nicely to the four continuous faces in
+Figure~\ref{fig:continuous-cycles}---so nicely, in fact, that we can
+identify each of the faces in Figure~\ref{fig:continuous-cycles} by
+its cycle.  For example, the cycle $abca$ identifies
+face~III\@.  The cycles in list~\ref{eq:5DA} are called the
+\emph{discrete faces} of the graph in
+Figure~\ref{fig:continuous-cycles}.  We use the term ``discrete''
+since cycles in a graph are a discrete data type---as opposed to a
+region in the plane, which is a continuous data type.
+
+\begin{figure}
+
+\graphic{continuous-cycles}
+
+\caption{The drawing with labeled vertices.}
+\label{fig:continuous-cycles}
+\end{figure}
+
+Unfortunately, continuous faces in planar drawings are not always
+bounded by cycles in the graph---things can get a little more
+complicated.  For example, the planar drawing in
+Figure~\ref{fig:bridge} has what we will call a \emph{bridge}, namely,
+a cut edge $\edge{c}{e}$.  The sequence of vertices along the boundary
+of the outer region of the drawing is
+\[
+abcefgecda.
+\]
+This sequence defines a closed walk, but does not define a cycle since
+the walk has two occurrences of the bridge $\edge{c}{e}$ and each of
+its endpoints.
+
+\begin{figure}
+
+\graphic{edge-twice-same-face}
+
+\caption{A planar drawing with a \emph{bridge}.}
+\label{fig:bridge}
+\end{figure}
+
+The planar drawing in Figure~\ref{fig:dongle} illustrates another
+complication.  This drawing has what we will call a \emph{dongle},
+namely, the nodes $v$, $x$, $y$ and~$w$, and the edges incident to
+them.  The sequence of vertices along the boundary
+of the inner region is
+\[
+rstvxyxvwvtur.
+\]
+This sequence defines a closed walk, but once again does not define a
+cycle because it has two occurrences of \emph{every} edge of the
+dongle---once ``coming'' and once ``going.''
+
+\begin{figure}
+
+\graphic{dongle-face}
+
+\caption{A planar drawing with a \emph{dongle}.}
+\label{fig:dongle}
+\end{figure}
+
+It turns out that bridges and dongles are the only complications, at
+least for connected graphs.  In particular, every continuous face in a
+planar drawing corresponds to a closed walk in the graph.  These
+closed walks will be called the \emph{discrete faces} of the drawing,
+and we'll define them next.
+
+\subsection{A Recursive Definition for Planar Embeddings}
+
+The association between the continuous faces of a planar drawing and
+closed walks provides the discrete data type we can use instead of
+continuous drawings.  We'll define a \term{planar embedding} of
+\emph{connected} graph to be the set of closed walks that are its face
+boundaries.  Since all we care about in a graph are the connections
+between vertices---not what a drawing of the graph actually looks
+like---planar embeddings are exactly what we need.
+
+The question is how to define planar embeddings without appealing to
+continuous drawings.  There is a simple way to do this based on the
+idea that any continuous drawing can drawn step by step: 
+\begin{itemize}
+\item either draw a new point somewhere in the plane to represent a vertex,
+
+\item or draw a curve between two vertex points that have already been
+  laid down, making sure the new curve doesn't cross any of the
+  previously drawn curves.
+\end{itemize}
+
+A new curve won't cross any other curves precisely when it stays
+within one of the continuous faces.  Alternatively, a new curve won't
+have to cross any other curves if it can go between the outer faces of
+two different drawings.  So to be sure it's ok to draw a new curve, we
+just need to check that its endpoints are on the boundary of the same
+face, or that its endpoints are on the outer faces of different
+drawings.  Of course drawing the new curve changes the faces slightly,
+so the face boundaries will have to be updated once the new curve is
+drawn.  This is the idea behind the following recursive definition.
+
+\begin{definition}\label{def:embedding}%\label{embeddingdef}
+A \term{planar embedding} of a \emph{connected} graph consists of a
+nonempty set of closed walks of the graph called the \term{discrete
+  faces} of the embedding.  Planar embeddings are defined recursively
+as follows:
+
+\inductioncase{Base case}: If $G$ is a graph consisting of a single
+vertex $v$ then a planar embedding of $G$ has one discrete face,
+namely, the length zero closed walk $v$.
+
+\inductioncase{Constructor case} (split a face): Suppose $G$ is a
+connected graph with a planar embedding, and suppose $a$ and $b$ are
+distinct, nonadjacent vertices of $G$ that occur in some discrete
+face $\gamma$ of the planar embedding.  That is, $\gamma$ is a
+closed walk of the form
+\[
+%a \dots b \cdots a.
+%\catv{\alpha}{b}{\beta}
+\gamma = \merge{\alpha}{\beta}
+\]
+where $\alpha$ is a walk from $a$ to $b$ and $\beta$ is a walk from
+$b$ to $a$.  Then the graph obtained by adding the edge $\edge{a}{b}$
+to the edges of $G$ has a planar embedding with the same discrete
+faces as $G$, except that face $\gamma$ is replaced by the two
+discrete faces\footnote{\label{C} There is a minor exception to this
+  definition of embedding in the special case when $G$ is a line graph
+  beginning with $a$ and ending with $b$.  In this case the cycles
+  into which $\gamma$ splits are actually the same.  That's because
+  adding edge $\edge{a}{b}$ creates a cycle that divides the plane
+  into ``inner'' and ``outer'' continuous faces that are both bordered
+  by this cycle.  In order to maintain the correspondence between
+  continuous faces and discrete faces in this case, we define the two
+  discrete faces of the embedding to be two ``copies'' of this same
+  cycle.}
+\begin{equation}\label{alphbetsplit}
+%a\dots ba\quad \text{ and } \quad ab\cdots a,
+\merge{\alpha}{\edge{b}{a}}
+ \quad \text{ and } \quad \merge{\edge{a}{b}}{\beta}
+\end{equation}
+as illustrated in Figure~\ref{fig:face-splitting}.\footnote{Formally,
+  merge is an operation on walks, not a walk and an edge, so
+  in~\eqref{alphbetsplit}, we should have used a walk $(a\ \edge{a}{b}\ b)$
+  instead of an edge $\edge{a}{b}$ and written
+\[
+%a\dots ab\cdots ba.
+\merge{\alpha}{(b\ \edge{b}{a}\ a)}
+ \quad \text{ and } \quad \merge{(a\ \edge{a}{b}\ b)}{\beta}
+\]
+}
+
+\begin{figure}
+
+\graphic{split-a-face}
+
+\caption{The ``split a face'' case: $awxbyza$ splits into $awxba$ and $abyza$.}
+\label{fig:face-splitting}
+\end{figure}
+
+\inductioncase{Constructor case} (add a bridge): Suppose $G$ and~$H$
+are connected graphs with planar embeddings and disjoint sets of
+vertices.  Let $\gamma$ be a discrete face of the embedding of $G$ and
+suppose that $\gamma$ begins and ends at vertex $a$.
+\iffalse
+That is, $\gamma$ is of the form
+\[
+a\dots a.
+\]
+\fi
+
+Similarly, let $\delta$ be a discrete face of the embedding of $H$
+that begins and ends at vertex $b$.
+\iffalse
+So $\delta$ is of the form
+\[
+b\cdots b.
+\]
+\fi
+
+Then the graph obtained by connecting $G$ and $H$ with a new edge
+$\edge{a}{b}$ has a planar embedding whose discrete faces are the
+union of the discrete faces of $G$ and $H$, except that faces $\gamma$
+and $\delta$ are replaced by one new face
+\[
+%a\dots ab\cdots ba.
+\merge{\merge{\merge{\gamma}{\edge{a}{b}}}{\delta}}{\edge{b}{a}}.
+\]
+
+This is illustrated in Figure~\ref{fig:add-bridge}, where the vertex
+sequences of the faces of $G$ and $H$ are:
+\[
+G: \set{ axyza,\; axya,\; ayza }
+    \qquad H: \set{ btuvwb,\; btvwb,\; tuvt },
+\]
+and after adding the bridge $\edge{a}{b}$, there is a
+single connected graph whose faces have the vertex sequences
+\[
+\set{ axyz{\color{blue}ab}tuvw{\color{blue}ba},\;
+         axya,\; ayza,\; btvwb,\; tuvt }.
+\]
+
+\begin{figure}
+
+\graphic{add-bridge}
+
+\caption{The ``add a bridge'' case.}
+\label{fig:add-bridge}
+\end{figure}
+
+\end{definition}
+
+A \idx{bridge} is simply a cut edge, but in the context of planar
+embeddings, the bridges are precisely the edges that occur \emph{twice
+  on the same discrete face}---as opposed to once on each of two
+faces.  \idx{Dongles} are trees made of bridges; we only use dongles
+in illustrations, so there's no need to define them more precisely.
+
+\subsection{Does It Work?}
+
+Yes!  In general, a graph is planar because it has a planar drawing
+according to Definition~\ref{def:planar_drawing} if and only if each
+of its connected components has a planar embedding as specified in
+Definition~\ref{def:embedding}.  Of course we can't prove this without
+an excursion into exactly the kind of continuous math that we're
+trying to avoid.  But now that the recursive definition of planar
+graphs is in place, we won't ever need to fall back on the continuous
+stuff.  That's the good news.
+
+The bad news is that Definition~\ref{def:embedding} is a lot more
+technical than the intuitively simple notion of a drawing whose edges
+don't cross.  In many cases it's easier to stick to the idea of planar
+drawings and give proofs in those terms.  For example, erasing edges
+from a planar drawing will surely leave a planar drawing.  On the
+other hand, it's not so obvious, though of course it is true, that you
+can delete an edge from a planar embedding and still get a planar
+embedding (see Problem~\ref{PS_planar_graph_construction_order}).
+
+In the hands of experts, and perhaps in your hands too with a little
+more experience, proofs about planar graphs by appeal to drawings can
+be convincing and reliable.  But given the long history of mistakes in
+such proofs, it's safer to work from the precise definition of planar
+embedding.  More generally, it's also important to see how the
+abstract properties of curved drawings in the plane can be modelled
+successfully using a discrete data type.
+
+\subsection{Where Did the Outer Face Go?}
+
+Every planar drawing has an immediately-recognizable outer face
+---it's the one that goes to infinity in all directions.  But where is
+the outer face in a planar embedding?
+
+There isn't one!  That's because there really isn't any need to
+distinguish one face from another.  In fact, a planar embedding could
+be drawn with any given face on the outside.  An intuitive explanation
+of this is to think of drawing the embedding on a \emph{sphere}
+instead of the plane.  Then any face can be made the outside face by
+``puncturing'' that face of the sphere, stretching the puncture hole
+to a circle around the rest of the faces, and flattening the circular
+drawing onto the plane.
+
+So pictures that show different ``outside'' boundaries may actually be
+illustrations of the same planar embedding.  For example, the two
+embeddings shown in Figure~\ref{fig:5DE} are really the same---check
+it: they have the same boundary cycles.
+
+\begin{figure}
+
+\graphic{Fig_5DE}
+
+\caption{Two illustrations of the same embedding.}
+\label{fig:5DE}
+\end{figure}
+
+This is what justifies the ``add bridge'' case in
+Definition~\ref{def:embedding}: whatever face is chosen in the
+embeddings of each of the disjoint planar graphs, we can draw a
+bridge between them without needing to cross any other edges in the
+drawing, because we can assume the bridge connects two ``outer''
+faces.
+
+\begin{problems}
+\practiceproblems
+\pinput{TP_Faces_of_a_Planar_Embedding}
+
+\end{problems}
+
+
+\section{Euler's Formula}
+
+The value of the recursive definition is that it provides a powerful
+technique for proving properties of planar graphs, namely, structural
+induction.  For example, we will now use
+Definition~\ref{def:embedding} and structural induction to establish
+one of the most basic properties of a connected planar graph, namely,
+that the number of vertices and edges completely determines the number
+of faces in every possible planar embedding of the graph.
+
+\begin{theorem}[Euler's Formula\index{Euler!formula}]\label{thm:eulers_formula}
+If a connected graph has a planar embedding, then
+\begin{equation*}
+    v - e + f = 2
+\end{equation*}
+where $v$ is the number of vertices, $e$ is the number of edges and
+$f$ is the number of faces.
+\end{theorem}
+
+For example, in Figure~\ref{fig:continuous-faces}, $v = 4$,
+$e = 6$ and $f = 4$.  Sure enough, $4 - 6 + 4 = 2$, as Euler's
+Formula claims.
+
+\begin{proof}
+The proof is by structural induction on the definition of planar
+embeddings.  Let $P(\embed{E})$ be the proposition that $v - e + f = 2$ for an
+embedding $\embed{E}$.
+
+\inductioncase{Base case} ($\embed{E}$ is the one-vertex planar
+embedding): By definition, $v=1$, $e=0$ and $f=1$, and $1-0+1 =2$, so
+$P(\embed{E})$ indeed holds.
+
+\inductioncase{Constructor case} (split a face): Suppose $G$ is a
+connected graph with a planar embedding, and suppose $a$ and $b$ are
+distinct, nonadjacent vertices of $G$ that appear on some discrete
+face $\gamma= a \dots b \cdots a$ of the planar embedding.
+
+Then the graph obtained by adding the edge $\edge{a}{b}$ to the edges of
+$G$ has a planar embedding with one more face and one more edge than $G$.
+So the quantity $v-e+f$ will remain the same for both graphs, and since by
+structural induction this quantity is 2 for $G$'s embedding, it's also 2
+for the embedding of $G$ with the added edge.  So $P$ holds for the
+constructed embedding.
+
+\inductioncase{Constructor case} (add bridge): Suppose $G$ and $H$ are
+connected graphs with planar embeddings and disjoint sets of vertices.
+Then connecting these two graphs with a bridge merges the two bridged
+faces into a single face, and leaves all other faces unchanged.  So
+the bridge operation yields a planar embedding of a connected graph
+with $v_G +v_H$ vertices, $e_G + e_H +1$ edges, and $f_G + f_H - 1$
+faces.  Since
+\begin{align*}
+\lefteqn{(v_G +v_H) - (e_G + e_H +1) + (f_G + f_H - 1)} \qquad\\
+   & = (v_G  - e_G + f_G) + (v_H  - e_H  + f_H) -2\\
+   & = (2)+(2)-2 \qquad \text{(by structural induction hypothesis)}\\
+   & = 2,
+\end{align*}
+$v-e+f$ remains equal to~2 for the constructed embedding.  That is,
+$P(\embed{E})$ also holds in this case.
+
+This completes the proof of the constructor cases, and the theorem follows
+by structural induction.
+\end{proof}
+
+\section{Bounding the Number of Edges in a Planar Graph}
+
+Like Euler's formula, the following lemmas follow by structural induction
+directly from Definition~\ref{def:embedding}.
+
+\begin{lemma}\label{2e}
+In a planar embedding of a connected graph, each edge occurs once in
+each of two different faces, or occurs exactly twice in one face.
+\end{lemma}
+
+\begin{lemma}\label{3f}
+  In a planar embedding of a connected graph with at least three vertices,
+  each face is of length at least three.
+\end{lemma}
+
+Combining Lemmas~\ref{2e} and~\ref{3f} with Euler's Formula, we can
+now prove that planar graphs have a limited number of edges:
+
+\begin{theorem}\label{th:e3v}
+  Suppose a connected planar graph has $v \geq 3$ vertices and $e$
+  edges.  Then
+\begin{equation}\label{eq:e3v}
+    e \leq 3v-6.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By definition, a connected graph is planar iff it has a planar
+embedding.  So suppose a connected graph with $v$ vertices and $e$
+edges has a planar embedding with $f$ faces.  By Lemma~\ref{2e}, every
+edge has exactly two occurrences in the face boundaries.  So the sum
+of the lengths of the face boundaries is exactly $2e$.  Also by
+Lemma~\ref{3f}, when $v \geq 3$, each face boundary is of length at
+least three, so this sum is at least $3f$.  This implies that
+\begin{equation}\label{e3f}
+3f \leq 2e.
+\end{equation}
+But $f = e-v+2$ by Euler's formula, and substituting into~\eqref{e3f} gives
+\begin{align*}
+3(e-v+2) & \leq 2e\\
+e-3v + 6  & \leq 0\\
+e & \leq 3v - 6 \qedhere
+\end{align*}
+\end{proof}
+
+\section{Returning to $K_5$ and $K_{3,3}$}
+
+Finally we have a simple way to answer the quadrapi question at the
+beginning of this chapter: the five quadrapi can't all shake hands without
+crossing.  The reason is that we know the quadrupi question is the same as
+asking whether a complete graph $K_5$ is planar, and 
+Theorem~\ref{th:e3v} has the immediate:
+\begin{corollary}\label{k5not}
+$K_5$ is not planar.
+\end{corollary}
+\begin{proof}
+  $K_5$ is connected and has 5 vertices and 10 edges.  But since $10 > 3
+  \cdot 5-6$, $K_5$ does not satisfy the inequality~\eqref{eq:e3v} that
+  holds in all planar graphs.
+\end{proof}
+
+We can also use Euler's Formula to show that $K_{3, 3}$ is not
+planar.  The proof is similar to that of Theorem~\ref{eq:e3v} except that
+we use the additional fact that $K_{3, 3}$ is a bipartite graph.
+
+\begin{editingnotes}
+\textcolor{red}{CUT by FTL since proved in Theorem~\ref{thm:2-colorable-equiv}}
+
+\begin{lemma*}\label{lem:5D5}
+Every closed walk in a bipartite graph has even length.
+\end{lemma*}
+
+\begin{proof}
+Any closed walk in a bipartite graph~$G$ must alternate between nodes
+in~$\leftbi{G}$ and $\rightbi{G}$.  Since a closed walk ends on the
+same node it started with, it must visit nodes in~$\leftbi{G}$
+equally often as nodes in~$\rightbi{G}$.  Hence it must have even
+length.
+\end{proof}
+
+\begin{corollary}\label{cor:5D6}
+In a planar embedding of a connected \emph{bipartite} graph with at
+least 3 vertices, each face has length at least~4.
+\end{corollary}
+\begin{proof}
+  By Lemma~\ref{3f}, every face has length~3.  Since the graph is
+  bipartite and since each face is a closed walk,
+  Lemma~\ref{2color-iff-bip} and
+  Theorem~\ref{thm:2-colorable-equiv}.\ref{has-odd-closed-walk} imply that
+  no face can have length~3.  Hence, every face must actually have length
+  at least~4.
+\end{proof}
+\end{editingnotes}
+
+\begin{lemma}\label{lem:5D6}
+In a planar embedding of a connected \idx{bipartite graph} with at
+least 3 vertices, each face has length at least~4.
+\end{lemma}
+
+\begin{proof}
+  By Lemma~\ref{3f}, every face of a planar embedding of the graph has
+  length at least~3.  But by Lemma~\ref{2color-iff-bip} and
+  Theorem~\ref{thm:2-colorable-equiv}.\ref{has-odd-closed-walk}, a
+    bipartite graph can't have odd length closed walks.  Since the faces
+    of a planar embedding are closed walks, there can't be any faces of
+    length 3 in a bipartite embedding.  So every face must have length at
+    least~4.
+\end{proof}
+
+\begin{theorem}\label{th:e2v}
+Suppose a connected bipartite graph with $v \geq 3$ vertices and $e$ edges
+is planar.  Then
+\begin{equation}\label{eq:e2v}
+    e \leq 2v-4.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+  Lemma~\ref{lem:5D6} implies that all the faces of an embedding of the
+  graph have length at least 4.  Now arguing as in the proof of
+  Theorem~\ref{th:e3v}, we find that the sum of the lengths of the face
+  boundaries is exactly~$2e$ and at least~$4f$.  Hence,
+\begin{equation}\label{4ele2e}
+    4f \le 2e
+\end{equation}
+for any embedding of a planar bipartite graph.  By Euler's theorem,
+$f=2-v+e$.  Substituting $2-v+e$ for $f$ in~\eqref{4ele2e}, we have
+\[
+4(2-v+e) \leq 2e,
+\]
+which simplies to~\eqref{eq:e2v}.
+\end{proof}
+
+\begin{corollary}\label{cor:K33-nonplanar} %\label{thm:K33-nonplanar}
+$K_{3, 3}$ is not planar.
+\end{corollary}
+
+\begin{proof}
+  $K_{3,3}$ is connected, bipartite and has 6 vertices and 9 edges.  But
+  since $ 9 > 2 \cdot 6-4$, $K_{3,3}$ does not satisfy the
+  inequality~\eqref{eq:e3v} that holds in all bipartite planar graphs.
+\end{proof}
+
+\begin{editingnotes}
+\section{Planar Subgraphs}
+
+If you draw a graph in the plane by repeatedly adding edges that don't
+cross, you clearly could add the edges in any other order and still
+wind up with the same drawing.  This is so basic that we might presume
+that our recursively defined planar embeddings have this property.
+But that wouldn't be fair: we really need to prove it.  After all, the
+recursive definition of planar embedding was pretty technical---maybe
+we got it a little bit wrong, with the result that our embeddings
+don't have this basic draw-in-any-order property.
+
+Now any ordering of edges can be obtained just by repeatedly switching the
+order of successive edges, and if you think about the recursive definition
+of embedding for a minute, you should realize that you can switch
+\emph{any} pair of successive edges if you can just switch the last two.
+So it all comes down to the following lemma.
+
+\begin{lemma}\label{switch-edges} Suppose that,
+  starting from some embeddings of planar graphs with disjoint sets of
+  vertices, it is possible by two successive applications of constructor
+  operations to add edges $e$ and then $f$ to obtain a planar embedding,
+  $\embed{F}$.  Then starting from the same embeddings, it is also
+  possible to obtain $\embed{F}$ by adding $f$ and then $e$ with two
+  successive applications of constructor operations.
+\end{lemma}
+
+We'll leave the proof of Lemma~\ref{switch-edges} to
+Problem~\ref{PS_planar_graph_construction_order}.
+
+\begin{corollary}\label{permute-edges} Suppose that, starting from some
+  embeddings of planar graphs with disjoint sets of vertices, it is
+  possible to add a sequence of edges $e_0,e_1,\dots,e_n$ by successive
+  applications of constructor operations to obtain a planar embedding,
+  $\embed{F}$.  Then starting from the same embeddings, it is also
+  possible to obtain $\embed{F}$ by applications of constructor operations
+  that successively add any permutation\footnote{If $\pi:\set{0,1,\dots,n} \to
+    \set{0,1,\dots,n}$ is a bijection, then the sequence
+    $e_{\pi(0)},e_{\pi(1)},\dots,e_{\pi(n)}$ is called a \term{permutation} of
+    the sequence $e_0,e_1,\dots,e_n$.} of the edges $e_0,e_1,\dots,e_n$.
+\end{corollary}
+
+\begin{corollary}\label{delete-edge}
+Deleting an edge from a planar graph leaves a planar graph.
+
+\begin{proof}
+  By Corollary~\ref{permute-edges}, we may assume the deleted edge was the
+  last one added in constructing an embedding of the graph.  So the
+  embedding to which this last edge was added must be an embedding of the
+  graph without that edge.
+\end{proof}
+
+\end{corollary}
+
+Since we can delete a vertex by deleting all its incident edges,
+Corollary~\ref{delete-edge} immediately implies
+
+\begin{corollary}%\label{delete-vertex}
+Deleting a vertex from a planar graph, along with all its incident
+edges of course, leaves another planar graph.
+\end{corollary}
+
+A \term{subgraph} of a graph $G$ is any graph whose set of vertices is a
+subset of the vertices of $G$ and whose set of edges is a subset of the
+set of edges of $G$.  So we can summarize these Corollaries %~\ref{delete-edge}
+%and %~\ref{delete-vertex}
+and their consequences in a Theorem.
+
+\begin{theorem}%\label{planar-subgraph}
+  Any \index{planar subgraph}subgraph of a planar graph is planar.
+\end{theorem}
+\end{editingnotes}
+
+
+\section{Coloring Planar Graphs}
+
+We've covered a lot of ground with planar graphs, but not nearly
+enough to prove the famous 4-color theorem.  But we can get awfully
+close.  Indeed, we have done almost enough work to prove that every
+planar graph can be colored using only 5 colors.
+
+There are two familiar facts about planarity that we will need.
+
+\begin{lemma}\label{planar-subgraph}
+  Any \index{planar subgraph}subgraph of a planar graph is planar.
+\end{lemma}
+
+\begin{lemma}\label{mergelem}
+Merging two adjacent vertices of a planar graph leaves another planar
+graph.
+\end{lemma}
+
+\emph{Merging} two adjacent vertices, $n_1$ and~$n_2$ of a
+  graph means deleting the two vertices and then replacing them by a
+  new ``merged'' vertex $m$ adjacent to all the vertices that were
+  adjacent to either of~$n_1$ or~$n_2$, as illustrated in
+  Figure~\ref{fig:merged}.
+
+\begin{figure}
+
+\graphic{vertex-merge-arrows}
+
+\caption{Merging adjacent vertices $n_1$ and $n_2$ into new vertex $m$.}
+\label{fig:merged}
+\end{figure}
+
+Many authors take Lemmas~\ref{planar-subgraph} and~\ref{mergelem} for
+granted for continuous drawings of planar graphs described by
+Definition~\ref{def:planar_drawing}.  With the recursive
+Definition~\ref{def:embedding} both Lemmas can actually be proved
+using structural induction (see
+Problem~\ref{PS_planar_graph_construction_order}).
+
+\begin{editingnotes}
+Problem~\ref{PS_planar_graph_construction_order} needs a solution,
+maybe an extension too.
+\end{editingnotes}
+
+\begin{editingnotes}
+\textcolor{red}{CUT: these are special cases of
+  Lemma~\ref{planar-subgraph}.  Only purpose in mentioning them is if
+  we were doing the proof.---ARM}
+
+\begin{lemma*}%\label{lem:deleting_planar_edge}
+Deleting an edge from a planar graph leaves another planar graph.
+\end{lemma*}
+
+\begin{corollary*}%\label{delete-vertex}
+Deleting a vertex from a planar graph, along with all its incident
+edges, leaves another planar graph.
+\end{corollary*}
+\end{editingnotes}
+
+We need only one more lemma:
+\begin{lemma}\label{lem:pg5}
+Every planar graph has a vertex of degree at most five.
+\end{lemma}
+
+\begin{proof}
+Assuming to the contrary that every vertex of some planar graph had
+degree at least~6, then the sum of the vertex degrees is at
+least~$6v$.  But the sum of the vertex degrees equals~$2e$ by the
+Handshake Lemma~\ref{sumedges}, so we have $e \ge 3v$ contradicting
+the fact that $e \le 3v - 6 < 3v$ by Theorem~\ref{th:e3v}.
+\end{proof}
+
+\begin{theorem}
+Every planar graph is five-colorable.
+\end{theorem}
+
+\begin{proof}
+The proof will be by strong induction on the number $v$ of vertices, with
+induction hypothesis:
+\begin{quote}
+Every planar graph with $v$ vertices is five-colorable.
+\end{quote}
+
+\inductioncase{Base cases} ($v \leq 5$): immediate.
+
+\inductioncase{Inductive case}: Suppose $G$ is a planar graph with
+$v+1$ vertices.  We will describe a five-coloring of $G$.
+
+First, choose a vertex $g$ of $G$ with degree at most 5;
+Lemma~\ref{lem:pg5} guarantees there will be such a vertex.
+\begin{description}
+
+\item[Case 1:] ($\degr{g}<5$): Deleting $g$ from $G$ leaves a graph
+$H$ that is planar by Lemma~\ref{planar-subgraph}, and since $H$
+has $v$ vertices, it is five-colorable by induction hypothesis.  Now
+define a five coloring of $G$ as follows: use the five-coloring of $H$
+for all the vertices besides $g$, and assign one of the five colors to
+$g$ that is not the same as the color assigned to any of its
+neighbors.  Since there are fewer than 5 neighbors, there will always
+be such a color available for $g$.
+
+\item[Case 2:] ($\degr{g}=5$): If the five neighbors of $g$ in $G$
+  were all adjacent to each other, then these five vertices would form
+  a nonplanar subgraph isomorphic to $K_5$, contradicting
+  Lemma~\ref{planar-subgraph} (since $K_5$ is not planar).  So there
+  must be two neighbors, $n_1$ and $n_2$, of $g$ that are not
+  adjacent.  Now merge $n_1$ and $g$ into a new vertex,~$m$.  In this
+  new graph, $n_2$ is adjacent to $m$, and the graph is planar by
+  Lemma~\ref{mergelem}.  So we can then merge $m$ and $n_2$ into a
+  another new vertex $m'$, resulting in a new graph $G'$ which by
+  Lemma~\ref{mergelem} is also planar.  Since $G'$ has $v-1$
+  vertices, it is five-colorable by the induction hypothesis.
+
+  Now define a five coloring of $G$ as follows: use the five-coloring of $G'$
+  for all the vertices besides $g$, $n_1$ and $n_2$.  Next assign the
+  color of $m'$ in $G'$ to be the color of the neighbors $n_1$ and $n_2$.
+  Since $n_1$ and $n_2$ are not adjacent in $G$, this defines a proper
+  five-coloring of $G$ except for vertex $g$.  But since these two
+  neighbors of $g$ have the same color, the neighbors of $g$ have been
+  colored using fewer than five colors altogether.  So complete the
+  five-coloring of $G$ by assigning one of the five colors to $g$ that is
+  not the same as any of the colors assigned to its neighbors.
+\end{description}
+
+\end{proof}
+
+\section{Classifying \idx{Polyhedra}}
+
+The \idx{Pythagoreans} had two great mathematical secrets, the
+irrationality of $\sqrt{2}$ and a geometric construct that we're about
+to rediscover!
+
+A \term{polyhedron} is a convex, three-dimensional region bounded by a
+finite number of polygonal faces.  If the faces are identical regular
+polygons and an equal number of polygons meet at each corner, then the
+polyhedron is \index{regular polyhedron}\term*{regular}.  Three
+examples of regular polyhedra are shown in Figure~\ref{fig:polyhedra}: the
+tetrahedron, the cube, and the octahedron.
+
+\begin{figure}
+
+\subfloat[]{
+    \graphic{Fig_5_47a}
+}
+\quad
+\subfloat[]{
+    \graphic{Fig_5_47b}
+}
+\quad
+\subfloat[]{
+    \graphic{Fig_5_47c}
+}
+
+\caption{The tetrahedron~(a), cube~(b), and octahedron~(c).}
+v
+\label{fig:polyhedra}
+\end{figure}
+
+We can determine how many more regular polyhedra there are by thinking
+about planarity.  Suppose we took \emph{any} polyhedron and placed a
+sphere inside it.  Then we could project the polyhedron face
+boundaries onto the sphere, which would give an image that was a
+planar graph embedded on the sphere, with the images of the corners of
+the polyhedron corresponding to vertices of the graph.  We've already
+observed that embeddings on a sphere are the same as embeddings on the
+plane, so Euler's formula for planar graphs can help guide our search
+for regular polyhedra.
+
+For example, planar embeddings of the three polyhedra in
+Figure~\ref{fig:5DP} are shown in Figure~\ref{fig:5DQ}.
+
+\begin{figure}
+
+\subfloat[]{
+    \graphic{Fig_5_48a}
+}
+\quad
+\subfloat[]{
+    \graphic{Fig_5_48b}
+}
+\quad
+\subfloat[]{
+    \graphic{Fig_5_48c}
+}
+
+\caption{Planar embeddings of the tetrahedron~(a), cube~(b), and
+  octahedron~(c).}
+
+\label{fig:5DQ}
+
+\end{figure}
+
+Let $m$ be the number of faces that meet at each corner of a
+polyhedron, and let $n$ be the number of edges on each face.  In the
+corresponding planar graph, there are $m$ edges incident to each of
+the $v$ vertices.  By the Handshake Lemma~\ref{sumedges}, we
+know:
+%
+\[
+m v = 2 e.
+\]
+%
+Also, each face is bounded by $n$ edges.  Since each edge is on the
+boundary of two faces, we have:
+%
+\[
+n f = 2 e
+\]
+%
+Solving for $v$ and $f$ in these equations and then substituting into
+\idx{Euler's formula} gives:
+\[
+\frac{2e}{m} - e + \frac{2e}{n} = 2
+\]
+which simplifies to
+\begin{equation}\label{1m1n}
+\frac{1}{m} + \frac{1}{n} = \frac{1}{e} + \frac{1}{2}
+\end{equation}
+%
+Equation~\ref{1m1n} places strong restrictions on the structure of a
+polyhedron.  Every nondegenerate polygon has at least 3 sides, so $n
+\geq 3$.  And at least 3 polygons must meet to form a corner, so $m
+\geq 3$.  On the other hand, if either $n$ or $m$ were 6 or more, then
+the left side of the equation could be at most $1/3 + 1/6 = 1/2$,
+which is less than the right side.  Checking the finitely-many cases
+that remain turns up only five solutions, as shown in
+Figure~\ref{fig:5DR}.  For each valid combination of $n$ and $m$, we
+can compute the associated number of vertices $v$, edges $e$, and
+faces $f$.  And polyhedra with these properties do actually exist.
+The largest polyhedron, the dodecahedron, was the other great
+mathematical secret of the Pythagorean sect.
+
+\begin{figure}\redrawntrue
+
+\gnote{Add illustration of icosa- and dodecahedra?}
+
+\[
+\begin{array}{cc|ccc|l}
+n & m & v  & e  &  f & \text{polyhedron} \\ \hline
+3 & 3 & 4  & 6  &  4 & \text{tetrahedron} \\
+4 & 3 & 8  & 12 &  6 & \text{cube} \\
+3 & 4 & 6  & 12 &  8 & \text{octahedron} \\
+3 & 5 & 12 & 30 & 20 & \text{icosahedron} \\
+5 & 3 & 20 & 30 & 12 & \text{dodecahedron}
+\end{array}
+\]
+
+\caption{The only possible regular polyhedra.}
+
+\label{fig:5DR}
+
+\end{figure}
+
+The 5 polyhedra in Figure~\ref{fig:5DR} are the only possible regular
+polyhedra.  So if you want to put more than 20 geocentric satellites
+in orbit so that they \emph{uniformly} blanket the globe---tough luck!
+
+\section{Another Characterization for Planar Graphs}
+
+We did not pick ~$K_5$ and~$K_{3, 3}$ as examples because of their
+application to dog houses or quadrapi shaking hands.  We really picked
+them because they provide another, famous, discrete characterizarion
+of planar graphs:
+\begin{theorem}[Kuratowski]\label{thm:kuratowski}
+A graph is not planar if and only if it contains $K_5$ or~$K_{3, 3}$
+as a minor.
+\end{theorem}
+
+\begin{definition}
+  A \term{minor} of a graph~$G$ is a graph that can be obtained by
+  repeatedly\footnote{The three operations can each be performed any
+    number of times in any order.} deleting vertices, deleting edges,
+  and \index{merging vertices}merging \emph{adjacent} vertices
+  of~$G$.
+\end{definition}
+
+For example, Figure~\ref{fig:5DL} illustrates why $C_3$ is a minor of
+the graph in Figure~\ref{fig:5DL}(a).  In fact $C_3$ is a minor of a
+connected graph~$G$ if and only if $G$ is not a tree.
+
+\begin{figure}
+
+\gnote{Tom: Should we label $v_1$, $v_2$ and $v_3$ in all 6 graphs?}
+
+\graphic{Fig_5DL}
+
+\caption{One method by which the graph in~(a) can be reduced
+  to~$C_3$~(f), thereby showing that $C_3$ is a minor of the graph.
+  The steps are: merging the nodes incident to~$e_1$~(b),
+  deleting~$v_1$ and all edges incident to it~(c), deleting $v_2$~(d),
+deleting~$e_2$, and deleting $v_3$~(f).}
+
+\label{fig:5DL}
+\end{figure}
+
+The known proofs of Kuratowski's Theorem~\ref{thm:kuratowski} are a little
+too long to include in an introductory text, so we won't give one.
+
+
+%\section{Problems}
+%\problemsection
+
+\begin{problems}
+
+\examproblems
+\pinput{MQ_planar_isomorphism}
+\pinput{MQ_planar_face_length}
+\pinput{FP_planar_structural_induction}
+\pinput{MQ_simple_graphs_short_answer}
+
+\classproblems
+\pinput{CP_planar_embedding_isomorphism}
+%\pinput{CP_K33_not_planar}
+\pinput{CP_planar_structural_induction}
+
+\homeworkproblems
+\pinput{PS_triangle_free_planar_graphs}
+\pinput{PS_planar_graph_construction_order}
+
+%\pinput{CP0506_}
+\end{problems}
+\
+\begin{editingnotes}
+Add CONCLUSION?
+\end{editingnotes}
+
+\endinput
+

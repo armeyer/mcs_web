@@ -1,0 +1,213 @@
+\documentclass[twoside,12pt]{article}
+
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\topmargin}{0 in}
+\setlength{\headheight}{0.25 in}
+\setlength{\headsep}{0.25 in}
+\setlength{\evensidemargin}{0 in}
+\setlength{\oddsidemargin}{0 in}
+\setlength{\parskip}{1ex}
+
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+
+\newenvironment{comment}[1]{}{}
+\newenvironment{proof}{\noindent {\em Proof.}}{$\Box$}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{mrule}{Rule}
+
+\newcommand{\beqn}{\begin{eqnarray*}}
+\newcommand{\eeqn}{\end{eqnarray*}}
+\newcommand{\pr}[1]{\Pr\left\{#1\right\}}
+\newcommand{\ex}[1]{\text{Ex}\left[#1\right]}
+\newcommand{\true}{\text{T}}
+\newcommand{\false}{\text{F}}
+
+\begin{document}
+
+\begin{center}
+{\Large Lecture 24 - Review} \\
+6.042 - May 15, 2003 \\
+\bigskip
+\end{center}
+
+This lecture was intended as a quick review of most of the topics seen
+in 6.042.  These notes primarily address what was {\em not} explained
+in lecture and will {\em not} appear on the final exam.
+
+\section{Catalan Numbers}
+
+The set of $P$ of balanced parentheses strings can be recursively
+defined as follows:
+
+\begin{enumerate}
+
+\item $\lambda \in P$
+
+\item If $\alpha, \beta \in P$, then $(\alpha)\beta$ is in $P$.
+
+\end{enumerate}
+
+\noindent Furthermore, every nonempty balanced parentheses string can
+be obtained via rule 2 from a {\em unique} pair of balanced
+parentheses strings $\alpha$ and $\beta$.  For example, the string
+$((())())(()())()$ is obtained as follows:
+
+\[
+(\ \underbrace{(\ (\ )\ )\ (\ )}_{\alpha}\ )\ \underbrace{(\ (\ )\ (\ )\ )\ (\ )}_{\beta}
+\]
+
+\subsection{Enumerating Catalan Numbers}
+
+Let $C_n$ be the number of balanced parentheses strings with exactly
+$n$ pairs of parentheses.  There is only one balanced parentheses
+string with zero pairs of parentheses, the empty string $\lambda$.
+Therefore, we have:
+
+\beqn
+C_0 & = & 1
+\eeqn
+
+Now let's determine $C_{n+1}$, the number of balanced parentheses
+strings with $n+1$ pairs of parentheses.  As we noted above, every
+such string can be obtained in a unique way via rule 2, which says:
+
+\begin{quotation}
+If $\alpha, \beta \in P$, then $(\alpha)\beta$ is in $P$.
+\end{quotation}
+
+\noindent One of the $n+1$ pairs of parentheses that we need appears
+explicitly in the rule.  The remaining $n$ pairs of parentheses must
+come from $\alpha$ and $\beta$.  Suppose that $\alpha$ contains $k$
+pairs of parentheses.  Then $\beta$ must contain $n - k$ pairs.  Thus,
+the number of ways to choose the balanced parentheses string $\alpha$
+is $C_k$, and the number of ways to choose $\beta$ is $C_{n-k}$.  Now
+$k$, the number of pairs of parentheses in $\alpha$, can be any number
+in the range from 0 to $n$.  Summing over all these possibilities, we
+find:
+
+\beqn
+C_{n+1} & = & \sum_{k=0}^{n} C_k \cdot C_{n-k} \hspace{0.75in} (n \geq 0)
+\eeqn
+
+The numbers $C_0, C_1, C_2, \ldots$ are called {\em Catalan numbers}.
+They arise in many different counting problem.  We can use the
+recurrent relation to compute as many was we like:
+
+\beqn
+C_0	& = &	1 \\
+C_1	& = &	C_0^2 \\
+	& = &	1 \\
+C_2	& = &	C_0 C_1 + C_1 C_0 \\
+	& = &	2 \\
+C_3	& = &	C_0 C_2 + C_1 C_1 + C_2 C_0 \\
+	& = &	5 \\
+	&   &	\text{etc.}
+\eeqn
+
+\noindent Note the expressions on the rights sides of these equations;
+they'll appear again later.  Here is a big list of Catalan numbers,
+computed by continuing the procedure used above:
+
+\noindent 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796, 58786,
+208012, 742900, 2674440, \\ 9694845, 35357670, 129644790, 477638700,
+1767263190, 6564120420, 24466267020, \\ 91482563640, 343059613650,
+1289904147324, 4861946401452, 18367353072152, \\ 69533550916004,
+263747951750360, 1002242216651368
+
+\section{A Geometry Problem}
+
+Now let's look at an easy geometry problem.  We have a circle with
+diameter 1,000,000.  We draw diameter AC and another radius BD.  Then
+we draw an additional segment DE of lenght 1 so that DEB is a right
+angle.  The figure below shows the configuration, but is not to scale:
+
+\bigskip
+\centerline{\resizebox{!}{1.5in}{\includegraphics{lec24-circle.eps}}}
+\bigskip
+
+\noindent We can then compute the lengt of segment BD using the
+Pythagorean theorem.  Remarkably, if we evaluate the length to several
+hundred digits of precision, the Catalan numbers come marching out:
+
+\beqn
+\text{BD}
+	& = &	500000 - \sqrt{500000^2 - 1} \\
+	& = &	
+\eeqn
+
+\section{An Explanation}
+
+This was {\em not} covered in lecture and will {\em not} be on the
+final exam.  Let's start by looking at the power series of a
+real-valued function $Q$.
+
+\beqn
+Q(x) & = & c_0 + c_1 x + c_2 x^2 + c_3 x^3 + \ldots
+\eeqn
+
+\noindent Then, by ordinary algebra, we have:
+
+\beqn
+1 + xQ(x)^2 & = &
+	1 +
+	c_0^2 x +
+	(c_0 c_1 + c_1 c_0) x^2 +
+	(c_0 c_2 + c_1 c_1 + c_2 c_0) x^3 + \ldots
+\eeqn
+
+\noindent Now consider the equation:
+
+\beqn
+Q(x) & = & 1 + x Q(x)^2
+\eeqn
+
+\noindent For this equation to hold, the power series of $Q(x)$ must
+equal the power series of $1 + x Q(x)^2$.  This happens only if all
+the coefficients of the two power series are equal; that is, if:
+
+\beqn
+c_0 & = & 1 \\
+c_1 & = & c_0^2 \\
+c_2 & = & c_0 c_1 + c_1 c_0 \\
+c_3 & = & c_0 c_2 + c_1 c_1 + c_2 c_0 \\
+    &   & \text{etc.}
+\eeqn
+
+\noindent In other words, the coefficients of the function $Q$ must be
+the Catalan numbers!
+
+We can solve for $Q$ using the quadratic equation:
+
+\beqn
+Q(x) & = & \frac{1 \pm \sqrt{1 - 4x}}{2x}
+\eeqn
+
+\noindent Let's use the negative square root.  From this formula for
+$Q$, we find:
+
+\beqn
+10^{-6} \cdot Q(10^{-12})
+	& = & 10^{-6} \cdot
+		\frac{1 \pm \sqrt{1 - 4 \cdot 10^{-12}}}{2 \cdot 10^{-12}} \\
+	& = & 500000 - \sqrt{500000^2 - 1}
+\eeqn
+
+From the original power-series expression for $Q$, we find:
+
+\beqn
+10^{-6} \cdot Q(10^{-12})
+	& = & c_0 10^{-6} + c_1 10^{-18} + c_2 10^{-30} + c_3 10^{-42} + \ldots
+\eeqn
+
+\noindent Therefore, $500000 - \sqrt{500000^2 - 1}$ should contain a
+Catalan number in every twelfth position, which is what we observed.
+
+\end{document}

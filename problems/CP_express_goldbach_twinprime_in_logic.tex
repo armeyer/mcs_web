@@ -1,0 +1,240 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{CP_express_goldbach_twinprime_in_logic}
+  \pcomment{ARM 9/18/17}
+  \pcomment{subsumes PS_rewrite_assertions_prime_goldbach_bertrand_fermat}
+  \pcomment{subsumes PS_translate_to_predicate_logic}
+\end{pcomments}
+
+\pkeywords{
+  predicate
+  quantifier
+  Goldbach
+  Bertrand
+  Fermat
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{problem}
+In this problem we'll examine predicate logic formulas where the domain
+of discourse is $\nngint$.  In addition to the logical symbols, the
+formulas may contain ternary predicate symbols $A$ and $M$, where
+\begin{align*}
+A(k,m,n) &\ \text{means}\ k = m + n,\\
+M(k,m,n) &\ \text{means}\ k = m \cdot n.
+\end{align*}
+For example, a formula ``$\text{Zero}(n)$'' meaning that $n$ is zero
+could be defined as
+\[
+\text{Zero}(n) \eqdef A(n,n,n).
+\]
+Having defined ``Zero,'' it is now OK to use it in subsequent
+formulas.  So a formula ``$\text{Greater}(m,n)$'' meaning $m > n$
+could be defined as
+\[
+\text{Greater}(m,n) \eqdef \exists k. \QNOT(\text{Zero}(k)) \QAND A(m,n,k).
+\]
+This makes it OK to use ``Greater'' in subsequent formulas.
+
+Write predicate logic formulas using only the allowed predicates $A,M$ that
+define the following predicates:
+
+\begin{problemparts}
+
+\ppart $\text{Equal}(m,n)$ meaning that $m=n$.
+\begin{solution}
+You could say that neither $m$ nor $n$ is greater than the other:
+\[
+\text{Equal}(m,n) \eqdef \QNOT(\text{Greater}(m,n) \QOR \text{Greater}(n,m)).
+\]
+It's even simpler to say that $m = n+0$:
+\[
+\text{Equal}(m,n) \eqdef \exists z. \text{Zero}(z) \QAND A(m,n,z).
+\]
+\end{solution}
+
+\ppart\label{defone} $\text{One}(n)$ meaning that $n=1$.
+
+\begin{solution}
+\[
+\text{One}(n) \eqdef M(n,n,n) \QAND \QNOT(\text{Zero}(n))
+\]
+clearly works.  So does
+\[
+\text{One}(n) \eqdef \forall m.\, M(m,m,n).
+\]
+Another approach uses Greater, namely, one is the number that is only
+greater than zero:
+\[
+\text{One}(n) \eqdef \forall m.\,  \text{Greater}(n,m) \QIFF \text{Zero}(m).
+\]
+\end{solution}
+
+\ppart\label{avoidterms} $n = i(m \cdot j + k^2)$
+
+\begin{solution}
+The idea is to introduce variables for the values of the arithmetic subformulas:
+\[
+\exists a, b, c.\,  M(a,m,j) \QAND M(b,k,k) \QAND A(c,a,b) \QAND M(n,i,c).
+\]
+
+\end{solution}
+
+\problempart $\text{Prime}(p)$ meaning $p$ is a prime number.
+
+\begin{solution}
+One way to define a prime number is:
+\begin{quote}
+``A prime is an integer greater than one that cannot be expressed as the
+  product of two numbers that are also greater than one.''
+\end{quote}
+This definition then translates directly into the predicate formula:
+\begin{align*}
+\text{Prime}(p)
+  \eqdef & \exists w. \text{One}(w) \QAND \text{Greater}(p,w)\ \QAND\\
+         & \qquad \QNOT(\exists m.\, \exists n.\, 
+          \text{Greater}(m,w) \QAND \text{Greater}(n,w) \QAND M(p,m,n)).
+\end{align*}
+
+Another, equivalent, definition is:
+\begin{quote}
+``A prime is an integer other than one whose only factors are itself and one.''
+\end{quote}
+This would translate into
+\begin{align*}
+\text{Prime}(p) & \eqdef  \QNOT(\text{Zero}(p))\ \QAND\\
+      & \qquad \forall m, n.\, 
+ M(p,m,n) \QIMPLIES [\text{Equal}(m,p) \QOR \text{One}(m)].
+\end{align*}
+
+A clever third characterization of primes leads to a more concise formula:
+\begin{quote}
+``A prime is an integer that can only be factored into two
+  numbers when exactly one of those numbers equals one.''
+\end{quote}
+\[
+\text{Prime}(p)
+    \eqdef \forall m, n.\,  M(p,m,n)
+       \QIMPLIES (\text{One}(m) \QXOR \text{One}(n)).
+\]
+\end{solution}
+
+\ppart\label{deftwo} $\text{Two}(n)$ meaning that $n=2$.
+
+\begin{solution}
+The usual definition would be that two is one plus one:
+\[
+\text{Two}(n) \eqdef \exists w. \text{One}(w) \QAND A(n, w, w).
+\]
+
+Another definition is that two is an integer that is only greater than
+either zero or one:
+
+\[
+\text{Two}(n) \eqdef \forall m.\, \text{Greater}(n,m) \QIMP (\text{Zero}(m) \QOR \text{One}(m)).
+\]
+\end{solution}
+
+\eparts
+
+The results of part~\eqref{deftwo} will entend to formulas
+$\text{Three}(n), \text{Four}(n), \text{Five}(n), \dots$ which are
+allowed from now on.
+
+\bparts
+
+\iffalse
+\problempart There is no largest prime number.
+
+\begin{solution}
+\[
+\QNOT(\exists p.\, (\text{Prime}(p) \QAND (\forall q.\, (\text{Prime}(q) \QIMPLIES p \geq q)))).
+\]
+\end{solution}
+\fi
+
+\ppart $\text{Even}(n)$ meaning $n$ is even.
+
+\begin{solution}
+A standard definition would be that an even number is a multiple of two:
+\[
+\text{Even}(n)\eqdef \exists t.\, (\text{Two}(t) \QAND  \exists k.\, M(n,t,k)).
+\]
+A simpler alternative is that an even number is the sum of some number with itself:
+\[
+\text{Even}(n)\eqdef \exists k.\, A(n,k,k).
+\]
+\end{solution}
+
+\problempart (\idx{Goldbach Conjecture}) Every even
+integer $n \geq 4$ can be expressed as the sum of two primes.
+
+\begin{solution}
+\begin{align*}
+\exists r. & \text{Three}(r)\ \QAND\\
+           & \forall n.\, (\text{Greater}(n,r) \QAND \text{Even}(n)) \QIMPLIES\\
+           & \qquad \exists p, q.\,
+                 \text{Prime}(p) \QAND \text{Prime}(q) \QAND A(n, p, q).
+\end{align*}
+\end{solution}
+
+\iffalse
+\problempart (\idx{Bertrand's Postulate}) If $n > 1$, then there is always
+at least one prime $p$ such that $n < p < 2n$.
+
+\begin{solution}
+\[
+\forall n.\,
+\( (n > 1) \QIMPLIES (\exists p ( \text{Prime}(p)  \QAND (n < p) \QAND (p < 2n))) 
+)
+\]
+\end{solution}
+\fi
+
+\inbook{
+\problempart (\idx{Fermat's Last Theorem}) Now suppose we also have
+\[
+X(k,m,n) \quad \text{means}\ k = m^n.
+\]
+Express the assertion that there are no positive integer solutions to
+the equation:
+\begin{equation*}
+    x^n + y^n = z^n
+\end{equation*}
+when $n > 2$.
+
+\begin{solution}
+We express $x^n + y^n = z^n$ with
+\[
+F(x,y,z,n) \eqdef \exists a,b,c.\, X(a,x,n) \QAND X(b,y,n) \QAND A(c,a,b) \QAND X(c,z,n).
+\]
+Then a formula for Fermat's Last Theorem is:
+\begin{align*}
+\forall x, y, z, n.\, & F(x,y,x,n) \QIMPLIES
+    &  [\text{Zero}(x) \QOR \text{Zero}(y) \QOR \text{Zero}(z) \QOR
+   \text{Zero}(n) \QOR \text{One}(n) \QOR \text{Two}(n)].
+\end{align*}
+\end{solution}
+}
+
+\ppart (Twin Prime Conjecture) There are infinitely many primes that differ by two.
+
+\begin{solution}
+\begin{align*}
+\forall n \exists p \exists q.
+       & \text{Prime}(p) \QAND \text{Prime}(q) \QAND\\
+       & \text{Greater}(p,n) \QAND \exists t.\, (\text{Two}(t) \QAND A(q,p,t)).
+\end{align*}
+\end{solution}
+
+\eparts
+
+\end{problem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem ends here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

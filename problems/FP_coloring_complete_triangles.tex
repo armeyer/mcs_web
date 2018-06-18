@@ -1,0 +1,221 @@
+\documentclass[problem]{mcs}
+
+\begin{pcomments}
+  \pcomment{FP_coloring_complete_triangles}
+  \pcomment{variation of FP_coloring_triangles from F03 final}
+  \pcomment{from S06.final}
+  \pcomment{minor edit ARM 5/20/12}
+  \pcomment{soln to last part need rewrite ala Drew Minnear}
+\end{pcomments}
+
+\pkeywords{
+ coloring
+ probability
+ variance
+ graphs
+ expectation
+ independence
+ Chebyshev
+ law_of_large_numbers
+ asymptotic_notation
+ big_oh 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Problem starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{problem}
+
+\iffalse
+\begin{staffnotes}
+(a) 2, (b) 2, (c) 1, (d) 2, (e) 2, (f) 3
+\end{staffnotes}
+\fi
+
+Let $K_n$ be the complete graph with $n$ vertices.  Each of the edges of
+the graph will be randomly assigned one of the colors red, green, or blue.
+The assignments of colors to edges are mutually independent, and the
+probability of an edge being assigned red is $r$, blue is $b$, and green is
+$g$ (so $r+b+g=1$).
+
+A set of three vertices in the graph is called a \emph{triangle}.  A
+triangle is \emph{monochromatic} if the three edges connecting the vertices
+are all the same color.
+
+\bparts 
+
+\ppart\label{mr3b3g3} Let $m$ be the probability that any given triangle $T$ is
+monochromatic.  Write a simple formula for $m$ in terms of $r,b,$ and $g$.
+
+\examspace[0.5in]
+
+\begin{solution}
+$m = r^3+b^3 +g^3$
+\end{solution}
+
+\ppart Let $I_T$ be the indicator variable for whether $T$ is
+monochromatic.  Write simple formulas in terms of $m,r,b$ and $g$ for
+$\expect{I_T}$ and $\variance{I_T}$.
+
+\begin{align*}
+\expect{I_T}   & = \text{\examboxplain{1.5in}{0.4in}{-0.2in}}\\
+\variance{I_T} & = \text{\examboxplain{1.5in}{0.4in}{-0.2in}}
+\end{align*}
+
+\examspace[1.0in]
+
+\begin{solution}
+\begin{align*}
+\expect{I_T} & = m,\\
+\variance{I_T} & = m(1-m).
+\end{align*}
+\end{solution}
+
+\eparts
+
+\bigskip
+
+Let $T$ and $U$ be distinct triangles.
+
+\bparts
+
+\ppart\label{tumono} What is the probability that $T$ and $U$ are both
+monochromatic if they do not share an edge?\dots if they do share an
+edge?
+
+\exambox{0.5in}{0.4in}{0in}
+
+\begin{solution}
+%Both $T$ and $U$ are monochromatic iff $I_T \cdot I_U =1$.
+
+\[
+\pr{\text{$T$ and $U$ are monochromatic}} =
+    \begin{cases}
+      m^2 & \text{if they do not share an edge},\\
+      r^5+b^5+g^5 & \text{if they do share an edge}.
+    \end{cases}
+\]
+
+If $T$ and $U$ do not share an edge, then the three edges of $T$ match
+with probability $m$, and independently, the three edges of $U$ match
+with probability $m$, so both match with probability $m^2$.  If they
+do share an edge, the five edges among them must all match one of
+colors $r,g,b$.
+\end{solution}
+\eparts
+
+\bigskip
+\begin{center}
+{\large \textbf{Now assume $r=b=g = \dfrac{1}{3}$.}}
+\end{center}
+
+\bparts
+\ppart Show that $I_T$ and $I_U$ are independent random variables.
+
+\examspace[2.0in]
+
+\begin{solution}
+Since $I_T$ and $I_U$ are indicators for events, it suffices to verify
+that
+\begin{equation}\label{it1iu1}
+\prob{I_T = 1}\cdot \prob{I_U = 1} = \prob{I_T\cdot I_U =1}.
+\end{equation}
+In the case that $T$ and $U$ do not share an edge,~\eqref{it1iu1}
+follows immediately from parts~\eqref{mr3b3g3} and~\eqref{tumono}.
+If they do share an edge, this follows because
+\[
+m^2= \paren{3(1/3)^3}^2 = (1/3)^4 = 3(1/3)^5 = r^5+b^5+g^5.
+\]
+\end{solution}
+
+\ppart\label{part:exMvarM} Let $M$ be the number of monochromatic
+triangles.  Write simple formulas in terms of $n$ and $m$ for
+$\expect{M}$ and $\variance{M}$.
+
+\begin{align*}
+\expect{M}   & = \text{\examboxplain{1.5in}{0.4in}{-0.2in}}\\
+\variance{M} & = \text{\examboxplain{1.5in}{0.4in}{-0.2in}}
+\end{align*}
+
+\examspace[1.0in]
+
+\begin{solution}
+\begin{align}
+\expect{M}   & = m \cdot \text{(\# triangles)}\notag\\
+             & = m\binom{n}{3},\label{expMmsh}\\
+\variance{M} & = \variance{I_T} \cdot \text{(\# triangles)}\notag\\
+             & = m(1-m)\binom{n}{3} = (1-m)\expect{M}.\label{varMITsh}
+\end{align}
+\end{solution}
+
+\ppart Let $\mu \eqdef \expect{M}$.  Use Chebyshev's Bound to prove
+that
+\[
+\Prob{\abs{M - \mu} > \sqrt{\mu \log \mu}} \leq \frac{1}{\log \mu}.
+\]
+
+\examspace[2.5in]
+
+\begin{staffnotes}
+Have students work out rough numbers for $n=10^3$.  THESE NUMBERS NEED
+TO BE CHECKED: $\mu \approx 10^9$, $\log \mu \approx 30$, so
+there is only a 3\% chance that $M$ will differ from its expected
+value by more than 15\%.
+\end{staffnotes}
+
+\begin{solution}
+According to Chebyshev's Bound:
+\[%\label{CMmucsig}
+\Prob{\abs{M - \mu} > c \sigma} \leq \frac{1}{c^2}
+\]
+So
+\begin{align*}
+\Prob{\abs{M - \mu} > \sqrt{\mu \log \mu}}
+  & = \Prob{\abs{M - \mu} > \sqrt{\log \mu} \sqrt{\mu}}\\
+  & \leq \Prob{\abs{M - \mu} > \sqrt{\log \mu} \sqrt{(1-m)\mu}}
+       & (0 \leq 1- m \leq 1)\\
+  & = \Prob{\abs{M - \mu} > \sqrt{\log \mu}\ \sigma}
+       & \text{(by~\eqref{varMITsh})}\\
+  & \leq \frac{1}{\log \mu}
+       & \text{(by Chebyshev)}\\%~\eqref{CMmucsig}
+%  & = O \paren{\frac{1}{\log n}}
+%       & \text{(by~\eqref{expMmsh}).}
+\end{align*}
+\iffalse
+The last step follows because according to~\eqref{expMmsh},
+\[
+\mu = m\binom{n}{3} = \Theta(n^3),
+\]
+so
+\[
+\frac{1}{\log \mu} = \Theta\paren{\frac{1}{\log n^3}} = \Theta\paren{\frac{1}{\log n}}.
+\]
+\fi
+\end{solution}
+
+
+\ppart Conclude that
+\[
+\lim_{n\to \infty} \Prob{\abs{M - \mu} > \sqrt{\mu \log \mu}} = 0
+\]
+
+\begin{solution}
+According to~\eqref{expMmsh},
+\[
+\mu = m\binom{n}{3} = \Theta(n^3),
+\]
+so
+\[
+\frac{1}{\log \mu} = \Theta\paren{\frac{1}{\log n^3}} = \Theta\paren{\frac{1}{\log n}}.
+\]
+
+Since $1/(\log n) \to 0$ as $n \to \infty$, the $O()$ bound on the
+probability goes to zero, which means an upper bound on the limit is
+zero.  Since the probability is nonnegative, the limit must be exactly
+zero.
+\end{solution}
+
+\eparts
+\end{problem}
